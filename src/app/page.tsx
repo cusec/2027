@@ -1,9 +1,6 @@
-import { SplashContent } from "@/components/splash-content";
+import { redirect } from "next/navigation";
+import { routing } from "@/i18n/routing";
 
-export default function Home() {
-  return (
-    <div className="p-6">
-      <SplashContent />
-    </div>
-  );
+export default function RootPage() {
+  redirect(`/${routing.defaultLocale}`);
 }
