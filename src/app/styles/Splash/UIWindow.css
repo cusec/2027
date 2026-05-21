@@ -1,0 +1,368 @@
+/*-----------------------------
+	UIWindow.tsx styling
+------------------------------*/
+.splash-UI {
+	position: relative;
+	width: 100%;
+}
+
+.splash-UI-bg {
+	width: 100%;
+	height: auto;
+	object-fit: contain;
+	display: block;
+	image-rendering: pixelated;
+}
+
+.splash-UI-bg-mobile {
+	display: none;
+}
+
+.UI-content {
+	position: absolute;
+	inset: 0;
+	font-family: "MS Sans Serif", Tahoma, sans-serif;
+}
+
+.UI-Items-Wrapped {
+	position: absolute;
+	inset: 0;
+}
+
+.UI-nav {
+	position: absolute;
+	top: 7.8%;
+	left: 6%;
+	right: 4.8%;
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+}
+
+.UI-nav h4 {
+	margin: 0;
+	color: #ffffff;
+	font-size: clamp(12px, 1.2vw, 34px);
+	font-weight: 400;
+	letter-spacing: 0;
+	line-height: 1;
+	text-shadow: 0 1px 0 rgba(0, 0, 0, 0.2);
+}
+
+.UI-nav-button-row {
+	display: flex;
+	gap: 0.35rem;
+}
+
+.UI-nav-button-row button {
+	width: clamp(13px, 2.9vw, 30px);
+	height: clamp(13px, 2.9vw, 30px);
+	background: #bfbfbf;
+	border-top: 2px solid #ffffff;
+	border-left: 2px solid #ffffff;
+	border-right: 2px solid #2b2b2b;
+	border-bottom: 2px solid #2b2b2b;
+	box-shadow: inset 1px 1px 0 #dbdbdb;
+	padding: 0;
+	position: relative;
+}
+
+.UI-minimize-button::before,
+.UI-fullscreen-button::before,
+.UI-close-button::before,
+.UI-close-button::after {
+	content: "";
+	position: absolute;
+	background: #0f0f0f;
+}
+
+.UI-minimize-button::before {
+	width: 55%;
+	height: 2px;
+	left: 22%;
+	bottom: 24%;
+}
+
+.UI-fullscreen-button::before {
+	width: 55%;
+	height: 55%;
+	left: 22%;
+	top: 22%;
+	border: 2px solid #0f0f0f;
+	background: transparent;
+	box-sizing: border-box;
+}
+
+.UI-close-button::before,
+.UI-close-button::after {
+	width: 2px;
+	height: 62%;
+	left: 49%;
+	top: 19%;
+	transform-origin: center;
+}
+
+.UI-close-button::before {
+	transform: rotate(45deg);
+}
+
+.UI-close-button::after {
+	transform: rotate(-45deg);
+}
+
+.UI-item {
+	position: absolute;
+	top: 55.2%;
+	transform: translate(-50%, -50%);
+	width: 22%;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: flex-start;
+	text-align: center;
+	color: #171717;
+	background: none;
+	border: none;
+	padding: 0;
+	font: inherit;
+	cursor: pointer;
+	text-decoration: none;
+}
+
+.UI-item:hover p,
+.UI-item:focus-visible p {
+	color: #2255aa;
+}
+
+.UI-item:focus-visible {
+	outline: 2px dotted #103436;
+	outline-offset: 2px;
+}
+
+.UI-item-edition {
+	left: 18.5%;
+}
+
+.UI-item-date {
+	left: 50%;
+}
+
+.UI-item-location {
+	left: 79.5%;
+}
+
+.UI-item svg,
+.UI-icon {
+	height: clamp(54px, 8vw, 160px);
+	width: auto !important;
+	max-width: clamp(54px, 8vw, 160px);
+	display: block;
+	margin: 0 auto;
+	object-fit: contain;
+	image-rendering: pixelated;
+}
+
+.UI-item p {
+	margin: clamp(0.35rem, 0.8vw, 0.6rem) 0 0;
+	font-size: clamp(11px, 1.5vw, 31px);
+	line-height: 1;
+	text-decoration: underline;
+	text-underline-offset: 2px;
+	white-space: nowrap;
+}
+
+.UI-cta {
+	position: absolute;
+	left: 50%;
+	top: 74.8%;
+	transform: translateX(-50%);
+	width: 85.5%;
+	cursor: pointer;
+}
+
+.UI-cta-link {
+	display: block;
+	width: 100%;
+	margin: 0;
+	padding: 0;
+	background: none;
+	border: none;
+	cursor: pointer;
+}
+
+.UI-cta-link + .UI-cta-link {
+	margin-top: 0.45rem;
+}
+
+.UI-cta svg {
+	width: 100%;
+	height: auto;
+	display: block;
+	transform: scaleX(1.40);
+	transform-origin: center;
+}
+
+.UI-cta .cta-button-text {
+	font-family: "Retropix", "MS Sans Serif", monospace;
+	font-size: clamp(25px, 1.15vw, 30px);
+	letter-spacing: 0;
+	transform: scaleX(0.70);
+	transform-box: fill-box;
+	transform-origin: center;
+}
+
+.UI-cta .interest-button:hover .interest-button__face,
+.UI-cta .sponsorship-interest-button:hover .sponsorship-interest-button__face,
+.UI-cta .UI-cta-link:hover .interest-button__face,
+.UI-cta .UI-cta-link:hover .sponsorship-interest-button__face {
+	fill: #0026D3;
+}
+
+.UI-cta .interest-button:hover .interest-button__highlight,
+.UI-cta .sponsorship-interest-button:hover .sponsorship-interest-button__highlight,
+.UI-cta .UI-cta-link:hover .interest-button__highlight,
+.UI-cta .UI-cta-link:hover .sponsorship-interest-button__highlight {
+	fill: rgb(255, 255, 255);
+}
+
+.UI-cta .interest-button:hover .interest-button__shadow,
+.UI-cta .sponsorship-interest-button:hover .sponsorship-interest-button__shadow,
+.UI-cta .UI-cta-link:hover .interest-button__shadow,
+.UI-cta .UI-cta-link:hover .sponsorship-interest-button__shadow {
+	fill: rgb(14, 0, 75);
+}
+
+.UI-cta .interest-button:hover .interest-button__text,
+.UI-cta .sponsorship-interest-button:hover .sponsorship-interest-button__text,
+.UI-cta .UI-cta-link:hover .interest-button__text,
+.UI-cta .UI-cta-link:hover .sponsorship-interest-button__text {
+	fill: #ffffff;
+}
+
+@media (max-width: 1400px) {
+	.UI-item svg,
+	.UI-icon {
+		max-width: clamp(54px, 10vw, 160px);
+		height: clamp(54px, 10vw, 160px);
+	}
+}
+
+@media (max-width: 640px) {
+	.splash-UI {
+		width: 100%;
+		margin: 0 auto;
+	}
+
+	.splash-UI-bg-default {
+		display: none;
+	}
+
+	.splash-UI-bg-mobile {
+		display: block;
+	}
+
+	.UI-nav {
+		top: 2.7%;
+		left: 9%;
+		right: 8%;
+	}
+
+	.UI-nav h4 {
+		font-size: 14px;
+	}
+
+	.UI-nav-button-row {
+		gap: 0.22rem;
+	}
+
+	.UI-nav-button-row button {
+		width: 22px;
+		height: 22px;
+		border-top-width: 1px;
+		border-left-width: 1px;
+		border-right-width: 1px;
+		border-bottom-width: 1px;
+	}
+	
+	.UI-Items-Wrapped {
+		transform: translateY(-24%);
+	}
+
+	.UI-item {
+		left: 14% !important;
+		width: 72%;
+		transform: none;
+		flex-direction: row;
+		align-items: center;
+		justify-content: flex-start;
+		gap: 14px;
+		text-align: left;
+	}
+
+	.UI-item-edition {
+		top: 47%;
+	}
+
+	.UI-item-date {
+		top: 67%;
+	}
+
+	.UI-item-location {
+		top: 87%;
+	}
+
+	.UI-item svg,
+	.UI-icon {
+		margin: 0;
+		flex: 0 0 auto;
+		max-width: clamp(100px, 12vw, 220px);
+		height: clamp(100px, 12vw, 220px);
+	}
+
+	.UI-item p {
+		margin: 0;
+		font-size: 16px;
+		text-underline-offset: 3px;
+	}
+
+	.UI-cta {
+		left: 50%;
+		top: 108.4%;
+		width: 66%;
+		display: flex;
+		flex-direction: column;
+		gap: 12px;
+	}
+
+	.UI-cta-link + .UI-cta-link {
+		margin-top: 0;
+	}
+
+	.UI-cta svg {
+		transform: scaleX(1.40) scaleY(1.8);
+		transform-origin: center;
+	}
+
+	.UI-cta .sponsorship-interest-button__text {
+		transform: scaleX(1.4) scaleY(1.15);
+		transform-box: fill-box;
+		transform-origin: center;
+	}
+
+	.UI-cta .interest-button__text {
+		transform: scaleX(1.35) scaleY(1.15);
+		transform-box: fill-box;
+		transform-origin: center;
+	}
+
+	.UI-cta .cta-button-text {
+		font-size: 22px;
+	}
+}
+
+@media (max-width: 370px) {
+	.UI-nav h4 {
+		font-size: 10px;
+	}
+}
+

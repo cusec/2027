@@ -2,5 +2,11 @@
     "HomePage": {
         "title": "Home page (English)",
         "description": "we goin mtl w ts ✌️🥀 (in English tho)"
+    },
+    "SplashPage": {
+        "title": "Canadian University Software Engineering Conference",
+        "edition-link": "26th Edition",
+        "attendance-interest": "Attendance Interest Form",
+        "sponsorship-interest": "Sponsorhip Interest Form"
     }
 }

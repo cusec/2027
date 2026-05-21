@@ -1,0 +1,289 @@
+@font-face {
+    font-family: "Retropix";
+	src: url("../../../fonts/retropix.woff2") format("woff2");
+    font-weight: 400;
+    font-style: normal;
+    font-display: swap;
+}
+
+/*-----------------------------
+	SplashPage.tsx styling
+------------------------------*/
+
+.splash-wrapper {
+	min-height: 100dvh;
+	height: 100dvh;
+	box-sizing: border-box;
+	padding: 1.4rem;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	position: relative;
+	overflow: hidden;
+	--splash-waveform-x: 50%;
+	--splash-waveform-bottom: -800px;
+	--splash-waveform-scale: 1.4;
+	--splash-waveform-width: min(2500px, 2800px);
+	background-image: url('../../assets/splash_bg.png');
+	background-position: center;
+	background-size: cover;
+	background-repeat: no-repeat;
+	animation: splash-circle-reveal 1.2s ease-out both;
+}
+
+@keyframes splash-circle-reveal {
+	from { clip-path: circle(0% at 50% 50%); }
+	to   { clip-path: circle(150% at 50% 50%); }
+}
+
+.main-splash-content {
+	/* background: green; */
+	width: min(90vw, 2100px);
+	margin: 0 auto;
+	display: grid;
+	grid-template-columns: minmax(240px, 0.85fr) minmax(560px, 1.35fr);
+	align-items: start;
+	column-gap: clamp(1.2rem, 3.4vw, 3.6rem);
+	padding-top: clamp(0.2rem, 1.8vw, 1.5rem);
+	position: relative;
+	z-index: 2;
+}
+
+.splash-waveform {
+	position: absolute;
+	left: var(--splash-waveform-x);
+	bottom: var(--splash-waveform-bottom);
+	width: var(--splash-waveform-width);
+	height: auto;
+	max-width: none;
+	transform: translateX(-50%) scale(var(--splash-waveform-scale));
+	transform-origin: center bottom;
+	pointer-events: none;
+	user-select: none;
+	z-index: 1;
+	animation: splash-waveform-fadein 1.2s ease-out both;
+}
+
+@keyframes splash-waveform-fadein {
+	0%   { opacity: 0; }
+	100% { opacity: 1; }
+}
+
+.splash-title-wrapper {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	animation: splash-bounce-in 0.5s cubic-bezier(.34, 1.56, 1, 1) 0.4s both;
+	/* background: red; */
+	/* gap: clamp(0.8rem, 2vw, 1.6rem); */
+}
+
+.splash-title {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	height: clamp(110px, vh, 180px);
+	margin: 0;
+	font-family: "Retropix", "MS Sans Serif", monospace;
+	font-weight: 400;
+	font-size: clamp(130px, 9vw, 200px);
+	color: #103436;
+	text-align: left;
+	text-shadow:
+		1px 0 0 rgba(16, 52, 54, 0.65),
+		0 1px 0 rgba(16, 52, 54, 0.65);
+}
+
+.splash-title-char {
+	display: inline-block;
+	white-space: pre;
+	animation: splash-title-wave 2.6s ease-in-out infinite;
+	will-change: transform;
+}
+
+@keyframes splash-title-wave {
+	0%, 100% { transform: translateY(0); }
+	50%      { transform: translateY(-4px); }
+}
+
+.title-row {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	margin-top: clamp(-60px, -3vw, -20px);
+}
+
+.splash-logo {
+	width: clamp(88px, 7vw, 170px);
+	height: auto;
+	margin-bottom: clamp(10px, 2vh, 24px);
+	filter: drop-shadow(0 0 5px rgba(255, 255, 255, 0.8));
+}
+
+.splash-ui-wrapper {
+	width: clamp(20px, 60vw, 1200px);
+	max-width: 100%;
+	justify-self: end;
+	padding-top: clamp(0.4rem, 1.3vw, 1.2rem);
+	animation:
+		splash-bounce-in 0.5s cubic-bezier(.34, 1.56, 1, 1) 0.6s both,
+		splash-ui-hover 4.5s ease-in-out 1.2s infinite;
+}
+
+@keyframes splash-ui-hover {
+	0%, 100% { transform: translateY(0); }
+	50%      { transform: translateY(-5px); }
+}
+
+@keyframes splash-bounce-in {
+	0%   { opacity: 0; transform: scale(0.4) translateY(40px); }
+	60%  { opacity: 1; transform: scale(1.08) translateY(-6px); }
+	100% { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+@media (max-width: 980px) {
+	.splash-wrapper {
+		--splash-waveform-x: 50%;
+		--splash-waveform-bottom: -400px;
+		--splash-waveform-scale: 1.35;
+		--splash-waveform-width: min(230vw, 1700px);
+	}
+
+	.main-splash-content {
+		grid-template-columns: 1fr;
+		row-gap: 1rem;
+	}
+
+	.splash-title-wrapper {
+		padding-top: 0;
+	}
+
+	.splash-title {
+		text-align: center;
+	}
+
+	.splash-ui-wrapper {
+		justify-self: center;
+	}
+}
+
+@media (max-width: 2000px) {
+	.splash-wrapper {
+		--splash-waveform-x: 60%;
+		--splash-waveform-bottom: -800px;
+		--splash-waveform-scale: 1.65;
+		--splash-waveform-width: min(230vw, 2000px);
+	}
+}
+
+@media (max-width: 1000px) {
+	.splash-wrapper {
+		--splash-waveform-x: 60%;
+		--splash-waveform-bottom: -500px;
+		--splash-waveform-scale: 1.35;
+		--splash-waveform-width: min(230vw, 1700px);
+	}
+	.main-splash-content {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+	}
+	.splash-title {
+		font-size: clamp(70px, 12vw, 250px);
+		height: 20vw;
+	}
+	.title-row {
+		height: 90px
+	}
+	.splash-ui-wrapper {
+		width: clamp(20px, 70vw, 1200px);
+		margin: 0;
+	}
+
+	.splash-title-wrapper {
+		align-items: start;
+	}
+}
+
+@media (max-width: 740) {
+	.splash-wrapper {
+		--splash-waveform-x: 60%;
+		--splash-waveform-bottom: -400px;
+		--splash-waveform-scale: 1.35;
+		--splash-waveform-width: min(1500px, 1700px);
+	}
+}
+
+@media (max-height: 900px) {
+	.splash-wrapper {
+		--splash-wavefom-translateX: 20%;
+		--splash-waveform-bottom: -450px;
+		--splash-waveform-scale: 1.08;
+		--splash-waveform-width: min(200vw, 2050px);
+	}
+}
+
+@media (max-height: 760px) {
+	.splash-wrapper {
+		--splash-waveform-bottom: -430px;
+		--splash-waveform-scale: 1;
+		--splash-waveform-width: min(175vw, 2000px);
+	}
+}
+
+@media (max-width: 980px) and (max-height: 560px) {
+	.splash-wrapper {
+		--splash-waveform-bottom: -320px;
+		--splash-waveform-scale: 1.15;
+		--splash-waveform-width: min(240vw, 1550px);
+	}
+}
+
+@media (max-width: 640px) {
+	.splash-wrapper {
+		padding: 0.95rem;
+		align-items: center;
+		justify-content: center;
+		background-size: auto 100%;
+		--splash-waveform-x: 56%;
+		--splash-waveform-bottom: -200px;
+		--splash-waveform-scale: 0.92;
+		--splash-waveform-width: min(1500px, 1950px);
+	}
+
+	.main-splash-content {
+		width: 100%;
+		row-gap: 0.45rem;
+		padding-top: 0.5rem;
+	}
+
+	.splash-title-wrapper {
+		align-items: flex-start;
+		padding-left:  1rem;
+	}
+
+	.splash-title {
+		height: auto;
+		justify-content: flex-start;
+		font-size: clamp(46px, 17vw, 110px);
+		line-height: 1.2;
+		text-align: left;
+	}
+
+	.title-row {
+		justify-content: flex-start;
+	}
+
+	.splash-logo {
+		width: clamp(52px, 14vw, 72px);
+		margin-left: 0.4rem;
+		margin-bottom: 0;
+	}
+
+	.splash-ui-wrapper {
+		width: 100%;
+		justify-self: stretch;
+		padding: 0.25rem 1rem 0;
+	}
+}
