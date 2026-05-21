@@ -2,5 +2,11 @@
     "HomePage": {
         "title": "Home page (French)",
         "description": "we goin mtl w ts ✌️🥀 (in French monseur)"
+    },
+    "SplashPage": {
+        "title": "Conférence canadienne sur le génie logiciel",
+        "edition-link": "26e édition",
+        "attendance-interest": "Formulaire d'intérêt pour la participation",
+        "sponsorship-interest": "Formulaire de manifestation d'intérêt pour un parrainage"
     }
 }
