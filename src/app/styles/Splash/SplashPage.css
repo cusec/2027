@@ -64,6 +64,8 @@
 	user-select: none;
 	z-index: 1;
 	animation: splash-waveform-fadein 1.2s ease-out both;
+	/* iOS Safari drops VP9 alpha, leaving black. screen blend makes black transparent. */
+	mix-blend-mode: screen;
 }
 
 @keyframes splash-waveform-fadein {
@@ -249,9 +251,12 @@
 		justify-content: center;
 		background-size: auto 100%;
 		--splash-waveform-x: 56%;
-		--splash-waveform-bottom: -200px;
+		--splash-waveform-bottom: 0px;
 		--splash-waveform-scale: 0.92;
 		--splash-waveform-width: min(1500px, 1950px);
+		height: auto;
+		overflow-x: hidden;
+		overflow-y: auto;
 	}
 
 	.main-splash-content {

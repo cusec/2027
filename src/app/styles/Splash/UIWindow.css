@@ -178,6 +178,7 @@
 	transform: translateX(-50%);
 	width: 85.5%;
 	cursor: pointer;
+	overflow: hidden;
 }
 
 .UI-cta-link {
@@ -187,6 +188,51 @@
 	padding: 0;
 	background: none;
 	border: none;
+	cursor: pointer;
+	overflow: hidden;
+}
+
+.UI-cta-email {
+	display: flex;
+	align-items: stretch;
+	gap: 0.4rem;
+	width: 100%;
+	margin-bottom: 0.45rem;
+}
+
+.UI-cta-email-input {
+	flex: 3;
+	min-width: 0;
+	padding: 0.2rem 0.6rem;
+	background: #efefef;
+	border-top: 1px solid #ffffff;
+	border-left: 1px solid #ffffff;
+	border-right: 1px solid #2b2b2b;
+	border-bottom: 1px solid #2b2b2b;
+	font-family: "Retropix", "MS Sans Serif", monospace;
+	font-size: 12px;
+	line-height: 1.1;
+	color: #103436;
+}
+
+.UI-cta-email-input::placeholder {
+	color: rgba(16, 52, 54, 0.7);
+}
+
+.UI-cta-email-submit {
+	flex: 1;
+	min-width: 0;
+	padding: 0.2rem 0.4rem;
+	background: #c0c0c0;
+	border-top: 1px solid #ffffff;
+	border-left: 1px solid #ffffff;
+	border-right: 1px solid #2b2b2b;
+	border-bottom: 1px solid #2b2b2b;
+	box-shadow: inset 1px 1px 0 #dbdbdb;
+	font-family: "Retropix", "MS Sans Serif", monospace;
+	font-size: 12px;
+	line-height: 1.1;
+	color: #0f0f0f;
 	cursor: pointer;
 }
 
@@ -200,6 +246,7 @@
 	display: block;
 	transform: scaleX(1.40);
 	transform-origin: center;
+	pointer-events: none;
 }
 
 .UI-cta .cta-button-text {
@@ -211,29 +258,21 @@
 	transform-origin: center;
 }
 
-.UI-cta .interest-button:hover .interest-button__face,
-.UI-cta .sponsorship-interest-button:hover .sponsorship-interest-button__face,
 .UI-cta .UI-cta-link:hover .interest-button__face,
 .UI-cta .UI-cta-link:hover .sponsorship-interest-button__face {
 	fill: #0026D3;
 }
 
-.UI-cta .interest-button:hover .interest-button__highlight,
-.UI-cta .sponsorship-interest-button:hover .sponsorship-interest-button__highlight,
 .UI-cta .UI-cta-link:hover .interest-button__highlight,
 .UI-cta .UI-cta-link:hover .sponsorship-interest-button__highlight {
 	fill: rgb(255, 255, 255);
 }
 
-.UI-cta .interest-button:hover .interest-button__shadow,
-.UI-cta .sponsorship-interest-button:hover .sponsorship-interest-button__shadow,
 .UI-cta .UI-cta-link:hover .interest-button__shadow,
 .UI-cta .UI-cta-link:hover .sponsorship-interest-button__shadow {
 	fill: rgb(14, 0, 75);
 }
 
-.UI-cta .interest-button:hover .interest-button__text,
-.UI-cta .sponsorship-interest-button:hover .sponsorship-interest-button__text,
 .UI-cta .UI-cta-link:hover .interest-button__text,
 .UI-cta .UI-cta-link:hover .sponsorship-interest-button__text {
 	fill: #ffffff;
@@ -332,6 +371,15 @@
 		display: flex;
 		flex-direction: column;
 		gap: 12px;
+	}
+
+	.UI-cta-email {
+		margin-bottom: 0;
+	}
+
+	.UI-cta-email-input,
+	.UI-cta-email-submit {
+		font-size: 13px;
 	}
 
 	.UI-cta-link + .UI-cta-link {

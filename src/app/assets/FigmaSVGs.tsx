@@ -68,7 +68,7 @@ export function FileFolder({width = 97, height = 74, ...props}: SVGElementProps)
 
 export function SponsorshipInterestButton({width = 616, height = 75, ...props}: SVGElementProps) {
     const t = useTranslations('SplashPage');
-    const lines = splitCtaLabel(t('sponsorship-interest'), 30);
+    const lines = splitCtaLabel(t('sponsorship-interest'), 28);
     const lineStartY = lines.length > 1 ? 30 : 38;
     return (
         <svg className="sponsorship-interest-button" width={width} height={height} viewBox="0 0 616 75" fill="none" xmlns="http://www.w3.org/2000/svg" {...props}>

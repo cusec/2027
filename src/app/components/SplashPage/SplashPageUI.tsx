@@ -1,7 +1,7 @@
 "use client";
 import {useTranslations} from 'next-intl';
 import Image from 'next/image';
-import {AttendanceInterestButton, FileFolder, SponsorshipInterestButton } from '@/app/assets/FigmaSVGs';
+import {FileFolder, SponsorshipInterestButton } from '@/app/assets/FigmaSVGs';
 import Calendar from "@/app/assets/calendar.png";
 import Globe from "@/app/assets/globe.png";
 import NavigationWindow from "@/app/assets/navigation_ui_window.png";
@@ -53,14 +53,18 @@ export default function SplashPageUI() {
                         <p>Montreal, QC</p>
                     </button>
                     <div className="UI-cta">
-                        <button
-                            type="button"
-                            className="UI-cta-link"
-                            aria-label="Attendance Interest Form"
-                            onClick={() => openCtaLink(ATTENDANCE_INTEREST_URL)}
-                        >
-                            <AttendanceInterestButton width={500} height={45} />
-                        </button>
+                        <div className="UI-cta-email" role="group" aria-label="Email signup">
+                            <input
+                                className="UI-cta-email-input"
+                                type="email"
+                                placeholder="Email"
+                                aria-label="Email address"
+                                autoComplete="email"
+                            />
+                            <button className="UI-cta-email-submit" type="button">
+                                Submit
+                            </button>
+                        </div>
                         <button
                             type="button"
                             className="UI-cta-link"
