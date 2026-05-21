@@ -4,6 +4,16 @@
 .splash-UI {
 	position: relative;
 	width: 100%;
+	transition: filter 0.18s ease;
+}
+
+.splash-UI--dragging {
+	filter: drop-shadow(0 18px 34px rgba(0, 0, 0, 0.45));
+}
+
+/* Hold the gentle float still while the user is dragging the window. */
+.splash-ui-wrapper:has(.UI-nav--dragging) {
+	animation-play-state: paused;
 }
 
 .splash-UI-bg {
@@ -27,6 +37,7 @@
 .UI-Items-Wrapped {
 	position: absolute;
 	inset: 0;
+	z-index: 1;
 }
 
 .UI-nav {
@@ -37,6 +48,14 @@
 	display: flex;
 	align-items: center;
 	justify-content: space-between;
+	cursor: grab;
+	user-select: none;
+	touch-action: none;
+	z-index: 2;
+}
+
+.UI-nav--dragging {
+	cursor: grabbing;
 }
 
 .UI-nav h4 {
