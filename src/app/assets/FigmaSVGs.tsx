@@ -2,6 +2,36 @@ import {useId, type SVGProps} from 'react';
 import {useTranslations} from 'next-intl';
 type SVGElementProps = SVGProps<SVGSVGElement>;
 
+function splitCtaLabel(label: string, maxChars: number) {
+    if (label.length <= maxChars) {
+        return [label];
+    }
+
+    const words = label.split(' ');
+    const lines: string[] = [];
+    let current = '';
+
+    for (const word of words) {
+        const next = current ? `${current} ${word}` : word;
+        if (next.length <= maxChars || !current) {
+            current = next;
+            continue;
+        }
+        lines.push(current);
+        current = word;
+    }
+
+    if (current) {
+        lines.push(current);
+    }
+
+    if (lines.length <= 2) {
+        return lines;
+    }
+
+    return [lines.slice(0, -1).join(' '), lines[lines.length - 1]];
+}
+
 export function FileFolder({width = 97, height = 74, ...props}: SVGElementProps) {
     return (
             <svg width={width} height={height} viewBox="0 0 97 74" fill="none" xmlns="http://www.w3.org/2000/svg" {...props}>
@@ -38,6 +68,8 @@ export function FileFolder({width = 97, height = 74, ...props}: SVGElementProps)
 
 export function SponsorshipInterestButton({width = 616, height = 75, ...props}: SVGElementProps) {
     const t = useTranslations('SplashPage');
+    const lines = splitCtaLabel(t('sponsorship-interest'), 30);
+    const lineStartY = lines.length > 1 ? 30 : 38;
     return (
         <svg className="sponsorship-interest-button" width={width} height={height} viewBox="0 0 616 75" fill="none" xmlns="http://www.w3.org/2000/svg" {...props}>
         <mask id="mask0_2005_311" style={{maskType: 'luminance'}} maskUnits="userSpaceOnUse" x="0" y="0" width="616" height="75">
@@ -51,13 +83,17 @@ export function SponsorshipInterestButton({width = 616, height = 75, ...props}: 
         <text
             className="cta-button-text sponsorship-interest-button__text"
             x="308"
-            y="38"
+            y={lineStartY}
             textAnchor="middle"
             dominantBaseline="middle"
             fill="black"
             fontSize="14"
         >
-            {t('sponsorship-interest')}
+            {lines.map((line, index) => (
+                <tspan key={index} x="308" dy={index === 0 ? 0 : '1.1em'}>
+                    {line}
+                </tspan>
+            ))}
         </text>
         </svg>
     );
@@ -65,6 +101,8 @@ export function SponsorshipInterestButton({width = 616, height = 75, ...props}: 
 
 export function AttendanceInterestButton({width = 616, height = 75, ...props}: SVGElementProps) {
     const t = useTranslations('SplashPage');
+    const lines = splitCtaLabel(t('attendance-interest'), 30);
+    const lineStartY = lines.length > 1 ? 30 : 38;
     return (
         <svg className="interest-button" width={width} height={height} viewBox="0 0 616 75" fill="none" xmlns="http://www.w3.org/2000/svg" {...props}>
         <mask id="mask0_2005_311" style={{maskType: 'luminance'}} maskUnits="userSpaceOnUse" x="0" y="0" width="616" height="75">
@@ -78,13 +116,17 @@ export function AttendanceInterestButton({width = 616, height = 75, ...props}: S
         <text
             className="cta-button-text interest-button__text"
             x="308"
-            y="38"
+            y={lineStartY}
             textAnchor="middle"
             dominantBaseline="middle"
             fill="black"
             fontSize="14"
         >
-            {t('attendance-interest')}
+            {lines.map((line, index) => (
+                <tspan key={index} x="308" dy={index === 0 ? 0 : '1.1em'}>
+                    {line}
+                </tspan>
+            ))}
         </text>
         </svg>
     );
