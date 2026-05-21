@@ -65,8 +65,8 @@ export const metadata: Metadata = {
     alternateLocale: ["fr_CA"],
     images: [
       {
-        // Add a 1200×630 OG image at public/og-image.png for best results
-        url: "/og-image.png",
+        // Add a 1200×630 OG image at public/cusec-logo.png for best results
+        url: "/cusec-logo.png",
         width: 1200,
         height: 630,
         alt: "CUSEC 2027 — Canadian University Software Engineering Conference, Montréal · January 2027",
@@ -80,7 +80,7 @@ export const metadata: Metadata = {
     title: "CUSEC 2027 — Canadian University Software Engineering Conference",
     description:
       "Canada's longest-running student-led software engineering conference. 26th edition — Montréal, QC · January 2027.",
-    images: ["/og-image.png"],
+    images: ["/cusec-logo.png"],
     site: "@cusec",     // update if handle changes
     creator: "@cusec",
   },
@@ -106,14 +106,12 @@ export const metadata: Metadata = {
       { url: "/favicon-32x32.png", sizes: "32x32", type: "image/png" },
     ],
     apple: [
-      { url: "/apple-touch-icon.png", sizes: "180x180", type: "image/png" },
+      { url: "/cusec-logo.png", sizes: "180x180", type: "image/png" },
     ],
     other: [
-      { rel: "mask-icon", url: "/safari-pinned-tab.svg", color: "#103436" },
+      { rel: "mask-icon", url: "/cusec-logo.svg", color: "#103436" },
     ],
   },
-
-  manifest: "/manifest.json",
 
   verification: {
     google: "", // paste Google Search Console verification token here
