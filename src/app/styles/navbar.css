@@ -1,0 +1,54 @@
+.Navbar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 52px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    padding: 0.4rem 0.6rem;
+    box-sizing: border-box;
+    z-index: 50;
+    background: transparent;
+}
+
+.Navbar-locale-switcher {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.24rem 0.5rem;
+    background: rgba(0, 60, 255, 0.82);
+    border-top: 1px solid #ffffff;
+    border-left: 1px solid #ffffff;
+    border-right: 1px solid #2b2b2b;
+    border-bottom: 1px solid #2b2b2b;
+    box-shadow: inset 1px 1px 0 #dbdbdb;
+    font-family: "MS Sans Serif", Tahoma, sans-serif;
+    color: #ffffff;
+}
+
+.Navbar-locale-label {
+    font-size: 11px;
+    line-height: 1;
+}
+
+.Navbar-locale-select {
+    min-width: 76px;
+    background: #efefef;
+    border-top: 1px solid #ffffff;
+    border-left: 1px solid #ffffff;
+    border-right: 1px solid #2b2b2b;
+    border-bottom: 1px solid #2b2b2b;
+    padding: 0.12rem 0.28rem;
+    font-family: "MS Sans Serif", Tahoma, sans-serif;
+    font-size: 11px;
+    line-height: 1.1;
+    color: #103436;
+    cursor: pointer;
+}
+
+.Navbar-locale-select:focus {
+    outline: 1px dotted #103436;
+    outline-offset: 1px;
+}
