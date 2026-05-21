@@ -1,25 +1,56 @@
 "use client";
-import {useTranslations} from 'next-intl';
+import { useState } from 'react';
+import { useTranslations } from 'next-intl';
 import Image from 'next/image';
-import {FileFolder, SponsorshipInterestButton } from '@/app/assets/FigmaSVGs';
+import { FileFolder, SponsorshipInterestButton } from '@/app/assets/FigmaSVGs';
 import Calendar from "@/app/assets/calendar.png";
 import Globe from "@/app/assets/globe.png";
 import NavigationWindow from "@/app/assets/navigation_ui_window.png";
 import NavigationWindowSkinny from "@/app/assets/navigation_ui_window_skinny.png";
 
-const ATTENDANCE_INTEREST_URL = "";
+// Sign up at formspree.io, create a form, and paste the endpoint here.
+// e.g. "https://formspree.io/f/your_form_id"
+const FORMSPREE_ENDPOINT = "";
+
 const SPONSORSHIP_INTEREST_URL = "";
 
 function openCtaLink(url: string) {
-    if (!url) {
-        return;
-    }
-
+    if (!url) return;
     window.open(url, '_blank', 'noopener,noreferrer');
 }
 
 export default function SplashPageUI() {
     const t = useTranslations('SplashPage');
+    const [email, setEmail] = useState('');
+    const [status, setStatus] = useState<'idle' | 'submitting' | 'success' | 'error'>('idle');
+
+    async function handleAttendanceSubmit(e: React.FormEvent<HTMLFormElement>) {
+        e.preventDefault();
+        if (!email) return;
+
+        if (!FORMSPREE_ENDPOINT) {
+            setStatus('success');
+            setEmail('');
+            return;
+        }
+
+        setStatus('submitting');
+        try {
+            const res = await fetch(FORMSPREE_ENDPOINT, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+                body: JSON.stringify({ email }),
+            });
+            if (res.ok) {
+                setStatus('success');
+                setEmail('');
+            } else {
+                setStatus('error');
+            }
+        } catch {
+            setStatus('error');
+        }
+    }
 
     return (
         <div className="splash-UI">
@@ -53,18 +84,35 @@ export default function SplashPageUI() {
                         <p>Montreal, QC</p>
                     </button>
                     <div className="UI-cta">
-                        <div className="UI-cta-email" role="group" aria-label="Email signup">
-                            <input
-                                className="UI-cta-email-input"
-                                type="email"
-                                placeholder="Email"
-                                aria-label="Email address"
-                                autoComplete="email"
-                            />
-                            <button className="UI-cta-email-submit" type="button">
-                                Submit
-                            </button>
-                        </div>
+                        <form className="UI-cta-attendance" onSubmit={handleAttendanceSubmit} noValidate>
+                            {status === 'success' ? (
+                                <p className="UI-cta-attendance-success">{t('attendance-success')}</p>
+                            ) : (
+                                <div className="UI-cta-email">
+                                    <input
+                                        className="UI-cta-email-input"
+                                        type="email"
+                                        value={email}
+                                        onChange={e => setEmail(e.target.value)}
+                                        placeholder={t('attendance-placeholder')}
+                                        aria-label={t('attendance-label')}
+                                        autoComplete="email"
+                                        required
+                                        disabled={status === 'submitting'}
+                                    />
+                                    <button
+                                        className="UI-cta-email-submit"
+                                        type="submit"
+                                        disabled={status === 'submitting'}
+                                    >
+                                        {status === 'submitting' ? '...' : t('attendance-submit')}
+                                    </button>
+                                </div>
+                            )}
+                            {status === 'error' && (
+                                <p className="UI-cta-attendance-error">{t('attendance-error')}</p>
+                            )}
+                        </form>
                         <button
                             type="button"
                             className="UI-cta-link"
