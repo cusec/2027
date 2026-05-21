@@ -26,8 +26,8 @@
 	--splash-waveform-bottom: -800px;
 	--splash-waveform-scale: 1.4;
 	--splash-waveform-width: min(2500px, 2800px);
-	background-image: url('../../assets/splash_bg.png');
-	background-position: center;
+	background-image: url('/assets/splash_bg.png');
+	background-position: center 65%;
 	background-size: cover;
 	background-repeat: no-repeat;
 	animation: splash-circle-reveal 1.2s ease-out both;
