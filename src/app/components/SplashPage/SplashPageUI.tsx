@@ -1,16 +1,8 @@
 "use client";
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { useTranslations } from 'next-intl';
 import Image from 'next/image';
 import { FileFolder, SponsorshipInterestButton } from '@/app/assets/FigmaSVGs';
-import Calendar from "@/app/assets/calendar.png";
-import Globe from "@/app/assets/globe.png";
-import NavigationWindow from "@/app/assets/navigation_ui_window.png";
-import NavigationWindowSkinny from "@/app/assets/navigation_ui_window_skinny.png";
-
-// Sign up at formspree.io, create a form, and paste the endpoint here.
-// e.g. "https://formspree.io/f/your_form_id"
-const FORMSPREE_ENDPOINT = "";
 
 const SPONSORSHIP_INTEREST_URL = "";
 
@@ -21,43 +13,112 @@ function openCtaLink(url: string) {
 
 export default function SplashPageUI() {
     const t = useTranslations('SplashPage');
-    const [email, setEmail] = useState('');
-    const [status, setStatus] = useState<'idle' | 'submitting' | 'success' | 'error'>('idle');
 
-    async function handleAttendanceSubmit(e: React.FormEvent<HTMLFormElement>) {
-        e.preventDefault();
-        if (!email) return;
+    const [offset, setOffset] = useState({ x: 0, y: 0 });
+    const [dragging, setDragging] = useState(false);
+    const [returning, setReturning] = useState(false);
+    const uiRef = useRef<HTMLDivElement>(null);
+    const offsetRef = useRef({ x: 0, y: 0 });
+    const dragOrigin = useRef({ x: 0, y: 0 });
+    const bounds = useRef({ minX: 0, maxX: 0, minY: 0, maxY: 0 });
+    const isDragging = useRef(false);
+    const returnTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-        if (!FORMSPREE_ENDPOINT) {
-            setStatus('success');
-            setEmail('');
-            return;
-        }
-
-        setStatus('submitting');
-        try {
-            const res = await fetch(FORMSPREE_ENDPOINT, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
-                body: JSON.stringify({ email }),
-            });
-            if (res.ok) {
-                setStatus('success');
-                setEmail('');
-            } else {
-                setStatus('error');
-            }
-        } catch {
-            setStatus('error');
+    function clearReturnTimer() {
+        if (returnTimer.current) {
+            clearTimeout(returnTimer.current);
+            returnTimer.current = null;
         }
     }
 
+    function scheduleReturn() {
+        clearReturnTimer();
+        returnTimer.current = setTimeout(() => {
+            setReturning(true);
+            offsetRef.current = { x: 0, y: 0 };
+            setOffset({ x: 0, y: 0 });
+        }, 1000);
+    }
+
+    function onNavPointerDown(e: React.PointerEvent<HTMLDivElement>) {
+        if ((e.target as HTMLElement).closest('button')) return;
+
+        clearReturnTimer();
+        setReturning(false);
+
+        const el = uiRef.current;
+        const container = el?.closest('.splash-wrapper');
+        if (el && container) {
+            const r = el.getBoundingClientRect();
+            const c = container.getBoundingClientRect();
+            const o = offsetRef.current;
+            bounds.current = {
+                minX: c.left - (r.left - o.x),
+                maxX: c.right - (r.right - o.x),
+                minY: c.top - (r.top - o.y),
+                maxY: c.bottom - (r.bottom - o.y),
+            };
+        }
+
+        isDragging.current = true;
+        setDragging(true);
+        dragOrigin.current = {
+            x: e.clientX - offsetRef.current.x,
+            y: e.clientY - offsetRef.current.y,
+        };
+        e.currentTarget.setPointerCapture(e.pointerId);
+        e.preventDefault();
+    }
+
+    function onNavPointerMove(e: React.PointerEvent<HTMLDivElement>) {
+        if (!isDragging.current) return;
+        const b = bounds.current;
+        const next = {
+            x: Math.min(Math.max(e.clientX - dragOrigin.current.x, b.minX), b.maxX),
+            y: Math.min(Math.max(e.clientY - dragOrigin.current.y, b.minY), b.maxY),
+        };
+        offsetRef.current = next;
+        setOffset(next);
+    }
+
+    function onNavPointerUp(e: React.PointerEvent<HTMLDivElement>) {
+        isDragging.current = false;
+        setDragging(false);
+        e.currentTarget.releasePointerCapture(e.pointerId);
+    }
+
+    function onWindowPointerEnter() {
+        clearReturnTimer();
+        setReturning(false);
+    }
+
+    function onWindowPointerLeave() {
+        if (!isDragging.current) scheduleReturn();
+    }
+
+    const classes = [
+        'splash-UI',
+        dragging   ? 'splash-UI--dragging'  : '',
+        returning  ? 'splash-UI--returning' : '',
+    ].filter(Boolean).join(' ');
+
     return (
-        <div className="splash-UI">
-            <Image className="splash-UI-bg splash-UI-bg-default" src={NavigationWindow} alt="NavigationWindow" priority />
-            <Image className="splash-UI-bg splash-UI-bg-mobile" src={NavigationWindowSkinny} alt="NavigationWindow mobile" priority />
+        <div
+            ref={uiRef}
+            className={classes}
+            style={{ transform: `translate(${offset.x}px, ${offset.y}px)` }}
+            onPointerEnter={onWindowPointerEnter}
+            onPointerLeave={onWindowPointerLeave}
+        >
+            <Image className="splash-UI-bg splash-UI-bg-default" src="/assets/navigation_ui_window.png" alt="NavigationWindow" width={735} height={514} priority />
+            <Image className="splash-UI-bg splash-UI-bg-mobile" src="/assets/navigation_ui_window_skinny.png" alt="NavigationWindow mobile" width={351} height={576} priority />
             <div className="UI-content">
-                <div className="UI-nav">
+                <div
+                    className={`UI-nav${dragging ? ' UI-nav--dragging' : ''}`}
+                    onPointerDown={onNavPointerDown}
+                    onPointerMove={onNavPointerMove}
+                    onPointerUp={onNavPointerUp}
+                >
                     <h4>{t('title')}</h4>
                     <div className="UI-nav-button-row">
                         <button className="UI-minimize-button" aria-label="Minimize window" />
@@ -76,43 +137,14 @@ export default function SplashPageUI() {
                         <p>{t('edition-link')}</p>
                     </a>
                     <button type="button" className="UI-item UI-item-date">
-                        <Image className="UI-icon" src={Calendar} alt="Calendar icon" />
+                        <Image className="UI-icon" src="/assets/calendar.png" alt="Calendar icon" width={83} height={83} />
                         <p>Jan. 2027</p>
                     </button>
                     <button type="button" className="UI-item UI-item-location">
-                        <Image className="UI-icon" src={Globe} alt="Globe icon" />
+                        <Image className="UI-icon" src="/assets/globe.png" alt="Globe icon" width={89} height={89} />
                         <p>Montreal, QC</p>
                     </button>
                     <div className="UI-cta">
-                        <form className="UI-cta-attendance" onSubmit={handleAttendanceSubmit} noValidate>
-                            {status === 'success' ? (
-                                <p className="UI-cta-attendance-success">{t('attendance-success')}</p>
-                            ) : (
-                                <div className="UI-cta-email">
-                                    <input
-                                        className="UI-cta-email-input"
-                                        type="email"
-                                        value={email}
-                                        onChange={e => setEmail(e.target.value)}
-                                        placeholder={t('attendance-placeholder')}
-                                        aria-label={t('attendance-label')}
-                                        autoComplete="email"
-                                        required
-                                        disabled={status === 'submitting'}
-                                    />
-                                    <button
-                                        className="UI-cta-email-submit"
-                                        type="submit"
-                                        disabled={status === 'submitting'}
-                                    >
-                                        {status === 'submitting' ? '...' : t('attendance-submit')}
-                                    </button>
-                                </div>
-                            )}
-                            {status === 'error' && (
-                                <p className="UI-cta-attendance-error">{t('attendance-error')}</p>
-                            )}
-                        </form>
                         <button
                             type="button"
                             className="UI-cta-link"
