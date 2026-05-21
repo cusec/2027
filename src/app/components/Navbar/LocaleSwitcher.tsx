@@ -16,7 +16,7 @@ export default function LocaleSwitcher() {
   }
 
   return (
-    <label className="Navbar-locale-switcher">
+    <div className="Navbar-locale-switcher">
       <span className="Navbar-locale-icon" aria-hidden>
         <Globe size={18} strokeWidth={1.75} />
       </span>
@@ -25,6 +25,7 @@ export default function LocaleSwitcher() {
           className="Navbar-locale-select"
           value={locale}
           onChange={(e) => onChange(e.target.value)}
+          aria-label="Language"
         >
           {LOCALES.map((value) => (
             <option key={value} value={value}>
@@ -33,6 +34,6 @@ export default function LocaleSwitcher() {
           ))}
         </select>
       </div>
-    </label>
+    </div>
   );
 }

@@ -11,7 +11,9 @@
 ------------------------------*/
 
 .splash-wrapper {
+	min-height: 100vh;
 	min-height: 100dvh;
+	height: 100vh;
 	height: 100dvh;
 	box-sizing: border-box;
 	padding: 1.4rem;
@@ -206,7 +208,7 @@
 	}
 }
 
-@media (max-width: 740) {
+@media (max-width: 740px) {
 	.splash-wrapper {
 		--splash-waveform-x: 60%;
 		--splash-waveform-bottom: -400px;

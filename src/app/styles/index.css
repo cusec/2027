@@ -2,12 +2,12 @@
 @import "./Splash/UIWindow.css";
 
 .splash-wrapper {
-    padding-top: calc(52px + 1.4rem); /* navbar height + original padding */
+    padding-top: calc(52px + env(safe-area-inset-top, 0px) + 1.4rem);
 }
 
 @media (max-width: 640px) {
     .splash-wrapper {
-        padding-top: calc(52px + 0.95rem);
+        padding-top: calc(52px + env(safe-area-inset-top, 0px) + 0.95rem);
     }
 
     .main-splash-content {
