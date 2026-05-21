@@ -38,7 +38,8 @@
 
 .main-splash-content {
 	/* background: green; */
-	width: min(97vw, 2100px);
+	width: min(90vw, 2100px);
+	margin: 0 auto;
 	display: grid;
 	grid-template-columns: minmax(240px, 0.85fr) minmax(560px, 1.35fr);
 	align-items: start;

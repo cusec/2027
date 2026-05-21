@@ -16,36 +16,51 @@
 .Navbar-locale-switcher {
     display: inline-flex;
     align-items: center;
-    gap: 0.5rem;
-    padding: 0.24rem 0.5rem;
-    background: rgba(0, 60, 255, 0.82);
-    border-top: 1px solid #ffffff;
-    border-left: 1px solid #ffffff;
-    border-right: 1px solid #2b2b2b;
-    border-bottom: 1px solid #2b2b2b;
-    box-shadow: inset 1px 1px 0 #dbdbdb;
+    gap: 0.4rem;
     font-family: "MS Sans Serif", Tahoma, sans-serif;
     color: #ffffff;
 }
 
-.Navbar-locale-label {
-    font-size: 11px;
-    line-height: 1;
-}
-
-.Navbar-locale-select {
-    min-width: 76px;
-    background: #efefef;
+.Navbar-locale-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    background: #1A66D4;
     border-top: 1px solid #ffffff;
     border-left: 1px solid #ffffff;
     border-right: 1px solid #2b2b2b;
     border-bottom: 1px solid #2b2b2b;
-    padding: 0.12rem 0.28rem;
-    font-family: "MS Sans Serif", Tahoma, sans-serif;
-    font-size: 11px;
+    box-shadow: inset 1px 1px 0 #dbdbdb, 0 8px 24px rgba(0, 0, 0, 0.55), 0 2px 6px rgba(0, 0, 0, 0.4);
+    color: #ffffff;
+}
+
+.Navbar-locale-select-wrapper {
+    position: relative;
+    min-width: 118px;
+    background: rgba(255, 255, 255, 0.12);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border-top: 1px solid #ffffff;
+    border-left: 1px solid #ffffff;
+    border-right: 1px solid #2b2b2b;
+    border-bottom: 1px solid #2b2b2b;
+    box-shadow: inset 1px 1px 0 #dbdbdb, 0 8px 24px rgba(0, 0, 0, 0.55), 0 2px 6px rgba(0, 0, 0, 0.4);
+}
+
+.Navbar-locale-select {
+    width: 100%;
+    background: transparent;
+    border: none;
+    padding: 0.2rem 0.6rem;
+    font-family: "Retropix", "MS Sans Serif", monospace;
+    font-size: 14px;
     line-height: 1.1;
-    color: #103436;
+    color: #000000;
     cursor: pointer;
+    appearance: none;
+    -webkit-appearance: none;
 }
 
 .Navbar-locale-select:focus {
