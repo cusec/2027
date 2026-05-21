@@ -7,6 +7,10 @@
         "title": "Conférence canadienne sur le génie logiciel",
         "edition-link": "26e édition",
         "attendance-interest": "Formulaire d'intérêt pour la participation",
+        "attendance-placeholder": "Intéressé(e) à venir à CUSEC 2027?",
+        "attendance-submit": "M'avertir",
+        "attendance-success": "C'est noté — à bientôt à Montréal!",
+        "attendance-error": "Une erreur s'est produite. Réessayez.",
         "sponsorship-interest": "Formulaire de manifestation d'intérêt pour un parrainage"
     }
 }
