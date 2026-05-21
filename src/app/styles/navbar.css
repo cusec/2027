@@ -15,9 +15,9 @@
 
 .Navbar-locale-switcher {
     display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 0.2rem;
+    flex-direction: row;
+    align-items: stretch;
+    gap: 0;
     font-family: "MS Sans Serif", Tahoma, sans-serif;
     color: #ffffff;
 }
@@ -27,7 +27,6 @@
     align-items: center;
     justify-content: center;
     width: 28px;
-    height: 28px;
     background: #1A66D4;
     border-top: 1px solid #ffffff;
     border-left: 1px solid #ffffff;

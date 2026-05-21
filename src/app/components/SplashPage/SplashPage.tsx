@@ -1,6 +1,5 @@
 import Image from 'next/image';
 import SplashPageUI from './SplashPageUI';
-import cusecAeroLogo from '../../assets/cusec_aero_logo.png';
 
 function WavyText({ text }: { text: string }) {
     return (
@@ -40,8 +39,10 @@ export default function SplashPage() {
                         </video> */}
                         <Image
                             className="splash-logo splash-title-char"
-                            src={cusecAeroLogo}
+                            src="/assets/cusec_aero_logo.png"
                             alt="CUSEC logo"
+                            width={146}
+                            height={146}
                             priority
                         />
                     </div>
