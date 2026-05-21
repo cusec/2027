@@ -16,16 +16,36 @@ export default function SplashPageUI() {
 
     const [offset, setOffset] = useState({ x: 0, y: 0 });
     const [dragging, setDragging] = useState(false);
+    const [returning, setReturning] = useState(false);
     const uiRef = useRef<HTMLDivElement>(null);
     const offsetRef = useRef({ x: 0, y: 0 });
     const dragOrigin = useRef({ x: 0, y: 0 });
     const bounds = useRef({ minX: 0, maxX: 0, minY: 0, maxY: 0 });
     const isDragging = useRef(false);
+    const returnTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+    function clearReturnTimer() {
+        if (returnTimer.current) {
+            clearTimeout(returnTimer.current);
+            returnTimer.current = null;
+        }
+    }
+
+    function scheduleReturn() {
+        clearReturnTimer();
+        returnTimer.current = setTimeout(() => {
+            setReturning(true);
+            offsetRef.current = { x: 0, y: 0 };
+            setOffset({ x: 0, y: 0 });
+        }, 1000);
+    }
 
     function onNavPointerDown(e: React.PointerEvent<HTMLDivElement>) {
         if ((e.target as HTMLElement).closest('button')) return;
 
-        // Constrain the window to its container so it can't be lost off-screen.
+        clearReturnTimer();
+        setReturning(false);
+
         const el = uiRef.current;
         const container = el?.closest('.splash-wrapper');
         if (el && container) {
@@ -67,11 +87,28 @@ export default function SplashPageUI() {
         e.currentTarget.releasePointerCapture(e.pointerId);
     }
 
+    function onWindowPointerEnter() {
+        clearReturnTimer();
+        setReturning(false);
+    }
+
+    function onWindowPointerLeave() {
+        if (!isDragging.current) scheduleReturn();
+    }
+
+    const classes = [
+        'splash-UI',
+        dragging   ? 'splash-UI--dragging'  : '',
+        returning  ? 'splash-UI--returning' : '',
+    ].filter(Boolean).join(' ');
+
     return (
         <div
             ref={uiRef}
-            className={`splash-UI${dragging ? ' splash-UI--dragging' : ''}`}
+            className={classes}
             style={{ transform: `translate(${offset.x}px, ${offset.y}px)` }}
+            onPointerEnter={onWindowPointerEnter}
+            onPointerLeave={onWindowPointerLeave}
         >
             <Image className="splash-UI-bg splash-UI-bg-default" src="/assets/navigation_ui_window.png" alt="NavigationWindow" width={735} height={514} priority />
             <Image className="splash-UI-bg splash-UI-bg-mobile" src="/assets/navigation_ui_window_skinny.png" alt="NavigationWindow mobile" width={351} height={576} priority />
