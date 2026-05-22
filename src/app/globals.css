@@ -1,5 +1,22 @@
 @import "tailwindcss";
 
+/*
+ * Scavenger-hunt theme tokens.
+ * Ported from CUSEC 2026 but intentionally remapped to a neutral grayscale
+ * palette ("no fancy color combos"). Tweak these values in one place to
+ * restyle the entire scavenger UI.
+ */
+@theme {
+  --color-primary: #1f2937;
+  --color-light-primary: #374151;
+  --color-secondary: #4b5563;
+  --color-dark-mode: #111827;
+  --color-light-mode: #f5f5f5;
+  --color-accent: #6b7280;
+  --color-sunset: #4b5563;
+  --color-sea: #374151;
+}
+
 :root {
   color-scheme: light;
 }
@@ -11,4 +28,25 @@ html {
 
 body {
   background-color: #ffffff;
+}
+
+/*
+ * Minimal, neutral versions of the two interactive helper classes the
+ * scavenger components rely on (originally defined in the 2026 globals).
+ */
+.email-hover {
+  position: relative;
+  transition: opacity 0.2s ease-out;
+}
+.email-hover:hover {
+  opacity: 0.8;
+}
+
+.register-hover {
+  position: relative;
+  transition: background-color 0.2s ease-out, border-color 0.2s ease-out;
+}
+.register-hover:hover {
+  background-color: var(--color-secondary);
+  border-color: var(--color-light-mode);
 }

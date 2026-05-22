@@ -1,0 +1,54 @@
+"use client";
+
+import { useState } from "react";
+import { Auth0User, DbUser } from "@/lib/interface";
+import EmailLink from "./EmailLink";
+import NoticeBoard from "./NoticeBoard";
+import UserHunt from "./UserHunt";
+import Leaderboard from "./Leaderboard";
+import Shop from "./Shop";
+import DashboardFAQ from "./faqs/DashboardFAQ";
+
+interface DashboardProps {
+  user: Auth0User;
+  dbUser: DbUser | null;
+  baseURL: string;
+}
+
+const Dashboard = ({ user, dbUser, baseURL }: DashboardProps) => {
+  const [linkedEmail, setLinkedEmail] = useState<string | undefined>(
+    dbUser?.linked_email || undefined
+  );
+
+  const handleEmailLinked = (email: string) => {
+    setLinkedEmail(email);
+  };
+
+  return (
+    <div className="w-full">
+      <NoticeBoard />
+      {dbUser && (
+        <>
+          {!linkedEmail && (
+            <EmailLink
+              user={user}
+              dbUser={dbUser}
+              onEmailLinked={handleEmailLinked}
+            />
+          )}
+          <UserHunt
+            user={user}
+            dbUser={dbUser}
+            linkedEmail={linkedEmail}
+            baseURL={baseURL}
+          />
+        </>
+      )}
+      <Leaderboard />
+      <Shop user={user} dbUser={dbUser} />
+      <DashboardFAQ />
+    </div>
+  );
+};
+
+export default Dashboard;

@@ -1,0 +1,538 @@
+"use client";
+
+import { useState, useEffect } from "react";
+import {
+  Search,
+  Edit2,
+  Save,
+  X,
+  Users as UsersIcon,
+  History,
+  Gem,
+  Gift,
+  // Trash2,
+  RefreshCw,
+} from "lucide-react";
+import Modal from "@/components/ui/modal";
+import UserHistoryDetailsModal from "./UserHistoryDetailsModal";
+import UserCollectiblesModal from "./UserCollectiblesModal";
+import UserShopPrizesModal from "./UserShopPrizesModal";
+
+interface User {
+  _id: string;
+  email: string;
+  name?: string;
+  linked_email?: string | undefined;
+  discord_handle?: string | null;
+  active: boolean;
+  points: number;
+  claimedItemsCount: number;
+  claimAttemptsCount: number;
+  createdAt: string;
+  updatedAt: string;
+}
+
+interface UsersManagementModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  isAdmin: boolean;
+}
+
+const UsersManagementModal = ({
+  isOpen,
+  onClose,
+  isAdmin,
+}: UsersManagementModalProps) => {
+  const [users, setUsers] = useState<User[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [editingUser, setEditingUser] = useState<string | null>(null);
+  const [editForm, setEditForm] = useState({
+    name: "",
+    linked_email: "",
+    discord_handle: "",
+    points: 0,
+    active: true,
+  });
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  // History modal state
+  const [historyModalOpen, setHistoryModalOpen] = useState(false);
+  const [selectedUser, setSelectedUser] = useState<User | null>(null);
+
+  // Collectibles modal state
+  const [collectiblesModalOpen, setCollectiblesModalOpen] = useState(false);
+
+  // Shop prizes modal state
+  const [shopPrizesModalOpen, setShopPrizesModalOpen] = useState(false);
+
+  const fetchUsers = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+
+      const params = new URLSearchParams({
+        limit: "100",
+        ...(searchTerm && { search: searchTerm }),
+      });
+
+      const response = await fetch(`/api/admin/users?${params}`);
+      const data = await response.json();
+
+      if (data.success) {
+        setUsers(data.users);
+      } else {
+        setError(data.error || "Failed to fetch users");
+      }
+    } catch (err) {
+      setError("Failed to fetch users");
+      console.error("Error fetching users:", err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    if (isOpen) {
+      fetchUsers();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isOpen]);
+
+  useEffect(() => {
+    const delayedSearch = setTimeout(() => {
+      if (isOpen) {
+        fetchUsers();
+      }
+    }, 300);
+
+    return () => clearTimeout(delayedSearch);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchTerm]);
+
+  const startEdit = (user: User) => {
+    setEditingUser(user._id);
+    setEditForm({
+      name: user.name || "",
+      linked_email: user.linked_email || "",
+      discord_handle: user.discord_handle || "",
+      points: user.points || 0,
+      active: user.active,
+    });
+  };
+
+  const cancelEdit = () => {
+    setEditingUser(null);
+    setEditForm({
+      name: "",
+      linked_email: "",
+      discord_handle: "",
+      points: 0,
+      active: true,
+    });
+  };
+
+  const saveUser = async (userId: string) => {
+    try {
+      setIsSubmitting(true);
+
+      const response = await fetch("/api/admin/users", {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          userId,
+          updates: {
+            name: editForm.name,
+            linked_email: editForm.linked_email || undefined,
+            discord_handle: editForm.discord_handle || null,
+            points: editForm.points,
+            active: editForm.active,
+          },
+        }),
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        // Update local state
+        setUsers(
+          users.map((user) =>
+            user._id === userId
+              ? {
+                  ...user,
+                  name: editForm.name,
+                  linked_email: editForm.linked_email || undefined,
+                  discord_handle: editForm.discord_handle || null,
+                  points: editForm.points,
+                  active: editForm.active,
+                }
+              : user
+          )
+        );
+        setEditingUser(null);
+      } else {
+        setError(data.error || "Failed to update user");
+      }
+    } catch (err) {
+      setError("Failed to update user");
+      console.error("Error updating user:", err);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const showUserHistory = (user: User) => {
+    setSelectedUser(user);
+    setHistoryModalOpen(true);
+  };
+
+  const showUserCollectibles = (user: User) => {
+    setSelectedUser(user);
+    setCollectiblesModalOpen(true);
+  };
+
+  const handleClose = () => {
+    setUsers([]);
+    setSearchTerm("");
+    setEditingUser(null);
+    setError(null);
+    onClose();
+  };
+
+  return (
+    <>
+      <Modal
+        isOpen={isOpen}
+        onClose={handleClose}
+        simple={true}
+        title="Users Management"
+        className="max-w-6xl text-dark-mode"
+      >
+        <div className="space-y-6">
+          {/* Header with search */}
+          <div className="flex items-center gap-4">
+            <div className="flex-1 relative">
+              <Search className="absolute left-3 top-3 w-4 h-4 text-gray-400" />
+              <input
+                type="text"
+                placeholder="Search by name, email, linked email, or discord..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg bg-white text-gray-900"
+              />
+            </div>
+            <button
+              onClick={fetchUsers}
+              disabled={loading}
+              className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:bg-gray-400 transition-colors"
+            >
+              <RefreshCw
+                className={`w-4 h-4 ${loading ? "animate-spin" : ""}`}
+              />
+              Refresh
+            </button>
+          </div>
+
+          {error && (
+            <div className="p-4 bg-red-50 border border-red-200 rounded-lg">
+              <p className="text-red-800">{error}</p>
+              <button
+                onClick={() => setError(null)}
+                className="mt-2 text-sm text-red-600 hover:underline"
+              >
+                Dismiss
+              </button>
+            </div>
+          )}
+
+          {/* Users list */}
+          <div className="space-y-4">
+            <div className="flex items-center gap-2 mb-4">
+              <UsersIcon className="w-5 h-5 text-gray-600" />
+              <h3 className="text-lg font-semibold text-gray-900">
+                Users ({users.length})
+              </h3>
+            </div>
+
+            {loading ? (
+              <div className="text-center py-8">
+                <p className="text-gray-600">Loading users...</p>
+              </div>
+            ) : users.length === 0 ? (
+              <div className="text-center py-8 bg-gray-50 rounded-lg">
+                <p className="text-gray-600">No users found</p>
+              </div>
+            ) : (
+              <div className="space-y-2 max-h-96 overflow-y-auto">
+                {users.map((user) => (
+                  <div
+                    key={user._id}
+                    className="p-4 border border-gray-200 rounded-lg bg-white"
+                  >
+                    {editingUser === user._id ? (
+                      // Edit mode
+                      <div className="space-y-3">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-1">
+                              Name
+                            </label>
+                            <input
+                              type="text"
+                              value={editForm.name}
+                              onChange={(e) =>
+                                setEditForm({
+                                  ...editForm,
+                                  name: e.target.value,
+                                })
+                              }
+                              className="w-full px-3 py-2 border border-gray-300 rounded bg-white text-gray-900"
+                              placeholder="Enter name"
+                              readOnly={!isAdmin}
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-1">
+                              Linked Email
+                            </label>
+                            <input
+                              type="email"
+                              value={editForm.linked_email}
+                              onChange={(e) =>
+                                setEditForm({
+                                  ...editForm,
+                                  linked_email: e.target.value,
+                                })
+                              }
+                              className="w-full px-3 py-2 border border-gray-300 rounded bg-white text-gray-900"
+                              placeholder="Enter linked email (optional)"
+                              readOnly={!isAdmin}
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-1">
+                              Discord Handle
+                            </label>
+                            <input
+                              type="text"
+                              value={editForm.discord_handle}
+                              onChange={(e) =>
+                                setEditForm({
+                                  ...editForm,
+                                  discord_handle: e.target.value,
+                                })
+                              }
+                              className="w-full px-3 py-2 border border-gray-300 rounded bg-white text-gray-900"
+                              placeholder="Enter discord handle (optional)"
+                              readOnly={!isAdmin}
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-1">
+                              Points (Updating points here doesn&apos;t affect
+                              the leaderboard)
+                            </label>
+                            <input
+                              type="number"
+                              value={editForm.points}
+                              onChange={(e) =>
+                                setEditForm({
+                                  ...editForm,
+                                  points: parseInt(e.target.value) || 0,
+                                })
+                              }
+                              className="w-full px-3 py-2 border border-gray-300 rounded bg-white text-gray-900"
+                              placeholder="Enter points"
+                              min="0"
+                              readOnly={!isAdmin}
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-1">
+                              Active
+                            </label>
+                            <input
+                              type="checkbox"
+                              checked={editForm.active}
+                              onChange={(e) =>
+                                setEditForm({
+                                  ...editForm,
+                                  active: e.target.checked,
+                                })
+                              }
+                              className="px-3 py-2 border border-gray-300 rounded bg-white text-gray-900"
+                              placeholder="Enter name"
+                              readOnly={!isAdmin}
+                            />
+                          </div>
+                        </div>
+                        <div className="flex flex-wrap gap-2">
+                          <button
+                            onClick={() => saveUser(user._id)}
+                            disabled={isSubmitting || !isAdmin}
+                            className="flex items-center gap-1 px-3 py-1 bg-green-600 text-white rounded hover:bg-green-700 disabled:bg-gray-400 text-sm"
+                          >
+                            <Save className="w-3 h-3" />
+                            Save
+                          </button>
+                          <button
+                            onClick={cancelEdit}
+                            disabled={isSubmitting}
+                            className="flex items-center gap-1 px-3 py-1 bg-gray-600 text-white rounded hover:bg-gray-700 text-sm"
+                          >
+                            <X className="w-3 h-3" />
+                            Cancel
+                          </button>
+                          <div className="border-l border-gray-300 mx-1"></div>
+                          {isAdmin && (
+                            <button
+                              onClick={() => showUserHistory(user)}
+                              className="flex items-center gap-1 px-3 py-1 bg-blue-600 text-white rounded hover:bg-blue-700 text-sm"
+                              title="View Claimed Items & Attempts"
+                            >
+                              <History className="w-3 h-3" />
+                              Claimed Items
+                            </button>
+                          )}
+                          <button
+                            onClick={() => showUserCollectibles(user)}
+                            className="flex items-center gap-1 px-3 py-1 bg-purple-600 text-white rounded hover:bg-purple-700 text-sm"
+                            title="View & Manage Collectibles"
+                          >
+                            <Gem className="w-3 h-3" />
+                            Collectibles
+                          </button>
+                          {isAdmin && (
+                            <button
+                              onClick={() => {
+                                setSelectedUser(user);
+                                setShopPrizesModalOpen(true);
+                              }}
+                              className="flex items-center gap-1 px-3 py-1 bg-accent text-white rounded hover:bg-accent-dark text-sm"
+                              title="Manage Shop Prizes"
+                            >
+                              <Gift className="w-4 h-4" /> Shop Prizes
+                            </button>
+                          )}
+                        </div>
+                      </div>
+                    ) : (
+                      // View mode
+                      <div className="flex items-center justify-between">
+                        <div className="flex-1">
+                          <div className="flex items-center gap-3">
+                            <h4 className="font-semibold text-gray-900">
+                              {user.name || "No name"}
+                            </h4>
+                            <span className="text-sm text-gray-600">
+                              {user.email}
+                            </span>
+                          </div>
+                          <div className="flex items-center gap-4 mt-1 text-sm text-gray-600 flex-wrap">
+                            <span>
+                              Points: <strong>{user.points}</strong>
+                            </span>
+                            <span>
+                              Items: <strong>{user.claimedItemsCount}</strong>
+                            </span>
+                            <span>
+                              Attempts:{" "}
+                              <strong>{user.claimAttemptsCount}</strong>
+                            </span>
+                            <span>
+                              Linked:{" "}
+                              <strong>{user.linked_email || "None"}</strong>
+                            </span>
+                            <span>
+                              Discord:{" "}
+                              <strong>{user.discord_handle || "None"}</strong>
+                            </span>
+                            <span>
+                              Joined:{" "}
+                              {new Date(user.createdAt).toLocaleDateString()}
+                            </span>
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <button
+                            onClick={() => startEdit(user)}
+                            disabled={editingUser === user._id || isSubmitting}
+                            className="flex items-center gap-1 px-3 py-1 bg-yellow-600 text-white rounded hover:bg-yellow-700 disabled:bg-gray-400 text-sm"
+                            title="Edit User"
+                          >
+                            <Edit2 className="w-3 h-3" />
+                            Edit
+                          </button>
+                          {/* <button
+                            onClick={() =>
+                              clearClaimAttempts(
+                                user._id,
+                                user.name || user.email
+                              )
+                            }
+                            disabled={isSubmitting}
+                            className="flex items-center gap-1 px-3 py-1 bg-orange-600 text-white rounded hover:bg-orange-700 disabled:bg-gray-400 text-sm"
+                            title="Clear Claim Attempts (Not Recommended)"
+                          >
+                            <RefreshCw className="w-3 h-3" />
+                            Clear Attempts
+                          </button>
+                          <button
+                            onClick={() =>
+                              clearUserHistory(
+                                user._id,
+                                user.name || user.email
+                              )
+                            }
+                            disabled={isSubmitting}
+                            className="flex items-center gap-1 px-3 py-1 bg-red-600 text-white rounded hover:bg-red-700 disabled:bg-gray-400 text-sm"
+                            title="Clear History & Points (DANGEROUS)"
+                          >
+                            <Trash2 className="w-3 h-3" />
+                            Clear History
+                            <AlertTriangle className="w-3 h-3" />
+                          </button> */}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
+      </Modal>
+
+      {/* User History Details Modal */}
+      <UserHistoryDetailsModal
+        isOpen={historyModalOpen}
+        onClose={() => setHistoryModalOpen(false)}
+        userId={selectedUser?._id || null}
+        userName={selectedUser?.name || ""}
+        userEmail={selectedUser?.email || ""}
+      />
+
+      {/* User Collectibles Modal */}
+      <UserCollectiblesModal
+        isOpen={collectiblesModalOpen}
+        onClose={() => setCollectiblesModalOpen(false)}
+        isAdmin={isAdmin}
+        userId={selectedUser?._id || null}
+        userName={selectedUser?.name || ""}
+        userEmail={selectedUser?.email || ""}
+      />
+
+      {/* User Shop Prizes Modal */}
+      <UserShopPrizesModal
+        isOpen={shopPrizesModalOpen}
+        onClose={() => setShopPrizesModalOpen(false)}
+        userId={selectedUser?._id || ""}
+      />
+    </>
+  );
+};
+
+export default UsersManagementModal;

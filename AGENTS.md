@@ -51,9 +51,16 @@ src/app/
   manifest.ts           ← Web App Manifest (MetadataRoute.Manifest)
   page.tsx              ← redirected by proxy — effectively unused
   [locale]/
-    layout.tsx          ← locale-aware layout: NextIntlClientProvider + Navbar + SplashPage
-    page.tsx            ← placeholder (real content is in SplashPage, rendered by locale layout)
+    layout.tsx          ← locale-aware layout: NextIntlClientProvider + Navbar + {children}
+    page.tsx            ← home route, renders <SplashPage />
+    scavenger/
+      page.tsx          ← scavenger hunt entry (server component, feature-flag gated)
+  api/                  ← scavenger backend (33 route handlers, see Scavenger section)
 ```
+
+> **Layout note:** `[locale]/layout.tsx` renders `{children}` (it used to hard-render
+> `SplashPage` and ignore children, which blocked every sub-route). The home page
+> content moved into `[locale]/page.tsx`. Do not move `SplashPage` back into the layout.
 
 The `[locale]` segment is internal routing only — it never appears in the browser URL bar.
 
@@ -183,3 +190,111 @@ Do not reduce these to 1px on mobile — they become invisible.
 5. **The `SponsorshipInterestButton` SVG is 8.2:1 wide.** Render it with `width: 100%` and let it scale proportionally. Do not apply `scaleY` or set a fixed height — it will distort.
 6. **`src/app/page.tsx` exists but is essentially unused.** The locale layout (`[locale]/layout.tsx`) handles rendering. The root `page.tsx` is a remnant — don't put real content there.
 7. **The `HomePage` message namespace is a placeholder** and not rendered anywhere visible. Real content uses `SplashPage.*`.
+
+---
+
+# Scavenger Hunt Subsystem
+
+The CUSEC **scavenger hunt** (backend + UI) was ported from the 2026 monolith into
+this repo as a **monorepo**, not a separate backend service. Full setup/handoff
+details (env vars, Auth0 config, deploy strategy) live in `SCAVENGER_SETUP.md`.
+This section is the architectural contract for working on it.
+
+## Why monorepo (and what that means for you)
+
+The 2026 API routes authenticate via the Auth0 **session cookie**
+(`auth0.getSession()`), which works same-origin with **zero auth rework**. A split
+backend would have forced cookie→Bearer-JWT conversion on all 33 routes, CORS, and
+two deploys. So everything lives here. Consequences:
+
+- **Auth is cookie-based, server-side.** Route handlers and the scavenger page read
+  the session directly with `auth0.getSession()`. There is no Bearer-token flow.
+- **The scavenger UI fetches relative `/api/...` URLs** (same-origin). Never
+  introduce an API base URL or CORS config for these.
+
+## Middleware: ONE file composes Auth0 + next-intl
+
+`src/proxy.ts` is the **only** middleware (Next 16 allows one). It composes both
+systems — **never split this into `auth.middleware` + `intl.middleware`, and never
+create `src/middleware.ts`**. Contract:
+
+- `/auth/*` → delegated entirely to `auth0.middleware(request)` (login, logout,
+  callback, profile, access-token).
+- Every other matched path → run `auth0.middleware` first (to roll the session
+  cookie). If it returns a redirect or non-200, return it as-is. Otherwise run the
+  next-intl middleware and **copy Auth0's Set-Cookie headers onto the intl
+  response** before returning. Dropping that cookie-merge step silently logs users
+  out on navigation.
+- Matcher excludes `api`, `trpc`, `_next`, `_vercel`, and files with a dot.
+
+## Backend lib (`src/lib/`)
+
+| Module | Responsibility |
+|---|---|
+| `mongodb.ts` | Cached global Mongoose connection. **dbName is `CUSEC2027`.** Throws at import if `MONGODB_URI` is unset — so that var must be present even for `next build` (Vercel included). |
+| `models.ts` | All Mongoose schemas/models (User, HuntItem, Collectible, ShopItem, Notice, Day, audit logs, etc.). |
+| `auth0.ts` | The Auth0 client instance (`auth0.getSession()`, `auth0.middleware()`). |
+| `isAdmin.ts` / `isVolunteer.ts` | Role guards. Read `session.user["cusec/roles"]` and check for `"Admin"` / `"Volunteer"`. Roles arrive via a namespaced ID-token claim set by an Auth0 Login Action. |
+| `userService.ts` | `findOrCreateUser` and user-record helpers. |
+| `adminAuditLogger.ts` | Writes admin action audit entries. |
+| `qrCode.ts` | Hunt-item QR generation. Base URL → `NEXT_PUBLIC_SITE_URL` ?? `https://2027.cusec.net`. |
+| `interface.ts` | Shared TS types (incl. `Auth0User`). |
+| `utils.ts` | `cn()` (clsx + tailwind-merge) and misc helpers. |
+
+## API routes (`src/app/api/**`) — 33 handlers
+
+All are cookie-authenticated; admin routes additionally call `isAdmin`. Grouped:
+
+- **Hunt items:** `hunt-items/[id]`, `hunt-items/[id]/claimed-users`, `hunt-items/[id]/mass-adjust-points`
+- **Collectibles:** `collectibles/redeem`, `collectibles/[id]`, `collectibles/[id]/owned-users`
+- **Shop:** `shop/redeem`, `shop/search-users`, `shop/[id]`, `shop/[id]/redeemed-users`
+- **Users:** `users/link-email`, `users/[id]`, `users/[id]/discord`, `users/[id]/hunt-items`, `users/[id]/inventory`
+- **Public:** `leaderboard`, `notices`, `schedule`
+- **Admin suite:** `admin/audit-logs`, `admin/claim-attempts`, `admin/notices`, `admin/redeem-points`, `admin/registered-users`, `admin/shop`, `admin/users`, `admin/users/[userId]/collectibles`, `admin/users/[userId]/hunt-items`, `admin/users/[userId]/shop-prizes`
+
+> `api/schedule` shares the `Day` model and came along with the port; its frontend
+> was not ported. Harmless — leave it unless asked to remove it.
+
+## Scavenger page (`src/app/[locale]/scavenger/page.tsx`)
+
+- Server component. URL is `/scavenger` (locale never in the URL).
+- Reads session → `findOrCreateUser` (serialized to a plain object for the client) →
+  renders `<Dashboard>` **only if** `SCAVENGER_HUNT_ENABLED === "true"` **OR** the
+  user is Admin/Volunteer. Otherwise shows a login / "coming soon" view linking to
+  `/auth/login?returnTo=/scavenger`.
+- This flag-gate is the late-release mechanism: keep the flag off in production until
+  launch; Admin/Volunteer can still preview.
+
+## Scavenger UI island (`src/components/scavenger/**`)
+
+- **Self-contained:** depends only on `react`, `lucide-react`, `react-zxing`,
+  `next/image`, and `@/lib/interface`. No imports from the splash-page component
+  tree. Entry is `Dashboard.tsx`.
+- Shared primitives `src/components/ui/{modal,accordion}.tsx` were ported alongside.
+- QR scanner: `react-zxing` v2 — the decode callback is **`onDecodeResult`** (not
+  `onResult`, which was the v1 name).
+
+## Theme / "no fancy colors"
+
+The 2026 theme tokens (`primary`, `accent`, `dark-mode`, `light-mode`, `secondary`,
+`sunset`, `sea`, …) are redefined as a **neutral grayscale palette** in a single
+`@theme` block in `globals.css`. Tailwind v4 errors on unknown utility classes, so
+those tokens must exist for the ported components to build. **To restyle the whole
+hunt, edit that one `@theme` block** — do not hunt through components.
+
+## Feature flags & deploy
+
+- `SCAVENGER_HUNT_ENABLED` (server) gates the dashboard; `NEXT_PUBLIC_SCAVENGER_HUNT_ENABLED`
+  mirrors it for client checks.
+- Branch strategy: scavenger work lives on a long-lived `staging` branch (its own
+  Vercel preview URL); landing-page work goes to `main` → production. Merge `main`
+  → `staging` to pull landing updates in; on launch day merge `staging` → `main`
+  and flip the flag on. See `SCAVENGER_SETUP.md` §6.
+
+## Don'ts (scavenger-specific)
+
+1. Don't create `src/middleware.ts` or split `proxy.ts` — it breaks both auth and i18n.
+2. Don't convert the API routes to JWT/Bearer or add CORS — they're same-origin cookie auth.
+3. Don't change the Mongo `dbName` away from `CUSEC2027`.
+4. Don't remove the Auth0 cookie-merge in `proxy.ts` — it keeps sessions alive across navigation.
+5. Don't add per-component colors — go through the `@theme` block in `globals.css`.
