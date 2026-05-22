@@ -54,4 +54,3 @@ export const config = {
   // `/auth/*` is intentionally NOT excluded so Auth0 can handle it.
   matcher: "/((?!api|trpc|_next|_vercel|.*\\..*).*)",
 };
- 
