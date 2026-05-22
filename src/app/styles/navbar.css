@@ -55,13 +55,19 @@
     border: none;
     padding: 0.15rem 0.4rem;
     font-family: "Retropix", "MS Sans Serif", monospace;
-    font-size: 11px;           /* smaller so it doesn't spill */
+    font-size: 11px;
     line-height: 1.1;
-    color: #000000;
-    -webkit-text-fill-color: #000000;
+    color: #ffffff;
+    -webkit-text-fill-color: #ffffff;
     cursor: pointer;
     appearance: none;
     -webkit-appearance: none;
+}
+
+.Navbar-locale-select option {
+    color: #000000;
+    -webkit-text-fill-color: #000000;
+    background: #ffffff;
 }
 
 .Navbar-locale-select:focus {
