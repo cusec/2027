@@ -70,7 +70,6 @@
 	font-size: clamp(12px, 1.2vw, 34px);
 	font-weight: 400;
 	letter-spacing: 0;
-	line-height: 1;
 	text-shadow: 0 1px 0 rgba(0, 0, 0, 0.2);
 	padding-right: 0.5rem;
 	white-space: nowrap;
@@ -197,7 +196,6 @@
 	margin: clamp(0.3rem, 0.6vw, 0.5rem) 0 0;
 	font-size: clamp(11px, 1.2vw, 22px);
 	font-weight: 700;
-	line-height: 1;
 	text-decoration: underline;
 	text-underline-offset: 2px;
 	white-space: nowrap;
