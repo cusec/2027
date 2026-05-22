@@ -4,7 +4,7 @@ import { useTranslations } from 'next-intl';
 import Image from 'next/image';
 import { FileFolder, SponsorshipInterestButton } from '@/app/assets/FigmaSVGs';
 
-const SPONSORSHIP_INTEREST_URL = "";
+const SPONSORSHIP_INTEREST_URL = "https://forms.gle/TzbNoCKmALEYryLw7";
 
 function openCtaLink(url: string) {
     if (!url) return;
