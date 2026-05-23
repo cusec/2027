@@ -76,17 +76,17 @@ export function SponsorshipInterestButton({width = 616, height = 75, ...props}: 
         <path d="M0 0H616V75H0V0Z" fill="white"/>
         </mask>
         <g mask="url(#mask0_2005_311)">
-        <path className="sponsorship-interest-button__face" d="M0.0513916 0H615.961V75H0.0513916V0Z" fill="#C0C0C0"/>
+        <path className="sponsorship-interest-button__face" d="M0.0513916 0H615.961V75H0.0513916V0Z" fill="currentColor"/>
         </g>
-        <path className="sponsorship-interest-button__highlight" d="M589.54 5.81921H13.0379V69.2712H26.2552V11.5422H589.54V5.81921Z" fill="white"/>
-        <path className="sponsorship-interest-button__shadow" d="M26.2552 69.2712H602.745V5.81921H589.54V63.5481H26.2552V69.2712Z" fill="black" fillOpacity="0.3"/>
+        <path className="sponsorship-interest-button__highlight" d="M589.54 5.81921H13.0379V69.2712H26.2552V11.5422H589.54V5.81921Z" fill="currentColor"/>
+        <path className="sponsorship-interest-button__shadow" d="M26.2552 69.2712H602.745V5.81921H589.54V63.5481H26.2552V69.2712Z" fill="currentColor" fillOpacity="0.3"/>
         <text
             className="cta-button-text sponsorship-interest-button__text"
             x="308"
             y={lineStartY}
             textAnchor="middle"
             dominantBaseline="middle"
-            fill="black"
+            fill="currentColor"
             fontSize="14"
         >
             {lines.map((line, index) => (
@@ -109,17 +109,17 @@ export function AttendanceInterestButton({width = 616, height = 75, ...props}: S
         <path d="M0 0H616V75H0V0Z" fill="white"/>
         </mask>
         <g mask="url(#mask0_2005_311)">
-        <path className="interest-button__face" d="M0.0513916 0H615.961V75H0.0513916V0Z" fill="#C0C0C0"/>
+        <path className="interest-button__face" d="M0.0513916 0H615.961V75H0.0513916V0Z" fill="currentColor"/>
         </g>
-        <path className="interest-button__highlight" d="M589.54 5.81921H13.0379V69.2712H26.2552V11.5422H589.54V5.81921Z" fill="white"/>
-        <path className="interest-button__shadow" d="M26.2552 69.2712H602.745V5.81921H589.54V63.5481H26.2552V69.2712Z" fill="black" fillOpacity="0.3"/>
+        <path className="interest-button__highlight" d="M589.54 5.81921H13.0379V69.2712H26.2552V11.5422H589.54V5.81921Z" fill="currentColor"/>
+        <path className="interest-button__shadow" d="M26.2552 69.2712H602.745V5.81921H589.54V63.5481H26.2552V69.2712Z" fill="currentColor" fillOpacity="0.3"/>
         <text
             className="cta-button-text interest-button__text"
             x="308"
             y={lineStartY}
             textAnchor="middle"
             dominantBaseline="middle"
-            fill="black"
+            fill="currentColor"
             fontSize="14"
         >
             {lines.map((line, index) => (
