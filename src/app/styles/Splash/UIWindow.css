@@ -338,28 +338,53 @@
 	font-size: clamp(25px, 1.15vw, 30px);
 	letter-spacing: 0;
 	transform: scaleX(0.70);
-	transform-box: fill-box;
 	transform-origin: center;
+}
+
+.UI-cta .interest-button__face {
+	color: #c0c0c0;
+}
+
+.UI-cta .sponsorship-interest-button__face {
+	color: #0026d4;
+}
+
+.UI-cta .interest-button__highlight,
+.UI-cta .sponsorship-interest-button__highlight {
+	color: #ffffff;
+}
+
+.UI-cta .interest-button__shadow,
+.UI-cta .sponsorship-interest-button__shadow {
+	color: #000000;
+}
+
+.UI-cta .interest-button__text {
+	color: #000000;
+}
+
+.UI-cta .sponsorship-interest-button__text {
+	color: #ffffff;
 }
 
 .UI-cta .UI-cta-link:hover .interest-button__face,
 .UI-cta .UI-cta-link:hover .sponsorship-interest-button__face {
-	fill: #0026D3;
+	color: #0026d3;
 }
 
 .UI-cta .UI-cta-link:hover .interest-button__highlight,
 .UI-cta .UI-cta-link:hover .sponsorship-interest-button__highlight {
-	fill: rgb(255, 255, 255);
+	color: rgb(255, 255, 255);
 }
 
 .UI-cta .UI-cta-link:hover .interest-button__shadow,
 .UI-cta .UI-cta-link:hover .sponsorship-interest-button__shadow {
-	fill: rgb(14, 0, 75);
+	color: rgb(14, 0, 75);
 }
 
 .UI-cta .UI-cta-link:hover .interest-button__text,
 .UI-cta .UI-cta-link:hover .sponsorship-interest-button__text {
-	fill: #ffffff;
+	color: #ffffff;
 }
 
 @media (max-width: 1400px) {
@@ -478,13 +503,11 @@
 
 	.UI-cta .sponsorship-interest-button__text {
 		transform: scaleX(1.4) scaleY(1.15);
-		transform-box: fill-box;
 		transform-origin: center;
 	}
 
 	.UI-cta .interest-button__text {
 		transform: scaleX(1.35) scaleY(1.15);
-		transform-box: fill-box;
 		transform-origin: center;
 	}
 
