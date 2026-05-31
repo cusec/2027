@@ -87,7 +87,9 @@ export function SponsorshipInterestButton({width = 616, height = 75, ...props}: 
             textAnchor="middle"
             dominantBaseline="middle"
             fill="currentColor"
-            fontSize="14"
+            fontFamily="Retropix, MS Sans Serif, monospace"
+            fontSize="22"
+            textRendering="geometricPrecision"
         >
             {lines.map((line, index) => (
                 <tspan key={index} x="308" dy={index === 0 ? 0 : '1.1em'}>
@@ -120,7 +122,9 @@ export function AttendanceInterestButton({width = 616, height = 75, ...props}: S
             textAnchor="middle"
             dominantBaseline="middle"
             fill="currentColor"
-            fontSize="14"
+            fontFamily="Retropix, MS Sans Serif, monospace"
+            fontSize="22"
+            textRendering="geometricPrecision"
         >
             {lines.map((line, index) => (
                 <tspan key={index} x="308" dy={index === 0 ? 0 : '1.1em'}>
