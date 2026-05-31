@@ -328,17 +328,13 @@
 	width: 100%;
 	height: auto;
 	display: block;
-	transform: scaleX(1.40);
-	transform-origin: center;
 	pointer-events: none;
 }
 
 .UI-cta .cta-button-text {
 	font-family: "Retropix", "MS Sans Serif", monospace;
-	font-size: clamp(25px, 1.15vw, 30px);
+	font-size: 22px;
 	letter-spacing: 0;
-	transform: scaleX(0.70);
-	transform-origin: center;
 }
 
 .UI-cta .interest-button__face {
