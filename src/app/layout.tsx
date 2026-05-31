@@ -4,7 +4,9 @@ import "./styles/index.css";
 import "./styles/navbar.css";
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://2027.cusec.net"),
+  metadataBase: new URL(
+    process.env.NEXT_PUBLIC_SITE_URL || "https://2027.cusec.net"
+  ),
 
   title: {
     default: "CUSEC 2027 — Canadian University Software Engineering Conference",
@@ -34,11 +36,9 @@ export const metadata: Metadata = {
     "CUSEC 26th edition",
     "conférence génie logiciel",
   ],
-  authors: [{ name: "CUSEC Organization", url: "https://cusec.net" }],
+  authors: [{ name: "CUSEC Organization" }],
   creator: "CUSEC Organization",
   publisher: "CUSEC",
-  category: "technology",
-  referrer: "origin-when-cross-origin",
   formatDetection: {
     email: false,
     address: false,
@@ -46,19 +46,14 @@ export const metadata: Metadata = {
   },
 
   alternates: {
-    canonical: "https://2027.cusec.net",
-    languages: {
-      "en-CA": "https://2027.cusec.net",
-      "fr-CA": "https://2027.cusec.net",
-      "x-default": "https://2027.cusec.net",
-    },
+    canonical: "/",
   },
 
   openGraph: {
     title: "CUSEC 2027 — Canadian University Software Engineering Conference",
     description:
       "Join CUSEC 2027, the 26th annual student-led software engineering conference in Montréal, QC. Canada's premier student tech conference — January 2027.",
-    url: "https://2027.cusec.net",
+    url: "/",
     siteName: "CUSEC 2027",
     type: "website",
     locale: "en_CA",
@@ -88,11 +83,9 @@ export const metadata: Metadata = {
   robots: {
     index: true,
     follow: true,
-    nocache: false,
     googleBot: {
       index: true,
       follow: true,
-      noimageindex: false,
       "max-video-preview": -1,
       "max-image-preview": "large",
       "max-snippet": -1,
@@ -111,10 +104,6 @@ export const metadata: Metadata = {
     other: [
       { rel: "mask-icon", url: "/cusec-logo.svg", color: "#103436" },
     ],
-  },
-
-  verification: {
-    google: "", // paste Google Search Console verification token here
   },
 };
 
