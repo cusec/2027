@@ -31,8 +31,8 @@ export const getQRCodeURL = async (
   }
 
   // QuickChart API URL
-  // Use logo.png from public as center image
-  const logoUrl = `https://2027.cusec.net/images/logo.png`;
+  // Use cusec_aero_logo.png from public/assets as center image
+  const logoUrl = `https://2027.cusec.net/assets/cusec_aero_logo.png`;
   const quickChartUrl =
     `https://quickchart.io/qr?text=${encodeURIComponent(qrData)}` +
     `&size=300&margin=0&centerImageUrl=${encodeURIComponent(logoUrl)}` +

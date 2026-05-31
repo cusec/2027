@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { auth0 } from "@/lib/auth0";
 import { HuntItem } from "@/lib/models";
 import { getQRCodeURL } from "@/lib/qrCode";
+import { storeQrCode } from "@/lib/imageStorage";
 import connectMongoDB from "@/lib/mongodb";
 import isAdmin from "@/lib/isAdmin";
 import { logAdminAction, sanitizeDataForLogging } from "@/lib/adminAuditLogger";
@@ -114,6 +115,9 @@ export async function POST(request: Request) {
     // Helper to fetch and convert QR image to base64 (server-side)
     async function fetchQRBase64(url: string): Promise<string> {
       const res = await fetch(url);
+      if (!res.ok) {
+        throw new Error(`Failed to fetch QR code from ${url}: ${res.status} ${res.statusText}`);
+      }
       const arrayBuffer = await res.arrayBuffer();
       const base64 = Buffer.from(arrayBuffer).toString("base64");
       // The QR server always returns PNG
@@ -123,28 +127,38 @@ export async function POST(request: Request) {
     // Try QuickChart URLs first, fallback to qrserver.com if any fail
     let localhostQR, productionQR, stagingQR;
     try {
-      [productionQR] = await Promise.all([
-        //getQRCodeURL(identifier, 300, "http://localhost:3000"),
-        getQRCodeURL(identifier, 300, "https://2026.cusec.net"),
-        // getQRCodeURL(
-        //   identifier,
-        //   300,
-        //   process.env.NEXT_PUBLIC_STAGING_URL || ""
-        // ),
+      [localhostQR, productionQR, stagingQR] = await Promise.all([
+        getQRCodeURL(identifier, 300, "http://localhost:3000"),
+        getQRCodeURL(identifier, 300, "https://2027.cusec.net"),
+        getQRCodeURL(
+          identifier,
+          300,
+          process.env.NEXT_PUBLIC_STAGING_URL || "https://staging.2027.cusec.net"
+        ),
       ]).then(async (urls) => Promise.all(urls.map(fetchQRBase64)));
-    } catch {
+    } catch (error) {
+      console.warn("Failed to generate QR codes with custom logo, falling back to basic QR generator:", error);
       // If any fail, try all with fallback=true (qrserver.com)
-      [productionQR] = await Promise.all([
-        // getQRCodeURL(identifier, 300, "http://localhost:3000", true),
-        getQRCodeURL(identifier, 300, "https://2026.cusec.net", true),
-        // getQRCodeURL(
-        //   identifier,
-        //   300,
-        //   process.env.NEXT_PUBLIC_STAGING_URL || "",
-        //   true
-        // ),
+      [localhostQR, productionQR, stagingQR] = await Promise.all([
+        getQRCodeURL(identifier, 300, "http://localhost:3000", true),
+        getQRCodeURL(identifier, 300, "https://2027.cusec.net", true),
+        getQRCodeURL(
+          identifier,
+          300,
+          process.env.NEXT_PUBLIC_STAGING_URL || "https://staging.2027.cusec.net",
+          true
+        ),
       ]).then(async (urls) => Promise.all(urls.map(fetchQRBase64)));
     }
+
+    // Offload the generated QR codes to Cloudinary (cusec-2027/qr-codes) when
+    // configured; otherwise they stay as inline base64 data URIs.
+    const [localhostQRStored, productionQRStored, stagingQRStored] =
+      await Promise.all([
+        storeQrCode(localhostQR),
+        storeQrCode(productionQR),
+        storeQrCode(stagingQR),
+      ]);
 
     const huntItem = new HuntItem({
       name,
@@ -158,9 +172,9 @@ export async function POST(request: Request) {
       activationEnd: activationEnd ? new Date(activationEnd) : null,
       collectibles: collectibles || [],
       qrCodes: {
-        localhost: localhostQR,
-        production: productionQR,
-        staging: stagingQR,
+        localhost: localhostQRStored,
+        production: productionQRStored,
+        staging: stagingQRStored,
       },
     });
 

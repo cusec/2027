@@ -2,6 +2,7 @@
 
 import { Edit, Trash2 } from "lucide-react";
 import { ShopItem } from "@/lib/interface";
+import { resolveImageSrc } from "@/lib/imageSrc";
 
 interface ShopItemDisplayProps {
   item: ShopItem;
@@ -10,10 +11,7 @@ interface ShopItemDisplayProps {
 }
 
 const ShopItemDisplay = ({ item, onEdit, onDelete }: ShopItemDisplayProps) => {
-  const imageSrc =
-    item.imageData && item.imageContentType
-      ? `data:${item.imageContentType};base64,${item.imageData}`
-      : null;
+  const imageSrc = resolveImageSrc(item.imageData, item.imageContentType);
 
   return (
     <div className="flex items-start justify-between">

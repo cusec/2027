@@ -4,6 +4,7 @@ import { ShopItem } from "@/lib/models";
 import isAdmin from "@/lib/isAdmin";
 import { logAdminAction, sanitizeDataForLogging } from "@/lib/adminAuditLogger";
 import { auth0 } from "@/lib/auth0";
+import { storePhoto } from "@/lib/imageStorage";
 
 // POST - Create a new shop item (admin only)
 export async function POST(request: Request) {
@@ -62,6 +63,8 @@ export async function POST(request: Request) {
       }
     }
 
+    const storedImage = await storePhoto(imageData, imageContentType, "shop");
+
     const shopItem = new ShopItem({
       name,
       description,
@@ -72,8 +75,8 @@ export async function POST(request: Request) {
       active: active !== undefined ? active : true,
       activationStart: activationStart || null,
       activationEnd: activationEnd || null,
-      imageData: imageData || null,
-      imageContentType: imageContentType || null,
+      imageData: storedImage.imageData,
+      imageContentType: storedImage.imageContentType,
     });
 
     await shopItem.save();
@@ -213,8 +216,13 @@ export async function PUT(request: Request) {
             { status: 400 }
           );
         }
-        shopItem.imageData = updates.imageData;
-        shopItem.imageContentType = updates.imageContentType;
+        const storedImage = await storePhoto(
+          updates.imageData,
+          updates.imageContentType,
+          "shop"
+        );
+        shopItem.imageData = storedImage.imageData;
+        shopItem.imageContentType = storedImage.imageContentType;
       }
     }
 

@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { Package, Gem, X, Gift } from "lucide-react";
 import Modal from "@/components/ui/modal";
 import { HuntItem, ShopItem } from "@/lib/interface";
+import { resolveImageSrc } from "@/lib/imageSrc";
 
 // Extended collectible interface for inventory (includes instance-specific fields)
 interface InventoryCollectible {
@@ -34,12 +35,8 @@ interface InventoryResponse {
 }
 
 // Helper function to get image source from shop item
-const getShopItemImageSrc = (item: ShopItem): string | null => {
-  if (item.imageData && item.imageContentType) {
-    return `data:${item.imageContentType};base64,${item.imageData}`;
-  }
-  return null;
-};
+const getShopItemImageSrc = (item: ShopItem): string | null =>
+  resolveImageSrc(item.imageData, item.imageContentType);
 
 // Interface for grouped collectibles
 interface GroupedCollectible {
@@ -296,17 +293,24 @@ const InventoryModal = ({ userId, isOpen, onClose }: InventoryModalProps) => {
                       key={collectible.name}
                       className="flex items-center gap-4 p-4 border-l border-light-mode/40"
                     >
-                      {collectible.imageData &&
-                        collectible.imageContentType && (
-                          <div className="w-10 h-10 hidden md:flex rounded-full overflow-hidden shrink-0 bg-light-mode/10">
-                            {/* eslint-disable-next-line @next/next/no-img-element */}
-                            <img
-                              src={`data:${collectible.imageContentType};base64,${collectible.imageData}`}
-                              alt={collectible.name}
-                              className="w-full h-full object-cover"
-                            />
-                          </div>
-                        )}
+                      {resolveImageSrc(
+                        collectible.imageData,
+                        collectible.imageContentType
+                      ) && (
+                        <div className="w-10 h-10 hidden md:flex rounded-full overflow-hidden shrink-0 bg-light-mode/10">
+                          {/* eslint-disable-next-line @next/next/no-img-element */}
+                          <img
+                            src={
+                              resolveImageSrc(
+                                collectible.imageData,
+                                collectible.imageContentType
+                              )!
+                            }
+                            alt={collectible.name}
+                            className="w-full h-full object-cover"
+                          />
+                        </div>
+                      )}
                       <div className="flex-1 min-w-0">
                         <p className="font-semibold wrap-break-word text-light-mode">
                           {collectible.name}

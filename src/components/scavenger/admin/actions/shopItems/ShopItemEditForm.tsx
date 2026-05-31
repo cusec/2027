@@ -3,6 +3,7 @@
 import { useRef, useState, useEffect } from "react";
 import { Upload, Users, Trash2 } from "lucide-react";
 import { ShopItem } from "@/lib/interface";
+import { resolveImageSrc } from "@/lib/imageSrc";
 import ShopItemUsersModal from "./ShopItemUsersModal";
 
 interface ShopItemEditFormProps {
@@ -38,8 +39,9 @@ const ShopItemEditForm = ({
 
   // Initialize image preview from existing data
   useEffect(() => {
-    if (item.imageData && item.imageContentType) {
-      setImagePreview(`data:${item.imageContentType};base64,${item.imageData}`);
+    const existing = resolveImageSrc(item.imageData, item.imageContentType);
+    if (existing) {
+      setImagePreview(existing);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [item._id]); // Only run when item changes (based on _id)
@@ -99,10 +101,7 @@ const ShopItemEditForm = ({
     if (imagePreview) {
       return imagePreview;
     }
-    if (item.imageData && item.imageContentType) {
-      return `data:${item.imageContentType};base64,${item.imageData}`;
-    }
-    return null;
+    return resolveImageSrc(item.imageData, item.imageContentType);
   };
 
   const imageSrc = getImageSrc();

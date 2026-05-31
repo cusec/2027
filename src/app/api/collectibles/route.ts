@@ -4,6 +4,7 @@ import { Collectible } from "@/lib/models";
 import connectMongoDB from "@/lib/mongodb";
 import isAdmin from "@/lib/isAdmin";
 import { logAdminAction, sanitizeDataForLogging } from "@/lib/adminAuditLogger";
+import { storePhoto } from "@/lib/imageStorage";
 
 // Helper function to check if item is within activation period
 function isWithinActivationPeriod(item: {
@@ -106,6 +107,12 @@ export async function POST(request: Request) {
       );
     }
 
+    const storedImage = await storePhoto(
+      imageData,
+      imageContentType,
+      "collectibles"
+    );
+
     const collectible = new Collectible({
       name,
       description: description || "",
@@ -117,8 +124,8 @@ export async function POST(request: Request) {
       active: active !== undefined ? active : true,
       activationStart: activationStart || null,
       activationEnd: activationEnd || null,
-      imageData: imageData || null,
-      imageContentType: imageContentType || null,
+      imageData: storedImage.imageData,
+      imageContentType: storedImage.imageContentType,
     });
 
     await collectible.save();

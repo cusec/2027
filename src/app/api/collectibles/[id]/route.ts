@@ -4,6 +4,7 @@ import { HuntItem, Collectible } from "@/lib/models";
 import connectMongoDB from "@/lib/mongodb";
 import isAdmin from "@/lib/isAdmin";
 import { logAdminAction, sanitizeDataForLogging } from "@/lib/adminAuditLogger";
+import { storePhoto } from "@/lib/imageStorage";
 import { Types } from "mongoose";
 
 // GET - Fetch a specific collectible
@@ -122,9 +123,13 @@ export async function PUT(
       collectible.imageData = null;
       collectible.imageContentType = null;
     } else if (imageData !== undefined) {
-      collectible.imageData = imageData;
-      if (imageContentType !== undefined)
-        collectible.imageContentType = imageContentType;
+      const storedImage = await storePhoto(
+        imageData,
+        imageContentType,
+        "collectibles"
+      );
+      collectible.imageData = storedImage.imageData;
+      collectible.imageContentType = storedImage.imageContentType;
     }
 
     await collectible.save();

@@ -108,8 +108,14 @@ Fill these in `cusec-2027/.env.local` (local) and in your Vercel project setting
 | `SCAVENGER_HUNT_ENABLED` | ✅ | scavenger page (server) | `"true"` to open the hunt to all logged-in users; otherwise only Admin/Volunteer see the dashboard. |
 | `NEXT_PUBLIC_SCAVENGER_HUNT_ENABLED` | ⬜ | client components | Mirror of the flag for client-side checks. |
 
-> The `CLOUDINARY_*` keys in `.env.example` are **not used** by the ported code
-> (images are stored as base64 in Mongo). You can delete them.
+> **Image storage (Cloudinary).** When `CLOUDINARY_URL` (or the
+> `CLOUDINARY_CLOUD_NAME` / `CLOUDINARY_API_KEY` / `CLOUDINARY_API_SECRET` trio)
+> is set, hunt-item QR codes, shop prizes, and collectible images are uploaded to
+> Cloudinary under a **`cusec-2027/`** root folder (`cusec-2027/qr-codes`,
+> `cusec-2027/shop`, `cusec-2027/collectibles`) — keeping 2027 isolated from
+> prior years on the same shared account, with photos stored as compressed WebP.
+> When the keys are unset, the app falls back to the legacy base64-in-Mongo
+> behaviour, so it still runs with zero config. See `src/lib/imageStorage.ts`.
 
 ---
 

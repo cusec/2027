@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { Collectible } from "@/lib/interface";
+import { resolveImageSrc } from "@/lib/imageSrc";
 import Modal from "@/components/ui/modal";
 import { Loader2 } from "lucide-react";
 
@@ -12,12 +13,8 @@ interface ShopCollectibleProps {
 }
 
 // Helper function to get image source from collectible
-const getCollectibleImageSrc = (item: Collectible): string | null => {
-  if (item.imageData && item.imageContentType) {
-    return `data:${item.imageContentType};base64,${item.imageData}`;
-  }
-  return null;
-};
+const getCollectibleImageSrc = (item: Collectible): string | null =>
+  resolveImageSrc(item.imageData, item.imageContentType);
 
 const ShopCollectible = ({
   collectible,

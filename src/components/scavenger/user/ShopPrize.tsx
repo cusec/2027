@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { ShopItem } from "@/lib/interface";
+import { resolveImageSrc } from "@/lib/imageSrc";
 import Modal from "@/components/ui/modal";
 import { Search, User, X, Loader2 } from "lucide-react";
 
@@ -21,12 +22,8 @@ interface SearchUser {
 }
 
 // Helper function to get image source from shop item
-const getImageSrc = (item: ShopItem): string | null => {
-  if (item.imageData && item.imageContentType) {
-    return `data:${item.imageContentType};base64,${item.imageData}`;
-  }
-  return null;
-};
+const getImageSrc = (item: ShopItem): string | null =>
+  resolveImageSrc(item.imageData, item.imageContentType);
 
 const ShopPrize = ({
   item,

@@ -10,6 +10,7 @@ import {
   Info,
 } from "lucide-react";
 import Modal from "@/components/ui/modal";
+import { resolveImageSrc } from "@/lib/imageSrc";
 
 interface UserCollectible {
   _id: string;
@@ -47,12 +48,7 @@ interface UserCollectiblesModalProps {
 const getCollectibleImageSrc = (
   imageData: string,
   imageContentType: string
-): string | null => {
-  if (imageData && imageContentType) {
-    return `data:${imageContentType};base64,${imageData}`;
-  }
-  return null;
-};
+): string | null => resolveImageSrc(imageData, imageContentType);
 
 const UserCollectiblesModal = ({
   isOpen,

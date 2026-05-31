@@ -2,6 +2,7 @@
 
 import { Pencil, Trash2 } from "lucide-react";
 import { Collectible } from "@/lib/interface";
+import { resolveImageSrc } from "@/lib/imageSrc";
 
 interface CollectibleDisplayProps {
   item: Collectible;
@@ -14,14 +15,7 @@ const CollectibleDisplay = ({
   onEdit,
   onDelete,
 }: CollectibleDisplayProps) => {
-  const getImageSrc = () => {
-    if (item.imageData && item.imageContentType) {
-      return `data:${item.imageContentType};base64,${item.imageData}`;
-    }
-    return null;
-  };
-
-  const imageSrc = getImageSrc();
+  const imageSrc = resolveImageSrc(item.imageData, item.imageContentType);
 
   return (
     <div className="p-4 bg-white rounded-lg border border-gray-200 shadow-sm hover:shadow-md transition-shadow">

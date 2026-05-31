@@ -41,11 +41,11 @@ const QRCodeModal = ({ isOpen, onClose, item, onError }: QRCodeModalProps) => {
             }
             className="px-3 py-2 border rounded"
           >
-            <option value="production">Production (2026.cusec.net)</option>
-            <option value="staging" disabled>
+            <option value="production">Production (2027.cusec.net)</option>
+            <option value="staging" disabled={!item.qrCodes?.staging}>
               Staging
             </option>
-            <option value="localhost" disabled>
+            <option value="localhost" disabled={!item.qrCodes?.localhost}>
               Localhost
             </option>
           </select>
