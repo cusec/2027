@@ -1,3 +1,4 @@
+import type React from "react";
 import { auth0 } from "@/lib/auth0";
 import { findOrCreateUser } from "@/lib/userService";
 import { RegisteredUser } from "@/lib/models";
@@ -39,7 +40,16 @@ export default async function ScavengerPage() {
   const showDashboard = user && (scavengerEnabled || isUserAdmin || isUserVolunteer);
 
   return (
-    <main className="min-h-screen bg-dark-mode text-light-mode">
+    <main
+        className="relative min-h-screen text-light-mode overflow-x-hidden"
+        style={{
+          backgroundImage: "url('/assets/linking-screen-1.png')",
+          backgroundSize: "cover",
+          backgroundAttachment: "fixed",
+          backgroundPosition: "center",
+          "--color-light-mode": "#111827",
+        } as React.CSSProperties}
+      >
       {showDashboard ? (
         <Dashboard
           user={user as Auth0User}

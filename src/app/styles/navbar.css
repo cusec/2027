@@ -19,7 +19,7 @@
     align-items: stretch;
     gap: 0;
     font-family: "MS Sans Serif", Tahoma, sans-serif;
-    color: #ffffff;
+    color: #111827;
 }
 
 .Navbar-locale-icon {
@@ -39,9 +39,7 @@
 .Navbar-locale-select-wrapper {
     position: relative;
     min-width: 78px;           /* narrower — just fits "English" */
-    background: rgba(255, 255, 255, 0.12);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
+    background: #c0c0c0;
     border-top: 1px solid #ffffff;
     border-left: 1px solid #ffffff;
     border-right: 1px solid #2b2b2b;
@@ -57,8 +55,8 @@
     font-family: "Retropix", "MS Sans Serif", monospace;
     font-size: 11px;
     line-height: 1.1;
-    color: #ffffff;
-    -webkit-text-fill-color: #ffffff;
+    color: #111827;
+    -webkit-text-fill-color: #111827;
     cursor: pointer;
     appearance: none;
     -webkit-appearance: none;

@@ -71,7 +71,7 @@ const Modal = ({
         onClick={handleClose}
       />
 
-      {/* Modal Content */}
+      {/* Modal Content — reset CSS vars so dark-bg modals keep light text */}
       <div
         className={cn(
           "relative z-10 w-full max-w-2xl max-h-[70vh] overflow-y-auto bg-white rounded-lg shadow-xl",
@@ -80,6 +80,10 @@ const Modal = ({
             : "animate-in fade-in zoom-in-95 duration-200",
           className
         )}
+        style={{
+          "--color-light-mode": "#f5f5f5",
+          "--color-dark-mode": "#111827",
+        } as React.CSSProperties}
       >
         {/* Header */}
         {title && (
