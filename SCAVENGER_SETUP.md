@@ -168,7 +168,89 @@ hunt stays dark until just before the conference.
 
 ---
 
-## 7. Known gaps / optional follow-ups
+## 7. Onboarding flow
+
+A guided onboarding experience was added on top of the scavenger dashboard. It presents up to three full-page screens (each with its own bubble-gradient background) when a user logs in for the first time.
+
+### Screens
+
+| # | Background asset | Purpose |
+|---|---|---|
+| 1 | `public/assets/linking-screen-1.png` | Link ticket email (or skip) |
+| 2 | `public/assets/linking-screen-2.png` | Personality quiz (2 questions) |
+| 3 | `public/assets/linking-screen-3.png` | Avatar customization placeholder |
+
+All screens are `fixed inset-0 z-50` overlays rendered inside the client Dashboard component — the URL stays at `/scavenger`.
+
+### User flows
+
+**First-time login** (`hasSeenIntro === false` and no verified linked email):
+```
+Login → Screen 1 (email link)
+  ↓ Skip  → mark hasSeenIntro=true → dashboard (email CTA banner shown)
+  ↓ Link  → Screen 2 (personality quiz)
+               ↓ Skip/Submit → Screen 3 (avatar placeholder)
+                                 ↓ Continue → mark hasSeenIntro=true → dashboard
+```
+
+**From the dashboard** (returning users):
+- No linked email → teal CTA banner with "Link Email" button → Screen 1 → 2 → 3
+- Has linked email → "Edit Profile" link (top-right of dashboard) → Screen 2 → 3
+
+### Onboarding gate logic
+
+The gate is evaluated server-side in `src/app/[locale]/scavenger/page.tsx` and passed to Dashboard as `emailVerified`. Dashboard skips onboarding if **either** condition holds:
+
+1. `dbUser.linked_email` is set **and** `RegisteredUser.isLinked === true` for that email — covers all users who linked before `hasSeenIntro` was introduced.
+2. `dbUser.hasSeenIntro === true` — covers users who explicitly skipped email linking.
+
+This means existing users with a linked email will never see the onboarding screens after a reload or re-login.
+
+### New model fields (`src/lib/models.ts` — `userSchema`)
+
+| Field | Type | Default | Purpose |
+|---|---|---|---|
+| `hasSeenIntro` | Boolean | `false` | Set to `true` once the user completes or skips the onboarding flow |
+| `personalityType` | String | `null` | Result of the personality quiz (e.g. `"hunter"`, `"strategist"`, `"connector"`, `"explorer"`) |
+
+### New API route
+
+`PATCH /api/users/onboarding` — authenticated. Accepts `{ hasSeenIntro?: boolean, personalityType?: string }`. Used by the onboarding components to persist quiz results and mark the intro as seen.
+
+### Component tree
+
+```
+src/components/scavenger/onboarding/
+  OnboardingFlow.tsx      ← orchestrator; mode prop controls start step
+  EmailLinkScreen.tsx     ← Screen 1 (wraps existing /api/users/link-email)
+  PersonalityQuiz.tsx     ← Screen 2 (two radio-card questions)
+  AvatarCustomize.tsx     ← Screen 3 (placeholder, no data saved yet)
+```
+
+`OnboardingFlow` accepts a `mode` prop:
+- `"first-login"` / `"link"` — start at Screen 1
+- `"edit"` — start at Screen 2 (for users who already have a linked email)
+
+### Personality types
+
+Quiz Q1 answer determines the stored `personalityType`:
+
+| Q1 answer | `personalityType` |
+|---|---|
+| Dive in headfirst | `hunter` |
+| Plan it out | `strategist` |
+| Rally the team | `connector` |
+| Think outside the box | `explorer` |
+
+Q2 ("What's your CUSEC goal?") is captured in the UI but does not currently affect the stored type — reserved for future use.
+
+### Avatar customization
+
+Screen 3 is a placeholder. The `avatarConfig` field is not yet in the model. When avatar customization is built out, add `avatarConfig: { type: Schema.Types.Mixed, default: null }` to `userSchema` and update `DbUser` in `src/lib/interface.ts`.
+
+---
+
+## 8. Known gaps / optional follow-ups
 
 - **PWA service worker not ported.** The "Install" prompt components were ported,
   but the 2026 offline service worker (serwist) was not. Install-to-homescreen

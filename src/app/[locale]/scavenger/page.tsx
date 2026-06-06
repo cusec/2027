@@ -1,5 +1,6 @@
 import { auth0 } from "@/lib/auth0";
 import { findOrCreateUser } from "@/lib/userService";
+import { RegisteredUser } from "@/lib/models";
 import Dashboard from "@/components/scavenger/Dashboard";
 import type { Auth0User } from "@/lib/interface";
 import { Trophy } from "lucide-react";
@@ -13,6 +14,7 @@ export default async function ScavengerPage() {
 
   // Find or create the MongoDB user record once the visitor is authenticated.
   let dbUser = null;
+  let emailVerified = false;
   if (user?.email) {
     const mongoUser = await findOrCreateUser({
       email: user.email,
@@ -23,6 +25,14 @@ export default async function ScavengerPage() {
       dbUser = JSON.parse(
         JSON.stringify({ ...plainUser, points: plainUser.points || 0 })
       );
+      // Confirm the linked email is genuinely registered and marked as linked
+      if (plainUser.linked_email) {
+        const registeredUser = await RegisteredUser.findOne({
+          linkedEmail: plainUser.linked_email,
+          isLinked: true,
+        }).lean();
+        emailVerified = !!registeredUser;
+      }
     }
   }
 
@@ -35,6 +45,7 @@ export default async function ScavengerPage() {
           user={user as Auth0User}
           dbUser={dbUser}
           baseURL={process.env.APP_BASE_URL || ""}
+          emailVerified={emailVerified}
         />
       ) : (
         <div className="mx-auto max-w-2xl px-6 py-24 text-center">

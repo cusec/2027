@@ -60,6 +60,8 @@ const userSchema = new Schema(
       ],
       default: [],
     },
+    hasSeenIntro: { type: Boolean, default: false },
+    personalityType: { type: String, default: null },
   },
   {
     timestamps: true,

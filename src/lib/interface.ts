@@ -47,6 +47,8 @@ export interface DbUser {
   collectibles: string[];
   shopPrizes: string[]; // Array of ShopItem IDs that have been redeemed for this user
   claim_attempts?: ClaimAttempt[];
+  hasSeenIntro?: boolean;
+  personalityType?: string | null;
 }
 
 export interface ClaimAttempt {
