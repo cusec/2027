@@ -26,11 +26,27 @@
 	--splash-waveform-bottom: -800px;
 	--splash-waveform-scale: 1.4;
 	--splash-waveform-width: min(2500px, 2800px);
-	background-image: url('/assets/splash_bg.png');
+	background-image: url('/assets/splash_bg.webp');
 	background-position: center 65%;
 	background-size: cover;
 	background-repeat: no-repeat;
 	animation: splash-circle-reveal 1.2s ease-out both;
+}
+
+html.no-startup-animations .splash-wrapper {
+	animation: none;
+}
+
+html.no-startup-animations .splash-waveform {
+	animation: none;
+}
+
+html.no-startup-animations .splash-title-wrapper {
+	animation: none;
+}
+
+html.no-startup-animations .splash-ui-wrapper {
+	animation: splash-ui-hover 4.5s ease-in-out 0s infinite;
 }
 
 @keyframes splash-circle-reveal {
@@ -94,12 +110,19 @@
 	font-size: clamp(130px, 9vw, 200px);
 	color: #103436;
 	-webkit-text-fill-color: transparent;
-	-webkit-text-stroke: 2px #103436;
+	-webkit-text-stroke: 3px #103436;
+	text-stroke: 3px #103436;
 	background-color: transparent;
 	text-align: left;
 	text-shadow:
-		1px 0 0 rgba(16, 52, 54, 0.65),
-		0 1px 0 rgba(16, 52, 54, 0.65);
+		1px 0 0 #103436,
+		-1px 0 0 #103436,
+		0 1px 0 #103436,
+		0 -1px 0 #103436,
+		1px 1px 0 #103436,
+		-1px 1px 0 #103436,
+		1px -1px 0 #103436,
+		-1px -1px 0 #103436;
 }
 
 .splash-title-char {
@@ -257,7 +280,6 @@
 		--splash-waveform-bottom: 0px;
 		--splash-waveform-scale: 0.92;
 		--splash-waveform-width: min(1500px, 1950px);
-		height: auto;
 		overflow-x: hidden;
 		overflow-y: auto;
 	}
@@ -276,7 +298,7 @@
 	.splash-title {
 		height: auto;
 		justify-content: flex-start;
-		font-size: clamp(46px, 17vw, 110px);
+		font-size: clamp(70px, 20vw, 130px);
 		line-height: 1.2;
 		text-align: left;
 	}

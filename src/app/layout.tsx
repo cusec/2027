@@ -1,4 +1,5 @@
 import type { Metadata, Viewport } from "next";
+import Script from "next/script";
 import "./globals.css";
 import "./styles/index.css";
 import "./styles/navbar.css";
@@ -123,8 +124,24 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en-CA" dir="ltr">
-      <body>{children}</body>
+    <html lang="en-CA" dir="ltr" suppressHydrationWarning>
+      <body>
+        <Script id="startup-animation-gate" strategy="beforeInteractive">
+          {`(function () {
+  var key = 'cusec-startup-animations-seen';
+  try {
+    if (sessionStorage.getItem(key) === '1') {
+      document.documentElement.classList.add('no-startup-animations');
+    } else {
+      sessionStorage.setItem(key, '1');
+    }
+  } catch (e) {
+    // Ignore storage access errors and keep default animation behavior.
+  }
+})();`}
+        </Script>
+        {children}
+      </body>
     </html>
   );
 }
