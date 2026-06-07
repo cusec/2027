@@ -53,10 +53,9 @@
     width: 100%;
     background: transparent;
     border: none;
-    padding: 0.15rem 0.4rem;
+    padding: 0.22rem 0.8rem;
     font-family: "Retropix", "MS Sans Serif", monospace;
     font-size: 11px;
-    line-height: 1.1;
     color: #ffffff;
     -webkit-text-fill-color: #ffffff;
     cursor: pointer;
@@ -71,6 +70,11 @@
 }
 
 .Navbar-locale-select:focus {
-    outline: 1px dotted #103436;
-    outline-offset: 1px;
+    outline: none;
+    box-shadow: none;
+}
+
+.Navbar-locale-select:focus-visible {
+    outline: none;
+    box-shadow: none;
 }

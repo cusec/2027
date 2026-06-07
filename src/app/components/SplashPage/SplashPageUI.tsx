@@ -151,7 +151,7 @@ export default function SplashPageUI() {
                             aria-label="Sponsorship Interest Form"
                             onClick={() => openCtaLink(SPONSORSHIP_INTEREST_URL)}
                         >
-                            <SponsorshipInterestButton width={500} height={45} />
+                            <SponsorshipInterestButton width={550} height={60} />
                         </button>
                     </div>
                 </div>
