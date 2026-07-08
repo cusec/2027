@@ -178,6 +178,9 @@ export default function SplashJoinWaitlist() {
     return (
         <>
             <div className="cta-row">
+                <button type="button" className="cta-btn" onClick={openModal}>
+                    {t('attendance-submit')}
+                </button>
                 <a
                     className="cta-btn"
                     href={SPONSORSHIP_URL}
@@ -186,9 +189,6 @@ export default function SplashJoinWaitlist() {
                 >
                     {t('sponsorship-interest')}
                 </a>
-                <button type="button" className="cta-btn" onClick={openModal}>
-                    {t('attendance-submit')}
-                </button>
             </div>
 
             {open && createPortal(modal, document.body)}

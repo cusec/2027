@@ -6,15 +6,11 @@ import SplashAnimationLock from './SplashAnimationLock';
 import VantaBirds from './VantaBirds';
 import SplashTitle from './SplashTitle';
 
-// if the splash has already been seen this session, mark <html> static so the entrance animation doesn't replay on refresh
-const SPLASH_ANIM_SCRIPT = `try{if(sessionStorage.getItem('cusecSplashSeen')){document.documentElement.classList.add('splash-static')}else{sessionStorage.setItem('cusecSplashSeen','1')}}catch(e){}`;
-
 export default async function SplashPage() {
     const t = await getTranslations('SplashPage');
 
     return (
         <>
-            <script dangerouslySetInnerHTML={{ __html: SPLASH_ANIM_SCRIPT }} />
             <SplashAnimationLock />
             <div className="splash-wrapper">
 

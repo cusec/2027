@@ -1,7 +1,11 @@
 import type { Metadata, Viewport } from "next";
+import Script from "next/script";
 import "./globals.css";
 import "./styles/index.css";
 import "./styles/navbar.css";
+
+// if the splash was already seen this session, mark <html> static so the entrance animation doesn't replay on refresh (no flash).
+const SPLASH_ANIM_SCRIPT = `try{if(sessionStorage.getItem('cusecSplashSeen')){document.documentElement.classList.add('splash-static')}else{sessionStorage.setItem('cusecSplashSeen','1')}}catch(e){}`;
 
 export const metadata: Metadata = {
   metadataBase: new URL(
@@ -123,7 +127,12 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en-CA" dir="ltr" suppressHydrationWarning>
-      <body>{children}</body>
+      <body>
+        <Script id="splash-anim" strategy="beforeInteractive">
+          {SPLASH_ANIM_SCRIPT}
+        </Script>
+        {children}
+      </body>
     </html>
   );
 }
