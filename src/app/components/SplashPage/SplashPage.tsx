@@ -3,6 +3,7 @@ import { getTranslations } from 'next-intl/server';
 import { FileFolder } from '@/app/assets/FigmaSVGs';
 import SplashJoinWaitlist from './SplashJoinWaitlist';
 import SplashAnimationLock from './SplashAnimationLock';
+import VantaBirds from './VantaBirds';
 
 // Runs before first paint: if the splash has already been seen this session,
 // mark <html> static so the entrance animation doesn't replay on refresh.
@@ -33,6 +34,9 @@ export default async function SplashPage() {
             <script dangerouslySetInnerHTML={{ __html: SPLASH_ANIM_SCRIPT }} />
             <SplashAnimationLock />
             <div className="splash-wrapper">
+
+            {/* Vanta birds — animated layer over the background image */}
+            <VantaBirds />
 
             {/* Desktop icons — left side */}
             <aside className="desktop-icons" aria-label="Quick links">
