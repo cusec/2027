@@ -11,4 +11,31 @@ html {
 
 body {
   background-color: #ffffff;
+  letter-spacing: 0.06em;
+}
+
+/* ---- win95 style cursors ---- */
+:root {
+  --cursor-arrow: url("/assets/cursor-win95.png") 2 2, auto;
+  --cursor-hand: url("/assets/pointer-win95.png") 8 0, pointer;
+}
+
+html {
+  cursor: var(--cursor-arrow);
+}
+
+a,
+button,
+select,
+summary,
+[role="button"],
+.desktop-icon,
+.cta-btn,
+.win95-close {
+  cursor: var(--cursor-hand);
+}
+
+input,
+textarea {
+  cursor: text;
 }

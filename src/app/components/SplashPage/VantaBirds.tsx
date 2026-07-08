@@ -30,9 +30,9 @@ export default function VantaBirds() {
                 birdSize: 1.5,
                 wingSpan: 40.0,
                 speedLimit: 3.0,
-                separation: 0.0,
-                alignment: 100.0,
-                cohesion: 100.0,
+                separation: 40.0,
+                alignment: 50.0,
+                cohesion: 30.0,
                 quantity: 1.0,
             });
             requestAnimationFrame(() => effect?.resize?.());

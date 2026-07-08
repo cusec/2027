@@ -60,7 +60,6 @@ export const metadata: Metadata = {
     alternateLocale: ["fr_CA"],
     images: [
       {
-        // Add a 1200×630 OG image at public/cusec-logo.png for best results
         url: "/cusec-logo.png",
         width: 1200,
         height: 630,
@@ -76,7 +75,7 @@ export const metadata: Metadata = {
     description:
       "Canada's longest-running student-led software engineering conference. 26th edition — Montréal, QC · January 2027.",
     images: ["/cusec-logo.png"],
-    site: "@cusec",     // update if handle changes
+    site: "@cusec", 
     creator: "@cusec",
   },
 

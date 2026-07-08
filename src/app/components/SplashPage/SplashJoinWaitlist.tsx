@@ -23,7 +23,7 @@ export default function SplashJoinWaitlist() {
     const [errorKind, setErrorKind] = useState<'' | 'generic' | 'duplicate'>('');
     const [msgIndex, setMsgIndex] = useState(0);
 
-    // Window drag state
+    // window drag state
     const [pos, setPos] = useState({ x: 0, y: 0 });
     const drag = useRef<{ startX: number; startY: number; baseX: number; baseY: number } | null>(null);
 
@@ -83,7 +83,7 @@ export default function SplashJoinWaitlist() {
         setLoading(true);
         setErrorKind('');
         try {
-            // Keep the retro loader on screen for a beat even if the request is quick.
+            // keep the retro loader on screen for a beat even if the request is quick.
             const minDelay = new Promise(r => setTimeout(r, 2400));
             const res = await fetch('/api/waitlist', {
                 method: 'POST',

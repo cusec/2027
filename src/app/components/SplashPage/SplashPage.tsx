@@ -4,26 +4,10 @@ import { FileFolder } from '@/app/assets/FigmaSVGs';
 import SplashJoinWaitlist from './SplashJoinWaitlist';
 import SplashAnimationLock from './SplashAnimationLock';
 import VantaBirds from './VantaBirds';
+import SplashTitle from './SplashTitle';
 
 // if the splash has already been seen this session, mark <html> static so the entrance animation doesn't replay on refresh
 const SPLASH_ANIM_SCRIPT = `try{if(sessionStorage.getItem('cusecSplashSeen')){document.documentElement.classList.add('splash-static')}else{sessionStorage.setItem('cusecSplashSeen','1')}}catch(e){}`;
-
-function WavyText({ text }: { text: string }) {
-    return (
-        <h1 className="splash-title" aria-label={text}>
-            {Array.from(text).map((char, i) => (
-                <span
-                    key={i}
-                    className="splash-title-char"
-                    style={{ animationDelay: `${i * 0.12}s` }}
-                    aria-hidden
-                >
-                    {char}
-                </span>
-            ))}
-        </h1>
-    );
-}
 
 export default async function SplashPage() {
     const t = await getTranslations('SplashPage');
@@ -58,20 +42,7 @@ export default async function SplashPage() {
 
             {/* Main content */}
             <div className="main-splash-content">
-                <div className="splash-title-wrapper">
-                    <WavyText text="CUSEC" />
-                    <div className="title-row">
-                        <Image
-                            className="splash-logo splash-title-char"
-                            src="/assets/cusec_aero_logo.png"
-                            alt="CUSEC logo"
-                            width={146}
-                            height={146}
-                            priority
-                        />
-                        <WavyText text="2027" />
-                    </div>
-                </div>
+                <SplashTitle />
                 <SplashJoinWaitlist />
             </div>
 
