@@ -19,7 +19,7 @@
     align-items: stretch;
     gap: 0;
     font-family: "MS Sans Serif", Tahoma, sans-serif;
-    color: #ffffff;
+    color: #000000;
 }
 
 .Navbar-locale-icon {
@@ -53,12 +53,14 @@
     width: 100%;
     background: transparent;
     border: none;
-    padding: 0.15rem 0.4rem;
+    padding: 0.2rem 0.5rem;
     font-family: "Retropix", "MS Sans Serif", monospace;
-    font-size: 11px;
+    font-size: 13px;
     line-height: 1.1;
-    color: #ffffff;
-    -webkit-text-fill-color: #ffffff;
+    text-align: center;
+    text-align-last: center;
+    color: #000000;
+    -webkit-text-fill-color: #000000;
     cursor: pointer;
     appearance: none;
     -webkit-appearance: none;
@@ -68,9 +70,10 @@
     color: #000000;
     -webkit-text-fill-color: #000000;
     background: #ffffff;
+    text-align: center;
 }
 
-.Navbar-locale-select:focus {
-    outline: 1px dotted #103436;
-    outline-offset: 1px;
+.Navbar-locale-select:focus,
+.Navbar-locale-select:focus-visible {
+    outline: none;
 }

@@ -3,11 +3,13 @@
 
 .splash-wrapper {
     padding-top: calc(52px + env(safe-area-inset-top, 0px) + 1.4rem);
+    padding-bottom: 2.2rem;
 }
 
 @media (max-width: 640px) {
     .splash-wrapper {
         padding-top: calc(52px + env(safe-area-inset-top, 0px) + 0.95rem);
+        padding-bottom: calc(2.2rem + env(safe-area-inset-bottom, 0px));
     }
 
     .main-splash-content {

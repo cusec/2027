@@ -1,299 +1,582 @@
 @font-face {
     font-family: "Retropix";
-	src: url("../../../fonts/retropix.woff2") format("woff2");
+    src: url("../../../fonts/retropix.woff2") format("woff2");
     font-weight: 400;
     font-style: normal;
     font-display: swap;
 }
 
-/*-----------------------------
-	SplashPage.tsx styling
-------------------------------*/
+/* ---- Splash wrapper ---- */
 
 .splash-wrapper {
-	min-height: 100vh;
-	min-height: 100dvh;
-	height: 100vh;
-	height: 100dvh;
-	box-sizing: border-box;
-	padding: 1.4rem;
-	display: flex;
-	justify-content: center;
-	align-items: center;
-	position: relative;
-	overflow: hidden;
-	--splash-waveform-x: 50%;
-	--splash-waveform-bottom: -800px;
-	--splash-waveform-scale: 1.4;
-	--splash-waveform-width: min(2500px, 2800px);
-	background-image: url('/assets/splash_bg.png');
-	background-position: center 65%;
-	background-size: cover;
-	background-repeat: no-repeat;
-	animation: splash-circle-reveal 1.2s ease-out both;
+    position: relative;
+    min-height: 100vh;
+    min-height: 100dvh;
+    height: 100vh;
+    height: 100dvh;
+    box-sizing: border-box;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+    background-image: url('/assets/splash_bg.webp');
+    background-position: center 65%;
+    background-size: cover;
+    background-repeat: no-repeat;
+    /* Splash chrome is decorative — don't let clicks select the text/icons */
+    user-select: none;
+    -webkit-user-select: none;
+    -webkit-tap-highlight-color: transparent;
+    animation: splash-circle-reveal 1.2s ease-out both;
+    --splash-waveform-x: 50%;
+    --splash-waveform-bottom: -800px;
+    --splash-waveform-scale: 1.4;
+    --splash-waveform-width: min(2500px, 2800px);
 }
 
 @keyframes splash-circle-reveal {
-	from { clip-path: circle(0% at 50% 50%); }
-	to   { clip-path: circle(150% at 50% 50%); }
+    from { clip-path: circle(0% at 50% 50%); }
+    to   { clip-path: circle(150% at 50% 50%); }
 }
+
+/* ---- Main content (title + waitlist) ---- */
 
 .main-splash-content {
-	/* background: green; */
-	width: min(90vw, 2100px);
-	margin: 0 auto;
-	display: grid;
-	grid-template-columns: minmax(240px, 0.85fr) minmax(560px, 1.35fr);
-	align-items: start;
-	column-gap: clamp(1.2rem, 3.4vw, 3.6rem);
-	padding-top: clamp(0.2rem, 1.8vw, 1.5rem);
-	position: relative;
-	z-index: 2;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+    z-index: 2;
+    animation: splash-bounce-in 0.5s cubic-bezier(.34, 1.56, 1, 1) 0.4s both;
 }
 
-.splash-waveform {
-	position: absolute;
-	left: var(--splash-waveform-x);
-	bottom: var(--splash-waveform-bottom);
-	width: var(--splash-waveform-width);
-	height: auto;
-	max-width: none;
-	transform: translateX(-50%) scale(var(--splash-waveform-scale));
-	transform-origin: center bottom;
-	pointer-events: none;
-	user-select: none;
-	z-index: 1;
-	animation: splash-waveform-fadein 1.2s ease-out both;
-	/* iOS Safari drops VP9 alpha, leaving black. screen blend makes black transparent. */
-	mix-blend-mode: screen;
-}
-
-@keyframes splash-waveform-fadein {
-	0%   { opacity: 0; }
-	100% { opacity: 1; }
-}
+/* ---- Title ---- */
 
 .splash-title-wrapper {
-	display: flex;
-	flex-direction: column;
-	align-items: center;
-	justify-content: center;
-	animation: splash-bounce-in 0.5s cubic-bezier(.34, 1.56, 1, 1) 0.4s both;
-	/* background: red; */
-	/* gap: clamp(0.8rem, 2vw, 1.6rem); */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
 }
 
 .splash-title {
-	display: flex;
-	justify-content: center;
-	align-items: center;
-	height: clamp(110px, vh, 180px);
-	margin: 0;
-	font-family: "Retropix", "MS Sans Serif", monospace;
-	font-weight: 400;
-	font-size: clamp(130px, 9vw, 200px);
-	color: #103436;
-	-webkit-text-fill-color: transparent;
-	-webkit-text-stroke: 2px #103436;
-	background-color: transparent;
-	text-align: left;
-	text-shadow:
-		1px 0 0 rgba(16, 52, 54, 0.65),
-		0 1px 0 rgba(16, 52, 54, 0.65);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: clamp(110px, 9vw, 180px);
+    margin: 15;
+    font-family: "Retropix", "MS Sans Serif", monospace;
+    font-weight: 400;
+    font-size: clamp(100px, 9vw, 180px);
+    color: #103436;
+    -webkit-text-fill-color: transparent;
+    -webkit-text-stroke: 2px #103436;
+    text-shadow:
+        1px 0 0 rgba(16, 52, 54, 0.65),
+        0 1px 0 rgba(16, 52, 54, 0.65);
+    user-select: none;
 }
 
 .splash-title-char {
-	display: inline-block;
-	white-space: pre;
-	animation: splash-title-wave 2.6s ease-in-out infinite;
-	will-change: transform;
+    display: inline-block;
+    white-space: pre;
+    animation: splash-title-wave 2.6s ease-in-out infinite;
+    will-change: transform;
 }
 
 @keyframes splash-title-wave {
-	0%, 100% { transform: translateY(0); }
-	50%      { transform: translateY(-4px); }
+    0%, 100% { transform: translateY(0); }
+    50%       { transform: translateY(-4px); }
 }
 
 .title-row {
-	display: flex;
-	justify-content: center;
-	align-items: center;
-	margin-top: clamp(-60px, -3vw, -20px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: clamp(-60px, -3vw, -20px);
 }
 
 .splash-logo {
-	width: clamp(88px, 7vw, 170px);
-	height: auto;
-	margin-bottom: clamp(10px, 2vh, 24px);
-	filter: drop-shadow(0 0 5px rgba(255, 255, 255, 0.8));
+    width: clamp(88px, 7vw, 150px);
+    height: auto;
+    margin-right: 0.4rem;
+    margin-bottom: clamp(10px, 2vh, 24px);
+    filter: drop-shadow(0 0 5px rgba(255, 255, 255, 0.8));
 }
 
-.splash-ui-wrapper {
-	width: clamp(20px, 60vw, 1200px);
-	max-width: 100%;
-	justify-self: end;
-	padding-top: clamp(0.4rem, 1.3vw, 1.2rem);
-	animation:
-		splash-bounce-in 0.5s cubic-bezier(.34, 1.56, 1, 1) 0.6s both,
-		splash-ui-hover 4.5s ease-in-out 1.2s infinite;
+/* ---- Desktop icons ---- */
+
+.desktop-icons {
+    position: absolute;
+    left: clamp(1rem, 3vw, 3.5rem);
+    top: clamp(72px, 12vh, 150px);
+    display: flex;
+    flex-direction: column;
+    gap: clamp(1rem, 2.5vh, 2rem);
+    z-index: 2;
+    animation: splash-bounce-in 0.5s cubic-bezier(.34, 1.56, 1, 1) 0.5s both;
 }
 
-@keyframes splash-ui-hover {
-	0%, 100% { transform: translateY(0); }
-	50%      { transform: translateY(-5px); }
+.desktop-icon {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.3rem;
+    width: clamp(92px, 6vw, 128px);
+    text-decoration: none;
+    cursor: pointer;
+    text-align: center;
+    user-select: none;
+    transition: transform 0.2s cubic-bezier(.34, 1.56, .64, 1);
+}
+
+.desktop-icon :is(img, svg) {
+    width: clamp(78px, 5.4vw, 112px);
+    height: auto;
+}
+
+.desktop-icon:hover {
+    animation: desktop-icon-hover 1.5s ease-in-out infinite;
+}
+
+@keyframes desktop-icon-hover {
+    0%, 100% { transform: scale(1.08) translateY(0); }
+    50%      { transform: scale(1.08) translateY(-3px); }
+}
+
+.desktop-icon span {
+    font-family: "Retropix", "MS Sans Serif", monospace;
+    font-size: clamp(10px, 0.82vw, 14px);
+    color: #103436;
+    text-shadow:
+        1px 1px 0 rgba(255, 255, 255, 0.9),
+        -1px 0 0 rgba(255, 255, 255, 0.9),
+        0 -1px 0 rgba(255, 255, 255, 0.9);
+    line-height: 1.35;
+    word-break: break-word;
+}
+
+/* ---- CTA buttons (below title) ---- */
+
+.cta-row {
+    display: flex;
+    justify-content: center;
+    gap: clamp(0.75rem, 2vw, 1.5rem);
+    margin-top: clamp(1rem, 2vw, 1.5rem);
+    flex-wrap: wrap;
+}
+
+.cta-btn {
+    position: relative;
+    overflow: hidden;
+    font-family: "Retropix", "MS Sans Serif", monospace;
+    font-size: clamp(13px, 1.35vw, 22px);
+    color: #fff;
+    text-decoration: none;
+    padding: 0.7em 1.6em;
+    background: linear-gradient(to bottom, #74d64f 0%, #57c23e 48%, #3f9f2c 52%, #4aad33 100%);
+    border: 1px solid #2f7d22;
+    border-radius: 0.5em;
+    box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.7),
+        inset 0 -2px 3px rgba(0, 0, 0, 0.25),
+        0 2px 4px rgba(0, 0, 0, 0.3);
+    text-shadow: 0 1px 1px rgba(0, 0, 0, 0.35);
+    cursor: pointer;
+    white-space: nowrap;
+    user-select: none;
+    transition: filter 0.1s;
+}
+
+/* Glossy sheen over the top half */
+.cta-btn::before {
+    content: "";
+    position: absolute;
+    inset: 1px 1px 50% 1px;
+    border-radius: 6px 6px 40% 40% / 6px 6px 12px 12px;
+    background: linear-gradient(to bottom, rgba(255, 255, 255, 0.55), rgba(255, 255, 255, 0.05));
+    pointer-events: none;
+}
+
+.cta-btn:hover { filter: brightness(1.07); }
+
+.cta-btn:active {
+    box-shadow:
+        inset 0 2px 4px rgba(0, 0, 0, 0.35),
+        0 1px 2px rgba(0, 0, 0, 0.3);
+    filter: brightness(0.95);
+}
+
+.cta-btn:disabled { opacity: 0.6; cursor: default; }
+
+/* ---- Waitlist modal (Win95 window) ---- */
+
+.modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.35);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 100;
+    padding: 1rem;
+    animation: modal-fade 0.15s ease-out;
+}
+
+@keyframes modal-fade {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+}
+
+.win95-window {
+    width: min(440px, 100%);
+    background: #c0c0c0;
+    border-top: 2px solid #ffffff;
+    border-left: 2px solid #ffffff;
+    border-right: 2px solid #2b2b2b;
+    border-bottom: 2px solid #2b2b2b;
+    box-shadow: 2px 2px 0 rgba(0, 0, 0, 0.35);
+    animation: modal-pop 0.18s cubic-bezier(.34, 1.4, .64, 1);
+}
+
+@keyframes modal-pop {
+    from { transform: scale(0.9); opacity: 0; }
+    to   { transform: scale(1); opacity: 1; }
+}
+
+.win95-titlebar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+    padding: 0.25rem 0.3rem 0.25rem 0.5rem;
+    background: linear-gradient(90deg, #3f5fb0, #6d84d4);
+    cursor: move;
+    user-select: none;
+    touch-action: none;
+}
+
+.win95-title {
+    font-family: "Retropix", "MS Sans Serif", monospace;
+    font-size: 13px;
+    color: #fff;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.win95-close {
+    flex-shrink: 0;
+    width: 22px;
+    height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: "MS Sans Serif", sans-serif;
+    font-size: 15px;
+    line-height: 1;
+    color: #000;
+    background: #c0c0c0;
+    border-top: 2px solid #ffffff;
+    border-left: 2px solid #ffffff;
+    border-right: 2px solid #2b2b2b;
+    border-bottom: 2px solid #2b2b2b;
+    cursor: pointer;
+}
+
+.win95-close:active {
+    border-top: 2px solid #2b2b2b;
+    border-left: 2px solid #2b2b2b;
+    border-right: 2px solid #ffffff;
+    border-bottom: 2px solid #ffffff;
+}
+
+.win95-body {
+    padding: 1.75rem 1.5rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.25rem;
+}
+
+.waitlist-form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.25rem;
+    width: 100%;
+}
+
+.waitlist-field {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    width: 100%;
+    background: #fff;
+    border-top: 2px solid #808080;
+    border-left: 2px solid #808080;
+    border-right: 2px solid #ffffff;
+    border-bottom: 2px solid #ffffff;
+    padding: 0.6rem 0.75rem;
+}
+
+.waitlist-field label {
+    font-family: "Retropix", "MS Sans Serif", monospace;
+    font-size: 14px;
+    color: #000;
+    white-space: nowrap;
+}
+
+.waitlist-field input {
+    flex: 1;
+    min-width: 0;
+    font-family: "Retropix", "MS Sans Serif", monospace;
+    font-size: 14px;
+    color: #000;
+    background: transparent;
+    border: none;
+    border-bottom: 1.5px solid #000;
+    outline: none;
+    padding: 0.1rem 0.2rem;
+    user-select: text;
+    -webkit-user-select: text;
+}
+
+.waitlist-error {
+    font-family: "Retropix", "MS Sans Serif", monospace;
+    font-size: 11px;
+    color: #a00;
+    margin: 0;
+}
+
+.waitlist-confirm {
+    font-family: "Retropix", "MS Sans Serif", monospace;
+    font-size: 15px;
+    color: #fff;
+    background: linear-gradient(90deg, #3f5fb0, #6d84d4);
+    padding: 0.9rem 1.5rem;
+    border: 2px solid #2f4a9e;
+    box-shadow: inset 0 0 0 2px rgba(255, 255, 255, 0.6);
+    text-shadow: 0 1px 1px rgba(0, 0, 0, 0.3);
+    text-align: center;
+}
+
+/* ---- Taskbar ---- */
+
+.splash-taskbar {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 2.2rem;
+    background: linear-gradient(180deg, #6d84d4, #3f5fb0);
+    border-top: 1px solid #8397db;
+    display: flex;
+    align-items: center;
+    padding: 0 0.75rem;
+    z-index: 10;
+}
+
+.taskbar-left {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    min-width: 0;
+}
+
+.taskbar-logo {
+    width: 22px;
+    height: 22px;
+    object-fit: contain;
+    filter: brightness(0) invert(1);
+}
+
+.taskbar-conference-name {
+    font-family: "Retropix", "MS Sans Serif", monospace;
+    font-size: 12px;
+    color: #fff;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* ---- Waveform overlay ---- */
+
+.splash-waveform {
+    position: absolute;
+    left: var(--splash-waveform-x);
+    bottom: var(--splash-waveform-bottom);
+    width: var(--splash-waveform-width);
+    height: auto;
+    max-width: none;
+    transform: translateX(-50%) scale(var(--splash-waveform-scale));
+    transform-origin: center bottom;
+    pointer-events: none;
+    user-select: none;
+    z-index: 1;
+    animation: splash-waveform-fadein 1.2s ease-out both;
+    /* iOS Safari drops VP9 alpha; screen blend makes black transparent */
+    mix-blend-mode: screen;
+}
+
+@keyframes splash-waveform-fadein {
+    0%   { opacity: 0; }
+    100% { opacity: 1; }
 }
 
 @keyframes splash-bounce-in {
-	0%   { opacity: 0; transform: scale(0.4) translateY(40px); }
-	60%  { opacity: 1; transform: scale(1.08) translateY(-6px); }
-	100% { opacity: 1; transform: scale(1) translateY(0); }
+    0%   { opacity: 0; transform: scale(0.4) translateY(40px); }
+    60%  { opacity: 1; transform: scale(1.08) translateY(-6px); }
+    100% { opacity: 1; transform: scale(1) translateY(0); }
 }
 
-@media (max-width: 980px) {
-	.splash-wrapper {
-		--splash-waveform-x: 50%;
-		--splash-waveform-bottom: -400px;
-		--splash-waveform-scale: 1.35;
-		--splash-waveform-width: min(230vw, 1700px);
-	}
-
-	.main-splash-content {
-		grid-template-columns: 1fr;
-		row-gap: 1rem;
-	}
-
-	.splash-title-wrapper {
-		padding-top: 0;
-	}
-
-	.splash-title {
-		text-align: center;
-	}
-
-	.splash-ui-wrapper {
-		justify-self: center;
-	}
+/* Play the entrance animation only once per browser session (set on <html>) */
+.splash-static .splash-wrapper,
+.splash-static .main-splash-content,
+.splash-static .desktop-icons,
+.splash-static .splash-waveform {
+    animation: none;
 }
+
+/* ---- Responsive ---- */
 
 @media (max-width: 2000px) {
-	.splash-wrapper {
-		--splash-waveform-x: 60%;
-		--splash-waveform-bottom: -800px;
-		--splash-waveform-scale: 1.65;
-		--splash-waveform-width: min(230vw, 2000px);
-	}
+    .splash-wrapper {
+        --splash-waveform-x: 60%;
+        --splash-waveform-bottom: -800px;
+        --splash-waveform-scale: 1.65;
+        --splash-waveform-width: min(230vw, 2000px);
+    }
 }
 
 @media (max-width: 1000px) {
-	.splash-wrapper {
-		--splash-waveform-x: 60%;
-		--splash-waveform-bottom: -500px;
-		--splash-waveform-scale: 1.35;
-		--splash-waveform-width: min(230vw, 1700px);
-	}
-	.main-splash-content {
-		display: flex;
-		flex-direction: column;
-		align-items: center;
-	}
-	.splash-title {
-		font-size: clamp(70px, 12vw, 250px);
-		height: 20vw;
-	}
-	.title-row {
-		height: 90px
-	}
-	.splash-ui-wrapper {
-		width: clamp(20px, 70vw, 1200px);
-		margin: 0;
-	}
-
-	.splash-title-wrapper {
-		align-items: start;
-	}
+    .splash-wrapper {
+        --splash-waveform-x: 60%;
+        --splash-waveform-bottom: -500px;
+        --splash-waveform-scale: 1.35;
+        --splash-waveform-width: min(230vw, 1700px);
+    }
+    .splash-title {
+        font-size: clamp(70px, 12vw, 180px);
+        height: 20vw;
+    }
+    .title-row { height: 90px; }
+    .desktop-icons { left: 0.75rem; }
+    .desktop-icon { width: 76px; }
 }
 
 @media (max-width: 740px) {
-	.splash-wrapper {
-		--splash-waveform-x: 60%;
-		--splash-waveform-bottom: -400px;
-		--splash-waveform-scale: 1.35;
-		--splash-waveform-width: min(1500px, 1700px);
-	}
+    .splash-wrapper {
+        --splash-waveform-x: 60%;
+        --splash-waveform-bottom: -400px;
+        --splash-waveform-scale: 1.35;
+        --splash-waveform-width: min(1500px, 1700px);
+    }
 }
 
 @media (max-height: 900px) {
-	.splash-wrapper {
-		--splash-wavefom-translateX: 20%;
-		--splash-waveform-bottom: -450px;
-		--splash-waveform-scale: 1.08;
-		--splash-waveform-width: min(200vw, 2050px);
-	}
+    .splash-wrapper {
+        --splash-waveform-bottom: -450px;
+        --splash-waveform-scale: 1.08;
+        --splash-waveform-width: min(200vw, 2050px);
+    }
 }
 
 @media (max-height: 760px) {
-	.splash-wrapper {
-		--splash-waveform-bottom: -430px;
-		--splash-waveform-scale: 1;
-		--splash-waveform-width: min(175vw, 2000px);
-	}
+    .splash-wrapper {
+        --splash-waveform-bottom: -430px;
+        --splash-waveform-scale: 1;
+        --splash-waveform-width: min(175vw, 2000px);
+    }
 }
 
 @media (max-width: 980px) and (max-height: 560px) {
-	.splash-wrapper {
-		--splash-waveform-bottom: -320px;
-		--splash-waveform-scale: 1.15;
-		--splash-waveform-width: min(240vw, 1550px);
-	}
+    .splash-wrapper {
+        --splash-waveform-bottom: -320px;
+        --splash-waveform-scale: 1.15;
+        --splash-waveform-width: min(240vw, 1550px);
+    }
 }
 
 @media (max-width: 640px) {
-	.splash-wrapper {
-		padding: 0.95rem;
-		align-items: center;
-		justify-content: center;
-		background-size: auto 100%;
-		--splash-waveform-x: 56%;
-		--splash-waveform-bottom: 0px;
-		--splash-waveform-scale: 0.92;
-		--splash-waveform-width: min(1500px, 1950px);
-		height: auto;
-		overflow-x: hidden;
-		overflow-y: auto;
-	}
+    .splash-wrapper {
+        --splash-waveform-x: 56%;
+        --splash-waveform-bottom: 0px;
+        --splash-waveform-scale: 0.92;
+        --splash-waveform-width: min(1500px, 1950px);
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: clamp(0.9rem, 3.5vh, 1.75rem);
+        height: auto;
+        overflow-x: hidden;
+        overflow-y: auto;
+    }
 
-	.main-splash-content {
-		width: 100%;
-		row-gap: 0.45rem;
-		padding-top: 3.2rem;
-	}
+    /* Flatten so icons can sit between the title and the buttons */
+    .main-splash-content {
+        display: contents;
+    }
 
-	.splash-title-wrapper {
-		align-items: flex-start;
-		padding-left:  1rem;
-	}
+    .splash-title-wrapper {
+        align-items: center;
+        order: 1;
+    }
 
-	.splash-title {
-		height: auto;
-		justify-content: flex-start;
-		font-size: clamp(46px, 17vw, 110px);
-		line-height: 1.2;
-		text-align: left;
-	}
+    .desktop-icons {
+        position: static;
+        order: 2;
+        transform: none;
+        flex-direction: row;
+        justify-content: center;
+        gap: clamp(1rem, 6vw, 2.5rem);
+        margin: 0;
+        padding-left: 0;
+    }
 
-	.title-row {
-		justify-content: flex-start;
-	}
+    .desktop-icon { width: 72px; }
 
-	.splash-logo {
-		width: clamp(52px, 14vw, 72px);
-		margin-left: 0.4rem;
-		margin-bottom: 0;
-	}
+    .desktop-icon :is(img, svg) { width: 58px; }
 
-	.splash-ui-wrapper {
-		width: 100%;
-		justify-self: stretch;
-		padding: 0.25rem 1rem 0;
-	}
+    .desktop-icon span { font-size: 10px; }
+
+    .splash-title {
+        height: auto;
+        justify-content: center;
+        font-size: clamp(46px, 17vw, 110px);
+        line-height: 1;
+        margin: 6px 0;
+    }
+
+    .title-row {
+        justify-content: center;
+        height: auto;
+        margin-top: clamp(-40px, -4vw, -12px);
+    }
+
+    .splash-logo {
+        width: clamp(52px, 14vw, 72px);
+        margin-bottom: 0;
+        margin-right: 0.3rem;
+    }
+
+    .cta-row {
+        order: 3;
+        width: min(calc(100vw - 2rem), 340px);
+        margin-top: 0;
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .cta-btn {
+        text-align: center;
+    }
+
+    .taskbar-conference-name { font-size: 10px; }
+
+    .splash-waveform { display: none; }
+}
+
+@media (max-width: 370px) {
+    .splash-title { font-size: clamp(36px, 14vw, 80px); }
 }
