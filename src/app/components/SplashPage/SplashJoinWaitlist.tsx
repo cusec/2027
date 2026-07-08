@@ -5,6 +5,14 @@ import { useTranslations } from 'next-intl';
 
 const SPONSORSHIP_URL = "https://forms.gle/TzbNoCKmALEYryLw7";
 
+const LOADING_MESSAGES = [
+    'Establishing connection…',
+    'Data compaction second pass…',
+    'Reticulating Cubear splines…',
+    'Reserving your seat…',
+    'Finalizing…',
+];
+
 export default function SplashJoinWaitlist() {
     const t = useTranslations('SplashPage');
 
@@ -12,7 +20,8 @@ export default function SplashJoinWaitlist() {
     const [email, setEmail] = useState('');
     const [submitted, setSubmitted] = useState(false);
     const [loading, setLoading] = useState(false);
-    const [error, setError] = useState(false);
+    const [errorKind, setErrorKind] = useState<'' | 'generic' | 'duplicate'>('');
+    const [msgIndex, setMsgIndex] = useState(0);
 
     // Window drag state
     const [pos, setPos] = useState({ x: 0, y: 0 });
@@ -26,7 +35,7 @@ export default function SplashJoinWaitlist() {
     function closeModal() {
         setOpen(false);
         setSubmitted(false);
-        setError(false);
+        setErrorKind('');
         setEmail('');
     }
 
@@ -47,7 +56,7 @@ export default function SplashJoinWaitlist() {
         e.currentTarget.releasePointerCapture(e.pointerId);
     }
 
-    // Close the modal on Escape
+    // close the modal on 'esc'
     useEffect(() => {
         if (!open) return;
         const onKey = (e: KeyboardEvent) => e.key === 'Escape' && closeModal();
@@ -55,24 +64,47 @@ export default function SplashJoinWaitlist() {
         return () => window.removeEventListener('keydown', onKey);
     }, [open]);
 
+    // cycle the retro loading messages while a submission is in flight
+    useEffect(() => {
+        if (!loading) {
+            setMsgIndex(0);
+            return;
+        }
+        const id = window.setInterval(
+            () => setMsgIndex(i => (i + 1) % LOADING_MESSAGES.length),
+            850,
+        );
+        return () => window.clearInterval(id);
+    }, [loading]);
+
     async function handleSubmit(e: React.FormEvent) {
         e.preventDefault();
         if (!email || loading) return;
         setLoading(true);
-        setError(false);
+        setErrorKind('');
         try {
-            // TODO: wire up to actual waitlist API
-            await new Promise(r => setTimeout(r, 600));
-            setSubmitted(true);
+            // Keep the retro loader on screen for a beat even if the request is quick.
+            const minDelay = new Promise(r => setTimeout(r, 2400));
+            const res = await fetch('/api/waitlist', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email }),
+            });
+            await minDelay;
+            if (res.ok) {
+                setSubmitted(true);
+            } else if (res.status === 409) {
+                setErrorKind('duplicate');
+            } else {
+                setErrorKind('generic');
+            }
         } catch {
-            setError(true);
+            setErrorKind('generic');
         } finally {
             setLoading(false);
         }
     }
 
-    // Rendered via a portal on document.body so the fixed backdrop covers the
-    // whole viewport, escaping the transformed .main-splash-content ancestor.
     const modal = (
         <div className="modal-overlay" onClick={closeModal}>
             <div
@@ -89,7 +121,9 @@ export default function SplashJoinWaitlist() {
                     onPointerMove={onTitlePointerMove}
                     onPointerUp={onTitlePointerUp}
                 >
-                    <span className="win95-title">{t('attendance-interest')}</span>
+                    <span className="win95-title">
+                        {loading ? 'Calculating…' : t('attendance-interest')}
+                    </span>
                     <button
                         type="button"
                         className="win95-close"
@@ -103,6 +137,13 @@ export default function SplashJoinWaitlist() {
                 <div className="win95-body">
                     {submitted ? (
                         <div className="waitlist-confirm">{t('attendance-success')}</div>
+                    ) : loading ? (
+                        <div className="waitlist-loading">
+                            <p className="waitlist-loading-msg">{LOADING_MESSAGES[msgIndex]}</p>
+                            <div className="xp-progress" aria-hidden>
+                                <div className="xp-progress-fill" />
+                            </div>
+                        </div>
                     ) : (
                         <form className="waitlist-form" onSubmit={handleSubmit}>
                             <div className="waitlist-field">
@@ -117,10 +158,16 @@ export default function SplashJoinWaitlist() {
                                     disabled={loading}
                                 />
                             </div>
-                            <button className="cta-btn" type="submit" disabled={loading}>
-                                {loading ? '...' : t('attendance-submit')}
+                            <button className="cta-btn" type="submit">
+                                {t('attendance-submit')}
                             </button>
-                            {error && <p className="waitlist-error">{t('attendance-error')}</p>}
+                            {errorKind && (
+                                <p className="waitlist-error">
+                                    {errorKind === 'duplicate'
+                                        ? t('attendance-duplicate')
+                                        : t('attendance-error')}
+                                </p>
+                            )}
                         </form>
                     )}
                 </div>

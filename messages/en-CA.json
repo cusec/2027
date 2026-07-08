@@ -12,6 +12,7 @@
         "attendance-submit": "Join Waitlist",
         "attendance-success": "You Are In The Waitlist!",
         "attendance-error": "Something went wrong. Try again.",
+        "attendance-duplicate": "You're already on the waitlist!",
         "sponsorship-interest": "Sponsorship Interest Form"
     }
 }

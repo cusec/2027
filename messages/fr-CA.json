@@ -12,6 +12,7 @@
         "attendance-submit": "Rejoindre la liste",
         "attendance-success": "Vous êtes sur la liste !",
         "attendance-error": "Une erreur s'est produite. Réessayez.",
+        "attendance-duplicate": "Vous êtes déjà sur la liste !",
         "sponsorship-interest": "Formulaire de manifestation d'intérêt pour un parrainage"
     }
 }

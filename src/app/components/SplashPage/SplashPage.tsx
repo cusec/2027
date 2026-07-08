@@ -5,8 +5,7 @@ import SplashJoinWaitlist from './SplashJoinWaitlist';
 import SplashAnimationLock from './SplashAnimationLock';
 import VantaBirds from './VantaBirds';
 
-// Runs before first paint: if the splash has already been seen this session,
-// mark <html> static so the entrance animation doesn't replay on refresh.
+// if the splash has already been seen this session, mark <html> static so the entrance animation doesn't replay on refresh
 const SPLASH_ANIM_SCRIPT = `try{if(sessionStorage.getItem('cusecSplashSeen')){document.documentElement.classList.add('splash-static')}else{sessionStorage.setItem('cusecSplashSeen','1')}}catch(e){}`;
 
 function WavyText({ text }: { text: string }) {
@@ -35,10 +34,8 @@ export default async function SplashPage() {
             <SplashAnimationLock />
             <div className="splash-wrapper">
 
-            {/* Vanta birds — animated layer over the background image */}
             <VantaBirds />
 
-            {/* Desktop icons — left side */}
             <aside className="desktop-icons" aria-label="Quick links">
                 <a
                     href="https://2026.cusec.net/"
