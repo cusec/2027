@@ -3,6 +3,7 @@ import Image from 'next/image';
 import Win95Modal from '../Shell/Win95Modal';
 import Countdown from '../Content/Countdown';
 import { useSplashWindows } from '../../SplashWindowsContext';
+import useIsPhone from '../useIsPhone';
 
 const WEEKDAYS = ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'];
 const YEAR = 2027;
@@ -48,6 +49,7 @@ function MonthCalendar() {
 export default function CalendarIcon() {
     const { windows, openWindow, closeWindow, minimizeWindow, focusWindow } = useSplashWindows();
     const calendar = windows.calendar;
+    const isPhone = useIsPhone();
 
     function onCalendarIconClick() {
         if (!calendar.isOpen) {
@@ -57,6 +59,11 @@ export default function CalendarIcon() {
 
         if (calendar.isMinimized) {
             openWindow('calendar');
+            return;
+        }
+
+        if (isPhone) {
+            focusWindow('calendar');
             return;
         }
 

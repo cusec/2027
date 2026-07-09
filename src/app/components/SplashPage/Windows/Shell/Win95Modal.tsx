@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
+import useIsPhone from '../useIsPhone';
 
 type Props = {
     title: string;
@@ -35,6 +36,7 @@ export default function Win95Modal({
     minWidth = 280,
     minHeight = 220,
 }: Props) {
+    const isPhone = useIsPhone();
     const [pos, setPos] = useState({ x: initialX, y: initialY });
     const [size, setSize] = useState<{ w: number; h: number } | null>(
         resizable ? { w: initialWidth, h: initialHeight } : null,
@@ -56,6 +58,7 @@ export default function Win95Modal({
     function onTitlePointerDown(e: React.PointerEvent<HTMLDivElement>) {
         if ((e.target as HTMLElement).closest('.win95-close, .win95-minimize')) return;
         onFocus?.();
+        if (isPhone) return;
         e.currentTarget.setPointerCapture(e.pointerId);
         drag.current = { startX: e.clientX, startY: e.clientY, baseX: pos.x, baseY: pos.y };
     }
@@ -72,6 +75,7 @@ export default function Win95Modal({
     }
 
     function onResizePointerDown(e: React.PointerEvent<HTMLDivElement>) {
+        if (isPhone) return;
         e.stopPropagation();
         e.currentTarget.setPointerCapture(e.pointerId);
         const s = size ?? { w: initialWidth, h: initialHeight };
@@ -93,15 +97,15 @@ export default function Win95Modal({
     }
 
     const windowStyle: React.CSSProperties = {
-        transform: `translate(${pos.x}px, ${pos.y}px)`,
+        transform: isPhone ? undefined : `translate(${pos.x}px, ${pos.y}px)`,
         ...(zIndex ? { zIndex } : null),
-        ...(size ? { width: size.w, height: size.h } : null),
+        ...(size && !isPhone ? { width: size.w, height: size.h } : null),
     };
 
     return createPortal(
         <div className="modal-overlay" style={zIndex ? { zIndex } : undefined}>
             <div
-                className={`win95-window${resizable ? ' win95-window--resizable' : ''}`}
+                className={`win95-window${resizable ? ' win95-window--resizable' : ''}${isPhone ? ' win95-window--phone' : ''}`}
                 role="dialog"
                 aria-modal="true"
                 aria-label={title}
@@ -116,7 +120,7 @@ export default function Win95Modal({
                 >
                     <span className="win95-title">{title}</span>
                     <div className="win95-titlebar-actions">
-                        {onMinimize && (
+                        {onMinimize && !isPhone && (
                             <button
                                 type="button"
                                 className="win95-minimize"
@@ -135,7 +139,7 @@ export default function Win95Modal({
                     </div>
                 </div>
                 <div className="win95-body">{children}</div>
-                {resizable && (
+                {resizable && !isPhone && (
                     <div
                         className="win95-resize"
                         aria-hidden

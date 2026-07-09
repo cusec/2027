@@ -2,6 +2,7 @@
 import Image from 'next/image';
 import Win95Modal from '../Shell/Win95Modal';
 import { useSplashWindows } from '../../SplashWindowsContext';
+import useIsPhone from '../useIsPhone';
 
 // shows downtown montreal location on map
 const MAP_SRC =
@@ -11,6 +12,7 @@ const MAP_SRC =
 export default function MontrealIcon() {
     const { windows, openWindow, closeWindow, minimizeWindow, focusWindow } = useSplashWindows();
     const mapWindow = windows.map;
+    const isPhone = useIsPhone();
 
     function focusMapWindow() {
         focusWindow('map');
@@ -24,6 +26,11 @@ export default function MontrealIcon() {
 
         if (mapWindow.isMinimized) {
             openWindow('map');
+            return;
+        }
+
+        if (isPhone) {
+            focusWindow('map');
             return;
         }
 

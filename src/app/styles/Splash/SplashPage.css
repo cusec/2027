@@ -432,7 +432,7 @@
     }
 }
 
-@media (max-width: 640px) {
+@media (max-width: 640px), (max-height: 500px) and (orientation: landscape) and (pointer: coarse) {
     .splash-wrapper {
         --splash-waveform-x: 56%;
         --splash-waveform-bottom: 0px;
@@ -520,6 +520,18 @@
     }
 
     .splash-waveform { display: none; }
+}
+
+@media (max-width: 640px) and (pointer: coarse), (max-height: 500px) and (orientation: landscape) and (pointer: coarse) {
+    .desktop-icons .desktop-icon:first-child {
+        margin-top: 4px;
+    }
+
+    .desktop-icon:hover {
+        scale: 1;
+        translate: 0 0;
+        animation: none;
+    }
 }
 
 @media (max-width: 370px) {

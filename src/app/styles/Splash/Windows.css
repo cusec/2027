@@ -401,3 +401,66 @@
     text-align: center;
     margin: 0;
 }
+
+@media (max-width: 640px) and (pointer: coarse), (max-height: 500px) and (orientation: landscape) and (pointer: coarse) {
+    .modal-overlay {
+        padding: 0.6rem;
+    }
+
+    .win95-window {
+        width: min(430px, calc(100vw - 1.2rem));
+        max-height: calc(100dvh - 1.2rem);
+    }
+
+    .win95-window--phone {
+        transform: none !important;
+    }
+
+    .win95-titlebar {
+        cursor: default;
+        touch-action: auto;
+    }
+
+    .win95-body {
+        padding: 0.95rem 0.85rem;
+        gap: 0.85rem;
+        max-height: calc(100dvh - 5.5rem);
+        overflow: auto;
+    }
+
+    .calendar-modal {
+        gap: 0.8rem;
+    }
+
+    .countdown-label {
+        font-size: 18px;
+    }
+
+    .countdown-grid {
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+
+    .countdown-unit {
+        min-width: 54px;
+        padding: 0.4rem;
+    }
+
+    .countdown-value {
+        font-size: 20px;
+    }
+
+    .location-well {
+        min-height: 180px;
+    }
+
+    /* Mobile needs an explicit viewport height so clipping is reliable. */
+    .location-frame {
+        height: 210px;
+    }
+
+    /* Mobile embed footer is taller; overdraw more so it stays clipped. */
+    .location-frame iframe {
+        height: calc(100% + 120px);
+    }
+}
