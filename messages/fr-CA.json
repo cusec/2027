@@ -6,9 +6,9 @@
     "SplashPage": {
         "title": "Conférence canadienne sur le génie logiciel",
         "edition-link": "25e édition",
-        "attendance-interest": "Formulaire de parrainage",
+        "attendance-interest": "Formulaire de manifestation d’intérêt",
         "attendance-label": "Courriel",
-        "attendance-placeholder": "Intéressé(e) à venir à CUSEC 2027?",
+        "attendance-placeholder": "Intéressé(e) à venir à CUCIL 2027?",
         "attendance-submit": "Rejoindre la liste",
         "attendance-success": "Vous êtes sur la liste !",
         "attendance-error": "Une erreur s'est produite. Réessayez.",
