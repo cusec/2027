@@ -4,6 +4,9 @@ import "./globals.css";
 import "./styles/index.css";
 import "./styles/navbar.css";
 
+// if the splash was already seen this session, mark <html> static so the entrance animation doesn't replay on refresh (no flash).
+const SPLASH_ANIM_SCRIPT = `try{if(sessionStorage.getItem('cusecSplashSeen')){document.documentElement.classList.add('splash-static')}else{sessionStorage.setItem('cusecSplashSeen','1')}}catch(e){}`;
+
 export const metadata: Metadata = {
   metadataBase: new URL(
     process.env.NEXT_PUBLIC_SITE_URL || "https://2027.cusec.net"
@@ -61,7 +64,6 @@ export const metadata: Metadata = {
     alternateLocale: ["fr_CA"],
     images: [
       {
-        // Add a 1200×630 OG image at public/cusec-logo.png for best results
         url: "/cusec-logo.png",
         width: 1200,
         height: 630,
@@ -77,7 +79,7 @@ export const metadata: Metadata = {
     description:
       "Canada's longest-running student-led software engineering conference. 26th edition — Montréal, QC · January 2027.",
     images: ["/cusec-logo.png"],
-    site: "@cusec",     // update if handle changes
+    site: "@cusec", 
     creator: "@cusec",
   },
 
@@ -126,19 +128,8 @@ export default function RootLayout({
   return (
     <html lang="en-CA" dir="ltr" suppressHydrationWarning>
       <body>
-        <Script id="startup-animation-gate" strategy="beforeInteractive">
-          {`(function () {
-  var key = 'cusec-startup-animations-seen';
-  try {
-    if (sessionStorage.getItem(key) === '1') {
-      document.documentElement.classList.add('no-startup-animations');
-    } else {
-      sessionStorage.setItem(key, '1');
-    }
-  } catch (e) {
-    // Ignore storage access errors and keep default animation behavior.
-  }
-})();`}
+        <Script id="splash-anim" strategy="beforeInteractive">
+          {SPLASH_ANIM_SCRIPT}
         </Script>
         {children}
       </body>

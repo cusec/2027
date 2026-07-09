@@ -17,7 +17,6 @@
 		filter 0.18s ease;
 }
 
-/* Hold the gentle float still while the user is dragging the window. */
 .splash-ui-wrapper:has(.UI-nav--dragging) {
 	animation-play-state: paused;
 }

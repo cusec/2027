@@ -1,321 +1,539 @@
 @font-face {
     font-family: "Retropix";
-	src: url("../../../fonts/retropix.woff2") format("woff2");
+    src: url("../../../fonts/retropix.woff2") format("woff2");
     font-weight: 400;
     font-style: normal;
     font-display: swap;
 }
 
-/*-----------------------------
-	SplashPage.tsx styling
-------------------------------*/
+/* ---- Splash wrapper ---- */
 
 .splash-wrapper {
-	min-height: 100vh;
-	min-height: 100dvh;
-	height: 100vh;
-	height: 100dvh;
-	box-sizing: border-box;
-	padding: 1.4rem;
-	display: flex;
-	justify-content: center;
-	align-items: center;
-	position: relative;
-	overflow: hidden;
-	--splash-waveform-x: 50%;
-	--splash-waveform-bottom: -800px;
-	--splash-waveform-scale: 1.4;
-	--splash-waveform-width: min(2500px, 2800px);
-	background-image: url('/assets/splash_bg.webp');
-	background-position: center 65%;
-	background-size: cover;
-	background-repeat: no-repeat;
-	animation: splash-circle-reveal 1.2s ease-out both;
-}
-
-html.no-startup-animations .splash-wrapper {
-	animation: none;
-}
-
-html.no-startup-animations .splash-waveform {
-	animation: none;
-}
-
-html.no-startup-animations .splash-title-wrapper {
-	animation: none;
-}
-
-html.no-startup-animations .splash-ui-wrapper {
-	animation: splash-ui-hover 4.5s ease-in-out 0s infinite;
+    position: relative;
+    min-height: 100vh;
+    min-height: 100dvh;
+    height: 100vh;
+    height: 100dvh;
+    box-sizing: border-box;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+    background-image: url('/assets/splash_bg.webp');
+    background-position: center 65%;
+    background-size: cover;
+    background-repeat: no-repeat;
+    /* Splash chrome is decorative — don't let clicks select the text/icons */
+    user-select: none;
+    -webkit-user-select: none;
+    -webkit-tap-highlight-color: transparent;
+    animation: splash-circle-reveal 1.2s ease-out both;
+    --splash-waveform-x: 50%;
+    --splash-waveform-bottom: -800px;
+    --splash-waveform-scale: 1.4;
+    --splash-waveform-width: min(2500px, 2800px);
 }
 
 @keyframes splash-circle-reveal {
-	from { clip-path: circle(0% at 50% 50%); }
-	to   { clip-path: circle(150% at 50% 50%); }
+    from { clip-path: circle(0% at 50% 50%); }
+    to   { clip-path: circle(150% at 50% 50%); }
 }
+
+/* ---- Main content (title + waitlist) ---- */
 
 .main-splash-content {
-	/* background: green; */
-	width: min(90vw, 2100px);
-	margin: 0 auto;
-	display: grid;
-	grid-template-columns: minmax(240px, 0.85fr) minmax(560px, 1.35fr);
-	align-items: start;
-	column-gap: clamp(1.2rem, 3.4vw, 3.6rem);
-	padding-top: clamp(0.2rem, 1.8vw, 1.5rem);
-	position: relative;
-	z-index: 2;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+    z-index: 2;
+    animation: splash-bounce-in 0.5s cubic-bezier(.34, 1.56, 1, 1) 0.4s both;
 }
 
-.splash-waveform {
-	position: absolute;
-	left: var(--splash-waveform-x);
-	bottom: var(--splash-waveform-bottom);
-	width: var(--splash-waveform-width);
-	height: auto;
-	max-width: none;
-	transform: translateX(-50%) scale(var(--splash-waveform-scale));
-	transform-origin: center bottom;
-	pointer-events: none;
-	user-select: none;
-	z-index: 1;
-	animation: splash-waveform-fadein 1.2s ease-out both;
-	/* iOS Safari drops VP9 alpha, leaving black. screen blend makes black transparent. */
-	mix-blend-mode: screen;
-}
-
-@keyframes splash-waveform-fadein {
-	0%   { opacity: 0; }
-	100% { opacity: 1; }
-}
+/* ---- Title ---- */
 
 .splash-title-wrapper {
-	display: flex;
-	flex-direction: column;
-	align-items: center;
-	justify-content: center;
-	animation: splash-bounce-in 0.5s cubic-bezier(.34, 1.56, 1, 1) 0.4s both;
-	/* background: red; */
-	/* gap: clamp(0.8rem, 2vw, 1.6rem); */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    /* let a touch hold-and-drag repel letters without scrolling the page */
+    touch-action: none;
 }
 
 .splash-title {
-	display: flex;
-	justify-content: center;
-	align-items: center;
-	height: clamp(110px, vh, 180px);
-	margin: 0;
-	font-family: "Retropix", "MS Sans Serif", monospace;
-	font-weight: 400;
-	font-size: clamp(130px, 9vw, 200px);
-	color: #103436;
-	-webkit-text-fill-color: transparent;
-	-webkit-text-stroke: 3px #103436;
-	text-stroke: 3px #103436;
-	background-color: transparent;
-	text-align: left;
-	text-shadow:
-		1px 0 0 #103436,
-		-1px 0 0 #103436,
-		0 1px 0 #103436,
-		0 -1px 0 #103436,
-		1px 1px 0 #103436,
-		-1px 1px 0 #103436,
-		1px -1px 0 #103436,
-		-1px -1px 0 #103436;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: clamp(110px, 9vw, 180px);
+    margin: 15;
+    font-family: "Retropix", "MS Sans Serif", monospace;
+    font-weight: 400;
+    font-size: clamp(100px, 9vw, 180px);
+    color: #103436;
+    -webkit-text-fill-color: #103436;
+    -webkit-text-stroke: 1px #103436;
+    text-shadow:
+        1px 0 0 rgba(16, 52, 54, 0.65),
+        0 1px 0 rgba(16, 52, 54, 0.65);
+    letter-spacing: normal;   /* CUSEC title keeps its original tight kerning */
+    user-select: none;
 }
 
 .splash-title-char {
-	display: inline-block;
-	white-space: pre;
-	animation: splash-title-wave 2.6s ease-in-out infinite;
-	will-change: transform;
+    display: inline-block;
+    white-space: pre;
+    animation: splash-title-wave 2.6s ease-in-out infinite;
+    will-change: transform;
+}
+
+/* Cursor-repel offset — composes with the parent's wave transform */
+.splash-title-repel {
+    display: inline-block;
+    transform: translate(var(--rx, 0px), var(--ry, 0px));
+    transition: transform 0.2s ease-out;
+    will-change: transform;
 }
 
 @keyframes splash-title-wave {
-	0%, 100% { transform: translateY(0); }
-	50%      { transform: translateY(-4px); }
+    0%, 100% { transform: translateY(0); }
+    50%       { transform: translateY(-4px); }
 }
 
 .title-row {
-	display: flex;
-	justify-content: center;
-	align-items: center;
-	margin-top: clamp(-60px, -3vw, -20px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: clamp(-60px, -3vw, -20px);
 }
 
 .splash-logo {
-	width: clamp(88px, 7vw, 170px);
-	height: auto;
-	margin-bottom: clamp(10px, 2vh, 24px);
-	filter: drop-shadow(0 0 5px rgba(255, 255, 255, 0.8));
+    width: clamp(88px, 7vw, 150px);
+    height: auto;
+    margin-right: 0.4rem;
+    margin-bottom: clamp(10px, 2vh, 24px);
+    filter: drop-shadow(0 0 5px rgba(255, 255, 255, 0.8));
 }
 
-.splash-ui-wrapper {
-	width: clamp(20px, 60vw, 1200px);
-	max-width: 100%;
-	justify-self: end;
-	padding-top: clamp(0.4rem, 1.3vw, 1.2rem);
-	animation:
-		splash-bounce-in 0.5s cubic-bezier(.34, 1.56, 1, 1) 0.6s both,
-		splash-ui-hover 4.5s ease-in-out 1.2s infinite;
+/* ---- Desktop icons ---- */
+
+.desktop-icons {
+    position: absolute;
+    left: clamp(1rem, 3vw, 3.5rem);
+    top: clamp(72px, 12vh, 150px);
+    display: flex;
+    flex-direction: column;
+    gap: clamp(1rem, 2.5vh, 2rem);
+    z-index: 2;
+    animation: splash-bounce-in 0.5s cubic-bezier(.34, 1.56, 1, 1) 0.5s both;
 }
 
-@keyframes splash-ui-hover {
-	0%, 100% { transform: translateY(0); }
-	50%      { transform: translateY(-5px); }
+.desktop-icon {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.3rem;
+    width: clamp(92px, 6vw, 128px);
+    /* reset for the <button> variant (Montréal) so it matches the <a>/<div> icons */
+    background: none;
+    border: 0;
+    padding: 0;
+    text-decoration: none;
+    text-align: center;
+    user-select: none;
+    transition: scale 0.25s ease, translate 0.25s ease;
+}
+
+.desktop-icon :is(img, svg) {
+    width: clamp(78px, 5.4vw, 112px);
+    height: auto;
+}
+
+.desktop-icon:hover {
+    scale: 1.08;
+    animation: hover-float 1.5s ease-in-out infinite;
+}
+
+@keyframes hover-float {
+    0%, 100% { translate: 0 0; }
+    50%      { translate: 0 -4px; }
+}
+
+.desktop-icon span {
+    font-family: "Retropix", "MS Sans Serif", monospace;
+    font-size: clamp(10px, 0.82vw, 14px);
+    color: #103436;
+    text-shadow:
+        1px 1px 0 rgba(255, 255, 255, 0.9),
+        -1px 0 0 rgba(255, 255, 255, 0.9),
+        0 -1px 0 rgba(255, 255, 255, 0.9);
+    line-height: 1.35;
+    word-break: break-word;
+}
+
+/* ---- CTA buttons (below title) ---- */
+
+.cta-row {
+    display: flex;
+    justify-content: center;
+    gap: clamp(0.75rem, 2vw, 1.5rem);
+    margin-top: clamp(1rem, 2vw, 1.5rem);
+    flex-wrap: wrap;
+}
+
+.cta-btn {
+    position: relative;
+    overflow: hidden;
+    font-family: "Retropix", "MS Sans Serif", monospace;
+    font-size: clamp(13px, 1.35vw, 22px);
+    color: #fff;
+    text-decoration: none;
+    padding: 0.7em 1.6em;
+    background: linear-gradient(to bottom, #74d64f 0%, #57c23e 48%, #3f9f2c 52%, #4aad33 100%);
+    border: 1px solid #2f7d22;
+    border-radius: 0.5em;
+    box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.7),
+        inset 0 -2px 3px rgba(0, 0, 0, 0.25),
+        0 2px 4px rgba(0, 0, 0, 0.3);
+    text-shadow: 0 1px 1px rgba(0, 0, 0, 0.35);
+    white-space: nowrap;
+    user-select: none;
+    transition: scale 0.25s ease, translate 0.25s ease, filter 0.1s;
+}
+
+/* glossy sheen over the top half */
+.cta-btn::before {
+    content: "";
+    position: absolute;
+    inset: 1px 1px 50% 1px;
+    border-radius: 6px 6px 40% 40% / 6px 6px 12px 12px;
+    background: linear-gradient(to bottom, rgba(255, 255, 255, 0.55), rgba(255, 255, 255, 0.05));
+    pointer-events: none;
+}
+
+.cta-btn:hover {
+    filter: brightness(1.05);
+    scale: 1.05;
+    animation: hover-float 1.5s ease-in-out infinite;
+}
+
+.cta-btn:active {
+    box-shadow:
+        inset 0 2px 4px rgba(0, 0, 0, 0.35),
+        0 1px 2px rgba(0, 0, 0, 0.3);
+    filter: brightness(0.95);
+}
+
+.cta-btn:disabled { opacity: 0.6; cursor: default; }
+
+/* ---- Taskbar ---- */
+
+.splash-taskbar {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 2.2rem;
+    background: linear-gradient(180deg, #6d84d4, #3f5fb0);
+    border-top: 1px solid #8397db;
+    display: flex;
+    align-items: center;
+    padding: 0 0.75rem;
+    z-index: 10;
+}
+
+.taskbar-left {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    min-width: 0;
+}
+
+.taskbar-logo {
+    width: 22px;
+    height: 22px;
+    object-fit: contain;
+    filter: brightness(0) invert(1);
+}
+
+.taskbar-conference-name {
+    font-family: "Retropix", "MS Sans Serif", monospace;
+    padding-top: 3px;
+    font-size: 12px;
+    color: #fff;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.taskbar-clock {
+    margin-left: auto;
+    flex-shrink: 0;
+    font-family: "Retropix", "MS Sans Serif", monospace;
+    font-size: 11px;
+    color: #fff;
+    background: rgba(255, 255, 255, 0.12);
+    padding: 0.22rem 0.6rem;
+    white-space: nowrap;
+    border-top: 1px solid rgba(0, 0, 0, 0.35);
+    border-left: 1px solid rgba(0, 0, 0, 0.35);
+    border-right: 1px solid rgba(255, 255, 255, 0.45);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.45);
+}
+
+.taskbar-window-list {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+    margin-left: 1rem;
+    flex: 1 1 auto;
+    min-width: 0;
+    overflow-x: auto;
+    scrollbar-width: thin;
+}
+
+.taskbar-window-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    max-width: 170px;
+    font-family: "Retropix", "MS Sans Serif", monospace;
+    font-size: 10px;
+    color: #fff;
+    background: rgba(255, 255, 255, 0.12);
+    border-top: 1px solid rgba(0, 0, 0, 0.35);
+    border-left: 1px solid rgba(0, 0, 0, 0.35);
+    border-right: 1px solid rgba(255, 255, 255, 0.45);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.45);
+    padding: 0.16rem 0.45rem;
+    white-space: nowrap;
+}
+
+.taskbar-window-item img {
+    width: 14px;
+    height: 14px;
+    object-fit: contain;
+    image-rendering: pixelated;
+}
+
+.taskbar-window-dot {
+    width: 14px;
+    height: 14px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 8px;
+    line-height: 1;
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: 2px;
+}
+
+.taskbar-window-label {
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* ---- Waveform overlay ---- */
+
+.splash-waveform {
+    position: absolute;
+    left: var(--splash-waveform-x);
+    bottom: var(--splash-waveform-bottom);
+    width: var(--splash-waveform-width);
+    height: auto;
+    max-width: none;
+    transform: translateX(-50%) scale(var(--splash-waveform-scale));
+    transform-origin: center bottom;
+    pointer-events: none;
+    user-select: none;
+    z-index: 1;
+    animation: splash-waveform-fadein 1.2s ease-out both;
+    /* iOS Safari drops VP9 alpha; screen blend makes black transparent */
+    mix-blend-mode: screen;
+}
+
+@keyframes splash-waveform-fadein {
+    0%   { opacity: 0; }
+    100% { opacity: 1; }
 }
 
 @keyframes splash-bounce-in {
-	0%   { opacity: 0; transform: scale(0.4) translateY(40px); }
-	60%  { opacity: 1; transform: scale(1.08) translateY(-6px); }
-	100% { opacity: 1; transform: scale(1) translateY(0); }
+    0%   { opacity: 0; transform: scale(0.4) translateY(40px); }
+    60%  { opacity: 1; transform: scale(1.08) translateY(-6px); }
+    100% { opacity: 1; transform: scale(1) translateY(0); }
 }
 
-@media (max-width: 980px) {
-	.splash-wrapper {
-		--splash-waveform-x: 50%;
-		--splash-waveform-bottom: -400px;
-		--splash-waveform-scale: 1.35;
-		--splash-waveform-width: min(230vw, 1700px);
-	}
-
-	.main-splash-content {
-		grid-template-columns: 1fr;
-		row-gap: 1rem;
-	}
-
-	.splash-title-wrapper {
-		padding-top: 0;
-	}
-
-	.splash-title {
-		text-align: center;
-	}
-
-	.splash-ui-wrapper {
-		justify-self: center;
-	}
+/* play the entrance animation only once per browser session (set on <html>) */
+.splash-static .splash-wrapper,
+.splash-static .main-splash-content,
+.splash-static .desktop-icons,
+.splash-static .splash-waveform {
+    animation: none;
 }
+
+/* ---- Responsive ---- */
 
 @media (max-width: 2000px) {
-	.splash-wrapper {
-		--splash-waveform-x: 60%;
-		--splash-waveform-bottom: -800px;
-		--splash-waveform-scale: 1.65;
-		--splash-waveform-width: min(230vw, 2000px);
-	}
+    .splash-wrapper {
+        --splash-waveform-x: 60%;
+        --splash-waveform-bottom: -800px;
+        --splash-waveform-scale: 1.65;
+        --splash-waveform-width: min(230vw, 2000px);
+    }
 }
 
 @media (max-width: 1000px) {
-	.splash-wrapper {
-		--splash-waveform-x: 60%;
-		--splash-waveform-bottom: -500px;
-		--splash-waveform-scale: 1.35;
-		--splash-waveform-width: min(230vw, 1700px);
-	}
-	.main-splash-content {
-		display: flex;
-		flex-direction: column;
-		align-items: center;
-	}
-	.splash-title {
-		font-size: clamp(70px, 12vw, 250px);
-		height: 20vw;
-	}
-	.title-row {
-		height: 90px
-	}
-	.splash-ui-wrapper {
-		width: clamp(20px, 70vw, 1200px);
-		margin: 0;
-	}
-
-	.splash-title-wrapper {
-		align-items: start;
-	}
+    .splash-wrapper {
+        --splash-waveform-x: 60%;
+        --splash-waveform-bottom: -500px;
+        --splash-waveform-scale: 1.35;
+        --splash-waveform-width: min(230vw, 1700px);
+    }
+    .splash-title {
+        font-size: clamp(70px, 12vw, 180px);
+        height: 20vw;
+    }
+    .title-row { height: 90px; }
+    .desktop-icons { left: 0.75rem; }
+    .desktop-icon { width: 76px; }
 }
 
 @media (max-width: 740px) {
-	.splash-wrapper {
-		--splash-waveform-x: 60%;
-		--splash-waveform-bottom: -400px;
-		--splash-waveform-scale: 1.35;
-		--splash-waveform-width: min(1500px, 1700px);
-	}
+    .splash-wrapper {
+        --splash-waveform-x: 60%;
+        --splash-waveform-bottom: -400px;
+        --splash-waveform-scale: 1.35;
+        --splash-waveform-width: min(1500px, 1700px);
+    }
 }
 
 @media (max-height: 900px) {
-	.splash-wrapper {
-		--splash-wavefom-translateX: 20%;
-		--splash-waveform-bottom: -450px;
-		--splash-waveform-scale: 1.08;
-		--splash-waveform-width: min(200vw, 2050px);
-	}
+    .splash-wrapper {
+        --splash-waveform-bottom: -450px;
+        --splash-waveform-scale: 1.08;
+        --splash-waveform-width: min(200vw, 2050px);
+    }
 }
 
 @media (max-height: 760px) {
-	.splash-wrapper {
-		--splash-waveform-bottom: -430px;
-		--splash-waveform-scale: 1;
-		--splash-waveform-width: min(175vw, 2000px);
-	}
+    .splash-wrapper {
+        --splash-waveform-bottom: -430px;
+        --splash-waveform-scale: 1;
+        --splash-waveform-width: min(175vw, 2000px);
+    }
 }
 
 @media (max-width: 980px) and (max-height: 560px) {
-	.splash-wrapper {
-		--splash-waveform-bottom: -320px;
-		--splash-waveform-scale: 1.15;
-		--splash-waveform-width: min(240vw, 1550px);
-	}
+    .splash-wrapper {
+        --splash-waveform-bottom: -320px;
+        --splash-waveform-scale: 1.15;
+        --splash-waveform-width: min(240vw, 1550px);
+    }
 }
 
-@media (max-width: 640px) {
-	.splash-wrapper {
-		padding: 0.95rem;
-		align-items: center;
-		justify-content: center;
-		background-size: auto 100%;
-		--splash-waveform-x: 56%;
-		--splash-waveform-bottom: 0px;
-		--splash-waveform-scale: 0.92;
-		--splash-waveform-width: min(1500px, 1950px);
-		overflow-x: hidden;
-		overflow-y: auto;
-	}
+@media (max-width: 640px), (max-height: 500px) and (orientation: landscape) and (pointer: coarse) {
+    .splash-wrapper {
+        --splash-waveform-x: 56%;
+        --splash-waveform-bottom: 0px;
+        --splash-waveform-scale: 0.92;
+        --splash-waveform-width: min(1500px, 1950px);
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: clamp(0.9rem, 3.5vh, 1.75rem);
+        height: auto;
+        overflow-x: hidden;
+        overflow-y: auto;
+    }
 
-	.main-splash-content {
-		width: 100%;
-		row-gap: 0.45rem;
-		padding-top: 3.2rem;
-	}
+    /* Flatten so icons can sit between the title and the buttons */
+    .main-splash-content {
+        display: contents;
+    }
 
-	.splash-title-wrapper {
-		align-items: flex-start;
-		padding-left:  1rem;
-	}
+    .splash-title-wrapper {
+        align-items: center;
+        order: 1;
+    }
 
-	.splash-title {
-		height: auto;
-		justify-content: flex-start;
-		font-size: clamp(70px, 20vw, 130px);
-		line-height: 1.2;
-		text-align: left;
-	}
+    .desktop-icons {
+        position: static;
+        order: 2;
+        transform: none;
+        flex-direction: row;
+        justify-content: center;
+        gap: clamp(1rem, 6vw, 2.5rem);
+        margin: 0;
+        padding-left: 0;
+    }
 
-	.title-row {
-		justify-content: flex-start;
-	}
+    .desktop-icon { width: 72px; }
 
-	.splash-logo {
-		width: clamp(52px, 14vw, 72px);
-		margin-left: 0.4rem;
-		margin-bottom: 0;
-	}
+    .desktop-icon :is(img, svg) { width: 58px; }
 
-	.splash-ui-wrapper {
-		width: 100%;
-		justify-self: stretch;
-		padding: 0.25rem 1rem 0;
-	}
+    .desktop-icon span { font-size: 10px; }
+
+    .splash-title {
+        height: auto;
+        justify-content: center;
+        font-size: clamp(46px, 17vw, 110px);
+        line-height: 1;
+        margin: 6px 0;
+    }
+
+    .title-row {
+        justify-content: center;
+        height: auto;
+        margin-top: clamp(-40px, -4vw, -12px);
+    }
+
+    .splash-logo {
+        width: clamp(52px, 14vw, 72px);
+        margin-bottom: 0;
+        margin-right: 0.3rem;
+    }
+
+    .cta-row {
+        order: 3;
+        width: min(calc(100vw - 2rem), 340px);
+        margin-top: 0;
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .cta-btn {
+        text-align: center;
+    }
+
+    .taskbar-conference-name { font-size: 10px; }
+
+    .taskbar-window-list {
+        margin-left: 0.5rem;
+        gap: 0.25rem;
+    }
+
+    .taskbar-window-item {
+        max-width: 92px;
+        font-size: 9px;
+        padding: 0.15rem 0.3rem;
+    }
+
+    .splash-waveform { display: none; }
+}
+
+@media (max-width: 640px) and (pointer: coarse), (max-height: 500px) and (orientation: landscape) and (pointer: coarse) {
+    .desktop-icons .desktop-icon:first-child {
+        margin-top: 4px;
+    }
+
+    .desktop-icon:hover {
+        scale: 1;
+        translate: 0 0;
+        animation: none;
+    }
+}
+
+@media (max-width: 370px) {
+    .splash-title { font-size: clamp(36px, 14vw, 80px); }
 }

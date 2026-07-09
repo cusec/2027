@@ -1,0 +1,466 @@
+/* ---- Waitlist modal (Win95 window) ---- */
+
+.modal-overlay {
+    position: fixed;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 100;
+    padding: 1rem;
+    pointer-events: none;
+}
+
+.win95-window {
+    position: relative;
+    pointer-events: auto;
+    box-sizing: border-box;
+    width: min(440px, 100%);
+    max-width: 100%;
+    max-height: 100%;
+    display: flex;
+    flex-direction: column;
+    background: #c0c0c0;
+    border-top: 2px solid #ffffff;
+    border-left: 2px solid #ffffff;
+    border-right: 2px solid #2b2b2b;
+    border-bottom: 2px solid #2b2b2b;
+    box-shadow: 2px 2px 0 rgba(0, 0, 0, 0.35);
+}
+
+/* Resizable variant: body fills the window, plus a bottom-right grip */
+.win95-window--resizable .win95-body {
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow: auto;
+}
+
+.win95-resize {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    width: 16px;
+    height: 16px;
+    cursor: nwse-resize;
+    touch-action: none;
+    background: repeating-linear-gradient(-45deg, #7a7a7a 0 1px, transparent 1px 3px);
+}
+
+.win95-titlebar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+    padding: 0.25rem 0.3rem 0.25rem 0.5rem;
+    background: linear-gradient(90deg, #3f5fb0, #6d84d4);
+    cursor: move;
+    user-select: none;
+    touch-action: none;
+}
+
+.win95-title {
+    font-family: "Retropix", "MS Sans Serif", monospace;
+    font-size: 13px;
+    color: #fff;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.win95-titlebar-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+}
+
+.win95-minimize,
+.win95-close {
+    flex-shrink: 0;
+    width: 22px;
+    height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: "MS Sans Serif", sans-serif;
+    font-size: 15px;
+    line-height: 1;
+    color: #000;
+    background: #c0c0c0;
+    border-top: 2px solid #ffffff;
+    border-left: 2px solid #ffffff;
+    border-right: 2px solid #2b2b2b;
+    border-bottom: 2px solid #2b2b2b;
+}
+
+.win95-minimize {
+    position: relative;
+}
+
+.win95-minimize::before {
+    content: "";
+    position: absolute;
+    left: 22%;
+    right: 22%;
+    bottom: 26%;
+    height: 2px;
+    background: #000;
+}
+
+.win95-minimize:active,
+.win95-close:active {
+    border-top: 2px solid #2b2b2b;
+    border-left: 2px solid #2b2b2b;
+    border-right: 2px solid #ffffff;
+    border-bottom: 2px solid #ffffff;
+}
+
+.win95-body {
+    box-sizing: border-box;
+    padding: 1.75rem 1.5rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 1.25rem;
+}
+
+.waitlist-form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.25rem;
+    width: 100%;
+}
+
+.waitlist-field {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    width: 100%;
+    background: #fff;
+    border-top: 2px solid #808080;
+    border-left: 2px solid #808080;
+    border-right: 2px solid #ffffff;
+    border-bottom: 2px solid #ffffff;
+    padding: 0.6rem 0.75rem;
+}
+
+.waitlist-field label {
+    font-family: "Retropix", "MS Sans Serif", monospace;
+    font-size: 14px;
+    color: #000;
+    white-space: nowrap;
+}
+
+.waitlist-field input {
+    flex: 1;
+    min-width: 0;
+    font-family: "Retropix", "MS Sans Serif", monospace;
+    font-size: 14px;
+    color: #000;
+    background: transparent;
+    border: none;
+    border-bottom: 1.5px solid #000;
+    outline: none;
+    padding: 0.1rem 0.2rem;
+    user-select: text;
+    -webkit-user-select: text;
+}
+
+.waitlist-error {
+    font-family: "Retropix", "MS Sans Serif", monospace;
+    font-size: 11px;
+    color: #a00;
+    margin: 0;
+}
+
+.waitlist-confirm {
+    font-family: "Retropix", "MS Sans Serif", monospace;
+    font-size: 15px;
+    color: #fff;
+    background: linear-gradient(90deg, #3f5fb0, #6d84d4);
+    padding: 0.9rem 1.5rem;
+    border: 2px solid #2f4a9e;
+    box-shadow: inset 0 0 0 2px rgba(255, 255, 255, 0.6);
+    text-shadow: 0 1px 1px rgba(0, 0, 0, 0.3);
+    text-align: center;
+}
+
+/* ---- Retro "Calculating..." loader ---- */
+
+.waitlist-loading {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.85rem;
+    width: 100%;
+}
+
+.waitlist-loading-msg {
+    font-family: "Retropix", "MS Sans Serif", monospace;
+    font-weight: 400;
+    font-size: 14px;
+    color: #000;
+    margin: 0;
+    align-self: flex-start;
+}
+
+.xp-progress {
+    width: 280px;
+    max-width: 100%;
+    height: 22px;
+    box-sizing: border-box;
+    background: #fff;
+    padding: 3px;
+    overflow: hidden;
+    /* sunken Win95 well */
+    border-top: 2px solid #808080;
+    border-left: 2px solid #808080;
+    border-right: 2px solid #ffffff;
+    border-bottom: 2px solid #ffffff;
+    box-shadow: inset 1px 1px 0 #404040;
+}
+
+.xp-progress-fill {
+    height: 100%;
+    width: 0;
+    /* segmented green blocks: 13px green + 3px gap */
+    background-image: repeating-linear-gradient(
+        90deg,
+        #2fb62f 0 13px,
+        transparent 13px 16px
+    );
+    animation: xp-progress-grow 2.2s steps(18) infinite;
+}
+
+@keyframes xp-progress-grow {
+    from { width: 0; }
+    to   { width: 100%; }
+}
+
+/* ---- Calendar modal ---- */
+
+.calendar-modal {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.1rem;
+    width: 100%;
+}
+
+.win95-calendar {
+    width: 100%;
+    background: #fff;
+    padding: 0.5rem;
+    box-sizing: border-box;
+    border-top: 2px solid #808080;
+    border-left: 2px solid #808080;
+    border-right: 2px solid #ffffff;
+    border-bottom: 2px solid #ffffff;
+    box-shadow: inset 1px 1px 0 #404040;
+}
+
+.calendar-header {
+    font-family: "Retropix", "MS Sans Serif", monospace;
+    font-size: 14px;
+    color: #000;
+    text-align: center;
+    padding-bottom: 0.4rem;
+    margin-bottom: 0.4rem;
+    border-bottom: 1px solid #c0c0c0;
+}
+
+.calendar-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 2px;
+}
+
+.calendar-dow {
+    font-family: "Retropix", "MS Sans Serif", monospace;
+    font-size: 11px;
+    color: #103436;
+    text-align: center;
+    padding: 2px 0;
+}
+
+.calendar-day {
+    font-family: "Retropix", "MS Sans Serif", monospace;
+    font-size: 12px;
+    color: #000;
+    text-align: center;
+    padding: 4px 0;
+}
+
+.calendar-day--active {
+    background: #000080;
+    color: #fff;
+}
+
+.calendar-day--empty {
+    color: transparent;
+}
+
+/* ---- Countdown modal ---- */
+
+.countdown {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+    width: 100%;
+}
+
+.countdown-label {
+    font-family: "Retropix", "MS Sans Serif", monospace;
+    font-size: 22px;
+    color: #000;
+    margin: 0;
+}
+
+.countdown-grid {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.countdown-unit {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-width: 60px;
+    padding: 0.5rem 0.5rem;
+    background: #fff;
+    border-top: 2px solid #808080;
+    border-left: 2px solid #808080;
+    border-right: 2px solid #ffffff;
+    border-bottom: 2px solid #ffffff;
+    box-shadow: inset 1px 1px 0 #404040;
+}
+
+.countdown-value {
+    font-family: "Retropix", "MS Sans Serif", monospace;
+    font-size: 24px;
+    line-height: 1;
+    color: #103436;
+}
+
+.countdown-name {
+    font-family: "Retropix", "MS Sans Serif", monospace;
+    font-size: 10px;
+    color: #555;
+    text-transform: uppercase;
+}
+
+/* ---- Location (Montreal) map modal ---- */
+
+.location-map {
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+    width: 100%;
+    height: 100%;
+}
+
+.location-well {
+    flex: 1 1 auto;
+    min-height: 200px;
+    padding: 3px;
+    background: #fff;
+    border-top: 2px solid #808080;
+    border-left: 2px solid #808080;
+    border-right: 2px solid #ffffff;
+    border-bottom: 2px solid #ffffff;
+    box-shadow: inset 1px 1px 0 #404040;
+}
+
+/* Fills the well and clips the OSM footer bar hanging off the bottom */
+.location-frame {
+    height: 100%;
+    overflow: hidden;
+}
+
+.location-frame iframe {
+    display: block;
+    width: 100%;
+    height: calc(100% + 52px);
+    border: 0;
+}
+
+.location-caption {
+    font-family: "Retropix", "MS Sans Serif", monospace;
+    font-size: 12px;
+    color: #000;
+    text-align: center;
+    margin: 0;
+}
+
+.location-attribution {
+    font-family: "Retropix", "MS Sans Serif", monospace;
+    font-size: 9px;
+    color: #666;
+    text-align: center;
+    margin: 0;
+}
+
+@media (max-width: 640px) and (pointer: coarse), (max-height: 500px) and (orientation: landscape) and (pointer: coarse) {
+    .modal-overlay {
+        padding: 0.6rem;
+    }
+
+    .win95-window {
+        width: min(430px, calc(100vw - 1.2rem));
+        max-height: calc(100dvh - 1.2rem);
+    }
+
+    .win95-window--phone {
+        transform: none !important;
+    }
+
+    .win95-titlebar {
+        cursor: default;
+        touch-action: auto;
+    }
+
+    .win95-body {
+        padding: 0.95rem 0.85rem;
+        gap: 0.85rem;
+        max-height: calc(100dvh - 5.5rem);
+        overflow: auto;
+    }
+
+    .calendar-modal {
+        gap: 0.8rem;
+    }
+
+    .countdown-label {
+        font-size: 18px;
+    }
+
+    .countdown-grid {
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+
+    .countdown-unit {
+        min-width: 54px;
+        padding: 0.4rem;
+    }
+
+    .countdown-value {
+        font-size: 20px;
+    }
+
+    .location-well {
+        min-height: 180px;
+    }
+
+    /* Mobile needs an explicit viewport height so clipping is reliable. */
+    .location-frame {
+        height: 210px;
+    }
+
+    /* Mobile embed footer is taller; overdraw more so it stays clipped. */
+    .location-frame iframe {
+        height: calc(100% + 120px);
+    }
+}
