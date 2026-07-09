@@ -16,8 +16,9 @@ body {
 
 /* ---- win95 style cursors ---- */
 :root {
-  --cursor-arrow: url("/assets/cursor-win95.png") 2 2, auto;
-  --cursor-hand: url("/assets/pointer-win95.png") 8 0, pointer;
+  /* hotspot coords are x y in source-image pixels (top-left origin) */
+  --cursor-arrow: url("/assets/cursor-win95.png") 1 1, auto;
+  --cursor-hand: url("/assets/pointer-win95.png") 10 2, pointer;
 }
 
 html {
@@ -31,7 +32,8 @@ summary,
 [role="button"],
 .desktop-icon,
 .cta-btn,
-.win95-close {
+.win95-close,
+.win95-minimize {
   cursor: var(--cursor-hand);
 }
 

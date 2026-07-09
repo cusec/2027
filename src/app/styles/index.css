@@ -1,4 +1,5 @@
 @import "./Splash/SplashPage.css";
+@import "./Splash/Windows.css";
 @import "./Splash/UIWindow.css";
 
 .splash-wrapper {

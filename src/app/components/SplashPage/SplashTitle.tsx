@@ -72,7 +72,6 @@ export default function SplashTitle() {
         };
 
         const onPointerMove = (e: PointerEvent) => {
-            // Mouse/pen repel on hover; touch only while held down.
             if (e.pointerType === 'touch' && !touchHolding) return;
             mx = e.clientX;
             my = e.clientY;
