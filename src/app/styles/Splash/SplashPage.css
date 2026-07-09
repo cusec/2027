@@ -504,6 +504,10 @@
 
     .cta-btn {
         text-align: center;
+        white-space: normal;
+        line-height: 1.2;
+        overflow-wrap: anywhere;
+        padding: 0.65em 1.1em;
     }
 
     .taskbar-conference-name { font-size: 10px; }
