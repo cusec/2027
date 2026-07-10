@@ -1,6 +1,6 @@
 import Image from 'next/image';
 import { getTranslations } from 'next-intl/server';
-import { FileFolder } from '@/app/assets/FigmaSVGs';
+import { ExternalLinkIcon, FileFolder } from '@/app/assets/FigmaSVGs';
 import SplashJoinWaitlist from './Windows/Content/SplashJoinWaitlist';
 import SplashAnimationLock from './SplashAnimationLock';
 import VantaBirds from './VantaBirds';
@@ -30,7 +30,10 @@ export default async function SplashPage() {
                         className="desktop-icon"
                     >
                         <FileFolder width={88} height={67} />
-                        <span>{t('edition-link')}</span>
+                        <span className="desktop-icon-label">
+                            {t('edition-link')}
+                            <ExternalLinkIcon className="external-link-icon" />
+                        </span>
                     </a>
                     <MontrealIcon />
                     <CalendarIcon />
