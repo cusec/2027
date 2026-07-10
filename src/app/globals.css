@@ -18,7 +18,7 @@ body {
 :root {
   /* hotspot coords are x y in source-image pixels (top-left origin) */
   --cursor-arrow: url("/assets/cursor-win95.png") 1 1, auto;
-  --cursor-hand: url("/assets/pointer-win95.png") 10 2, pointer;
+  --cursor-hand: url("/assets/pointer-win95.png") 7 1, pointer;
 }
 
 html {

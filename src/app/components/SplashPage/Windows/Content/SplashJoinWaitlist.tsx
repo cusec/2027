@@ -2,6 +2,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { useTranslations } from 'next-intl';
+import { ExternalLinkIcon } from '@/app/assets/FigmaSVGs';
 
 const SPONSORSHIP_URL = "https://forms.gle/TzbNoCKmALEYryLw7";
 
@@ -187,7 +188,10 @@ export default function SplashJoinWaitlist() {
                     target="_blank"
                     rel="noopener noreferrer"
                 >
-                    {t('sponsorship-interest')}
+                    <span className="cta-link-label">
+                        {t('sponsorship-interest')}
+                        <ExternalLinkIcon className="cta-external-link-icon" />
+                    </span>
                 </a>
             </div>
 
