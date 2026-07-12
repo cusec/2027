@@ -19,15 +19,37 @@
 
 :root {
   color-scheme: light;
+  /* hotspot coords are x y in source-image pixels (top-left origin) */
+  --cursor-arrow: url("/assets/cursor-win95.png") 1 1, auto;
+  --cursor-hand: url("/assets/pointer-win95.png") 7 1, pointer;
 }
 
 html {
   -webkit-text-size-adjust: 100%;
   text-size-adjust: 100%;
+  cursor: var(--cursor-arrow);
 }
 
 body {
   background-color: #ffffff;
+  letter-spacing: 0.06em;
+}
+
+a,
+button,
+select,
+summary,
+[role="button"],
+.desktop-icon,
+.cta-btn,
+.win95-close,
+.win95-minimize {
+  cursor: var(--cursor-hand);
+}
+
+input,
+textarea {
+  cursor: text;
 }
 
 /*

@@ -112,7 +112,7 @@ All CSS is plain files, no CSS Modules. Imported globally via `src/app/styles/in
 |---|---|---|
 | `public/assets/navigation_ui_window.png` | 735×514 | Desktop UI window background |
 | `public/assets/navigation_ui_window_skinny.png` | 351×576 | Mobile UI window background (shown ≤640px) |
-| `public/assets/splash_bg.png` | 1448×1086 | Full-page background image |
+| `public/assets/splash_bg.webp` | 1448×1086 | Full-page background image |
 | `public/assets/calendar.png` | 83×83 | "Jan. 2027" icon in the window |
 | `public/assets/globe.png` | 89×89 | "Montreal, QC" icon in the window |
 | `public/assets/cusec_aero_logo.png` | 146×146 | Logo beside "2027" title |
@@ -122,7 +122,7 @@ All CSS is plain files, no CSS Modules. Imported globally via `src/app/styles/in
 | `public/favicon.ico` / `favicon-16x16.png` / `favicon-32x32.png` | — | Favicons |
 
 **SVG components** (code, not static assets) live in `src/app/assets/FigmaSVGs.tsx`:
-- `FileFolder` — pixel-art folder icon for "26th Edition" link
+- `FileFolder` — pixel-art folder icon for "25th Edition" link
 - `SponsorshipInterestButton` — Win95-style button SVG, `viewBox="0 0 616 75"` (8.2:1 aspect ratio — render at full width, do not scale height or it distorts)
 
 The SVG file also exports `splitCtaLabel`, a utility that word-wraps long button label strings to at most 2 lines.

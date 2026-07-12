@@ -1,57 +1,67 @@
 import Image from 'next/image';
-import SplashPageUI from './SplashPageUI';
+import { getTranslations } from 'next-intl/server';
+import { ExternalLinkIcon, FileFolder } from '@/app/assets/FigmaSVGs';
+import SplashJoinWaitlist from './Windows/Content/SplashJoinWaitlist';
+import SplashAnimationLock from './SplashAnimationLock';
+import VantaBirds from './VantaBirds';
+import SplashTitle from './SplashTitle';
+import TaskbarClock from './Windows/Launchers/TaskbarClock';
+import MontrealIcon from './Windows/Launchers/MontrealIcon';
+import CalendarIcon from './Windows/Launchers/CalendarIcon';
+import TaskbarWindows from './TaskbarWindows';
+import { SplashWindowsProvider } from './SplashWindowsContext';
 
-function WavyText({ text }: { text: string }) {
-    return (
-        <h1 className="splash-title" aria-label={text}>
-            {Array.from(text).map((char, i) => (
-                <span
-                    key={i}
-                    className="splash-title-char"
-                    style={{ animationDelay: `${i * 0.12}s` }}
-                    aria-hidden
-                >
-                    {char}
-                </span>
-            ))}
-        </h1>
-    );
-}
+export default async function SplashPage() {
+    const t = await getTranslations('SplashPage');
 
-export default function SplashPage() {
     return (
-        <div className="splash-wrapper">
+        <>
+            <SplashAnimationLock />
+            <div className="splash-wrapper">
+
+            <VantaBirds />
+
+            <SplashWindowsProvider>
+                <aside className="desktop-icons" aria-label="Quick links">
+                    <a
+                        href="https://2026.cusec.net/"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="desktop-icon"
+                    >
+                        <FileFolder width={88} height={67} />
+                        <span className="desktop-icon-label">
+                            {t('edition-link')}
+                            <ExternalLinkIcon className="external-link-icon" />
+                        </span>
+                    </a>
+                    <MontrealIcon />
+                    <CalendarIcon />
+                </aside>
+
+            {/* Main content */}
             <div className="main-splash-content">
-                <div className="splash-title-wrapper">
-                    <WavyText text="CUSEC" />
-                    <div className="title-row">
-                        <WavyText text="2027" />
-                        {/* <video
-                            className="splash-logo"
-                            autoPlay
-                            loop
-                            muted
-                            playsInline
-                            preload="auto"
-                            aria-label="CUSEC logo"
-                        >
-                            <source src="/logo_animated.webm" type="video/webm" />
-                        </video> */}
+                <SplashTitle />
+                <SplashJoinWaitlist />
+            </div>
+
+                {/* Taskbar */}
+                <div className="splash-taskbar" role="toolbar" aria-label="Taskbar">
+                    <div className="taskbar-left">
                         <Image
-                            className="splash-logo splash-title-char"
+                            className="taskbar-logo"
                             src="/assets/cusec_aero_logo.png"
                             alt="CUSEC logo"
-                            width={146}
-                            height={146}
-                            priority
+                            width={28}
+                            height={28}
                         />
+                        <span className="taskbar-conference-name">{t('title')}</span>
                     </div>
+                    <TaskbarWindows />
+                    <TaskbarClock />
                 </div>
-                <div className="splash-ui-wrapper">
-                    <SplashPageUI />
-                </div>
+            </SplashWindowsProvider>
 
-            </div>
             <video
                 className="splash-waveform"
                 autoPlay
@@ -63,7 +73,7 @@ export default function SplashPage() {
             >
                 <source src="/splash_waveform.webm" type="video/webm" />
             </video>
-        </div>
+            </div>
+        </>
     );
 }
-

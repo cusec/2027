@@ -1,7 +1,11 @@
 import type { Metadata, Viewport } from "next";
+import Script from "next/script";
 import "./globals.css";
 import "./styles/index.css";
 import "./styles/navbar.css";
+
+// if the splash was already seen this session, mark <html> static so the entrance animation doesn't replay on refresh (no flash).
+const SPLASH_ANIM_SCRIPT = `try{if(sessionStorage.getItem('cusecSplashSeen')){document.documentElement.classList.add('splash-static')}else{sessionStorage.setItem('cusecSplashSeen','1')}}catch(e){}`;
 
 export const metadata: Metadata = {
   metadataBase: new URL(
@@ -60,7 +64,6 @@ export const metadata: Metadata = {
     alternateLocale: ["fr_CA"],
     images: [
       {
-        // Add a 1200×630 OG image at public/cusec-logo.png for best results
         url: "/cusec-logo.png",
         width: 1200,
         height: 630,
@@ -76,7 +79,7 @@ export const metadata: Metadata = {
     description:
       "Canada's longest-running student-led software engineering conference. 26th edition — Montréal, QC · January 2027.",
     images: ["/cusec-logo.png"],
-    site: "@cusec",     // update if handle changes
+    site: "@cusec", 
     creator: "@cusec",
   },
 
@@ -123,8 +126,13 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en-CA" dir="ltr">
-      <body>{children}</body>
+    <html lang="en-CA" dir="ltr" suppressHydrationWarning>
+      <body>
+        <Script id="splash-anim" strategy="beforeInteractive">
+          {SPLASH_ANIM_SCRIPT}
+        </Script>
+        {children}
+      </body>
     </html>
   );
 }
