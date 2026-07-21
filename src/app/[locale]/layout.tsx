@@ -5,6 +5,7 @@ import {notFound} from 'next/navigation';
 import {routing} from '@/i18n/routing';
 import SplashPage from '@/app/components/SplashPage/SplashPage';
 import Navbar from '@/app/components/Navbar/Navbar';
+import { MotionPreferenceProvider } from '@/app/components/motion/MotionPreference';
 
 type Props = {
   children: React.ReactNode;
@@ -55,8 +56,10 @@ export default async function LocaleLayout({children, params}: Props) {
 
   return (
     <NextIntlClientProvider>
-      <Navbar />
-      <SplashPage />
+      <MotionPreferenceProvider>
+        <Navbar />
+        <SplashPage />
+      </MotionPreferenceProvider>
     </NextIntlClientProvider>
   );
 }

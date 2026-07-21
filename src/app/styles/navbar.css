@@ -13,6 +13,13 @@
     background: transparent;
 }
 
+.Navbar-controls {
+    display: flex;
+    flex-direction: row;
+    align-items: stretch;
+    gap: 0.4rem;
+}
+
 .Navbar-locale-switcher {
     display: flex;
     flex-direction: row;
@@ -20,6 +27,44 @@
     gap: 0;
     font-family: "MS Sans Serif", Tahoma, sans-serif;
     color: #000000;
+}
+
+.Navbar-motion-toggle {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    padding: 0;
+    color: #000000;
+    background: rgba(255, 255, 255, 0.12);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border-top: 1px solid #ffffff;
+    border-left: 1px solid #ffffff;
+    border-right: 1px solid #2b2b2b;
+    border-bottom: 1px solid #2b2b2b;
+    box-shadow: inset 1px 1px 0 #dbdbdb, 0 8px 24px rgba(0, 0, 0, 0.55), 0 2px 6px rgba(0, 0, 0, 0.4);
+    cursor: pointer;
+}
+
+/* Pressed-in Win95 look while active, and a solid blue "on" state when motion
+   is reduced (mirrors the locale icon's accent colour). */
+.Navbar-motion-toggle[aria-pressed="true"] {
+    background: #1A66D4;
+    color: #ffffff;
+}
+
+.Navbar-motion-toggle:active {
+    border-top: 1px solid #2b2b2b;
+    border-left: 1px solid #2b2b2b;
+    border-right: 1px solid #ffffff;
+    border-bottom: 1px solid #ffffff;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
+}
+
+.Navbar-motion-toggle:focus-visible {
+    outline: 2px solid #1A66D4;
+    outline-offset: 2px;
 }
 
 .Navbar-locale-icon {

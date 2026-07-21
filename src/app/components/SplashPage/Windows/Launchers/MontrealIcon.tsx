@@ -40,7 +40,7 @@ export default function MontrealIcon() {
     return (
         <>
             <button type="button" className="desktop-icon" onClick={onMapIconClick}>
-                <Image src="/assets/globe.png" alt="Globe icon" width={76} height={76} />
+                <Image src="/assets/globe.webp" alt="Globe icon" width={76} height={76} priority />
                 <span>Montreal, QC</span>
             </button>
 

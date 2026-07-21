@@ -73,7 +73,7 @@ export default function CalendarIcon() {
     return (
         <>
             <button type="button" className="desktop-icon" onClick={onCalendarIconClick}>
-                <Image src="/assets/calendar.png" alt="Calendar icon" width={72} height={72} />
+                <Image src="/assets/calendar.webp" alt="Calendar icon" width={72} height={72} priority />
                 <span>Jan 07, 2027</span>
             </button>
 

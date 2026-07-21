@@ -1,6 +1,7 @@
 "use client";
 import Image from 'next/image';
 import { useEffect, useRef } from 'react';
+import { useMotionPreference } from '@/app/components/motion/MotionPreference';
 
 const REPEL_RADIUS = 140;   // how close the cursor must be to nudge a letter (px)
 const REPEL_STRENGTH = 20;  // max displacement at the cursor (px)
@@ -26,10 +27,13 @@ function Word({ text }: { text: string }) {
 
 export default function SplashTitle() {
     const rootRef = useRef<HTMLDivElement>(null);
+    const { reduceMotion } = useMotionPreference();
 
     useEffect(() => {
         const root = rootRef.current;
         if (!root) return;
+
+        if (reduceMotion) return;
 
         const repels = Array.from(
             root.querySelectorAll<HTMLElement>('.splash-title-repel'),
@@ -106,7 +110,7 @@ export default function SplashTitle() {
             document.removeEventListener('mouseleave', reset);
             cancelAnimationFrame(raf);
         };
-    }, []);
+    }, [reduceMotion]);
 
     return (
         <div className="splash-title-wrapper" ref={rootRef}>
@@ -116,7 +120,7 @@ export default function SplashTitle() {
                     <span className="splash-title-repel">
                         <Image
                             className="splash-logo"
-                            src="/assets/cusec_aero_logo.png"
+                            src="/assets/cusec_aero_logo.webp"
                             alt="CUSEC logo"
                             width={146}
                             height={146}

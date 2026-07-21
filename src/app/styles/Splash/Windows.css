@@ -124,6 +124,63 @@
     gap: 1.25rem;
 }
 
+/* ---- External-link confirm dialog ---- */
+
+.win95-window--dialog {
+    width: min(360px, 100%);
+}
+
+/* Confirm dialog isn't draggable — keep the default arrow cursor on its bar. */
+.win95-titlebar--static {
+    cursor: default;
+}
+
+.win95-dialog-body {
+    gap: 1.5rem;
+}
+
+.win95-dialog-message {
+    font-family: "MS Sans Serif", sans-serif;
+    font-size: 14px;
+    color: #000;
+    text-align: center;
+    line-height: 1.4;
+}
+
+.win95-dialog-actions {
+    display: flex;
+    gap: 0.75rem;
+}
+
+/* Classic Win95 grey push-button */
+.win95-btn {
+    min-width: 84px;
+    padding: 0.4rem 1rem;
+    font-family: "MS Sans Serif", sans-serif;
+    font-size: 13px;
+    color: #000;
+    background: #c0c0c0;
+    border-top: 2px solid #ffffff;
+    border-left: 2px solid #ffffff;
+    border-right: 2px solid #2b2b2b;
+    border-bottom: 2px solid #2b2b2b;
+    box-shadow: inset 1px 1px 0 #dbdbdb;
+    cursor: pointer;
+}
+
+.win95-btn:focus-visible {
+    outline: 1px dotted #000;
+    outline-offset: 2px;
+}
+
+.win95-btn:active {
+    border-top: 2px solid #2b2b2b;
+    border-left: 2px solid #2b2b2b;
+    border-right: 2px solid #ffffff;
+    border-bottom: 2px solid #ffffff;
+    box-shadow: none;
+}
+
 .waitlist-form {
     display: flex;
     flex-direction: column;
@@ -454,12 +511,10 @@
         min-height: 180px;
     }
 
-    /* Mobile needs an explicit viewport height so clipping is reliable. */
     .location-frame {
         height: 210px;
     }
 
-    /* Mobile embed footer is taller; overdraw more so it stays clipped. */
     .location-frame iframe {
         height: calc(100% + 120px);
     }

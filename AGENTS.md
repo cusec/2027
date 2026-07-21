@@ -106,9 +106,9 @@ All CSS is plain files, no CSS Modules. Imported globally via `src/app/styles/in
 | `public/assets/navigation_ui_window.png` | 735×514 | Desktop UI window background |
 | `public/assets/navigation_ui_window_skinny.png` | 351×576 | Mobile UI window background (shown ≤640px) |
 | `public/assets/splash_bg.webp` | 1448×1086 | Full-page background image |
-| `public/assets/calendar.png` | 83×83 | "Jan. 2027" icon in the window |
-| `public/assets/globe.png` | 89×89 | "Montreal, QC" icon in the window |
-| `public/assets/cusec_aero_logo.png` | 146×146 | Logo beside "2027" title |
+| `public/assets/calendar.webp` | 83×83 | "Jan. 2027" icon in the window |
+| `public/assets/globe.webp` | 89×89 | "Montreal, QC" icon in the window |
+| `public/assets/cusec_aero_logo.webp` | 146×146 | Logo beside "2027" title |
 | `public/splash_waveform.webm` | — | Animated waveform overlay (screen blend mode for iOS VP9 alpha fix) |
 | `public/logo_animated.webm` | — | Animated logo (currently commented out, replaced by static PNG) |
 | `public/cusec-logo.png` | — | OG image + PWA icon (should be 1200×630 for best OG) |
