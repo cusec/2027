@@ -3,6 +3,10 @@
         "title": "Home page (English)",
         "description": "we goin mtl w ts ✌️🥀 (in English tho)"
     },
+    "Navbar": {
+        "reduce-motion": "Reduce animations",
+        "enable-motion": "Enable animations"
+    },
     "SplashPage": {
         "title": "Canadian University Software Engineering Conference",
         "edition-link": "25th Edition",
@@ -13,6 +17,10 @@
         "attendance-success": "On the waitlist!",
         "attendance-error": "Something went wrong. Try again.",
         "attendance-duplicate": "You're already on the waitlist!",
-        "sponsorship-interest": "Sponsorship Interest Form"
+        "sponsorship-interest": "Sponsorship Interest Form",
+        "external-link-title": "Open External Link",
+        "external-link-message": "You are about to open a new tab.",
+        "external-link-confirm": "OK",
+        "external-link-cancel": "Cancel"
     }
 }

@@ -3,6 +3,10 @@
         "title": "Home page (French)",
         "description": "we goin mtl w ts ✌️🥀 (in French monseur)"
     },
+    "Navbar": {
+        "reduce-motion": "Réduire les animations",
+        "enable-motion": "Activer les animations"
+    },
     "SplashPage": {
         "title": "Conférence canadienne sur le génie logiciel",
         "edition-link": "25e édition",
@@ -13,6 +17,10 @@
         "attendance-success": "Vous êtes sur la liste !",
         "attendance-error": "Une erreur s'est produite. Réessayez.",
         "attendance-duplicate": "Vous êtes déjà sur la liste !",
-        "sponsorship-interest": "Formulaire de parrainage"
+        "sponsorship-interest": "Formulaire de parrainage",
+        "external-link-title": "Ouvrir un lien externe",
+        "external-link-message": "Vous êtes sur le point d’ouvrir un nouvel onglet.",
+        "external-link-confirm": "OK",
+        "external-link-cancel": "Annuler"
     }
 }
