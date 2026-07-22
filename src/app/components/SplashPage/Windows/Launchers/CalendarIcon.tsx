@@ -1,5 +1,4 @@
 "use client";
-import Image from 'next/image';
 import Win95Modal from '../Shell/Win95Modal';
 import Countdown from '../Content/Countdown';
 import { useSplashWindows } from '../../SplashWindowsContext';
@@ -73,7 +72,7 @@ export default function CalendarIcon() {
     return (
         <>
             <button type="button" className="desktop-icon" onClick={onCalendarIconClick}>
-                <Image src="/assets/calendar.webp" alt="Calendar icon" width={72} height={72} priority />
+                <img src="/assets/calendar.webp" alt="Calendar icon" width={72} height={72} />
                 <span>Jan 07, 2027</span>
             </button>
 

@@ -1,4 +1,3 @@
-import Image from 'next/image';
 import { preload } from 'react-dom';
 import { getTranslations } from 'next-intl/server';
 import { ExternalLinkIcon, FileFolder } from '@/app/assets/FigmaSVGs';
@@ -51,7 +50,7 @@ export default async function SplashPage() {
                 {/* Taskbar */}
                 <div className="splash-taskbar" role="toolbar" aria-label="Taskbar">
                     <div className="taskbar-left">
-                        <Image
+                        <img
                             className="taskbar-logo"
                             src="/assets/cusec_aero_logo.webp"
                             alt="CUSEC logo"

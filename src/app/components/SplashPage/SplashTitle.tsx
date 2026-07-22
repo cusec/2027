@@ -1,5 +1,4 @@
 "use client";
-import Image from 'next/image';
 import { useEffect, useRef } from 'react';
 import { useMotionPreference } from '@/app/components/motion/MotionPreference';
 
@@ -118,13 +117,12 @@ export default function SplashTitle() {
             <div className="title-row">
                 <span className="splash-title-char">
                     <span className="splash-title-repel">
-                        <Image
+                        <img
                             className="splash-logo"
                             src="/assets/cusec_aero_logo.webp"
                             alt="CUSEC logo"
                             width={146}
                             height={146}
-                            priority
                         />
                     </span>
                 </span>
