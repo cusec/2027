@@ -1,6 +1,7 @@
 @import "./Splash/SplashPage.css";
 @import "./Splash/Windows.css";
 @import "./Splash/UIWindow.css";
+@import "./Tickets/TicketCard.css";
 
 .splash-wrapper {
     padding-top: calc(52px + env(safe-area-inset-top, 0px) + 1.4rem);

@@ -13,6 +13,25 @@
         "attendance-success": "On the waitlist!",
         "attendance-error": "Something went wrong. Try again.",
         "attendance-duplicate": "You're already on the waitlist!",
-        "sponsorship-interest": "Sponsorship Interest Form"
+        "sponsorship-interest": "Sponsorship Interest Form",
+        "get-tickets": "Get Tickets"
+    },
+    "TicketsPage": {
+        "heading": "Get Your Ticket",
+        "subheading": "Join us in Montréal, QC — January 2027.",
+        "mock-banner": "Showing test data — connect Ticket Tailor to go live.",
+        "error-banner": "Couldn't load ticket data. Please try again shortly.",
+        "vip-badge": "Popular",
+        "general-feature-1": "Workshops, Sponsor-Hosted Talks and Social Events",
+        "general-feature-2": "Access to all conference sessions",
+        "general-feature-3": "Conference materials",
+        "vip-feature-1": "Everything in General",
+        "vip-feature-2": "Priority Networking Sessions",
+        "vip-feature-3": "Exclusive CUSEC 2027 Merchandise",
+        "buy-button": "Buy",
+        "sold-out": "Sold Out",
+        "unavailable": "Not Yet Available",
+        "checkout-not-configured": "Coming Soon",
+        "loading-checkout": "Loading…"
     }
 }

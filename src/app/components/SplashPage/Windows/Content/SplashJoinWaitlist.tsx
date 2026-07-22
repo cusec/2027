@@ -3,6 +3,7 @@ import { useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { useTranslations } from 'next-intl';
 import { ExternalLinkIcon } from '@/app/assets/FigmaSVGs';
+import { Link } from '@/i18n/navigation';
 
 const SPONSORSHIP_URL = "https://forms.gle/TzbNoCKmALEYryLw7";
 
@@ -182,6 +183,9 @@ export default function SplashJoinWaitlist() {
                 <button type="button" className="cta-btn" onClick={openModal}>
                     {t('attendance-submit')}
                 </button>
+                <Link className="cta-btn" href="/tickets">
+                    {t('get-tickets')}
+                </Link>
                 <a
                     className="cta-btn"
                     href={SPONSORSHIP_URL}

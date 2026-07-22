@@ -13,6 +13,25 @@
         "attendance-success": "Vous êtes sur la liste !",
         "attendance-error": "Une erreur s'est produite. Réessayez.",
         "attendance-duplicate": "Vous êtes déjà sur la liste !",
-        "sponsorship-interest": "Formulaire de parrainage"
+        "sponsorship-interest": "Formulaire de parrainage",
+        "get-tickets": "Obtenir des billets"
+    },
+    "TicketsPage": {
+        "heading": "Obtenez votre billet",
+        "subheading": "Joignez-vous à nous à Montréal, QC — janvier 2027.",
+        "mock-banner": "Données de test affichées — connectez Ticket Tailor pour la mise en ligne.",
+        "error-banner": "Impossible de charger les données des billets. Veuillez réessayer sous peu.",
+        "vip-badge": "Populaire",
+        "general-feature-1": "Ateliers, conférences des commanditaires et activités sociales",
+        "general-feature-2": "Accès à toutes les sessions de la conférence",
+        "general-feature-3": "Matériel de la conférence",
+        "vip-feature-1": "Tout ce qui est inclus dans le billet Général",
+        "vip-feature-2": "Sessions de réseautage prioritaires",
+        "vip-feature-3": "Marchandise exclusive CUSEC 2027",
+        "buy-button": "Acheter",
+        "sold-out": "Épuisé",
+        "unavailable": "Pas encore disponible",
+        "checkout-not-configured": "Bientôt disponible",
+        "loading-checkout": "Chargement…"
     }
 }
