@@ -4,8 +4,11 @@ import "./globals.css";
 import "./styles/index.css";
 import "./styles/navbar.css";
 
-// if the splash was already seen this session, mark <html> static so the entrance animation doesn't replay on refresh (no flash).
+// if the splash was already seen this session, mark <html> static so the entrance animation doesn't replay on refresh (no flash)
 const SPLASH_ANIM_SCRIPT = `try{if(sessionStorage.getItem('cusecSplashSeen')){document.documentElement.classList.add('splash-static')}else{sessionStorage.setItem('cusecSplashSeen','1')}}catch(e){}`;
+
+// apply the reduce-motion class pre-paint from the saved toggle preference
+const MOTION_PREF_SCRIPT = `try{if(localStorage.getItem('cusecReduceMotion')==='1'){document.documentElement.classList.add('reduce-motion')}}catch(e){}`;
 
 export const metadata: Metadata = {
   metadataBase: new URL(
@@ -130,6 +133,9 @@ export default function RootLayout({
       <body>
         <Script id="splash-anim" strategy="beforeInteractive">
           {SPLASH_ANIM_SCRIPT}
+        </Script>
+        <Script id="motion-pref" strategy="beforeInteractive">
+          {MOTION_PREF_SCRIPT}
         </Script>
         {children}
       </body>

@@ -4,6 +4,7 @@ import {setRequestLocale} from 'next-intl/server';
 import {notFound} from 'next/navigation';
 import {routing} from '@/i18n/routing';
 import Navbar from '@/app/components/Navbar/Navbar';
+import { MotionPreferenceProvider } from '@/app/components/motion/MotionPreference';
 
 type Props = {
   children: React.ReactNode;
@@ -54,8 +55,10 @@ export default async function LocaleLayout({children, params}: Props) {
 
   return (
     <NextIntlClientProvider>
-      <Navbar />
-      {children}
+      <MotionPreferenceProvider>
+        <Navbar />
+        {children}
+      </MotionPreferenceProvider>
     </NextIntlClientProvider>
   );
 }

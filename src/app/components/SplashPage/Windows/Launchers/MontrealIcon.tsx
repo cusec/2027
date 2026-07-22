@@ -1,5 +1,4 @@
 "use client";
-import Image from 'next/image';
 import Win95Modal from '../Shell/Win95Modal';
 import { useSplashWindows } from '../../SplashWindowsContext';
 import useIsPhone from '../useIsPhone';
@@ -40,7 +39,7 @@ export default function MontrealIcon() {
     return (
         <>
             <button type="button" className="desktop-icon" onClick={onMapIconClick}>
-                <Image src="/assets/globe.png" alt="Globe icon" width={76} height={76} />
+                <img src="/assets/globe.webp" alt="Globe icon" width={76} height={76} />
                 <span>Montreal, QC</span>
             </button>
 
