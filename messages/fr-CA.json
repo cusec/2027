@@ -109,6 +109,14 @@
         "purchase-fallback-manual-link": "Toujours en traitement? Vérifiez votre courriel, ou liez votre courriel de billet manuellement depuis votre tableau de bord de la chasse au trésor une fois qu'il arrive.",
         "purchase-open-new-tab": "Des difficultés? Ouvrez la caisse dans un nouvel onglet — nous le détecterons automatiquement.",
         "nav-back": "← Retour",
-        "nav-cancel": "Annuler"
+        "nav-cancel": "Annuler",
+        "substep-about": "À propos de vous",
+        "substep-education": "Études",
+        "substep-professional": "Professionnel",
+        "substep-conference": "Conférence",
+        "substep-optional": "Facultatif",
+        "substep-progress": "Section {current} sur {total}",
+        "back-button": "Retour",
+        "save-continue-button": "Enregistrer et continuer"
     }
 }

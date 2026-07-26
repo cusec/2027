@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, type FormEvent } from "react";
+import { useMemo, useState, type FormEvent } from "react";
 import { useTranslations } from "next-intl";
 import { useRouter } from "@/i18n/navigation";
 import type { DemographicInfo } from "@/lib/interface";
@@ -41,6 +41,13 @@ const EMPTY_FORM: FormState = {
   cusecAssociation: "",
 };
 
+// The survey is long, so it's broken into sub-steps. Each renders a subset
+// of the fieldsets below; required-field validation is handled natively by
+// the browser, which only ever sees the fields currently in the DOM - so
+// pressing Continue validates exactly the current sub-step.
+const SECTIONS = ["about", "education", "professional", "conference", "optional"] as const;
+type SectionId = (typeof SECTIONS)[number];
+
 interface DemographicsFormProps {
   initialData: DemographicInfo | null;
 }
@@ -51,6 +58,21 @@ export default function DemographicsForm({ initialData }: DemographicsFormProps)
   const [form, setForm] = useState<FormState>(initialData ? { ...EMPTY_FORM, ...initialData } : EMPTY_FORM);
   const [error, setError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [stepIndex, setStepIndex] = useState(0);
+
+  const section: SectionId = SECTIONS[stepIndex];
+  const isLastSection = stepIndex === SECTIONS.length - 1;
+  const progressPct = useMemo(
+    () => Math.round(((stepIndex + 1) / SECTIONS.length) * 100),
+    [stepIndex]
+  );
+
+  const goToStep = (index: number) => {
+    setError(null);
+    setStepIndex(index);
+    // Long sections leave the viewport mid-form; start each one at the top.
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
 
   const set = <K extends keyof FormState>(key: K, value: FormState[K]) =>
     setForm((prev) => ({ ...prev, [key]: value }));
@@ -80,10 +102,21 @@ export default function DemographicsForm({ initialData }: DemographicsFormProps)
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
-    if (form.excitedEvents.length !== 3) {
+
+    // "Pick exactly 3" can't be expressed with native validation, so it's
+    // enforced here on the sub-step that owns those checkboxes.
+    if (section === "conference" && form.excitedEvents.length !== 3) {
       setError(t("error-pick-three-events"));
       return;
     }
+
+    // Not the last sub-step: this submit is just "Continue". Native
+    // validation already passed for the visible fields at this point.
+    if (!isLastSection) {
+      goToStep(stepIndex + 1);
+      return;
+    }
+
     setIsSubmitting(true);
     setError(null);
     try {
@@ -107,6 +140,41 @@ export default function DemographicsForm({ initialData }: DemographicsFormProps)
 
   return (
     <form className="wizard-form" onSubmit={handleSubmit}>
+      <div className="wizard-substep-progress">
+        <div className="wizard-substep-labels">
+          {SECTIONS.map((id, index) => {
+            const state =
+              index < stepIndex ? "done" : index === stepIndex ? "active" : "upcoming";
+            return (
+              <button
+                key={id}
+                type="button"
+                // Only completed sections are clickable - jumping ahead would
+                // skip the native validation gate on the sections between.
+                disabled={index > stepIndex}
+                onClick={() => goToStep(index)}
+                className={`wizard-substep-label wizard-substep-label--${state}`}
+              >
+                {t(`substep-${id}`)}
+              </button>
+            );
+          })}
+        </div>
+        <div
+          className="wizard-substep-bar"
+          role="progressbar"
+          aria-valuenow={stepIndex + 1}
+          aria-valuemin={1}
+          aria-valuemax={SECTIONS.length}
+        >
+          <div className="wizard-substep-bar-fill" style={{ width: `${progressPct}%` }} />
+        </div>
+        <p className="wizard-substep-count">
+          {t("substep-progress", { current: stepIndex + 1, total: SECTIONS.length })}
+        </p>
+      </div>
+
+      {section === "about" && (
       <fieldset className="wizard-fieldset">
         <legend>{t("section-personal")}</legend>
 
@@ -167,7 +235,9 @@ export default function DemographicsForm({ initialData }: DemographicsFormProps)
           />
         </label>
       </fieldset>
+      )}
 
+      {section === "about" && (
       <fieldset className="wizard-fieldset">
         <legend>{t("section-contact")}</legend>
 
@@ -191,7 +261,9 @@ export default function DemographicsForm({ initialData }: DemographicsFormProps)
           />
         </label>
       </fieldset>
+      )}
 
+      {section === "education" && (
       <fieldset className="wizard-fieldset">
         <legend>{t("section-education")}</legend>
 
@@ -261,7 +333,9 @@ export default function DemographicsForm({ initialData }: DemographicsFormProps)
           />
         </label>
       </fieldset>
+      )}
 
+      {section === "education" && (
       <fieldset className="wizard-fieldset">
         <legend>{t("section-school-community")}</legend>
 
@@ -282,7 +356,9 @@ export default function DemographicsForm({ initialData }: DemographicsFormProps)
           </select>
         </label>
       </fieldset>
+      )}
 
+      {section === "professional" && (
       <fieldset className="wizard-fieldset">
         <legend>{t("section-professional")}</legend>
 
@@ -324,7 +400,9 @@ export default function DemographicsForm({ initialData }: DemographicsFormProps)
           />
         </label>
       </fieldset>
+      )}
 
+      {section === "conference" && (
       <fieldset className="wizard-fieldset">
         <legend>{t("section-conference")}</legend>
 
@@ -373,7 +451,9 @@ export default function DemographicsForm({ initialData }: DemographicsFormProps)
           </p>
         </div>
       </fieldset>
+      )}
 
+      {section === "conference" && (
       <fieldset className="wizard-fieldset">
         <legend>{t("section-accommodation")}</legend>
 
@@ -389,7 +469,9 @@ export default function DemographicsForm({ initialData }: DemographicsFormProps)
           </label>
         </div>
       </fieldset>
+      )}
 
+      {section === "optional" && (
       <fieldset className="wizard-fieldset">
         <legend>{t("section-optional")}</legend>
 
@@ -417,12 +499,28 @@ export default function DemographicsForm({ initialData }: DemographicsFormProps)
           />
         </label>
       </fieldset>
+      )}
 
       {error && <p className="wizard-form-error">{error}</p>}
 
-      <button type="submit" className="cta-btn wizard-form-submit" disabled={isSubmitting}>
-        {isSubmitting ? t("submitting") : t("continue-button")}
-      </button>
+      <div className="wizard-form-actions">
+        {stepIndex > 0 && (
+          <button
+            type="button"
+            className="cta-btn wizard-form-back"
+            onClick={() => goToStep(stepIndex - 1)}
+          >
+            {t("back-button")}
+          </button>
+        )}
+        <button type="submit" className="cta-btn wizard-form-submit" disabled={isSubmitting}>
+          {isSubmitting
+            ? t("submitting")
+            : isLastSection
+              ? t("save-continue-button")
+              : t("continue-button")}
+        </button>
+      </div>
     </form>
   );
 }

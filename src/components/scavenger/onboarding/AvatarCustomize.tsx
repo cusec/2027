@@ -36,7 +36,7 @@ const AvatarCustomize = ({ onComplete }: AvatarCustomizeProps) => {
           onClick={onComplete}
           className="w-full py-2 rounded-lg bg-teal-500 text-white font-semibold hover:bg-teal-600 transition-colors cursor-pointer"
         >
-          Continue to Dashboard
+          Continue
         </button>
       </div>
     </div>

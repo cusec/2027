@@ -230,9 +230,86 @@
     border-bottom: 2px solid #2b2b2b;
 }
 
+.wizard-form-actions {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+}
+
 .wizard-form-submit {
-    align-self: center;
     min-width: 220px;
+}
+
+.wizard-form-back {
+    min-width: 110px;
+}
+
+/* Demographics sub-step progress */
+
+.wizard-substep-progress {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.wizard-substep-labels {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    justify-content: center;
+}
+
+.wizard-substep-label {
+    font-family: "Retropix", "MS Sans Serif", monospace;
+    font-size: 11px;
+    padding: 0.3rem 0.7rem;
+    background: #c0c0c0;
+    color: #6b6b6b;
+    border-top: 2px solid #ffffff;
+    border-left: 2px solid #ffffff;
+    border-right: 2px solid #2b2b2b;
+    border-bottom: 2px solid #2b2b2b;
+    box-shadow: inset 1px 1px 0 #dbdbdb;
+}
+
+.wizard-substep-label--active {
+    background: #ffd447;
+    color: #103436;
+}
+
+.wizard-substep-label--done {
+    background: #d8ead8;
+    color: #103436;
+}
+
+.wizard-substep-label:disabled {
+    cursor: default;
+}
+
+.wizard-substep-bar {
+    height: 14px;
+    background: #ffffff;
+    border-top: 2px solid #2b2b2b;
+    border-left: 2px solid #2b2b2b;
+    border-right: 2px solid #ffffff;
+    border-bottom: 2px solid #ffffff;
+    overflow: hidden;
+}
+
+.wizard-substep-bar-fill {
+    height: 100%;
+    background: #103436;
+    transition: width 0.25s ease-out;
+}
+
+.wizard-substep-count {
+    text-align: center;
+    font-family: "Retropix", "MS Sans Serif", monospace;
+    font-size: 11px;
+    color: #103436;
+    margin: 0;
 }
 
 .wizard-purchase-status {

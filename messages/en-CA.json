@@ -109,6 +109,14 @@
         "purchase-fallback-manual-link": "Still processing? Check your email, or link your ticket email manually from your scavenger hunt dashboard once it arrives.",
         "purchase-open-new-tab": "Trouble checking out? Open checkout in a new tab — we'll detect it automatically.",
         "nav-back": "← Back",
-        "nav-cancel": "Cancel"
+        "nav-cancel": "Cancel",
+        "substep-about": "About You",
+        "substep-education": "Education",
+        "substep-professional": "Professional",
+        "substep-conference": "Conference",
+        "substep-optional": "Optional",
+        "substep-progress": "Section {current} of {total}",
+        "back-button": "Back",
+        "save-continue-button": "Save & Continue"
     }
 }
