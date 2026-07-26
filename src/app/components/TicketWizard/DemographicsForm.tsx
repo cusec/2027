@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState, type FormEvent } from "react";
+import { useEffect, useMemo, useState, type FormEvent } from "react";
 import { useTranslations } from "next-intl";
 import { useRouter } from "@/i18n/navigation";
 import type { DemographicInfo } from "@/lib/interface";
@@ -50,15 +50,57 @@ type SectionId = (typeof SECTIONS)[number];
 
 interface DemographicsFormProps {
   initialData: DemographicInfo | null;
+  userId: string;
 }
 
-export default function DemographicsForm({ initialData }: DemographicsFormProps) {
+export default function DemographicsForm({ initialData, userId }: DemographicsFormProps) {
   const t = useTranslations("TicketWizard");
   const router = useRouter();
   const [form, setForm] = useState<FormState>(initialData ? { ...EMPTY_FORM, ...initialData } : EMPTY_FORM);
   const [error, setError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [stepIndex, setStepIndex] = useState(0);
+  const [restored, setRestored] = useState(false);
+
+  // Draft persistence: the survey spans 5 sub-steps but only saves to the
+  // server at the end, so without this a refresh loses every answer.
+  //
+  // Note this puts confidential survey data (names, emails, dietary
+  // restrictions) in the browser's localStorage: unencrypted, readable by
+  // any script on this origin, and persistent on shared machines. Mitigated
+  // by namespacing per user and clearing on successful submit. See
+  // docs/ticket-tailor/KNOWN_ISSUES.md (C2).
+  const storageKey = `cusec:demographics-draft:${userId}`;
+
+  // Restore has to happen in an effect, not a lazy initializer: this
+  // component is server-rendered, so reading localStorage during render
+  // would desync the client from the server HTML.
+  useEffect(() => {
+    try {
+      const raw = window.localStorage.getItem(storageKey);
+      if (raw) {
+        const draft = JSON.parse(raw) as { form?: Partial<FormState>; stepIndex?: number };
+        if (draft.form) setForm(prev => ({ ...prev, ...draft.form }));
+        if (typeof draft.stepIndex === "number" && draft.stepIndex < SECTIONS.length) {
+          setStepIndex(draft.stepIndex);
+        }
+      }
+    } catch {
+      // corrupt/unavailable storage - just start fresh
+    }
+    setRestored(true);
+  }, [storageKey]);
+
+  // Skipped until `restored` flips, so the empty initial state can't
+  // overwrite a saved draft on first mount.
+  useEffect(() => {
+    if (!restored) return;
+    try {
+      window.localStorage.setItem(storageKey, JSON.stringify({ form, stepIndex }));
+    } catch {
+      // quota/private mode - drafting is best-effort
+    }
+  }, [restored, form, stepIndex, storageKey]);
 
   const section: SectionId = SECTIONS[stepIndex];
   const isLastSection = stepIndex === SECTIONS.length - 1;
@@ -129,6 +171,13 @@ export default function DemographicsForm({ initialData }: DemographicsFormProps)
       if (!res.ok || !data.success) {
         setError(data.error || t("error-generic"));
         return;
+      }
+      // Saved server-side now - don't leave confidential answers sitting in
+      // the browser.
+      try {
+        window.localStorage.removeItem(storageKey);
+      } catch {
+        // best-effort
       }
       router.push("/tickets/avatar");
     } catch {

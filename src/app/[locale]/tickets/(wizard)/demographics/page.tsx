@@ -44,6 +44,7 @@ export default async function DemographicsPage() {
       </div>
       <DemographicsForm
         initialData={existing ? JSON.parse(JSON.stringify(existing)) : null}
+        userId={String(user._id)}
       />
     </div>
   );

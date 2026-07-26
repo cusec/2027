@@ -9,7 +9,8 @@ diagram this was built against.
 
 > **Setting this up?** `REQUIRED.md` in this folder is the human checklist —
 > custom domain, DNS, webhook registration, env vars. This doc is the
-> technical/architectural reference.
+> technical/architectural reference, and `KNOWN_ISSUES.md` tracks unverified
+> assumptions and known weak spots.
 
 ---
 
@@ -31,7 +32,8 @@ Two ticket-purchase flows exist in the flow diagram:
                              Logged out -> "Sign Up" (Auth0, screen_hint=signup)
                              Logged in  -> redirects to whichever step is incomplete
 
-/tickets/demographics        ~25-field confidential survey -> DemographicInfo collection
+/tickets/demographics        ~25-field confidential survey, split into 5 sub-steps
+                             (localStorage draft; saved to DemographicInfo on submit)
 /tickets/avatar              Existing placeholder AvatarCustomize component, reused as-is
 /tickets/purchase            TicketCard/TicketsSection + checkout in an on-page modal
 ```
