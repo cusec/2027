@@ -8,12 +8,16 @@ export interface WizardStatus {
   avatarComplete: boolean;
   purchaseComplete: boolean;
   linkedEmail: string | null;
+  purchasedTicketName: string | null;
 }
 
 interface LeanWizardUser {
   _id: unknown;
   linked_email?: string;
-  ticketWizard?: { avatarCompletedAt?: Date | string | null };
+  ticketWizard?: {
+    avatarCompletedAt?: Date | string | null;
+    purchasedTicketName?: string | null;
+  };
 }
 
 // Every gate re-derives its own prerequisite from the real underlying data
@@ -30,6 +34,7 @@ export async function getWizardStatus(email: string): Promise<WizardStatus> {
       avatarComplete: false,
       purchaseComplete: false,
       linkedEmail: null,
+      purchasedTicketName: null,
     };
   }
 
@@ -49,5 +54,6 @@ export async function getWizardStatus(email: string): Promise<WizardStatus> {
     avatarComplete: !!user.ticketWizard?.avatarCompletedAt,
     purchaseComplete,
     linkedEmail: user.linked_email ?? null,
+    purchasedTicketName: user.ticketWizard?.purchasedTicketName ?? null,
   };
 }

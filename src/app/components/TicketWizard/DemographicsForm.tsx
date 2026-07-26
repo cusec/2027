@@ -8,7 +8,6 @@ import {
   TSHIRT_SIZE_OPTIONS,
   DEGREE_LEVEL_OPTIONS,
   HEAD_DELEGATE_OPTIONS,
-  TICKET_TYPE_OPTIONS,
   PREVIOUSLY_ATTENDED_OPTIONS,
   EXCITED_EVENT_OPTIONS,
 } from "@/lib/ticketWizardOptions";
@@ -33,7 +32,6 @@ const EMPTY_FORM: FormState = {
   resumeUrl: "",
   githubUrl: "",
   linkedinUrl: "",
-  preferredTicketType: "general",
   howDidYouHear: "",
   previouslyAttendedCUSEC: [],
   excitedEvents: [],
@@ -329,23 +327,6 @@ export default function DemographicsForm({ initialData }: DemographicsFormProps)
 
       <fieldset className="wizard-fieldset">
         <legend>{t("section-conference")}</legend>
-
-        <label className="wizard-field">
-          {t("field-ticket-type")}
-          <select
-            required
-            value={form.preferredTicketType}
-            onChange={(e) =>
-              set("preferredTicketType", e.target.value as FormState["preferredTicketType"])
-            }
-          >
-            {TICKET_TYPE_OPTIONS.map((option) => (
-              <option key={option.value} value={option.value}>
-                {option.label}
-              </option>
-            ))}
-          </select>
-        </label>
 
         <label className="wizard-field wizard-field--wide">
           {t("field-how-did-you-hear")}

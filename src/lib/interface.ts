@@ -38,6 +38,8 @@ export interface Auth0User {
 export interface TicketWizardProgress {
   currentStep: "demographics" | "avatar" | "purchase" | "completed";
   avatarCompletedAt?: string | null;
+  purchasedTicketTypeId?: string | null;
+  purchasedTicketName?: string | null;
 }
 
 export interface DbUser {
@@ -275,7 +277,6 @@ export interface DemographicInfo {
   resumeUrl?: string;
   githubUrl?: string;
   linkedinUrl?: string;
-  preferredTicketType: "general" | "vip";
   howDidYouHear?: string;
   previouslyAttendedCUSEC: string[];
   excitedEvents: string[];

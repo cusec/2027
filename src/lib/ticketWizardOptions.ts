@@ -20,11 +20,6 @@ export const HEAD_DELEGATE_OPTIONS: { value: string; label: string }[] = [
   { value: "unsure", label: "Not sure" },
 ];
 
-export const TICKET_TYPE_OPTIONS: { value: string; label: string }[] = [
-  { value: "general", label: "General" },
-  { value: "vip", label: "VIP" },
-];
-
 export const PREVIOUSLY_ATTENDED_OPTIONS = ["2024", "2025", "2026", "none"];
 
 // Placeholder until the real conference schedule exists (see timeline notes

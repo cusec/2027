@@ -7,6 +7,10 @@ purchase wizard, plus everything learned by testing against a real Ticket
 Tailor event. See `ticket-tailor-flow.png` in this folder for the target flow
 diagram this was built against.
 
+> **Setting this up?** `REQUIRED.md` in this folder is the human checklist —
+> custom domain, DNS, webhook registration, env vars. This doc is the
+> technical/architectural reference.
+
 ---
 
 ## What this is
@@ -29,7 +33,7 @@ Two ticket-purchase flows exist in the flow diagram:
 
 /tickets/demographics        ~25-field confidential survey -> DemographicInfo collection
 /tickets/avatar              Existing placeholder AvatarCustomize component, reused as-is
-/tickets/purchase            Existing TicketCard/TicketsSection + TTWidget popup checkout
+/tickets/purchase            TicketCard/TicketsSection + checkout in an on-page modal
 ```
 
 Each step is a real sub-route (not client-only state), so a user who closes
@@ -52,6 +56,58 @@ Tailor webhook (`order.created`) now also matches the buyer's email against
 skipping the manual "link your email" step entirely when the purchase email
 matches the account email. The manual `/api/users/link-email` flow still
 exists as a fallback if it doesn't match.
+
+## The purchase step (how checkout actually renders)
+
+`/tickets/purchase` shows the ticket cards (live name/price/availability from
+the API, with the perk list) up front. Clicking **Buy** opens a Win95-styled
+modal containing the Ticket Tailor checkout in an iframe — the user never
+leaves the page.
+
+**We render that iframe ourselves rather than using Ticket Tailor's
+`widget.js`.** Their script replaces itself with an iframe-resizer frame that
+has `scrolling="no"` and depends on a cross-origin height handshake; when the
+handshake doesn't land, the frame sits at its initial size with scrolling
+disabled — i.e. a checkout that's visibly cut off and can't be interacted
+with. Owning the iframe means we control its size and keep it scrollable.
+`getTicketWidgetConfig()` exposes `checkoutEmbedUrl`, which is just the
+public event URL plus the same query params `widget.js` appends
+(`?widget=true&minimal=true&show_logo=false&bg_fill=false`), so the embed
+renders identically without the script.
+
+### ⚠️ In-page checkout REQUIRES a custom domain (and never works on localhost)
+
+The embedded checkout needs to set session cookies. Served from
+`tickettailor.com` inside a page on another domain, those cookies are
+**third-party** and every modern browser blocks them — so Ticket Tailor
+detects it can't hold a session and deliberately shows *"Checkout has opened
+in a new tab or window"* rather than failing mid-payment. This is a browser
+security boundary; no iframe/CSS/code change can defeat it.
+
+The only real fix is Ticket Tailor's **custom domain** feature: point a
+subdomain that shares this site's registrable domain (e.g.
+`tickets.2027.cusec.net`, same `cusec.net` as the site) at Ticket Tailor via
+CNAME, then set `TICKET_TAILOR_CUSTOM_DOMAIN`. `getTicketWidgetConfig()`
+builds the embed URL from that host, making the cookies first-party and
+letting checkout complete inline.
+
+Consequences to plan around:
+
+- **It can never work on localhost** — `localhost` can't share a registrable
+  domain with the Ticket Tailor host. Verify in-page checkout on a deployed
+  environment only.
+- **Until the custom domain is live**, the modal shows a "open checkout in a
+  new tab" link. Status polling continues while the modal is open, so a
+  purchase completed in the new tab still advances the wizard automatically —
+  the flow is completable today, just not fully in-page.
+- The custom-domain URL path (`/events/{slug}/{id}`) is assumed to mirror the
+  canonical one; confirm on first connection.
+
+Because a cross-origin iframe gives no "payment succeeded" callback, the page
+polls `/api/ticket-wizard/status` every 4s while open. When the webhook lands
+and auto-links the account, the modal closes and the confirmation state
+appears with the purchased ticket name and a **Go to Dashboard** link. Cards
+matching a completed purchase render as disabled **"Purchased"**.
 
 ## New/changed files
 
@@ -76,7 +132,7 @@ during testing (see gotchas):
 TICKET_TAILOR_API_KEY=sk_...
 TICKET_TAILOR_EVENT_ID=            # the PUBLIC id, e.g. 2329159 (see below — do not use the internal ev_ id here)
 TICKET_TAILOR_BOX_OFFICE_NAME=     # the URL slug, e.g. "cusec" — NOT the display name
-TICKET_TAILOR_CUSTOM_DOMAIN=       # leave truly blank until a custom domain is connected
+TICKET_TAILOR_CUSTOM_DOMAIN=       # e.g. tickets.2027.cusec.net once CNAME'd — REQUIRED for in-page checkout; blank = checkout opens in a new tab
 TICKET_TAILOR_WEBHOOK_SECRET=
 ```
 
@@ -93,28 +149,58 @@ calling the real API directly:
    event, `default_ticket_types` on an event series) — there's no separate
    sub-resource endpoint.
 2. **Two different "Event ID"s exist for the same event.** The public one
-   (shown in checkout/box office URLs, e.g. `buytickets.at/cusec/2329159`,
-   and what `TTWidget.loadEvent()` needs) belongs to the **event series**
-   resource — Ticket Tailor wraps every event in a series, even a one-off.
-   The internal single-**event-occurrence** id (`ev_8760377`) is a different
-   number, only used server-side. `getTicketTypes()` now fetches
-   `GET /v1/event_series/es_{id}` (reading `default_ticket_types`) first,
-   falling back to `GET /v1/events/ev_{id}` (reading `ticket_types`) for box
-   offices not using series. **`TICKET_TAILOR_EVENT_ID` must be the public
-   id** — using the internal occurrence id breaks the widget popup with
-   "This page is not available right now."
+   (shown in checkout/box office URLs, e.g. `buytickets.at/cusec/2329159`)
+   belongs to the **event series** resource — Ticket Tailor wraps every event
+   in a series, even a one-off. The internal single-**event-occurrence** id
+   (`ev_8760377`) is a different number, only used server-side.
+   `getTicketTypes()` now fetches `GET /v1/event_series/es_{id}` (reading
+   `default_ticket_types`) first, falling back to `GET /v1/events/ev_{id}`
+   (reading `ticket_types`) for box offices not using series.
+   **`TICKET_TAILOR_EVENT_ID` must be the public id** — using the internal
+   occurrence id yields "This page is not available right now."
+   Note the API endpoints require the prefixed form (`es_`/`ev_`); the bare
+   number 404s, so the code adds the prefix itself.
 3. **`TICKET_TAILOR_BOX_OFFICE_NAME` is the URL slug**, not the display
    name — e.g. `cusec`, not `"Canadian University Software Engineering
-   Conference"`. Using the display name breaks the widget popup silently.
+   Conference"`. Using the display name breaks checkout silently.
 4. **Available quantity is the `quantity` field**, not `quantity_available`
    (that field doesn't exist on the real payload). `quantity_total` is the
    original capacity.
 5. **An empty-string env var is not the same as unset.** `getTicketWidgetConfig()`
    used `??` (nullish coalescing), which doesn't catch `""` — so
    `TICKET_TAILOR_CUSTOM_DOMAIN=` (present but blank, which is correct until
-   a custom domain is connected) was passed to the widget as an empty
-   string instead of `null`, causing a DNS resolution error in the popup.
-   Fixed by switching to `||`.
+   a custom domain is connected) was passed through as an empty string
+   instead of `null`, causing a DNS resolution error. Fixed by switching
+   to `||`.
+6. **Two public URL forms; use the canonical one.** The API reports an event
+   series' `url` as `buytickets.at/{slug}/{id}`, but that **301-redirects**
+   to `www.tickettailor.com/events/{slug}/{id}`. Both work; the code builds
+   the canonical `tickettailor.com` form so the iframe doesn't take a
+   redirect hop on every open.
+7. **`widget.js` matches its container class with strict equality.** It finds
+   its render target via `element.parentNode.className === 'tt-widget'` — so
+   `class="tt-widget my-styles"` makes it silently render nothing. (Moot now
+   that we render the iframe directly, but worth knowing if the script is
+   ever reintroduced: the styling must live on an ancestor, and the script
+   tag must be a real child of the exactly-classed div, which also rules out
+   `next/script`, whose load strategies relocate the tag to `<body>`.)
+8. **A raw JSX `<script>` tag never executes.** React deliberately renders
+   script tags inert on the client. Third-party embed scripts have to be
+   injected imperatively (`document.createElement`) or via `next/script` —
+   though see the caveat in (7).
+
+## Order payload shape (confirmed via `GET /v1/orders`)
+
+The webhook's `order.created` payload was previously guessed at. Reading real
+orders from the API confirmed the fields both helpers in
+`src/lib/ticketTailor.ts` rely on:
+
+- `buyer_details.{email,first_name,last_name,name}` → `extractPurchaser()`
+  (the other paths it checks are now just defensive fallbacks).
+- `line_items[].item_id` (ticket type id) and `line_items[].description`
+  (display name) → `extractPurchasedTicket()`, stored on the user as
+  `ticketWizard.purchasedTicketTypeId` / `purchasedTicketName`. Only the
+  first line item is read.
 
 ## Testing against a real event
 
@@ -123,8 +209,11 @@ calling the real API directly:
    id/slug from the checkout URL, not any internal id.
 3. `npm run dev` → `/tickets/purchase` should show `source: "live"` in
    `/api/ticket-types` and the real ticket name/price/quantity.
-4. Click Buy — the Ticket Tailor popup should open in place, not redirect
-   off-site, and not show a DNS or "page not available" error.
+4. Click Buy — the checkout modal opens in place and the embedded checkout
+   should be scrollable and clickable. **Note:** it will say "Checkout has
+   opened in a new tab" at the payment step unless a custom domain is
+   configured *and* you're testing on a deployed environment (not localhost)
+   — see the ⚠️ section above. That's expected, not a regression.
 5. For the webhook/auto-link path: see `scripts/test-ticket-webhook.mjs` for
    local testing without a real purchase, or use Ticket Tailor's dashboard
    "Send test webhook" button once a webhook is registered pointing at
@@ -135,14 +224,19 @@ calling the real API directly:
 - **"Pick 3 events" option list is a placeholder** (`EXCITED_EVENT_OPTIONS`
   in `src/lib/ticketWizardOptions.ts`) — the real conference schedule
   doesn't exist yet.
-- **Custom domain not connected.** Until `2027.cusec.net` is added in Ticket
-  Tailor's dashboard, some users (Safari/Firefox, third-party-cookie
-  blocking) will still get redirected to a new tab during checkout. Not a
-  code issue — this is Ticket Tailor dashboard setup, tracked as a launch
-  blocker.
-- **Ticket Tailor webhook payload shape for `extractPurchaser()`** is still
-  based on best-effort field-name guessing (unconfirmed against a real
-  payload) — verify once a real (or `$0` test) purchase fires the webhook.
+- **Custom domain not connected — the one blocker for in-page checkout.**
+  Until a `cusec.net` subdomain is CNAME'd to Ticket Tailor and set as
+  `TICKET_TAILOR_CUSTOM_DOMAIN`, checkout bounces to a new tab for everyone.
+  Dashboard + DNS setup, not code. See the ⚠️ section above.
+- **Purchased-card matching is name-based.** `TicketsSection` marks a card
+  "Purchased" by comparing the webhook's `line_items[].description` to the
+  ticket type's name. Ticket Tailor sometimes prefixes descriptions (real
+  orders show e.g. `"UManitoba Tickets - UManitoba General Admission"`), so
+  if this ever mismatches, switch to comparing the already-stored
+  `ticketWizard.purchasedTicketTypeId` against the ticket's `id`.
+- **The webhook auto-link path hasn't been exercised end-to-end yet** — the
+  order payload field names are confirmed (see below), but a real purchase
+  → webhook → auto-link → confirmation round trip still needs one live run.
 - **HD bulk-purchase flow** is not built — out of scope per the flow
   diagram's own unresolved note about mapping shared ticket codes to
   students.

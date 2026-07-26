@@ -1,6 +1,7 @@
 import type React from "react";
 import { auth0 } from "@/lib/auth0";
 import { findOrCreateUser } from "@/lib/userService";
+import { reconcileTicketPurchase } from "@/lib/ticketLinking";
 import { RegisteredUser } from "@/lib/models";
 import Dashboard from "@/components/scavenger/Dashboard";
 import type { Auth0User } from "@/lib/interface";
@@ -17,10 +18,25 @@ export default async function ScavengerPage() {
   let dbUser = null;
   let emailVerified = false;
   if (user?.email) {
-    const mongoUser = await findOrCreateUser({
+    let mongoUser = await findOrCreateUser({
       email: user.email,
       name: user.name || "Hunter",
     });
+
+    // If this account isn't linked to a ticket yet, ask Ticket Tailor whether
+    // this email actually bought one and link it on the spot. Covers tickets
+    // purchased before the account existed, and any purchase whose webhook
+    // never arrived - so simply logging in here is enough to pick it up.
+    if (mongoUser && !mongoUser.linked_email) {
+      const result = await reconcileTicketPurchase(user.email, user.name || "Hunter");
+      if (result.linked) {
+        mongoUser = await findOrCreateUser({
+          email: user.email,
+          name: user.name || "Hunter",
+        });
+      }
+    }
+
     if (mongoUser) {
       const plainUser = mongoUser.toObject();
       dbUser = JSON.parse(

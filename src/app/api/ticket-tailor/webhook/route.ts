@@ -1,12 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
-import connectMongoDB from "@/lib/mongodb";
-import { RegisteredUser, User, DemographicInfo } from "@/lib/models";
-import { extractPurchaser, verifyTicketTailorWebhook } from "@/lib/ticketTailor";
+import { extractPurchaser, extractPurchasedTicket, verifyTicketTailorWebhook } from "@/lib/ticketTailor";
+import { linkTicketPurchase } from "@/lib/ticketLinking";
 
-// Pre-seeds the RegisteredUser allowlist that /api/users/link-email checks
-// against, so a ticket buyer can immediately link their email when they log
-// into /scavenger. This never touches `isLinked` on an existing record —
-// linking itself still only happens through the onboarding flow.
+// Seeds the RegisteredUser allowlist that /api/users/link-email checks
+// against, and auto-links the buyer's account when their purchase email
+// matches their CUSEC account email. All of that lives in
+// linkTicketPurchase(), shared with the API reconciliation path so the two
+// can't diverge.
 export async function POST(request: NextRequest) {
   const secret = process.env.TICKET_TAILOR_WEBHOOK_SECRET;
   if (!secret) {
@@ -41,66 +41,11 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ ok: true, skipped: "no-email" });
   }
 
-  await connectMongoDB();
-
-  let registeredUser = await RegisteredUser.findOne({ linkedEmail: purchaser.email });
-  if (registeredUser) {
-    if (!registeredUser.name && purchaser.name) {
-      registeredUser.name = purchaser.name;
-      await registeredUser.save();
-    }
-  } else {
-    try {
-      registeredUser = await RegisteredUser.create({
-        linkedEmail: purchaser.email,
-        name: purchaser.name,
-        isLinked: false,
-      });
-    } catch (err: unknown) {
-      // Duplicate key from a concurrent/retried delivery for the same email
-      // is not an error here — the record already exists, which is the goal.
-      const isDuplicateKey =
-        typeof err === "object" && err !== null && "code" in err && err.code === 11000;
-      if (!isDuplicateKey) throw err;
-      registeredUser = await RegisteredUser.findOne({ linkedEmail: purchaser.email });
-    }
-  }
-
-  // Ticket-wizard auto-link: if the buyer's Ticket Tailor email matches an
-  // authenticated wizard User's Auth0 account email exactly, link them
-  // automatically instead of requiring the manual /api/users/link-email
-  // step. Same safety checks as that route (no cross-linking); if nothing
-  // matches, RegisteredUser is still upserted above and the manual flow
-  // remains available as the fallback.
-  if (registeredUser && !registeredUser.isLinked) {
-    const matchedUser = await User.findOne({ email: purchaser.email });
-    if (matchedUser && !matchedUser.linked_email) {
-      const alreadyLinkedElsewhere = await User.findOne({
-        linked_email: purchaser.email,
-      });
-      if (!alreadyLinkedElsewhere) {
-        matchedUser.linked_email = purchaser.email;
-        matchedUser.ticketWizard.currentStep = "completed";
-        await matchedUser.save();
-
-        registeredUser.isLinked = true;
-
-        const demographics = await DemographicInfo.findOne({
-          user: matchedUser._id,
-        }).lean<{ studentEmail?: string; personalEmail?: string }>();
-        if (demographics) {
-          if (!registeredUser.studentEmail) {
-            registeredUser.studentEmail = demographics.studentEmail;
-          }
-          if (!registeredUser.personalEmail) {
-            registeredUser.personalEmail = demographics.personalEmail;
-          }
-        }
-
-        await registeredUser.save();
-      }
-    }
-  }
+  await linkTicketPurchase(
+    purchaser.email,
+    purchaser.name,
+    extractPurchasedTicket(envelope.payload ?? {})
+  );
 
   return NextResponse.json({ ok: true });
 }

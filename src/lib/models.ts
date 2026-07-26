@@ -71,6 +71,11 @@ const userSchema = new Schema(
             default: "demographics",
           },
           avatarCompletedAt: { type: Date, default: null },
+          // Best-effort, set from the order.created webhook's line_items -
+          // used only to show which ticket the user has on the purchase
+          // confirmation screen, not for any access-control decision.
+          purchasedTicketTypeId: { type: String, default: null },
+          purchasedTicketName: { type: String, default: null },
         },
         { _id: false }
       ),
@@ -326,11 +331,6 @@ const demographicInfoSchema = new Schema(
     linkedinUrl: { type: String, default: "" },
 
     // Conference Information
-    preferredTicketType: {
-      type: String,
-      required: true,
-      enum: ["general", "vip"],
-    },
     howDidYouHear: { type: String, default: "" },
     previouslyAttendedCUSEC: { type: [String], default: [] },
     excitedEvents: {

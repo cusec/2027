@@ -11,15 +11,15 @@ interface TicketCardProps {
   ticket: TicketType;
   isVip: boolean;
   checkoutConfigured: boolean;
-  checkoutReady: boolean;
-  onBuy: () => void;
+  purchased?: boolean;
+  onBuy?: () => void;
 }
 
 export default function TicketCard({
   ticket,
   isVip,
   checkoutConfigured,
-  checkoutReady,
+  purchased = false,
   onBuy,
 }: TicketCardProps) {
   const t = useTranslations("TicketsPage");
@@ -31,7 +31,10 @@ export default function TicketCard({
   let buttonLabel = t("buy-button");
   let disabled = false;
 
-  if (ticket.status === "sold_out") {
+  if (purchased) {
+    buttonLabel = t("purchased");
+    disabled = true;
+  } else if (ticket.status === "sold_out") {
     buttonLabel = t("sold-out");
     disabled = true;
   } else if (ticket.status === "unavailable") {
@@ -40,13 +43,14 @@ export default function TicketCard({
   } else if (!checkoutConfigured) {
     buttonLabel = t("checkout-not-configured");
     disabled = true;
-  } else if (!checkoutReady) {
-    buttonLabel = t("loading-checkout");
-    disabled = true;
   }
 
   return (
-    <div className={`ticket-card${isVip ? " ticket-card--vip" : ""}`}>
+    <div
+      className={`ticket-card${isVip ? " ticket-card--vip" : ""}${
+        purchased ? " ticket-card--purchased" : ""
+      }`}
+    >
       {isVip && <span className="ticket-card-badge">{t("vip-badge")}</span>}
       <h2 className="ticket-card-name">{ticket.name}</h2>
       <p className="ticket-card-price">{formatPrice(ticket.priceCents)}</p>

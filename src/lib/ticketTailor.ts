@@ -17,6 +17,13 @@ export interface TicketWidgetConfig {
   boxOfficeName: string | null;
   eventId: string | null;
   customDomain: string | null;
+  // Public event URL, e.g. https://buytickets.at/cusec/2329159. Computed
+  // from boxOfficeName + eventId rather than a separate env var, so there is
+  // a single source of truth for the event identity.
+  eventUrl: string | null;
+  // Same URL plus the query params Ticket Tailor's widget.js would append,
+  // so it can be used as a plain <iframe src> without loading their script.
+  checkoutEmbedUrl: string | null;
 }
 
 const MOCK_TICKETS: TicketType[] = [
@@ -135,10 +142,41 @@ export function getTicketWidgetConfig(): TicketWidgetConfig {
   // TICKET_TAILOR_CUSTOM_DOMAIN commonly is until a custom domain is
   // connected) falls back to null instead of being passed to the widget as
   // an empty string, which the widget script fails to resolve as a host.
+  const boxOfficeName = process.env.TICKET_TAILOR_BOX_OFFICE_NAME || null;
+  const eventId = process.env.TICKET_TAILOR_EVENT_ID || null;
+  const customDomain = process.env.TICKET_TAILOR_CUSTOM_DOMAIN || null;
+
+  // Serving checkout from a custom domain that shares a registrable domain
+  // with this site (e.g. tickets.2027.cusec.net under cusec.net) is what
+  // makes the embedded checkout's cookies FIRST-party. Without it the
+  // browser blocks them and Ticket Tailor deliberately bounces checkout to a
+  // new tab ("Checkout has opened in a new tab or window") - so in-page
+  // checkout genuinely cannot work until this is configured, and never works
+  // on localhost. See the custom-domain note in docs/ticket-tailor.
+  //
+  // The event_series API reports its `url` as the buytickets.at short-domain,
+  // but that 301s to this canonical path - use the canonical form directly so
+  // the iframe doesn't eat a redirect hop on every open.
+  const host = customDomain
+    ? customDomain.replace(/^https?:\/\//, "").replace(/\/+$/, "")
+    : "www.tickettailor.com";
+  const eventUrl =
+    boxOfficeName && eventId
+      ? `https://${host}/events/${boxOfficeName}/${eventId}`
+      : null;
+
   return {
-    boxOfficeName: process.env.TICKET_TAILOR_BOX_OFFICE_NAME || null,
-    eventId: process.env.TICKET_TAILOR_EVENT_ID || null,
-    customDomain: process.env.TICKET_TAILOR_CUSTOM_DOMAIN || null,
+    boxOfficeName,
+    eventId,
+    customDomain,
+    eventUrl,
+    // Query params copied from widget.js's own iframe-URL construction, so
+    // the embed renders identically to their official widget without taking
+    // on its script + iframe-resizer handshake (which silently leaves the
+    // frame unsized and unscrollable when it fails).
+    checkoutEmbedUrl: eventUrl
+      ? `${eventUrl}?widget=true&minimal=true&show_logo=false&bg_fill=false`
+      : null,
   };
 }
 
@@ -200,11 +238,9 @@ export function verifyTicketTailorWebhook(
   return crypto.timingSafeEqual(expectedBuf, providedBuf);
 }
 
-// Best-effort extraction across the plausible shapes Ticket Tailor's Order
-// resource may use for its buyer fields — their docs site doesn't statically
-// expose a payload example (it's rendered client-side). Verify this against
-// a real delivery (dashboard -> Webhooks -> Send test webhook, or a real $0
-// test purchase) and tighten the field paths once the true shape is known.
+// Confirmed against a real Order via GET /v1/orders: buyer fields live under
+// `buyer_details` (email, first_name, last_name, name). The other lookup
+// paths are kept as defensive fallbacks in case of API/version variance.
 export function extractPurchaser(payload: Record<string, unknown>): TicketPurchaser | null {
   const buyer = (payload.buyer_details ??
     payload.buyer ??
@@ -224,4 +260,85 @@ export function extractPurchaser(payload: Record<string, unknown>): TicketPurcha
   const name = typeof rawName === "string" && rawName.trim() ? rawName.trim() : email;
 
   return { email, name };
+}
+
+export interface PurchasedTicket {
+  ticketTypeId: string | null;
+  name: string | null;
+}
+
+// Confirmed against a real Order via GET /v1/orders: `line_items[].item_id`
+// is the purchased item's id and `.description` its display name.
+//
+// Line items aren't only ticket types - an order that includes a bundle
+// lists the bundle (`bu_...`) alongside the ticket (`tt_...`), and the
+// bundle can come first. So prefer the first `tt_`-prefixed item and only
+// fall back to the first line item if there isn't one. Multi-ticket orders
+// aren't disambiguated further; this is just for showing "which ticket you
+// have" on the confirmation screen.
+export function extractPurchasedTicket(payload: Record<string, unknown>): PurchasedTicket {
+  const lineItems = (
+    Array.isArray(payload.line_items) ? payload.line_items : []
+  ) as Record<string, unknown>[];
+
+  const ticketItem =
+    lineItems.find(
+      li => typeof li.item_id === "string" && li.item_id.startsWith("tt_")
+    ) ?? lineItems[0];
+
+  if (!ticketItem) return { ticketTypeId: null, name: null };
+
+  return {
+    ticketTypeId: typeof ticketItem.item_id === "string" ? ticketItem.item_id : null,
+    name: typeof ticketItem.description === "string" ? ticketItem.description : null,
+  };
+}
+
+// Looks up whether an email has a completed order, straight from the Ticket
+// Tailor API. This is the reconciliation path that makes purchases detectable
+// WITHOUT a registered webhook (and without the custom domain needed for
+// in-page checkout) - see docs/ticket-tailor/REQUIRED.md.
+//
+// Note the API masks buyer PII on this key, so we can't verify the email by
+// reading it back; we rely on the server-side `email=` filter instead. That
+// filter is silently DROPPED for malformed addresses (returning unrelated
+// orders), so the address is validated first - without that guard a bad
+// address would look like "this person has a ticket".
+export async function findCompletedOrderByEmail(
+  email: string
+): Promise<PurchasedTicket | null> {
+  const apiKey = process.env.TICKET_TAILOR_API_KEY;
+  if (!apiKey) return null;
+
+  const normalized = email.trim().toLowerCase();
+  if (!/^[^\s@]+@[^\s@]+\.[a-z]{2,}$/i.test(normalized)) return null;
+
+  try {
+    const auth = Buffer.from(`${apiKey}:`).toString("base64");
+    const res = await fetch(
+      `https://api.tickettailor.com/v1/orders?email=${encodeURIComponent(normalized)}&limit=50`,
+      { headers: { Authorization: `Basic ${auth}` }, cache: "no-store" }
+    );
+    if (!res.ok) return null;
+
+    const body = await res.json();
+    const orders = (Array.isArray(body?.data) ? body.data : []) as Record<string, unknown>[];
+
+    // Restrict to completed orders for the configured event, so a stale
+    // order against some other event in the same box office can't be
+    // mistaken for a ticket to this one.
+    const eventId = process.env.TICKET_TAILOR_EVENT_ID;
+    const match = orders.find(order => {
+      if (order.status !== "completed") return false;
+      if (!eventId) return true;
+      const summary = (order.event_summary ?? {}) as Record<string, unknown>;
+      const seriesId = String(summary.event_series_id ?? "");
+      const evId = String(summary.event_id ?? "");
+      return seriesId.endsWith(eventId) || evId.endsWith(eventId);
+    });
+
+    return match ? extractPurchasedTicket(match) : null;
+  } catch {
+    return null;
+  }
 }

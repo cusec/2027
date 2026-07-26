@@ -19,7 +19,6 @@ function sanitizeArray(input: unknown): string[] {
 
 const TSHIRT_SIZES = ["XS", "S", "M", "L", "XL", "XXL", "XXXL"];
 const HEAD_DELEGATE_VALUES = ["yes", "no", "unsure"];
-const TICKET_TYPES = ["general", "vip"];
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 // GET - the caller's own demographic survey answers, or null if not submitted yet.
@@ -72,7 +71,6 @@ export async function PUT(request: Request) {
     resumeUrl: sanitizeInput(body.resumeUrl),
     githubUrl: sanitizeInput(body.githubUrl),
     linkedinUrl: sanitizeInput(body.linkedinUrl),
-    preferredTicketType: sanitizeInput(body.preferredTicketType),
     howDidYouHear: sanitizeInput(body.howDidYouHear),
     previouslyAttendedCUSEC: sanitizeArray(body.previouslyAttendedCUSEC),
     excitedEvents: sanitizeArray(body.excitedEvents),
@@ -96,7 +94,6 @@ export async function PUT(request: Request) {
     ["expectedGraduation", data.expectedGraduation],
     ["schoolHasHeadDelegate", data.schoolHasHeadDelegate],
     ["currentAffiliation", data.currentAffiliation],
-    ["preferredTicketType", data.preferredTicketType],
   ];
   for (const [field, value] of requiredFields) {
     if (!value) {
@@ -109,9 +106,6 @@ export async function PUT(request: Request) {
   }
   if (!HEAD_DELEGATE_VALUES.includes(data.schoolHasHeadDelegate)) {
     return NextResponse.json({ error: "Invalid head delegate answer" }, { status: 400 });
-  }
-  if (!TICKET_TYPES.includes(data.preferredTicketType)) {
-    return NextResponse.json({ error: "Invalid ticket type" }, { status: 400 });
   }
   if (!EMAIL_REGEX.test(data.studentEmail) || !EMAIL_REGEX.test(data.personalEmail)) {
     return NextResponse.json({ error: "Invalid email format" }, { status: 400 });

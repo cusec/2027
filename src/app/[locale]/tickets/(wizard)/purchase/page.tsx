@@ -49,6 +49,7 @@ export default async function PurchasePage() {
         tickets={tickets}
         widgetConfig={widgetConfig}
         alreadyComplete={status.purchaseComplete}
+        purchasedTicketName={status.purchasedTicketName}
       />
     </div>
   );

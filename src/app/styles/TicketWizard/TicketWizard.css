@@ -8,6 +8,39 @@
 
 /* Step nav */
 
+/* Raised above the avatar step, which renders as a fixed inset-0 z-50
+   overlay, so Back/Cancel stay reachable on that step too. */
+.wizard-nav {
+    position: relative;
+    z-index: 60;
+}
+
+.wizard-nav-actions {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    padding: 0.5rem 0 0.2rem;
+}
+
+.wizard-nav-btn {
+    font-family: "Retropix", "MS Sans Serif", monospace;
+    font-size: 11px;
+    text-decoration: none;
+    color: #103436;
+    background: #c0c0c0;
+    padding: 0.35rem 0.75rem;
+    border-top: 2px solid #ffffff;
+    border-left: 2px solid #ffffff;
+    border-right: 2px solid #2b2b2b;
+    border-bottom: 2px solid #2b2b2b;
+    box-shadow: inset 1px 1px 0 #dbdbdb;
+}
+
+.wizard-nav-btn--cancel {
+    margin-left: auto;
+}
+
 .wizard-step-nav {
     display: flex;
     align-items: center;
@@ -212,6 +245,95 @@
 
 .wizard-purchase-status--timeout {
     color: #7a5a00;
+}
+
+/* Checkout modal (Ticket Tailor inline widget lives inside) */
+
+.wizard-checkout-backdrop {
+    position: fixed;
+    inset: 0;
+    z-index: 100;
+    background: rgba(0, 0, 0, 0.55);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+}
+
+.wizard-checkout-modal {
+    width: 100%;
+    /* Sized to the checkout content itself - the Ticket Tailor event page
+       renders as a narrow card, so a wide modal just adds dead space. */
+    max-width: 560px;
+    max-height: 92vh;
+    display: flex;
+    flex-direction: column;
+    background: #c0c0c0;
+    border-top: 2px solid #ffffff;
+    border-left: 2px solid #ffffff;
+    border-right: 2px solid #2b2b2b;
+    border-bottom: 2px solid #2b2b2b;
+    box-shadow: inset 1px 1px 0 #dbdbdb, 0 10px 30px rgba(0, 0, 0, 0.4);
+}
+
+.wizard-checkout-modal-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 0.4rem 0.5rem 0.4rem 0.7rem;
+    background: #103436;
+    color: #ffffff;
+    font-family: "Retropix", "MS Sans Serif", monospace;
+    font-size: 13px;
+}
+
+.wizard-checkout-close {
+    width: 1.5rem;
+    height: 1.5rem;
+    line-height: 1;
+    font-size: 15px;
+    background: #c0c0c0;
+    color: #2b2b2b;
+    border-top: 2px solid #ffffff;
+    border-left: 2px solid #ffffff;
+    border-right: 2px solid #2b2b2b;
+    border-bottom: 2px solid #2b2b2b;
+}
+
+/* The iframe scrolls its own content (we set scrolling="yes" and own the
+   frame directly, rather than letting Ticket Tailor's resizer disable it). */
+.wizard-checkout-frame {
+    flex: 1;
+    width: auto;
+    min-height: 70vh;
+    display: block;
+    background: #ffffff;
+    margin: 0.5rem;
+    border-top: 2px solid #2b2b2b;
+    border-left: 2px solid #2b2b2b;
+    border-right: 2px solid #ffffff;
+    border-bottom: 2px solid #ffffff;
+}
+
+.wizard-checkout-modal .wizard-purchase-status {
+    margin: 0 0 0.4rem;
+}
+
+.wizard-checkout-newtab {
+    text-align: center;
+    font-family: "Retropix", "MS Sans Serif", monospace;
+    font-size: 11px;
+    margin: 0 0.6rem 0.7rem;
+}
+
+.wizard-checkout-newtab a {
+    color: #103436;
+    text-decoration: underline;
+}
+
+.ticket-card--purchased {
+    outline: 3px solid #2f7d22;
 }
 
 @media (max-width: 640px) {

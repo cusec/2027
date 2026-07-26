@@ -1,53 +1,38 @@
 "use client";
 
-import { useState } from "react";
-import Script from "next/script";
 import TicketCard from "./TicketCard";
 import type { TicketType, TicketWidgetConfig } from "@/lib/ticketTailor";
 
 interface TicketsSectionProps {
   tickets: TicketType[];
   widgetConfig: TicketWidgetConfig;
-  onBuyClicked?: () => void;
+  purchasedTicketName?: string | null;
+  onBuy?: () => void;
 }
 
-export default function TicketsSection({ tickets, widgetConfig, onBuyClicked }: TicketsSectionProps) {
-  const [scriptReady, setScriptReady] = useState(false);
-
-  const checkoutConfigured = Boolean(widgetConfig.boxOfficeName && widgetConfig.eventId);
-
-  function handleBuy() {
-    if (!checkoutConfigured || !window.TTWidget) return;
-    window.TTWidget.loadEvent(
-      widgetConfig.boxOfficeName!,
-      widgetConfig.eventId!,
-      "tt-wgt-popup",
-      widgetConfig.customDomain ?? undefined
-    );
-    onBuyClicked?.();
-  }
+export default function TicketsSection({
+  tickets,
+  widgetConfig,
+  purchasedTicketName = null,
+  onBuy,
+}: TicketsSectionProps) {
+  const checkoutConfigured = Boolean(widgetConfig.boxOfficeName && widgetConfig.eventUrl);
 
   return (
-    <>
-      {checkoutConfigured && (
-        <Script
-          src="https://cdn.tickettailor.com/js/TTWidget.js"
-          strategy="lazyOnload"
-          onLoad={() => setScriptReady(true)}
+    <div className="tickets-grid">
+      {tickets.map(ticket => (
+        <TicketCard
+          key={ticket.id}
+          ticket={ticket}
+          isVip={ticket.name.toLowerCase().includes("vip")}
+          checkoutConfigured={checkoutConfigured}
+          purchased={
+            !!purchasedTicketName &&
+            purchasedTicketName.toLowerCase().includes(ticket.name.toLowerCase())
+          }
+          onBuy={onBuy}
         />
-      )}
-      <div className="tickets-grid">
-        {tickets.map(ticket => (
-          <TicketCard
-            key={ticket.id}
-            ticket={ticket}
-            isVip={ticket.name.toLowerCase().includes("vip")}
-            checkoutConfigured={checkoutConfigured}
-            checkoutReady={checkoutConfigured && scriptReady}
-            onBuy={handleBuy}
-          />
-        ))}
-      </div>
-    </>
+      ))}
+    </div>
   );
 }
