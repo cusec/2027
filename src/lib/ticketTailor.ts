@@ -63,10 +63,16 @@ function parseTicketType(raw: Record<string, unknown>, index: number): TicketTyp
     name: String(attrs.name ?? "Ticket"),
     priceCents,
     status: normalizeStatus(attrs.status),
+    // Confirmed against a real event: Ticket Tailor's ticket_type objects
+    // expose the currently-available count as `quantity` (quantity_total is
+    // the original capacity). `quantity_available` doesn't actually exist on
+    // the live payload but is kept as a fallback in case of API variance.
     quantityAvailable:
-      typeof attrs.quantity_available === "number"
-        ? (attrs.quantity_available as number)
-        : null,
+      typeof attrs.quantity === "number"
+        ? (attrs.quantity as number)
+        : typeof attrs.quantity_available === "number"
+          ? (attrs.quantity_available as number)
+          : null,
   };
 }
 
@@ -82,20 +88,42 @@ export async function getTicketTypes(): Promise<TicketTypesResult> {
 
   try {
     const auth = Buffer.from(`${apiKey}:`).toString("base64");
-    const res = await fetch(
-      `https://api.tickettailor.com/v1/events/${eventId}/ticket_types`,
-      {
-        headers: { Authorization: `Basic ${auth}` },
+    const headers = { Authorization: `Basic ${auth}` };
+
+    // There is no separate `/ticket_types` sub-resource in Ticket Tailor's
+    // v1 API (confirmed against a live event - it 404s). Ticket types are
+    // embedded directly on the resource itself instead.
+    //
+    // TICKET_TAILOR_EVENT_ID is the public-facing id used in checkout/box
+    // office URLs (e.g. buytickets.at/cusec/2329159 or the "eventId" the
+    // TTWidget popup needs) - confirmed that id belongs to the *event
+    // series* resource (Ticket Tailor wraps every event in a series, even a
+    // one-off), not the internal single-event occurrence id. So try
+    // event_series first (reading `default_ticket_types`), and fall back to
+    // the single-event resource (reading `ticket_types`) for box offices set
+    // up without series.
+    const seriesId = eventId.startsWith("es_") ? eventId : `es_${eventId}`;
+    let res = await fetch(`https://api.tickettailor.com/v1/event_series/${seriesId}`, {
+      headers,
+      next: { revalidate: 300 },
+    });
+    let ticketTypesKey = "default_ticket_types";
+
+    if (!res.ok) {
+      const eventResId = eventId.startsWith("ev_") ? eventId : `ev_${eventId}`;
+      res = await fetch(`https://api.tickettailor.com/v1/events/${eventResId}`, {
+        headers,
         next: { revalidate: 300 },
-      }
-    );
+      });
+      ticketTypesKey = "ticket_types";
+    }
 
     if (!res.ok) {
       throw new Error(`Ticket Tailor API responded ${res.status}`);
     }
 
     const body = await res.json();
-    const rawTickets = Array.isArray(body?.data) ? body.data : [];
+    const rawTickets = Array.isArray(body?.[ticketTypesKey]) ? body[ticketTypesKey] : [];
     return { tickets: rawTickets.map(parseTicketType), source: "live" };
   } catch {
     return { tickets: [], source: "error" };
@@ -103,10 +131,14 @@ export async function getTicketTypes(): Promise<TicketTypesResult> {
 }
 
 export function getTicketWidgetConfig(): TicketWidgetConfig {
+  // `||` (not `??`) so an empty-string env var (unset-but-present, as
+  // TICKET_TAILOR_CUSTOM_DOMAIN commonly is until a custom domain is
+  // connected) falls back to null instead of being passed to the widget as
+  // an empty string, which the widget script fails to resolve as a host.
   return {
-    boxOfficeName: process.env.TICKET_TAILOR_BOX_OFFICE_NAME ?? null,
-    eventId: process.env.TICKET_TAILOR_EVENT_ID ?? null,
-    customDomain: process.env.TICKET_TAILOR_CUSTOM_DOMAIN ?? null,
+    boxOfficeName: process.env.TICKET_TAILOR_BOX_OFFICE_NAME || null,
+    eventId: process.env.TICKET_TAILOR_EVENT_ID || null,
+    customDomain: process.env.TICKET_TAILOR_CUSTOM_DOMAIN || null,
   };
 }
 

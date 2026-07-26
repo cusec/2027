@@ -33,5 +33,90 @@
         "unavailable": "Not Yet Available",
         "checkout-not-configured": "Coming Soon",
         "loading-checkout": "Loading…"
+    },
+    "TicketWizard": {
+        "nav-label": "Ticket purchase steps",
+        "nav-register": "Register",
+        "nav-demographics": "Demographics",
+        "nav-avatar": "Avatar",
+        "nav-purchase": "Purchase",
+
+        "intro-heading": "Get Your Ticket",
+        "intro-subheading": "A quick, step-by-step process to get you to CUSEC 2027.",
+        "intro-step-register": "Create your CUSEC account",
+        "intro-step-demographics": "Tell us a bit about yourself",
+        "intro-step-avatar": "Customize your avatar",
+        "intro-step-purchase": "Purchase your ticket",
+        "intro-cta-signup": "Sign Up to Get Started",
+        "intro-complete-heading": "You're All Set!",
+        "intro-complete-subheading": "Your ticket is confirmed and your account is linked.",
+        "intro-complete-cta": "Go to the Scavenger Hunt",
+
+        "signin-heading": "Please Sign In",
+        "signin-cta": "Sign In to Continue",
+
+        "demographics-heading": "Tell Us About Yourself",
+        "confidential-notice": "This information is confidential and will not be shared with anyone outside the CUSEC organizing team.",
+
+        "select-placeholder": "Select an option",
+        "yes": "Yes",
+        "no-first-time": "No, this is my first time",
+
+        "section-personal": "Personal Information",
+        "field-first-name": "First name",
+        "field-last-name": "Last name",
+        "field-pronoun": "Pronoun",
+        "field-pronoun-placeholder": "e.g. she/her, he/him, they/them",
+        "field-tshirt-size": "What is your T-Shirt size? (Unisex)",
+        "field-dietary-restrictions": "Dietary restrictions",
+
+        "section-contact": "Contact Information",
+        "field-student-email": "Student email address",
+        "field-personal-email": "Personal email address",
+
+        "section-education": "Education",
+        "field-university": "What university do you go to?",
+        "field-field-of-study": "What are you currently studying?",
+        "field-degree-pursuing": "What degree are you currently pursuing?",
+        "field-highest-degree": "Highest degree you're enrolled in, or have achieved",
+        "field-expected-graduation": "When do you expect to graduate?",
+
+        "section-school-community": "School and Community",
+        "field-head-delegate": "Does your school have a Head Delegate (HD)?",
+
+        "section-professional": "Professional Information",
+        "field-current-affiliation": "Current affiliation",
+        "field-current-affiliation-placeholder": "e.g. student, intern at ...",
+        "field-resume-url": "Resume/CV link",
+        "field-github-url": "GitHub",
+        "field-linkedin-url": "LinkedIn",
+
+        "section-conference": "Conference Information",
+        "field-ticket-type": "Ticket type",
+        "field-how-did-you-hear": "How did you hear about CUSEC?",
+        "field-previously-attended": "Have you previously attended CUSEC?",
+        "field-excited-events": "Pick 3 events you would be most excited for",
+        "field-excited-events-hint": "{count}/3 selected",
+
+        "section-accommodation": "Accommodation",
+        "field-hotel-booking": "Would you like to be booked at the hotel where the conference takes place?",
+
+        "section-optional": "Optional Questions",
+        "field-why-attend": "Why do you want to attend CUSEC 2027?",
+        "field-school-involvement": "Tell us about your involvement in your school community",
+        "field-cusec-association": "When I think of CUSEC, I think of...",
+
+        "error-pick-three-events": "Please pick exactly 3 events.",
+        "error-generic": "Something went wrong. Please try again.",
+        "submitting": "Saving…",
+        "continue-button": "Continue",
+
+        "purchase-heading": "Purchase Your Ticket",
+        "purchase-subheading": "Last step! Pick a ticket to finish your registration.",
+        "mock-banner": "Showing test data — connect Ticket Tailor to go live.",
+        "error-banner": "Couldn't load ticket data. Please try again shortly.",
+        "purchase-already-complete": "Your ticket is confirmed — you're all set!",
+        "purchase-waiting-confirmation": "Waiting for your ticket confirmation…",
+        "purchase-fallback-manual-link": "Still processing? Check your email, or link your ticket email manually from your scavenger hunt dashboard once it arrives."
     }
 }

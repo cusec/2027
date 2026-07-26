@@ -8,9 +8,10 @@ import type { TicketType, TicketWidgetConfig } from "@/lib/ticketTailor";
 interface TicketsSectionProps {
   tickets: TicketType[];
   widgetConfig: TicketWidgetConfig;
+  onBuyClicked?: () => void;
 }
 
-export default function TicketsSection({ tickets, widgetConfig }: TicketsSectionProps) {
+export default function TicketsSection({ tickets, widgetConfig, onBuyClicked }: TicketsSectionProps) {
   const [scriptReady, setScriptReady] = useState(false);
 
   const checkoutConfigured = Boolean(widgetConfig.boxOfficeName && widgetConfig.eventId);
@@ -23,6 +24,7 @@ export default function TicketsSection({ tickets, widgetConfig }: TicketsSection
       "tt-wgt-popup",
       widgetConfig.customDomain ?? undefined
     );
+    onBuyClicked?.();
   }
 
   return (

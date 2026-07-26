@@ -1,0 +1,221 @@
+/* ---- Ticket purchase wizard ---- */
+
+.wizard-wrapper {
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 0 1.2rem;
+}
+
+/* Step nav */
+
+.wizard-step-nav {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    padding: 1.2rem 0 0.4rem;
+}
+
+.wizard-step-nav-item {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+}
+
+.wizard-step-pill {
+    font-family: "Retropix", "MS Sans Serif", monospace;
+    font-size: 11px;
+    padding: 0.4rem 0.8rem;
+    background: #c0c0c0;
+    color: #666;
+    border-top: 2px solid #ffffff;
+    border-left: 2px solid #ffffff;
+    border-right: 2px solid #2b2b2b;
+    border-bottom: 2px solid #2b2b2b;
+    box-shadow: inset 1px 1px 0 #dbdbdb;
+}
+
+.wizard-step-pill--active {
+    background: #ffd447;
+    color: #103436;
+}
+
+.wizard-step-pill--done {
+    background: #d8ead8;
+    color: #103436;
+}
+
+.wizard-step-nav-connector {
+    width: 1.4rem;
+    height: 2px;
+    background: repeating-linear-gradient(90deg, #103436 0 4px, transparent 4px 8px);
+}
+
+/* Intro / sign-in / confirmation cards */
+
+.wizard-intro-card {
+    max-width: 560px;
+    margin: 0 auto;
+    padding: 1.5rem;
+    background: #c0c0c0;
+    border-top: 2px solid #ffffff;
+    border-left: 2px solid #ffffff;
+    border-right: 2px solid #2b2b2b;
+    border-bottom: 2px solid #2b2b2b;
+    box-shadow: inset 1px 1px 0 #dbdbdb;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.2rem;
+}
+
+.wizard-intro-steps {
+    font-family: "Retropix", "MS Sans Serif", monospace;
+    font-size: 13px;
+    color: #222;
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+    margin: 0;
+    padding-left: 1.4rem;
+}
+
+.wizard-intro-cta {
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+}
+
+.wizard-confidential-notice {
+    font-family: "Retropix", "MS Sans Serif", monospace;
+    font-size: 12px;
+    color: #6b5a00;
+    background: #fff7c2;
+    padding: 0.6rem 1rem;
+    margin: 0.4rem auto 0;
+    max-width: fit-content;
+    border-top: 2px solid #ffffff;
+    border-left: 2px solid #ffffff;
+    border-right: 2px solid #2b2b2b;
+    border-bottom: 2px solid #2b2b2b;
+    box-shadow: inset 1px 1px 0 #dbdbdb;
+}
+
+/* Demographics form */
+
+.wizard-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.4rem;
+    margin: 1.4rem 0 3rem;
+}
+
+.wizard-fieldset {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1rem;
+    padding: 1.2rem;
+    background: #c0c0c0;
+    border-top: 2px solid #ffffff;
+    border-left: 2px solid #ffffff;
+    border-right: 2px solid #2b2b2b;
+    border-bottom: 2px solid #2b2b2b;
+    box-shadow: inset 1px 1px 0 #dbdbdb;
+}
+
+.wizard-fieldset legend {
+    font-family: "Retropix", "MS Sans Serif", monospace;
+    font-size: 14px;
+    color: #103436;
+    padding: 0 0.4rem;
+}
+
+.wizard-field {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+    font-family: "Retropix", "MS Sans Serif", monospace;
+    font-size: 12px;
+    color: #222;
+}
+
+.wizard-field--wide {
+    grid-column: 1 / -1;
+}
+
+.wizard-field input[type="text"],
+.wizard-field input[type="email"],
+.wizard-field input[type="url"],
+.wizard-field input[type="month"],
+.wizard-field select,
+.wizard-field textarea {
+    font-family: "Retropix", "MS Sans Serif", monospace;
+    font-size: 13px;
+    padding: 0.45rem 0.6rem;
+    background: #ffffff;
+    border-top: 2px solid #2b2b2b;
+    border-left: 2px solid #2b2b2b;
+    border-right: 2px solid #ffffff;
+    border-bottom: 2px solid #ffffff;
+}
+
+.wizard-field textarea {
+    min-height: 4.5rem;
+    resize: vertical;
+}
+
+.wizard-checkbox {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-family: "Retropix", "MS Sans Serif", monospace;
+    font-size: 12px;
+}
+
+.wizard-checkbox-group {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem 1rem;
+}
+
+.wizard-field-hint {
+    font-size: 11px;
+    color: #555;
+    margin: 0.2rem 0 0;
+}
+
+.wizard-form-error {
+    font-family: "Retropix", "MS Sans Serif", monospace;
+    font-size: 12px;
+    color: #7a0000;
+    background: #ffd7d7;
+    padding: 0.6rem 0.9rem;
+    border-top: 2px solid #ffffff;
+    border-left: 2px solid #ffffff;
+    border-right: 2px solid #2b2b2b;
+    border-bottom: 2px solid #2b2b2b;
+}
+
+.wizard-form-submit {
+    align-self: center;
+    min-width: 220px;
+}
+
+.wizard-purchase-status {
+    text-align: center;
+    font-family: "Retropix", "MS Sans Serif", monospace;
+    font-size: 12px;
+    color: #103436;
+    margin-top: 1rem;
+}
+
+.wizard-purchase-status--timeout {
+    color: #7a5a00;
+}
+
+@media (max-width: 640px) {
+    .wizard-fieldset {
+        grid-template-columns: 1fr;
+    }
+}

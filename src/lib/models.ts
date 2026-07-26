@@ -62,6 +62,20 @@ const userSchema = new Schema(
     },
     hasSeenIntro: { type: Boolean, default: false },
     personalityType: { type: String, default: null },
+    ticketWizard: {
+      type: new Schema(
+        {
+          currentStep: {
+            type: String,
+            enum: ["demographics", "avatar", "purchase", "completed"],
+            default: "demographics",
+          },
+          avatarCompletedAt: { type: Date, default: null },
+        },
+        { _id: false }
+      ),
+      default: () => ({}),
+    },
   },
   {
     timestamps: true,
@@ -263,6 +277,84 @@ const registeredUserSchema = new Schema(
   }
 );
 
+// Confidential ticket-purchase-wizard survey answers. Kept in its own
+// collection (rather than embedded on User) so access can be scoped and
+// audited separately from hunt gameplay data.
+const demographicInfoSchema = new Schema(
+  {
+    user: {
+      type: Schema.Types.ObjectId,
+      ref: "User",
+      required: true,
+      unique: true,
+      index: true,
+    },
+
+    // Personal Information
+    firstName: { type: String, required: true },
+    lastName: { type: String, required: true },
+    pronoun: { type: String, required: true },
+    tshirtSize: {
+      type: String,
+      required: true,
+      enum: ["XS", "S", "M", "L", "XL", "XXL", "XXXL"],
+    },
+    dietaryRestrictions: { type: String, default: "" },
+
+    // Contact Information
+    studentEmail: { type: String, required: true },
+    personalEmail: { type: String, required: true },
+
+    // Education
+    university: { type: String, required: true },
+    fieldOfStudy: { type: String, required: true },
+    degreeCurrentlyPursuing: { type: String, required: true },
+    highestDegree: { type: String, required: true },
+    expectedGraduation: { type: String, required: true }, // "YYYY-MM"
+
+    // School and Community
+    schoolHasHeadDelegate: {
+      type: String,
+      required: true,
+      enum: ["yes", "no", "unsure"],
+    },
+
+    // Professional Information
+    currentAffiliation: { type: String, required: true },
+    resumeUrl: { type: String, default: "" },
+    githubUrl: { type: String, default: "" },
+    linkedinUrl: { type: String, default: "" },
+
+    // Conference Information
+    preferredTicketType: {
+      type: String,
+      required: true,
+      enum: ["general", "vip"],
+    },
+    howDidYouHear: { type: String, default: "" },
+    previouslyAttendedCUSEC: { type: [String], default: [] },
+    excitedEvents: {
+      type: [String],
+      default: [],
+      validate: {
+        validator: (v: string[]) => v.length === 3,
+        message: "Pick exactly 3 events",
+      },
+    },
+
+    // Accommodation
+    wantsHotelBooking: { type: Boolean, required: true },
+
+    // Optional
+    whyAttendCUSEC: { type: String, default: "" },
+    schoolCommunityInvolvement: { type: String, default: "" },
+    cusecAssociation: { type: String, default: "" },
+  },
+  {
+    timestamps: true,
+  }
+);
+
 const Day = mongoose.models.Day || mongoose.model("Day", DaySchema);
 
 const User = mongoose.models.User || mongoose.model("User", userSchema);
@@ -282,6 +374,10 @@ const RegisteredUser =
   mongoose.models.RegisteredUser ||
   mongoose.model("RegisteredUser", registeredUserSchema);
 
+const DemographicInfo =
+  mongoose.models.DemographicInfo ||
+  mongoose.model("DemographicInfo", demographicInfoSchema);
+
 export {
   User,
   HuntItem,
@@ -291,4 +387,5 @@ export {
   Notice,
   Collectible,
   RegisteredUser,
+  DemographicInfo,
 };

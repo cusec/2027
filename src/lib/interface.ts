@@ -35,6 +35,11 @@ export interface Auth0User {
   "cusec/roles"?: string[];
 }
 
+export interface TicketWizardProgress {
+  currentStep: "demographics" | "avatar" | "purchase" | "completed";
+  avatarCompletedAt?: string | null;
+}
+
 export interface DbUser {
   _id: string;
   email: string;
@@ -49,6 +54,7 @@ export interface DbUser {
   claim_attempts?: ClaimAttempt[];
   hasSeenIntro?: boolean;
   personalityType?: string | null;
+  ticketWizard?: TicketWizardProgress;
 }
 
 export interface ClaimAttempt {
@@ -247,4 +253,36 @@ export interface RegisteredUser {
   studentEmail?: string;
   personalEmail?: string;
   isLinked: boolean;
+}
+
+export interface DemographicInfo {
+  _id?: string;
+  user: string;
+  firstName: string;
+  lastName: string;
+  pronoun: string;
+  tshirtSize: string;
+  dietaryRestrictions?: string;
+  studentEmail: string;
+  personalEmail: string;
+  university: string;
+  fieldOfStudy: string;
+  degreeCurrentlyPursuing: string;
+  highestDegree: string;
+  expectedGraduation: string;
+  schoolHasHeadDelegate: "yes" | "no" | "unsure";
+  currentAffiliation: string;
+  resumeUrl?: string;
+  githubUrl?: string;
+  linkedinUrl?: string;
+  preferredTicketType: "general" | "vip";
+  howDidYouHear?: string;
+  previouslyAttendedCUSEC: string[];
+  excitedEvents: string[];
+  wantsHotelBooking: boolean;
+  whyAttendCUSEC?: string;
+  schoolCommunityInvolvement?: string;
+  cusecAssociation?: string;
+  createdAt?: string;
+  updatedAt?: string;
 }

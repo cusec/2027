@@ -33,5 +33,90 @@
         "unavailable": "Pas encore disponible",
         "checkout-not-configured": "Bientôt disponible",
         "loading-checkout": "Chargement…"
+    },
+    "TicketWizard": {
+        "nav-label": "Étapes d'achat de billet",
+        "nav-register": "Inscription",
+        "nav-demographics": "Renseignements",
+        "nav-avatar": "Avatar",
+        "nav-purchase": "Achat",
+
+        "intro-heading": "Obtenez votre billet",
+        "intro-subheading": "Un processus rapide, étape par étape, pour vous mener à CUSEC 2027.",
+        "intro-step-register": "Créez votre compte CUSEC",
+        "intro-step-demographics": "Parlez-nous un peu de vous",
+        "intro-step-avatar": "Personnalisez votre avatar",
+        "intro-step-purchase": "Achetez votre billet",
+        "intro-cta-signup": "Inscrivez-vous pour commencer",
+        "intro-complete-heading": "Vous êtes prêt!",
+        "intro-complete-subheading": "Votre billet est confirmé et votre compte est lié.",
+        "intro-complete-cta": "Accéder à la chasse au trésor",
+
+        "signin-heading": "Veuillez vous connecter",
+        "signin-cta": "Se connecter pour continuer",
+
+        "demographics-heading": "Parlez-nous de vous",
+        "confidential-notice": "Ces renseignements sont confidentiels et ne seront partagés avec personne en dehors de l'équipe organisatrice de CUSEC.",
+
+        "select-placeholder": "Sélectionnez une option",
+        "yes": "Oui",
+        "no-first-time": "Non, c'est ma première fois",
+
+        "section-personal": "Renseignements personnels",
+        "field-first-name": "Prénom",
+        "field-last-name": "Nom de famille",
+        "field-pronoun": "Pronom",
+        "field-pronoun-placeholder": "p. ex. elle, il, iel",
+        "field-tshirt-size": "Quelle est votre taille de t-shirt? (Unisexe)",
+        "field-dietary-restrictions": "Restrictions alimentaires",
+
+        "section-contact": "Coordonnées",
+        "field-student-email": "Adresse courriel étudiante",
+        "field-personal-email": "Adresse courriel personnelle",
+
+        "section-education": "Études",
+        "field-university": "Dans quelle université étudiez-vous?",
+        "field-field-of-study": "Que faites-vous comme études présentement?",
+        "field-degree-pursuing": "Quel diplôme poursuivez-vous présentement?",
+        "field-highest-degree": "Diplôme le plus élevé auquel vous êtes inscrit(e), ou que vous avez obtenu",
+        "field-expected-graduation": "Quand prévoyez-vous obtenir votre diplôme?",
+
+        "section-school-community": "École et communauté",
+        "field-head-delegate": "Votre école a-t-elle un(e) délégué(e) principal(e) (HD)?",
+
+        "section-professional": "Renseignements professionnels",
+        "field-current-affiliation": "Affiliation actuelle",
+        "field-current-affiliation-placeholder": "p. ex. étudiant(e), stagiaire chez ...",
+        "field-resume-url": "Lien vers votre CV",
+        "field-github-url": "GitHub",
+        "field-linkedin-url": "LinkedIn",
+
+        "section-conference": "Renseignements sur la conférence",
+        "field-ticket-type": "Type de billet",
+        "field-how-did-you-hear": "Comment avez-vous entendu parler de CUSEC?",
+        "field-previously-attended": "Avez-vous déjà assisté à CUSEC?",
+        "field-excited-events": "Choisissez 3 activités qui vous emballent le plus",
+        "field-excited-events-hint": "{count}/3 sélectionnées",
+
+        "section-accommodation": "Hébergement",
+        "field-hotel-booking": "Aimeriez-vous être réservé(e) à l'hôtel où se déroule la conférence?",
+
+        "section-optional": "Questions facultatives",
+        "field-why-attend": "Pourquoi voulez-vous assister à CUSEC 2027?",
+        "field-school-involvement": "Parlez-nous de votre implication dans la communauté de votre école",
+        "field-cusec-association": "Quand je pense à CUSEC, je pense à...",
+
+        "error-pick-three-events": "Veuillez choisir exactement 3 activités.",
+        "error-generic": "Une erreur s'est produite. Veuillez réessayer.",
+        "submitting": "Enregistrement…",
+        "continue-button": "Continuer",
+
+        "purchase-heading": "Achetez votre billet",
+        "purchase-subheading": "Dernière étape! Choisissez un billet pour terminer votre inscription.",
+        "mock-banner": "Données de test affichées — connectez Ticket Tailor pour la mise en ligne.",
+        "error-banner": "Impossible de charger les données des billets. Veuillez réessayer sous peu.",
+        "purchase-already-complete": "Votre billet est confirmé — vous êtes prêt(e)!",
+        "purchase-waiting-confirmation": "En attente de la confirmation de votre billet…",
+        "purchase-fallback-manual-link": "Toujours en traitement? Vérifiez votre courriel, ou liez votre courriel de billet manuellement depuis votre tableau de bord de la chasse au trésor une fois qu'il arrive."
     }
 }

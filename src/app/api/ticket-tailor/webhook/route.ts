@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import connectMongoDB from "@/lib/mongodb";
-import { RegisteredUser } from "@/lib/models";
+import { RegisteredUser, User, DemographicInfo } from "@/lib/models";
 import { extractPurchaser, verifyTicketTailorWebhook } from "@/lib/ticketTailor";
 
 // Pre-seeds the RegisteredUser allowlist that /api/users/link-email checks
@@ -43,15 +43,15 @@ export async function POST(request: NextRequest) {
 
   await connectMongoDB();
 
-  const existing = await RegisteredUser.findOne({ linkedEmail: purchaser.email });
-  if (existing) {
-    if (!existing.name && purchaser.name) {
-      existing.name = purchaser.name;
-      await existing.save();
+  let registeredUser = await RegisteredUser.findOne({ linkedEmail: purchaser.email });
+  if (registeredUser) {
+    if (!registeredUser.name && purchaser.name) {
+      registeredUser.name = purchaser.name;
+      await registeredUser.save();
     }
   } else {
     try {
-      await RegisteredUser.create({
+      registeredUser = await RegisteredUser.create({
         linkedEmail: purchaser.email,
         name: purchaser.name,
         isLinked: false,
@@ -62,6 +62,43 @@ export async function POST(request: NextRequest) {
       const isDuplicateKey =
         typeof err === "object" && err !== null && "code" in err && err.code === 11000;
       if (!isDuplicateKey) throw err;
+      registeredUser = await RegisteredUser.findOne({ linkedEmail: purchaser.email });
+    }
+  }
+
+  // Ticket-wizard auto-link: if the buyer's Ticket Tailor email matches an
+  // authenticated wizard User's Auth0 account email exactly, link them
+  // automatically instead of requiring the manual /api/users/link-email
+  // step. Same safety checks as that route (no cross-linking); if nothing
+  // matches, RegisteredUser is still upserted above and the manual flow
+  // remains available as the fallback.
+  if (registeredUser && !registeredUser.isLinked) {
+    const matchedUser = await User.findOne({ email: purchaser.email });
+    if (matchedUser && !matchedUser.linked_email) {
+      const alreadyLinkedElsewhere = await User.findOne({
+        linked_email: purchaser.email,
+      });
+      if (!alreadyLinkedElsewhere) {
+        matchedUser.linked_email = purchaser.email;
+        matchedUser.ticketWizard.currentStep = "completed";
+        await matchedUser.save();
+
+        registeredUser.isLinked = true;
+
+        const demographics = await DemographicInfo.findOne({
+          user: matchedUser._id,
+        }).lean<{ studentEmail?: string; personalEmail?: string }>();
+        if (demographics) {
+          if (!registeredUser.studentEmail) {
+            registeredUser.studentEmail = demographics.studentEmail;
+          }
+          if (!registeredUser.personalEmail) {
+            registeredUser.personalEmail = demographics.personalEmail;
+          }
+        }
+
+        await registeredUser.save();
+      }
     }
   }
 
