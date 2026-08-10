@@ -24,10 +24,13 @@ cookies become first-party.
 ### Steps
 
 1. **Ticket Tailor dashboard** → Box Office Settings → Custom Domain.
-   Enter a subdomain of `cusec.net` - e.g. `tickets.2027.cusec.net`.
+   Enter **`tickets.cusec.net`**.
    > It **must** be under `cusec.net`, the same registrable domain as the
    > site. A domain like `cusec-tickets.com` will not work - it'd still be
    > third-party.
+   >
+   > Deliberately **not** year-scoped (`tickets.2027.cusec.net`): the same
+   > hostname carries over to 2028 and later, so the DNS work is done once.
 2. Ticket Tailor then shows you the DNS record(s) to create - **always a
    CNAME, and possibly one or more TXT records** for domain verification.
    Their dashboard may list up to 3; if you only see 2, the missing TXT is
@@ -40,12 +43,15 @@ cookies become first-party.
 
    Notes that trip people up:
    - **Name/Host field:** per Ticket Tailor, *most* hosts want the **full**
-     record (`tickets.2027.cusec.net`), but *some* auto-append the domain and
-     want only the subdomain part (`tickets.2027`). Check your registrar's
+     record (`tickets.cusec.net`), but *some* auto-append the domain and
+     want only the subdomain part (`tickets`). Check your registrar's
      convention - getting it wrong the second way produces
-     `tickets.2027.cusec.net.cusec.net`.
+     `tickets.cusec.net.cusec.net`.
    - A CNAME can't coexist with other records on the same name, and can't be
-     used on the root domain - another reason to use a subdomain.
+     used on the root domain - another reason to use a subdomain. If anything
+     already exists on `tickets.cusec.net`, remove it first.
+   - **No TLS certificate to install.** Ticket Tailor issues and renews it
+     automatically once the CNAME resolves. Don't generate a CSR or key.
    - Leave TTL on automatic/default.
    - **If DNS is on Cloudflare** (general DNS advice, not something Ticket
      Tailor documents): set the record to **DNS only** (grey cloud, not
@@ -58,9 +64,9 @@ cookies become first-party.
    [MX Toolbox](https://mxtoolbox.com/) and selecting CNAME or TXT to confirm
    they match the dashboard. From a terminal:
    ```bash
-   nslookup tickets.2027.cusec.net
+   nslookup tickets.cusec.net
    # or
-   dig +short tickets.2027.cusec.net CNAME
+   dig +short tickets.cusec.net CNAME
    ```
    Nothing returned = not propagated yet, or a typo in the record.
 
@@ -78,7 +84,7 @@ cookies become first-party.
 6. Set the env var in **Vercel** (both Production and any Preview env you
    test on):
    ```
-   TICKET_TAILOR_CUSTOM_DOMAIN=tickets.2027.cusec.net
+   TICKET_TAILOR_CUSTOM_DOMAIN=tickets.cusec.net
    ```
    Hostname only - no `https://`, no trailing slash. Redeploy after setting.
 

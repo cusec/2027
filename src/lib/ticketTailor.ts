@@ -147,7 +147,7 @@ export function getTicketWidgetConfig(): TicketWidgetConfig {
   const customDomain = process.env.TICKET_TAILOR_CUSTOM_DOMAIN || null;
 
   // Serving checkout from a custom domain that shares a registrable domain
-  // with this site (e.g. tickets.2027.cusec.net under cusec.net) is what
+  // with this site (tickets.cusec.net under cusec.net) is what
   // makes the embedded checkout's cookies FIRST-party. Without it the
   // browser blocks them and Ticket Tailor deliberately bounces checkout to a
   // new tab ("Checkout has opened in a new tab or window") - so in-page

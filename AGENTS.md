@@ -55,7 +55,11 @@ src/app/
     page.tsx            ← home route, renders <SplashPage />
     scavenger/
       page.tsx          ← scavenger hunt entry (server component, feature-flag gated)
-  api/                  ← scavenger backend (33 route handlers, see Scavenger section)
+    tickets/
+      page.tsx          ← ticket wizard entry + resolver (see Ticket Wizard section)
+      (wizard)/         ← route group: shared step-nav layout, no URL segment
+        demographics/ avatar/ purchase/
+  api/                  ← scavenger backend + ticketing routes (see sections below)
 ```
 
 > **Layout note:** `[locale]/layout.tsx` renders `{children}` (it used to hard-render
@@ -298,3 +302,111 @@ hunt, edit that one `@theme` block** — do not hunt through components.
 3. Don't change the Mongo `dbName` away from `CUSEC2027`.
 4. Don't remove the Auth0 cookie-merge in `proxy.ts` — it keeps sessions alive across navigation.
 5. Don't add per-component colors — go through the `@theme` block in `globals.css`.
+
+---
+
+# Ticket Purchase Wizard
+
+The ticket-buying flow on `/tickets`. Full detail lives in
+**`docs/ticket-tailor/`** — `TICKET_INTEGRATION.md` (architecture),
+`REQUIRED.md` (human setup checklist: DNS, webhook, env), `KNOWN_ISSUES.md`
+(unverified assumptions + weak spots). Read those before changing this
+subsystem; this section is the contract.
+
+## The flow
+
+```
+/tickets                 Public entry. Logged out -> Auth0 signup.
+                         Logged in -> redirects to first incomplete step.
+/tickets/demographics    ~25-field confidential survey, 5 sub-steps
+/tickets/avatar          Reuses the scavenger AvatarCustomize placeholder
+/tickets/purchase        Ticket cards + checkout in an on-page modal
+```
+
+Steps are **real sub-routes with server-derived progress**, so an abandoned
+flow resumes exactly where it left off. Progress is always re-derived from
+real data — does a `DemographicInfo` doc exist, is `ticketWizard.avatarCompletedAt`
+set, is `linked_email` verified against `RegisteredUser` — never from a
+client flag. `ticketWizard.currentStep` is a cache for UI only; don't gate on it.
+
+**Account creation is just Auth0 signup** (`/auth/login?screen_hint=signup`).
+There is no second auth system. `findOrCreateUser` creates the `User`, same as
+the hunt.
+
+## How it connects to the scavenger hunt
+
+Submitting demographics sets `User.hasSeenIntro = true` **immediately**, which
+is what stops the legacy hunt onboarding (email-link screen + personality quiz)
+from ever appearing for a wizard user, at any abandonment point. Don't defer
+that write to a later step.
+
+A completed purchase auto-links the account — sets `User.linked_email` and
+`RegisteredUser.isLinked` — so wizard users arrive at `/scavenger` already
+linked. The manual `/api/users/link-email` flow still exists as the fallback.
+
+Two independent paths do that linking, both via `linkTicketPurchase()` in
+`src/lib/ticketLinking.ts` (single implementation — keep it that way):
+1. The `order.created` webhook.
+2. **API reconciliation** — `reconcileTicketPurchase()` asks Ticket Tailor
+   directly whether an email has a completed order. Runs on `/scavenger` load
+   and on the purchase-step poll, so a purchase is picked up even with no
+   webhook registered, and even when checkout completed in a separate tab.
+
+## Key files
+
+| File | Purpose |
+|---|---|
+| `src/lib/ticketTailor.ts` | All Ticket Tailor API/config. `getTicketTypes()`, `getTicketWidgetConfig()`, webhook verification, `extractPurchaser()`, `extractPurchasedTicket()`, `findCompletedOrderByEmail()`. |
+| `src/lib/ticketLinking.ts` | `linkTicketPurchase()` + `reconcileTicketPurchase()`. |
+| `src/lib/ticketWizard.ts` | `getWizardStatus()` — server-only (imports Mongoose). |
+| `src/lib/ticketWizardOptions.ts` | Client-safe form option lists. **Kept separate on purpose** — client components can't import `ticketWizard.ts`. |
+| `src/lib/models.ts` | `DemographicInfo` model + `ticketWizard` subdoc on `userSchema`. |
+| `src/app/api/{demographics,ticket-wizard/*,ticket-tailor/webhook}/route.ts` | Wizard APIs. |
+| `src/app/components/TicketWizard/*` | `WizardStepNav`, `DemographicsForm`, `AvatarStepClient`, `PurchaseStepClient`. |
+
+## Checkout rendering (hard-won — don't undo)
+
+Checkout is a **plain `<iframe>` we render ourselves**, not Ticket Tailor's
+`widget.js`. Their script replaces itself with an iframe-resizer frame using
+`scrolling="no"` and a cross-origin height handshake; when that handshake
+doesn't land you get a clipped, unscrollable checkout. `checkoutEmbedUrl`
+appends the same query params their script would.
+
+Their API has **no payment endpoint at all** — orders are read/update only.
+A fully custom checkout would mean integrating Stripe and becoming merchant of
+record. Investigated and rejected; don't re-litigate without reading
+`TICKET_INTEGRATION.md`.
+
+**The "Checkout has opened in a new tab" message is not a bug** — it's
+third-party cookies being blocked. Only fixable by connecting a custom domain
+under `cusec.net` (`TICKET_TAILOR_CUSTOM_DOMAIN`). **It can never work on
+localhost.** Test in-page checkout on a deployed environment only.
+
+## Ticket Tailor API gotchas (verified against a live event)
+
+1. `GET /v1/events/{id}/ticket_types` **does not exist** (404s). Ticket types
+   are embedded on the parent: `default_ticket_types` on an event series,
+   `ticket_types` on an event.
+2. **Two IDs per event.** `TICKET_TAILOR_EVENT_ID` must be the *public* id
+   (from the checkout URL) — that's the **event series**. The internal
+   `ev_...` occurrence id is different. API paths need the `es_`/`ev_` prefix;
+   the bare number 404s.
+3. `TICKET_TAILOR_BOX_OFFICE_NAME` is the URL **slug** (`cusec`), not the
+   display name.
+4. Available quantity is `quantity`, not `quantity_available`.
+5. Env vars use `||`, not `??` — an empty-string var must fall back to null.
+6. Order `line_items` include bundles (`bu_...`); prefer the `tt_...` item.
+7. Buyer PII is masked (`****`) on the current API key.
+
+## Don'ts (ticket-wizard-specific)
+
+1. Don't render third-party embed scripts as JSX `<script>` — React makes them
+   inert. And `next/script` relocates them, breaking scripts that locate
+   themselves via `document.currentScript`.
+2. Don't import `ticketWizard.ts` (or anything importing `models.ts`) into a
+   client component — use `ticketWizardOptions.ts`.
+3. Don't duplicate linking logic — extend `linkTicketPurchase()`.
+4. Don't drop the guards in `findCompletedOrderByEmail()`: a malformed address
+   makes Ticket Tailor silently ignore the `email=` filter and return unrelated
+   orders, which reads as a false "has a ticket".
+5. Don't log demographic data — it's confidential PII, and the UI promises so.

@@ -18,9 +18,9 @@ mistakes don't get reintroduced.
 
 - **Was:** "most registrars want only the subdomain part (`tickets.2027`)."
 - **Actually:** Ticket Tailor states most hosts want the **full** record
-  (`tickets.2027.cusec.net`); only *some* auto-append the domain.
+  (`tickets.cusec.net`); only *some* auto-append the domain.
 - **Why it mattered:** following the wrong convention silently creates
-  `tickets.2027.cusec.net.cusec.net`, which resolves to nothing and looks
+  `tickets.cusec.net.cusec.net`, which resolves to nothing and looks
   like a propagation delay rather than a typo.
 
 ### A2. TXT records were omitted entirely ❌ → ✅ fixed

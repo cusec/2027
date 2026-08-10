@@ -87,8 +87,8 @@ in a new tab or window"* rather than failing mid-payment. This is a browser
 security boundary; no iframe/CSS/code change can defeat it.
 
 The only real fix is Ticket Tailor's **custom domain** feature: point a
-subdomain that shares this site's registrable domain (e.g.
-`tickets.2027.cusec.net`, same `cusec.net` as the site) at Ticket Tailor via
+subdomain that shares this site's registrable domain
+(`tickets.cusec.net`, same `cusec.net` as the site) at Ticket Tailor via
 CNAME, then set `TICKET_TAILOR_CUSTOM_DOMAIN`. `getTicketWidgetConfig()`
 builds the embed URL from that host, making the cookies first-party and
 letting checkout complete inline.
@@ -134,7 +134,7 @@ during testing (see gotchas):
 TICKET_TAILOR_API_KEY=sk_...
 TICKET_TAILOR_EVENT_ID=            # the PUBLIC id, e.g. 2329159 (see below — do not use the internal ev_ id here)
 TICKET_TAILOR_BOX_OFFICE_NAME=     # the URL slug, e.g. "cusec" — NOT the display name
-TICKET_TAILOR_CUSTOM_DOMAIN=       # e.g. tickets.2027.cusec.net once CNAME'd — REQUIRED for in-page checkout; blank = checkout opens in a new tab
+TICKET_TAILOR_CUSTOM_DOMAIN=       # tickets.cusec.net once CNAME'd — REQUIRED for in-page checkout; blank = checkout opens in a new tab
 TICKET_TAILOR_WEBHOOK_SECRET=
 ```
 
