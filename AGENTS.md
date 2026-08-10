@@ -51,11 +51,17 @@ src/app/
   manifest.ts           ← Web App Manifest (MetadataRoute.Manifest)
   page.tsx              ← redirected by proxy — effectively unused
   [locale]/
-    layout.tsx          ← locale-aware layout: NextIntlClientProvider + Navbar + SplashPage
-    page.tsx            ← placeholder (real content is in SplashPage, rendered by locale layout)
+    layout.tsx          ← locale-aware layout: NextIntlClientProvider + MotionPreferenceProvider only
+    page.tsx            ← the splash page (Navbar + SplashPage)
+    v2/
+      page.tsx          ← the v2 main site (see "Main site (v2)" below)
 ```
 
 The `[locale]` segment is internal routing only — it never appears in the browser URL bar.
+
+> The locale layout used to render `Navbar` + `SplashPage` directly. That was moved
+> down into `[locale]/page.tsx` so sibling routes such as `v2` get a clean slate.
+> Keep the layout to providers only.
 
 ---
 
@@ -95,6 +101,7 @@ All CSS is plain files, no CSS Modules. Imported globally via `src/app/styles/in
 
 **Message namespaces in use:**
 - `SplashPage.*` — title, edition-link, attendance-*, sponsorship-interest
+- `V2.*` — all copy for the v2 main site, grouped by section (`V2.nav`, `V2.hero`, `V2.sky`, `V2.dawn`, `V2.archive`, `V2.hunt`, `V2.passes`, `V2.sponsors`, `V2.faq`, `V2.closing`, `V2.footer`)
 - `HomePage.*` — placeholder, not currently rendered
 
 ### Assets
@@ -153,6 +160,56 @@ Do not reduce these to 1px on mobile — they become invisible.
 
 ---
 
+## Main site (v2)
+
+Route: `src/app/[locale]/v2/page.tsx`. Built from the Figma frame "Home V2"
+(`public/assets/v2/Home V2.png` is the reference screenshot).
+
+**Components** — `src/app/components/v2/`, all prefixed `V2`:
+`V2Nav`, `V2Hero`, `V2Sky`, `V2Dawn` (+ `V2CdPlayer`, `V2Polaroid`),
+`V2Archive` (+ `V2SdCard`, `archiveData.ts`), `V2Hunt`, `V2Passes`,
+`V2Sponsors`, `V2Faq`, `V2Closing`, `V2Footer`.
+Only `V2Nav`, `V2CdPlayer` and `V2Archive` are client components.
+
+**Styles** — `src/app/styles/v2/`, imported by `index.css` and pulled in by the
+route (not globally). Everything is namespaced under a `.v2` root class so it
+cannot leak into the splash page. `.v2` also resets the splash's global Win95
+cursor back to the normal pointer.
+
+**Design tokens** live on `.v2` in `styles/v2/base.css`. The palette values were
+lifted verbatim from the Figma SVG exports rather than sampled by eye — do not
+"correct" them.
+
+### The exported SVGs have outlined text
+
+Every file in `public/assets/v2/` has its text baked in as `<path>`; there is
+not a single `<text>` element. So the exports are **reference art, not
+components** — anything with copy in it is rebuilt in HTML/CSS so it stays
+translatable, selectable and reflowable. Use the SVGs for measurements and
+exact colour values.
+
+### Background
+
+One painting, `public/assets/v2/background.jpg` (1512×7300, bubbles already
+baked in), on `.v2-scene` at `background-size: cover`. See the comment in
+`base.css` for why `cover` and not `100% 100%` or `100% auto`. The footer sits
+outside `.v2-scene` on its own solid colour.
+
+### Archive interaction
+
+`V2Archive` holds `yearIndex` / `shotIndex`. Clicking an SD card sets a
+`swapping` flag (glitches the LCD), swaps the year after 260ms, and clears at
+620ms. Card positions are pure CSS: the loaded card gets `.is-inserted`
+(camera slot) and the rest get `.v2-archive__slot--rest-{0,1,2}` in order, so
+the flight in and out animates from the `transition` on `.v2-archive__slot`.
+
+The camera is `container-type: inline-size` with an `aspect-ratio`, and all its
+internals are sized in `cqi` — it scales as one physical object rather than
+reflowing. Below 1000px the decorative control column is dropped and the SD
+cards become a normal wrapped row.
+
+---
+
 ## SplashPageUI Drag System
 
 `SplashPageUI` implements a pointer-capture drag for the window:
@@ -181,5 +238,5 @@ Do not reduce these to 1px on mobile — they become invisible.
 3. **Static assets belong in `public/`**, not `src/app/assets/`. Only code (TSX/TS) goes in `src/`.
 4. **The waveform video uses `mix-blend-mode: screen`** — this is intentional. iOS Safari drops VP9 alpha channel, leaving black; screen blend makes black transparent without needing a separate codec.
 5. **The `SponsorshipInterestButton` SVG is 8.2:1 wide.** Render it with `width: 100%` and let it scale proportionally. Do not apply `scaleY` or set a fixed height — it will distort.
-6. **`src/app/page.tsx` exists but is essentially unused.** The locale layout (`[locale]/layout.tsx`) handles rendering. The root `page.tsx` is a remnant — don't put real content there.
+6. **`src/app/page.tsx` (the root one) is essentially unused** — the proxy redirects past it. It's a remnant; don't put real content there. Real pages live under `[locale]/`.
 7. **The `HomePage` message namespace is a placeholder** and not rendered anywhere visible. Real content uses `SplashPage.*`.

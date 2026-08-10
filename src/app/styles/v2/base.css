@@ -1,0 +1,232 @@
+/* ==========================================================================
+   CUSEC 2027 — Main site (v2) design tokens + page shell
+   Palette values are lifted verbatim from the Figma SVG exports in
+   public/assets/v2, so they are exact rather than eyeballed.
+   ========================================================================== */
+
+.v2 {
+    /* --- brand --- */
+    --v2-lime: #C3E956;
+    --v2-lime-deep: #7FA829;
+    --v2-lime-dark: #4D7111;
+
+    /* --- greens (cards, text) --- */
+    --v2-ink: #1F3B2C;
+    --v2-ink-deep: #0E2318;
+
+    /* --- mints / whites --- */
+    --v2-mint: #DFF6EE;
+    --v2-mint-bright: #B2FEE7;
+    --v2-teal: #4EC9A8;
+    --v2-white: #F4FFFC;
+    --v2-white-pure: #FDFFFE;
+
+    /* --- blues / neutrals --- */
+    --v2-navy: #0B1A3A;
+    --v2-slate: #5B6B7E;
+    --v2-slate-light: #9DBFE8;
+    --v2-blue: #416CED;
+
+    /* --- accents --- */
+    --v2-gold: #E8C34A;
+    --v2-red: #E8564A;
+
+    /* --- type --- */
+    --v2-font-pixel: "Retropix", "MS Sans Serif", monospace;
+    --v2-font-body: var(--font-v2-body), "Segoe UI", system-ui, sans-serif;
+
+    /* --- layout --- */
+    --v2-container: 1220px;
+    --v2-nav-h: 82px;
+
+    /* --- elevation --- */
+    --v2-shadow-card: 0 18px 40px rgba(11, 26, 58, 0.28);
+    --v2-shadow-float: 0 10px 28px rgba(11, 26, 58, 0.22);
+
+    font-family: var(--v2-font-body);
+    color: var(--v2-ink-deep);
+    letter-spacing: 0;
+    position: relative;
+    isolation: isolate;
+    overflow-x: clip;
+}
+
+/* The splash page ships a Win95 cursor globally; v2 uses the normal pointer. */
+.v2,
+.v2 a,
+.v2 button,
+.v2 select,
+.v2 summary,
+.v2 [role="button"] {
+    cursor: auto;
+}
+
+.v2 a,
+.v2 button,
+.v2 summary,
+.v2 [role="button"] {
+    cursor: pointer;
+}
+
+/* --------------------------------------------------------------------------
+   Painted backdrop
+   background.jpg is one continuous 1512x7300 painting (sky -> clouds -> forest
+   -> city -> hills -> lake) with the bubbles already baked in.
+
+   `cover` keeps the painting's aspect ratio — so the painted bubbles stay
+   circular — while always spanning the whole page. On desktop the page is
+   close to the art's own 1512x7300 proportions, so it scales to full width
+   with only a sliver cropped off the bottom. On narrow viewports the page is
+   proportionally much taller, so it scales to full height and crops the sides
+   instead, which keeps the sky -> forest -> city -> lake scene in step with
+   the sections rather than running out partway down.
+   -------------------------------------------------------------------------- */
+.v2-scene {
+    position: relative;
+    background-image: url("/assets/v2/background.jpg");
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: top center;
+    background-color: #3A94D4;
+}
+
+/* --------------------------------------------------------------------------
+   Shared primitives
+   -------------------------------------------------------------------------- */
+.v2-container {
+    width: 100%;
+    max-width: var(--v2-container);
+    margin-inline: auto;
+    padding-inline: 24px;
+}
+
+.v2-section {
+    position: relative;
+    z-index: 1;
+}
+
+/* Pixel display type ------------------------------------------------------ */
+.v2-pixel {
+    font-family: var(--v2-font-pixel);
+    letter-spacing: 0.04em;
+    text-transform: none;
+}
+
+/* Buttons ----------------------------------------------------------------- */
+.v2-btn {
+    font-family: var(--v2-font-pixel);
+    font-size: 15px;
+    letter-spacing: 0.06em;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 14px 26px;
+    border: 0;
+    border-radius: 999px;
+    text-decoration: none;
+    white-space: nowrap;
+    transition: transform 160ms ease, box-shadow 160ms ease, background-color 160ms ease;
+}
+
+.v2-btn--primary {
+    background: var(--v2-lime);
+    color: var(--v2-ink);
+    box-shadow: 0 6px 16px rgba(31, 59, 44, 0.28);
+}
+
+.v2-btn--primary:hover {
+    background: #cff063;
+    transform: translateY(-2px);
+    box-shadow: 0 10px 22px rgba(31, 59, 44, 0.32);
+}
+
+.v2-btn--ghost {
+    background: rgba(255, 255, 255, 0.26);
+    color: var(--v2-white);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.4);
+}
+
+.v2-btn--ghost:hover {
+    background: rgba(255, 255, 255, 0.38);
+    transform: translateY(-2px);
+}
+
+.v2-btn:focus-visible {
+    outline: 3px solid var(--v2-white);
+    outline-offset: 3px;
+}
+
+/* Heading pill (dark rounded plaque behind section titles) ----------------- */
+.v2-heading-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    padding: 16px 34px;
+    border-radius: 18px;
+    background: rgba(14, 35, 24, 0.92);
+    color: var(--v2-white);
+    box-shadow: var(--v2-shadow-card);
+    font-family: var(--v2-font-pixel);
+    letter-spacing: 0.03em;
+}
+
+/* Dark glass card --------------------------------------------------------- */
+.v2-card {
+    background: rgba(14, 35, 24, 0.9);
+    border-radius: 20px;
+    box-shadow: var(--v2-shadow-card);
+    color: var(--v2-mint);
+    padding: 26px 28px;
+    backdrop-filter: blur(2px);
+    -webkit-backdrop-filter: blur(2px);
+}
+
+.v2-card__eyebrow {
+    font-family: var(--v2-font-pixel);
+    font-size: 11px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--v2-lime);
+    margin: 0 0 10px;
+}
+
+.v2-card__title {
+    font-family: var(--v2-font-pixel);
+    font-size: 26px;
+    line-height: 1.35;
+    color: var(--v2-white);
+    margin: 0 0 14px;
+}
+
+.v2-card__body {
+    font-size: 15px;
+    line-height: 1.65;
+    color: var(--v2-mint);
+    margin: 0;
+}
+
+/* Screen-reader-only ------------------------------------------------------ */
+.v2-sr {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}
+
+@media (max-width: 760px) {
+    .v2-card__title {
+        font-size: 21px;
+    }
+
+    .v2-container {
+        padding-inline: 18px;
+    }
+}

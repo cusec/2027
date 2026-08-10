@@ -1,0 +1,339 @@
+/* ==========================================================================
+   v2 — Scavenger hunt + leaderboard, and the ticket passes
+   ========================================================================== */
+
+.v2-hunt {
+    padding-block: 60px 120px;
+}
+
+.v2-hunt__inner {
+    position: relative;
+    display: grid;
+    grid-template-columns: minmax(0, 405px) minmax(0, 1fr);
+    align-items: start;
+    gap: 40px;
+}
+
+.v2-hunt__card {
+    padding: 30px 32px;
+}
+
+.v2-hunt__badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin: 0 0 20px;
+    padding: 6px 14px;
+    border-radius: 999px;
+    border: 1px solid rgba(195, 233, 86, 0.7);
+    font-size: 10.5px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--v2-lime);
+}
+
+.v2-hunt__badge i {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--v2-lime);
+}
+
+.v2-hunt__title {
+    max-width: 14ch;
+    font-size: clamp(1.5rem, 2.6vw, 2rem);
+}
+
+.v2-hunt__actions {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin: 26px 0 0;
+}
+
+.v2-hunt__note {
+    font-size: 13px;
+    color: rgba(223, 246, 238, 0.55);
+}
+
+/* map pins ---------------------------------------------------------------- */
+.v2-hunt__pin {
+    position: absolute;
+    display: block;
+}
+
+.v2-hunt__pin--a {
+    top: 12%;
+    left: 47%;
+    width: 34px;
+    height: 34px;
+    border: 2.5px dashed rgba(77, 113, 17, 0.85);
+    border-radius: 50%;
+}
+
+.v2-hunt__pin--b {
+    top: 32%;
+    left: 58%;
+    width: 12px;
+    height: 12px;
+    border: 2px solid #ffffff;
+    border-radius: 50%;
+    background: var(--v2-lime-dark);
+    box-shadow: 0 4px 10px rgba(11, 26, 58, 0.4);
+}
+
+/* leaderboard ------------------------------------------------------------- */
+.v2-board {
+    justify-self: end;
+    width: min(434px, 100%);
+    margin-top: 60px;
+    padding: 18px 18px 14px;
+    border-radius: 18px;
+    background: rgba(14, 35, 24, 0.86);
+    box-shadow: var(--v2-shadow-card);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+}
+
+.v2-board__head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 12px;
+    font-size: 11px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--v2-lime);
+}
+
+.v2-board__live {
+    color: var(--v2-red);
+}
+
+.v2-board__rows {
+    display: grid;
+    gap: 8px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    counter-reset: none;
+}
+
+.v2-board__rows li {
+    display: grid;
+    grid-template-columns: 26px 1fr auto;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 14px;
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.06);
+}
+
+.v2-board__rows li.is-lead {
+    background: var(--v2-lime);
+}
+
+.v2-board__rank {
+    font-size: 13px;
+    color: var(--v2-lime);
+}
+
+.v2-board__rows li.is-lead .v2-board__rank {
+    color: var(--v2-ink);
+}
+
+.v2-board__team {
+    font-size: 15px;
+    color: var(--v2-white);
+}
+
+.v2-board__rows li.is-lead .v2-board__team {
+    color: var(--v2-ink);
+}
+
+.v2-board__score {
+    font-size: 13px;
+    color: var(--v2-mint-bright);
+}
+
+.v2-board__rows li.is-lead .v2-board__score {
+    color: var(--v2-ink);
+}
+
+.v2-board__foot {
+    margin: 12px 0 0;
+    font-size: 12px;
+    color: rgba(178, 254, 231, 0.7);
+}
+
+/* ==========================================================================
+   Passes
+   ========================================================================== */
+
+.v2-passes {
+    padding-block: 40px 90px;
+}
+
+.v2-passes__head {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 40px;
+}
+
+.v2-passes__heading {
+    font-size: clamp(1.4rem, 3vw, 2.1rem);
+    padding: 18px 44px;
+}
+
+.v2-passes__grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 34px;
+    max-width: 1090px;
+    margin-inline: auto;
+}
+
+.v2-pass {
+    position: relative;
+    padding: 30px 32px 28px;
+    border-radius: 24px;
+    box-shadow: var(--v2-shadow-card);
+}
+
+/* the two cards sit at slightly different angles in the Figma frame */
+.v2-pass--basic {
+    background: var(--v2-white-pure);
+    color: var(--v2-ink-deep);
+    transform: rotate(-1.5deg);
+}
+
+.v2-pass--vip {
+    background: var(--v2-ink-deep);
+    color: var(--v2-mint);
+    transform: rotate(1deg);
+}
+
+.v2-pass__name {
+    margin: 0;
+    font-size: 20px;
+}
+
+.v2-pass--vip .v2-pass__name {
+    color: var(--v2-white);
+}
+
+.v2-pass__badge {
+    position: absolute;
+    top: 28px;
+    right: 30px;
+    padding: 6px 12px;
+    border-radius: 999px;
+    background: var(--v2-lime);
+    color: var(--v2-ink);
+    font-size: 9.5px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+}
+
+.v2-pass__price {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 18px 0 22px;
+}
+
+.v2-pass__price > span:first-child {
+    font-size: 44px;
+    line-height: 1;
+}
+
+.v2-pass--basic .v2-pass__price > span:first-child {
+    color: var(--v2-blue);
+}
+
+.v2-pass--vip .v2-pass__price > span:first-child {
+    color: var(--v2-lime);
+}
+
+.v2-pass__price > span:last-child {
+    font-size: 12px;
+    line-height: 1.45;
+    color: var(--v2-slate);
+}
+
+.v2-pass--vip .v2-pass__price > span:last-child {
+    color: rgba(223, 246, 238, 0.6);
+}
+
+.v2-pass__perks {
+    display: grid;
+    gap: 11px;
+    margin: 0 0 26px;
+    padding: 0;
+    list-style: none;
+}
+
+.v2-pass__perks li {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 14.5px;
+}
+
+.v2-pass__perks i {
+    flex: 0 0 auto;
+    width: 9px;
+    height: 9px;
+    border-radius: 2px;
+    background: var(--v2-teal);
+}
+
+.v2-pass--vip .v2-pass__perks i {
+    background: var(--v2-lime);
+}
+
+.v2-pass__cta {
+    display: flex;
+    width: 100%;
+    border-radius: 12px;
+}
+
+.v2-passes__note {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    width: max-content;
+    max-width: 100%;
+    margin: 70px auto 0;
+    padding: 10px 22px;
+    border-radius: 999px;
+    background: rgba(14, 35, 24, 0.86);
+    color: var(--v2-mint);
+    font-size: 12.5px;
+}
+
+@media (max-width: 900px) {
+    .v2-hunt__inner {
+        grid-template-columns: 1fr;
+    }
+
+    .v2-board {
+        justify-self: stretch;
+        margin-top: 0;
+    }
+
+    .v2-hunt__pin {
+        display: none;
+    }
+
+    .v2-passes__grid {
+        grid-template-columns: 1fr;
+        gap: 22px;
+    }
+
+    .v2-pass--basic,
+    .v2-pass--vip {
+        transform: none;
+    }
+}

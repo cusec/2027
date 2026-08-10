@@ -1,8 +1,17 @@
 import type { Metadata, Viewport } from "next";
 import Script from "next/script";
+import { Nunito } from "next/font/google";
 import "./globals.css";
 import "./styles/index.css";
 import "./styles/navbar.css";
+
+// Body copy face for the v2 main site. Exposed as a CSS variable so swapping it
+// for the real Figma font later is a one-line change.
+const bodyFont = Nunito({
+  subsets: ["latin"],
+  variable: "--font-v2-body",
+  display: "swap",
+});
 
 // if the splash was already seen this session, mark <html> static so the entrance animation doesn't replay on refresh (no flash)
 const SPLASH_ANIM_SCRIPT = `try{if(sessionStorage.getItem('cusecSplashSeen')){document.documentElement.classList.add('splash-static')}else{sessionStorage.setItem('cusecSplashSeen','1')}}catch(e){}`;
@@ -129,7 +138,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en-CA" dir="ltr" suppressHydrationWarning>
+    <html lang="en-CA" dir="ltr" className={bodyFont.variable} suppressHydrationWarning>
       <body>
         <Script id="splash-anim" strategy="beforeInteractive">
           {SPLASH_ANIM_SCRIPT}

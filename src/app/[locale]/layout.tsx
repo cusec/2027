@@ -3,8 +3,6 @@ import {NextIntlClientProvider, hasLocale} from 'next-intl';
 import {setRequestLocale} from 'next-intl/server';
 import {notFound} from 'next/navigation';
 import {routing} from '@/i18n/routing';
-import SplashPage from '@/app/components/SplashPage/SplashPage';
-import Navbar from '@/app/components/Navbar/Navbar';
 import { MotionPreferenceProvider } from '@/app/components/motion/MotionPreference';
 
 type Props = {
@@ -57,8 +55,7 @@ export default async function LocaleLayout({children, params}: Props) {
   return (
     <NextIntlClientProvider>
       <MotionPreferenceProvider>
-        <Navbar />
-        <SplashPage />
+        {children}
       </MotionPreferenceProvider>
     </NextIntlClientProvider>
   );

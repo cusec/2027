@@ -1,0 +1,235 @@
+/* ==========================================================================
+   v2 — Navbar + Hero
+   ========================================================================== */
+
+.v2-nav {
+    position: fixed;
+    inset: 0 0 auto 0;
+    z-index: 60;
+    height: var(--v2-nav-h);
+    display: flex;
+    align-items: center;
+    transition: background-color 220ms ease, box-shadow 220ms ease;
+}
+
+.v2-nav--solid {
+    background: rgba(14, 35, 24, 0.72);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    box-shadow: 0 2px 18px rgba(11, 26, 58, 0.22);
+}
+
+.v2-nav__inner {
+    width: 100%;
+    max-width: 1400px;
+    margin-inline: auto;
+    padding-inline: 40px;
+    display: flex;
+    align-items: center;
+    gap: 24px;
+}
+
+.v2-nav__brand {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    text-decoration: none;
+    color: var(--v2-white);
+    font-size: 18px;
+    flex: 0 0 auto;
+}
+
+.v2-nav__brand img {
+    width: 34px;
+    height: 34px;
+}
+
+.v2-nav__links {
+    display: flex;
+    align-items: center;
+    gap: 30px;
+    margin-inline: auto;
+}
+
+.v2-nav__links a {
+    color: var(--v2-white);
+    text-decoration: none;
+    font-size: 15px;
+    opacity: 0.94;
+    transition: opacity 140ms ease, color 140ms ease;
+}
+
+.v2-nav__links a:hover {
+    color: var(--v2-lime);
+    opacity: 1;
+}
+
+.v2-nav__cta {
+    flex: 0 0 auto;
+    padding: 11px 22px;
+    font-size: 14px;
+}
+
+/* Mobile menu ------------------------------------------------------------- */
+.v2-nav__burger {
+    display: none;
+    flex-direction: column;
+    justify-content: center;
+    gap: 5px;
+    width: 42px;
+    height: 42px;
+    padding: 0 9px;
+    border: 0;
+    border-radius: 10px;
+    background: rgba(255, 255, 255, 0.22);
+}
+
+.v2-nav__burger span[aria-hidden] {
+    display: block;
+    height: 2px;
+    border-radius: 2px;
+    background: var(--v2-white);
+}
+
+.v2-nav__mobile {
+    position: absolute;
+    top: var(--v2-nav-h);
+    left: 16px;
+    right: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    padding: 16px;
+    border-radius: 18px;
+    background: rgba(14, 35, 24, 0.95);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    box-shadow: var(--v2-shadow-card);
+}
+
+.v2-nav__mobile a:not(.v2-btn) {
+    color: var(--v2-white);
+    text-decoration: none;
+    padding: 11px 8px;
+    border-radius: 10px;
+    font-size: 16px;
+}
+
+.v2-nav__mobile a:not(.v2-btn):hover {
+    background: rgba(195, 233, 86, 0.14);
+    color: var(--v2-lime);
+}
+
+.v2-nav__mobile .v2-btn {
+    margin-top: 8px;
+}
+
+@media (max-width: 1080px) {
+    .v2-nav__inner {
+        padding-inline: 20px;
+    }
+
+    .v2-nav__links,
+    .v2-nav__cta {
+        display: none;
+    }
+
+    .v2-nav__burger {
+        display: flex;
+        margin-left: auto;
+    }
+}
+
+@media (min-width: 1081px) {
+    .v2-nav__mobile {
+        display: none;
+    }
+}
+
+/* --------------------------------------------------------------------------
+   Hero
+   -------------------------------------------------------------------------- */
+.v2-hero {
+    padding-top: calc(var(--v2-nav-h) + 76px);
+    padding-bottom: 150px;
+    text-align: center;
+}
+
+.v2-hero__inner {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.v2-hero__logo {
+    width: 146px;
+    height: 146px;
+    margin-bottom: 26px;
+    filter: drop-shadow(0 8px 20px rgba(11, 26, 58, 0.24));
+}
+
+.v2-hero__pill {
+    margin: 0 0 34px;
+    padding: 9px 26px;
+    border-radius: 999px;
+    background: rgba(31, 59, 44, 0.42);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    color: var(--v2-mint-bright);
+    font-size: 12px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+}
+
+.v2-hero__wordmark {
+    margin: 0;
+    font-size: clamp(3.2rem, 12vw, 9.4rem);
+    line-height: 0.95;
+    color: var(--v2-white-pure);
+    letter-spacing: 0.02em;
+    /* hard offset shade + soft bloom, matching the Figma wordmark treatment */
+    text-shadow:
+        7px 7px 0 rgba(91, 107, 126, 0.85),
+        0 0 60px rgba(232, 255, 214, 0.55);
+}
+
+.v2-hero__tagline {
+    margin: 34px 0 0;
+    font-size: clamp(1rem, 1.5vw, 1.2rem);
+    color: var(--v2-white);
+    text-shadow: 0 2px 12px rgba(11, 26, 58, 0.35);
+}
+
+.v2-hero__actions {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 14px;
+    margin-top: 30px;
+}
+
+@media (max-width: 760px) {
+    .v2-hero {
+        padding-top: calc(var(--v2-nav-h) + 40px);
+        padding-bottom: 90px;
+    }
+
+    .v2-hero__logo {
+        width: 104px;
+        height: 104px;
+        margin-bottom: 20px;
+    }
+
+    .v2-hero__pill {
+        margin-bottom: 24px;
+        font-size: 10px;
+        letter-spacing: 0.16em;
+        padding: 8px 18px;
+    }
+
+    .v2-hero__wordmark {
+        text-shadow:
+            4px 4px 0 rgba(91, 107, 126, 0.85),
+            0 0 40px rgba(232, 255, 214, 0.55);
+    }
+}
