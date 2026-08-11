@@ -8,9 +8,14 @@ This version has breaking changes — APIs, conventions, and file structure may 
 
 # CUSEC 2027 — Repository Guide
 
-**What this is:** The coming-soon / landing page for CUSEC 2027 (26th annual Canadian University Software Engineering Conference, Montréal QC, January 2027). Currently a single-page splash with a draggable Win95-style UI window, locale switcher, and animated background.
+**What this is:** The main site for CUSEC 2027 (26th annual Canadian University Software Engineering Conference, Montréal QC, January 2027). One long scrolling page over a single painted backdrop: hero, intro, about collage, an interactive photo archive, the scavenger hunt, passes, sponsors, FAQ and footer.
 
 **Live domain:** `https://2027.cusec.net`
+
+> The old Win95-style splash page has been **deleted**. If you find a reference
+> to `SplashPage`, `UIWindow`, `navigation_ui_window*`, Vanta birds, the
+> waitlist API or the Win95 cursors, it is a leftover — remove it rather than
+> restoring it.
 
 ---
 
@@ -20,11 +25,12 @@ This version has breaking changes — APIs, conventions, and file structure may 
 |---|---|
 | Framework | Next.js 16.2.6 (App Router, Turbopack) |
 | Language | TypeScript 5 |
-| Styling | Plain CSS modules + Tailwind v4 (minimal use) |
+| Styling | Plain CSS files + Tailwind v4 (minimal use) |
 | i18n | next-intl 4.9.0 |
 | Icons | lucide-react |
 | React | 19.2.4 |
-| Font | `Retropix` (custom woff2, pixel-art style) + MS Sans Serif fallback |
+| Display font | `Retropix` (custom woff2, pixel-art style) |
+| Body font | `Nunito` via `next/font/google` |
 
 ---
 
@@ -42,143 +48,120 @@ src/proxy.ts  ← the correct file (already set up with next-intl)
 
 Locales are detected from the `Accept-Language` header / cookie, **not** from URL path segments. The URL never shows `/en-CA/` or `/fr-CA/`. All navigation uses wrappers from `src/i18n/navigation.ts`, never Next.js's `next/navigation` directly.
 
+Because the locale never appears in the URL, `V2LocaleSwitcher` in the navbar is
+the only way a visitor can change language. Don't delete it as "not in the
+Figma frame" — it isn't in the frame, but without it `fr-CA` is unreachable.
+
 ### Route structure
 
 ```
 src/app/
-  layout.tsx            ← root layout (metadata, viewport, global CSS imports)
+  layout.tsx            ← root layout (metadata, viewport, fonts, global CSS)
   globals.css           ← Tailwind import + base resets
   manifest.ts           ← Web App Manifest (MetadataRoute.Manifest)
   page.tsx              ← redirected by proxy — effectively unused
   [locale]/
-    layout.tsx          ← locale-aware layout: NextIntlClientProvider + MotionPreferenceProvider only
-    page.tsx            ← the splash page (Navbar + SplashPage)
-    v2/
-      page.tsx          ← the v2 main site (see "Main site (v2)" below)
+    layout.tsx          ← NextIntlClientProvider only
+    page.tsx            ← the whole main site
 ```
 
-The `[locale]` segment is internal routing only — it never appears in the browser URL bar.
-
-> The locale layout used to render `Navbar` + `SplashPage` directly. That was moved
-> down into `[locale]/page.tsx` so sibling routes such as `v2` get a clean slate.
-> Keep the layout to providers only.
+The `[locale]` segment is internal routing only — it never appears in the browser URL bar. Keep the locale layout to providers; the page composes the sections.
 
 ---
 
 ## File Map
 
-### Components
+### Components — `src/app/components/v2/`
 
-| File | Purpose |
+One folder per page section, each named after the section and holding that
+section's component plus anything only it uses. Sections are composed in order
+by `[locale]/page.tsx`. All components are prefixed `V2`; only `V2Nav`,
+`V2LocaleSwitcher`, `V2CdPlayer`, `V2Archive` and `V2Faq` are client
+components, everything else is a server component.
+
+```
+components/v2/
+  Nav/       V2Nav.tsx · V2LocaleSwitcher.tsx
+  Hero/      V2Hero.tsx
+  Sky/       V2Sky.tsx
+  Dawn/      V2Dawn.tsx · V2CdPlayer.tsx · V2Polaroid.tsx
+  Archive/   V2Archive.tsx · V2SdCard.tsx · archiveData.ts
+  Hunt/      V2Hunt.tsx
+  Passes/    V2Passes.tsx
+  Sponsors/  V2Sponsors.tsx
+  Faq/       V2Faq.tsx
+  Closing/   V2Closing.tsx
+  Footer/    V2Footer.tsx
+```
+
+| Component | Purpose |
 |---|---|
-| `src/app/components/SplashPage/SplashPage.tsx` | Server component. Composes the full splash page: wavy animated title, CUSEC logo, `SplashPageUI`, and the waveform video background. |
-| `src/app/components/SplashPage/SplashPageUI.tsx` | **Client component** (`"use client"`). The draggable Win95-style application window. Contains all pointer event drag logic (bounds-clamped, auto-returns to origin after 1s idle). |
-| `src/app/components/Navbar/Navbar.tsx` | Fixed top navbar shell. Currently just renders `LocaleSwitcher`. |
-| `src/app/components/Navbar/LocaleSwitcher.tsx` | **Client component**. Globe icon + `<select>` for en-CA / fr-CA. Uses `useRouter` / `usePathname` from `src/i18n/navigation.ts`. |
+| `V2Nav` | Floating capsule navbar (see below). Deepens its glass on scroll. |
+| `V2LocaleSwitcher` | Globe + `<select>` for en-CA / fr-CA. Uses `useRouter`/`usePathname` from `@/i18n/navigation`. |
+| `V2Hero` | Icosahedron, edition pill, `CUSEC 2027` wordmark, tagline, two CTAs. |
+| `V2Sky` | Statement heading + three frosted info cards. |
+| `V2Dawn` | The collage: polaroids, stat tiles, CUSEC.FM, about / who / good-to-know cards. |
+| `V2CdPlayer` | Decorative CUSEC.FM widget. Plays no audio — the button just spins the disc. |
+| `V2Polaroid` | Tilted photo frame with a caption. |
+| `V2Archive` | CUSEC-CAM 2000 + swappable SD cards (see below). |
+| `V2SdCard` | One CUSEC-SD card, rebuilt in CSS so its inserted/idle state can follow the loaded year. |
+| `archiveData.ts` | Per-edition photos, counts and card gradients. |
+| `V2Hunt` | Scavenger hunt card + 2026 leaderboard + map pins. |
+| `V2Passes` | Basic / VIP tickets. |
+| `V2Sponsors` | Hex honeycomb by tier. |
+| `V2Faq` | Lily-pad accordion. |
+| `V2Closing` / `V2Footer` | Closing CTA and footer. |
 
-### Styles
+### Styles — `src/app/styles/v2/`
 
-All CSS is plain files, no CSS Modules. Imported globally via `src/app/styles/index.css`.
+Plain CSS, no CSS Modules, one stylesheet per section folder above.
+`index.css` imports them in page order and is pulled in by the root layout.
+Everything is namespaced under a `.v2` root class.
 
 | File | Covers |
 |---|---|
-| `src/app/globals.css` | Tailwind import, `color-scheme: light`, base body background |
-| `src/app/styles/index.css` | Imports SplashPage.css + UIWindow.css; patches `splash-wrapper` top padding to account for fixed navbar height + safe-area inset |
-| `src/app/styles/Splash/SplashPage.css` | `.splash-wrapper`, `.main-splash-content`, `.splash-title`, `.title-row`, `.splash-logo`, `.splash-ui-wrapper`, waveform video, responsive breakpoints |
-| `src/app/styles/Splash/UIWindow.css` | Everything inside `SplashPageUI`: nav bar, window buttons, item icons, CTA area, sponsorship button. Has breakpoints at 1400px, 640px, 370px. |
-| `src/app/styles/navbar.css` | `.Navbar`, `.Navbar-locale-switcher`, `.Navbar-locale-icon`, `.Navbar-locale-select-wrapper`, `.Navbar-locale-select` |
+| `base.css` | `@font-face` for Retropix, design tokens on `.v2`, `.v2-scene` backdrop, buttons, heading pills, cards, reduced-motion guard |
+| `nav.css` | `.v2-nav*`, `.v2-locale` |
+| `hero.css` | `.v2-hero*` |
+| `sky.css` | `.v2-sky*` |
+| `dawn.css` | `.v2-polaroid`, `.v2-stat`, `.v2-cd*`, `.v2-dawn*` |
+| `archive.css` | `.v2-cam*`, `.v2-sd*`, `.v2-archive*` |
+| `hunt.css` | `.v2-hunt*`, `.v2-board*` |
+| `passes.css` | `.v2-pass*`, `.v2-passes*` |
+| `sponsors.css` | `.v2-hex*`, `.v2-sponsors*` |
+| `faq.css` | `.v2-faq*`, `.v2-pad*` |
+| `closing.css` | `.v2-closing*` |
+| `footer.css` | `.v2-footer*` |
+
+**Design tokens** live on `.v2` in `base.css`. The palette values were lifted
+verbatim from the Figma SVG exports rather than sampled by eye — do not
+"correct" them.
+
+```
+--v2-lime #C3E956   --v2-ink #1F3B2C     --v2-mint #DFF6EE   --v2-navy  #0B1A3A
+--v2-lime-deep #7FA829  --v2-ink-deep #0E2318  --v2-mint-bright #B2FEE7
+--v2-lime-dark #4D7111  --v2-teal #4EC9A8   --v2-white #F4FFFC  --v2-blue #416CED
+--v2-slate #5B6B7E  --v2-slate-light #9DBFE8  --v2-gold #E8C34A  --v2-red #E8564A
+```
 
 ### i18n
 
 | File | Purpose |
 |---|---|
-| `src/i18n/routing.ts` | Defines locales `['en-CA', 'fr-CA']`, `defaultLocale: 'en-CA'`, `localePrefix: 'never'` |
-| `src/i18n/request.ts` | Server-side locale resolution from request; loads `messages/<locale>.json` |
-| `src/i18n/navigation.ts` | Re-exports `Link`, `redirect`, `usePathname`, `useRouter`, `getPathname` from next-intl — always use these instead of `next/navigation` |
-| `src/proxy.ts` | next-intl middleware. Handles locale detection and cookie. Matches all paths except `api`, `_next`, `_vercel`, and files with a dot. |
-| `messages/en-CA.json` | English strings |
-| `messages/fr-CA.json` | French strings |
+| `src/i18n/routing.ts` | Locales `['en-CA', 'fr-CA']`, `defaultLocale: 'en-CA'`, `localePrefix: 'never'` |
+| `src/i18n/request.ts` | Server-side locale resolution; loads `messages/<locale>.json` |
+| `src/i18n/navigation.ts` | Re-exports `Link`, `redirect`, `usePathname`, `useRouter`, `getPathname` — always use these instead of `next/navigation` |
+| `src/proxy.ts` | next-intl middleware. Matches all paths except `api`, `_next`, `_vercel`, and files with a dot. |
+| `messages/en-CA.json` / `messages/fr-CA.json` | All copy |
 
-**Message namespaces in use:**
-- `SplashPage.*` — title, edition-link, attendance-*, sponsorship-interest
-- `V2.*` — all copy for the v2 main site, grouped by section (`V2.nav`, `V2.hero`, `V2.sky`, `V2.dawn`, `V2.archive`, `V2.hunt`, `V2.passes`, `V2.sponsors`, `V2.faq`, `V2.closing`, `V2.footer`)
-- `HomePage.*` — placeholder, not currently rendered
-
-### Assets
-
-**Static assets live in `public/assets/`**, not in `src/`. Reference them as `/assets/filename.ext`.
-
-| File | Dimensions | Usage |
-|---|---|---|
-| `public/assets/navigation_ui_window.png` | 735×514 | Desktop UI window background |
-| `public/assets/navigation_ui_window_skinny.png` | 351×576 | Mobile UI window background (shown ≤640px) |
-| `public/assets/splash_bg.webp` | 1448×1086 | Full-page background image |
-| `public/assets/calendar.webp` | 83×83 | "Jan. 2027" icon in the window |
-| `public/assets/globe.webp` | 89×89 | "Montreal, QC" icon in the window |
-| `public/assets/cusec_aero_logo.webp` | 146×146 | Logo beside "2027" title |
-| `public/splash_waveform.webm` | — | Animated waveform overlay (screen blend mode for iOS VP9 alpha fix) |
-| `public/logo_animated.webm` | — | Animated logo (currently commented out, replaced by static PNG) |
-| `public/cusec-logo.png` | — | OG image + PWA icon (should be 1200×630 for best OG) |
-| `public/favicon.ico` / `favicon-16x16.png` / `favicon-32x32.png` | — | Favicons |
-
-**SVG components** (code, not static assets) live in `src/app/assets/FigmaSVGs.tsx`:
-- `FileFolder` — pixel-art folder icon for "25th Edition" link
-- `SponsorshipInterestButton` — Win95-style button SVG, `viewBox="0 0 616 75"` (8.2:1 aspect ratio — render at full width, do not scale height or it distorts)
-
-The SVG file also exports `splitCtaLabel`, a utility that word-wraps long button label strings to at most 2 lines.
-
-### Font
-
-`src/fonts/retropix.woff2` — loaded via `@font-face` in `SplashPage.css` as `"Retropix"`. Used for all monospace/pixel-art text (CTA buttons, email input, etc.).
+Every string lives under the single `V2.*` namespace, grouped by section:
+`V2.nav`, `V2.hero`, `V2.sky`, `V2.dawn`, `V2.archive`, `V2.hunt`, `V2.passes`,
+`V2.sponsors`, `V2.faq`, `V2.closing`, `V2.footer`. Both locale files must stay
+in sync — add to both or the missing one throws at render.
 
 ---
 
-## Design System Notes
-
-**Color palette (key values):**
-- `#103436` — dark teal, primary brand colour (text, outlines, theme-color)
-- `#ffffff` — highlights / borders
-- `#2b2b2b` — shadows / borders
-- `#bfbfbf` / `#c0c0c0` — Win95 grey (buttons)
-- `#1A66D4` — locale icon blue
-
-**Win95 border pattern** (used on all "window" UI elements):
-```css
-border-top: 2px solid #ffffff;
-border-left: 2px solid #ffffff;
-border-right: 2px solid #2b2b2b;
-border-bottom: 2px solid #2b2b2b;
-box-shadow: inset 1px 1px 0 #dbdbdb;
-```
-Do not reduce these to 1px on mobile — they become invisible.
-
-**Responsive breakpoints:**
-- `≤1400px` — reduce icon sizes slightly
-- `≤980px` — stack layout to single column
-- `≤640px` — mobile layout: skinny window image, row-layout items, CTA below window
-- `≤370px` — very small phones, smaller nav title
-
----
-
-## Main site (v2)
-
-Route: `src/app/[locale]/v2/page.tsx`. Built from the Figma frame "Home V2"
-(`public/assets/v2/Home V2.png` is the reference screenshot).
-
-**Components** — `src/app/components/v2/`, all prefixed `V2`:
-`V2Nav`, `V2Hero`, `V2Sky`, `V2Dawn` (+ `V2CdPlayer`, `V2Polaroid`),
-`V2Archive` (+ `V2SdCard`, `archiveData.ts`), `V2Hunt`, `V2Passes`,
-`V2Sponsors`, `V2Faq`, `V2Closing`, `V2Footer`.
-Only `V2Nav`, `V2CdPlayer` and `V2Archive` are client components.
-
-**Styles** — `src/app/styles/v2/`, imported by `index.css` and pulled in by the
-route (not globally). Everything is namespaced under a `.v2` root class so it
-cannot leak into the splash page. `.v2` also resets the splash's global Win95
-cursor back to the normal pointer.
-
-**Design tokens** live on `.v2` in `styles/v2/base.css`. The palette values were
-lifted verbatim from the Figma SVG exports rather than sampled by eye — do not
-"correct" them.
+## Design notes
 
 ### The exported SVGs have outlined text
 
@@ -192,8 +175,17 @@ exact colour values.
 
 One painting, `public/assets/v2/background.jpg` (1512×7300, bubbles already
 baked in), on `.v2-scene` at `background-size: cover`. See the comment in
-`base.css` for why `cover` and not `100% 100%` or `100% auto`. The footer sits
-outside `.v2-scene` on its own solid colour.
+`base.css` for why `cover` and not `100% 100%` or `100% auto` — the short
+version is that it keeps the bubbles circular on desktop *and* keeps the scene
+in step with the sections on tall narrow viewports. The footer sits outside
+`.v2-scene` on its own solid colour.
+
+### Navbar
+
+A floating capsule inset from the top and sides, not a full-bleed bar, so the
+sky reads continuously behind it. `.v2-nav` is the fixed positioning layer and
+is `pointer-events: none`; `.v2-nav__bar` re-enables pointer events. Resting
+state is a light glass tint that deepens to `.is-lifted` past 40px of scroll.
 
 ### Archive interaction
 
@@ -208,26 +200,56 @@ internals are sized in `cqi` — it scales as one physical object rather than
 reflowing. Below 1000px the decorative control column is dropped and the SD
 cards become a normal wrapped row.
 
+### FAQ
+
+`V2Faq` keeps a single `openPad` index, so exactly one answer is open at a
+time. Answers are rich text via `t.rich` (`<p> <b> <ul> <li>` plus `<tickets>`,
+`<hotel>` and `<email>` link tags).
+
+The pads look scattered but are a **single flex column in normal flow**, one
+pad per row, each given a different `--pad-x` indent so the column reads as
+floating platforms rather than a list. They are flat — no tilt.
+
+They were absolutely positioned once; don't go back to that. In flow, an
+opening answer grows its row and pushes the pads below it down, so overlap is
+impossible and the pads can sit close together. Absolute positioning cannot
+push, which forced huge gaps and still overlapped.
+
+Below 900px the indents drop away and the pads run full width in a straight
+column. The desktop width animation is also disabled there — a fixed answer
+width is exactly what overflows a phone — so only the height animates.
+
+Two details make the open animation smooth, and both matter:
+- the wrapper animates `grid-template-rows: 0fr → 1fr`, so no height measuring;
+- the answer body is pinned to a fixed width at all times and the wrapper
+  animates `width: 0 → var(--pad-answer-w)`, clipping it into view. Letting the
+  text re-wrap during the transition is what made it look rough. The 0-width
+  wrapper is also what keeps a closed pill tight to its question — otherwise
+  the answer inflates the pad's `max-content` width.
+
+### Sponsor hexes
+
+Tier drives both the hex size and its edge colour. The logo area is a wide box
+sitting at the hexagon's vertical midpoint (where the shape is full width) —
+sponsor wordmarks carry text and go unreadable in a small square, so **do not
+shrink `.v2-hex__slot` back into a thin bar.**
+
+### Motion
+
+There is no in-app motion toggle. `base.css` honours
+`prefers-reduced-motion: reduce` for everything under `.v2`.
+
 ---
 
-## SplashPageUI Drag System
+## Copy rules
 
-`SplashPageUI` implements a pointer-capture drag for the window:
-
-- **Drag handle:** `.UI-nav` bar (top of the window). Clicking a `<button>` inside the nav does NOT initiate drag.
-- **Bounds:** Clamped to `.splash-wrapper` on every `pointerdown` so the window can't be dragged outside the page.
-- **Auto-return:** If the cursor leaves the window and stays absent for 1 second, the window slides back to `translate(0, 0)` with a spring animation (`cubic-bezier(0.34, 1.4, 0.64, 1)`).
-- **Float animation:** `.splash-ui-wrapper` has a CSS `splash-ui-hover` keyframe animation. It pauses while dragging via `:has(.UI-nav--dragging)`.
-- **State:** `offsetRef` is the source of truth during drag (avoids React re-render lag); `offset` state drives the `style` prop for the actual transform.
-
----
-
-## Metadata & SEO
-
-- Defined in `src/app/layout.tsx` (root, language-agnostic defaults) and `src/app/[locale]/layout.tsx` (per-locale overrides for title/description/OG).
-- Web App Manifest at `src/app/manifest.ts` (Next.js built-in `MetadataRoute.Manifest`).
-- Google Search Console verification token field is empty in `layout.tsx` — fill in when needed.
-- OG image is `/cusec-logo.png` — should be replaced with a proper 1200×630 image.
+- **The scavenger hunt happens inside the conference venue only** — not across
+  Montréal — and **no prize amount is confirmed**. Don't reintroduce a dollar
+  figure or "the streets of Montréal" phrasing.
+- Avoid small, faint flavour text laid directly over the painting. Several such
+  lines were deliberately removed (archive caption/hint, sky eyebrow/subline,
+  sponsors caption, CD player hint) because they were unreadable and pulled
+  focus from the components they sat under.
 
 ---
 
@@ -235,8 +257,21 @@ cards become a normal wrapped row.
 
 1. **Never use `next/navigation`** directly. Always import from `@/i18n/navigation` for locale-aware routing.
 2. **Never create `src/middleware.ts`** — use `src/proxy.ts`.
-3. **Static assets belong in `public/`**, not `src/app/assets/`. Only code (TSX/TS) goes in `src/`.
-4. **The waveform video uses `mix-blend-mode: screen`** — this is intentional. iOS Safari drops VP9 alpha channel, leaving black; screen blend makes black transparent without needing a separate codec.
-5. **The `SponsorshipInterestButton` SVG is 8.2:1 wide.** Render it with `width: 100%` and let it scale proportionally. Do not apply `scaleY` or set a fixed height — it will distort.
-6. **`src/app/page.tsx` (the root one) is essentially unused** — the proxy redirects past it. It's a remnant; don't put real content there. Real pages live under `[locale]/`.
-7. **The `HomePage` message namespace is a placeholder** and not rendered anywhere visible. Real content uses `SplashPage.*`.
+3. **Static assets belong in `public/`**, not `src/`. Only code (TSX/TS) goes in `src/`.
+4. **Plain `<img>` is intentional** throughout — `next/image` was dropped to avoid Vercel's image-optimization quota. The `no-img-element` lint warnings are expected; don't "fix" them.
+5. **Never hand-write `-webkit-backdrop-filter`.** Write only the standard `backdrop-filter` and let the build prefix it. When both are authored, Lightning CSS (Turbopack's minifier) collapses the pair down to *only* the `-webkit-` version, which Chrome ignores — every glass surface silently renders as a flat tint. This bit the whole site once already. If a frosted panel looks flat, check the computed `backdrop-filter` in devtools before touching the colours.
+6. **`src/app/page.tsx` (the root one) is essentially unused** — the proxy redirects past it. Real pages live under `[locale]/`.
+7. **`public/assets/` still holds splash-era files** (`navigation_ui_window*`, `splash_bg.webp`, `cursor-win95.webp`, `calendar.webp`, `globe.webp`, `/splash_waveform.webm`, `/logo_animated.webm`). Nothing references them; they're safe to delete.
+8. **`three` and `vanta` are still in `package.json`** but nothing imports them — the only consumer was the splash background.
+
+---
+
+## Known gaps
+
+- **Fonts.** Retropix matches the hero wordmark, but the Figma card titles use a
+  heavier rounded face that hasn't been supplied. Body copy is Nunito as a
+  stand-in. Both are CSS variables (`--v2-font-pixel`, `--v2-font-body`).
+- **Archive photos.** Only 2026 has real photos (extracted from the CAM export).
+  2023–2025 reuse them — see the note in `archiveData.ts`.
+- **Sponsor logos** are placeholder boxes; tiers and counts are invented.
+- **French copy** is a first-pass translation and wants a native review.

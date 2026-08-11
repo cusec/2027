@@ -3,15 +3,8 @@
    ========================================================================== */
 
 .v2-sky {
-    padding-block: 40px 120px;
+    padding-block: 150px 120px;
     text-align: center;
-}
-
-.v2-sky__eyebrow {
-    margin: 0 0 90px;
-    font-size: 11px;
-    letter-spacing: 0.28em;
-    color: rgba(178, 254, 231, 0.85);
 }
 
 .v2-sky__heading {
@@ -20,13 +13,6 @@
     font-size: clamp(1.55rem, 3vw, 2.3rem);
     line-height: 1.42;
     color: var(--v2-ink);
-}
-
-.v2-sky__subline {
-    margin: 26px 0 0;
-    font-size: 13px;
-    letter-spacing: 0.18em;
-    color: rgba(31, 59, 44, 0.75);
 }
 
 .v2-sky__cards {
@@ -46,7 +32,6 @@
     background: rgba(11, 26, 58, 0.45);
     border: 1px solid rgba(178, 254, 231, 0.4);
     backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px);
 }
 
 .v2-sky__card-title {
@@ -64,11 +49,7 @@
 
 @media (max-width: 900px) {
     .v2-sky {
-        padding-block: 20px 80px;
-    }
-
-    .v2-sky__eyebrow {
-        margin-bottom: 50px;
+        padding-block: 90px 80px;
     }
 
     .v2-sky__cards {

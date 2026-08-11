@@ -558,34 +558,6 @@
 }
 
 /* --------------------------------------------------------------------------
-   Footnotes
-   -------------------------------------------------------------------------- */
-.v2-archive__foot {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 20px;
-    /* clears the lowest resting SD card, which overhangs the camera body */
-    margin-top: 52px;
-    padding-right: 22%;
-}
-
-.v2-archive__caption {
-    margin: 0;
-    font-size: 13px;
-    color: rgba(255, 255, 255, 0.85);
-    text-shadow: 0 1px 6px rgba(11, 26, 58, 0.5);
-}
-
-.v2-archive__hint {
-    margin: 0;
-    font-size: 12px;
-    letter-spacing: 0.08em;
-    color: rgba(255, 255, 255, 0.9);
-    text-shadow: 0 1px 6px rgba(11, 26, 58, 0.5);
-}
-
-/* --------------------------------------------------------------------------
    Responsive — below the breakpoint the camera goes full width, the decorative
    control column is dropped, and the SD cards become a normal row underneath.
    -------------------------------------------------------------------------- */
@@ -621,13 +593,6 @@
         position: static;
         transform: none;
         transition: none;
-    }
-
-    .v2-archive__foot {
-        flex-direction: column;
-        text-align: center;
-        margin-top: 26px;
-        padding-right: 0;
     }
 }
 

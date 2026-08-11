@@ -1,32 +1,9 @@
 {
-    "HomePage": {
-        "title": "Home page (French)",
-        "description": "we goin mtl w ts ✌️🥀 (in French monseur)"
-    },
-    "Navbar": {
-        "reduce-motion": "Réduire les animations",
-        "enable-motion": "Activer les animations"
-    },
-    "SplashPage": {
-        "title": "Conférence canadienne sur le génie logiciel",
-        "edition-link": "25e édition",
-        "attendance-interest": "Formulaire de manifestation d’intérêt",
-        "attendance-label": "Courriel",
-        "attendance-placeholder": "Intéressé(e) à venir à CUCIL 2027?",
-        "attendance-submit": "Rejoindre la liste",
-        "attendance-success": "Vous êtes sur la liste !",
-        "attendance-error": "Une erreur s'est produite. Réessayez.",
-        "attendance-duplicate": "Vous êtes déjà sur la liste !",
-        "sponsorship-interest": "Formulaire de parrainage",
-        "external-link-title": "Ouvrir un lien externe",
-        "external-link-message": "Vous êtes sur le point d’ouvrir un nouvel onglet.",
-        "external-link-confirm": "OK",
-        "external-link-cancel": "Annuler"
-    },
     "V2": {
         "nav": {
             "aria-label": "Principal",
             "menu": "Menu",
+            "language": "Langue",
             "about": "À propos",
             "speakers": "Conférenciers",
             "sponsors": "Commanditaires",
@@ -42,9 +19,7 @@
             "cta-secondary": "Suivre la route"
         },
         "sky": {
-            "eyebrow": "· · · la route vers montréal commence ici · · ·",
             "heading": "Vingt-cinq ans de conversations de couloir devenues des carrières.",
-            "subline": "· et une quête secondaire très disputée ·",
             "card-1-title": "20+ conférences et ateliers",
             "card-1-body": "Des hackers du noyau aux ingénieurs en design — trois scènes, zéro remplissage, du niveau débutant au plus pointu.",
             "card-2-title": "Un salon de l'emploi qui embauche",
@@ -65,7 +40,6 @@
             "stat-4-label": "reviennent",
             "player-title": "CUSEC.FM",
             "player-now-playing": "en lecture · lofi_for_lakes.mp3",
-            "player-hint": "♪ de la musique pendant que vous défilez · cliquez pour lancer",
             "player-prev": "Piste précédente",
             "player-play": "Lecture",
             "player-pause": "Pause",
@@ -99,8 +73,6 @@
         },
         "archive": {
             "heading": "Les archives – choisissez une carte, une année",
-            "caption": "les archives interactives — une carte SD par édition, de vraies photos à l'intérieur",
-            "hint": "{year} chargée · touchez une carte pour changer d'année",
             "camera-name": "CUSEC-CAM 2000",
             "power": "PWR",
             "play": "PLAY",
@@ -115,10 +87,9 @@
         },
         "hunt": {
             "badge": "Quête secondaire · en direct le 8 janv., 20 h",
-            "title": "La ville est le plateau de jeu.",
-            "body": "Quarante indices cachés dans les conférences, le lieu et les rues de Montréal — ces épingles ne sont pas décoratives. Des équipes de quatre, un classement en direct et un mur de prix de 2 000 $ à la cérémonie de clôture.",
+            "title": "Le lieu est le plateau de jeu.",
+            "body": "Des indices cachés partout dans le lieu de la conférence — dans les présentations, aux kiosques et dans chaque corridor. Des équipes de quatre, un classement en direct et des prix annoncés à l'approche de l'événement.",
             "cta": "Entrer dans la chasse",
-            "cta-note": "/scavenger",
             "board-title": "classement final 2026",
             "board-live": "EN DIRECT",
             "team-1": "Null Pointers",
@@ -148,11 +119,10 @@
             "vip-perk-2": "Soupers avec les conférenciers + salon VIP",
             "vip-perk-3": "Collection exclusive + priorité dans toutes les files",
             "vip-cta": "Prendre VIP – 160 $",
-            "note": "paiement sécurisé via Ticket Tailor à /pricing · remboursements jusqu'au 15 déc."
+            "note": "paiement sécurisé via Ticket Tailor · remboursements jusqu’au 27 déc. 2026"
         },
         "sponsors": {
             "heading": "Soutenus par les meilleurs",
-            "caption": "30+ entreprises se joignent à nous chaque année · survolez un hexagone pour le retourner, cliquez pour visiter — votre logo a sa place ici",
             "become": "devenir commanditaire",
             "tier-platinum": "logo platine",
             "tier-gold": "logo or",
@@ -161,16 +131,22 @@
         },
         "faq": {
             "heading": "Vos questions, nos réponses",
-            "q1": "Qui peut participer ?",
-            "a1": "Tout étudiant postsecondaire — ainsi que les diplômés et les professionnels. La curiosité est le seul prérequis.",
-            "q2": "Qu'est-ce qui est inclus dans mon billet ?",
-            "a2": "Toutes les conférences et les ateliers, le salon de l'emploi, les trois socials, une trousse cadeau et les rafraîchissements sur place. Le transport et l'hébergement sont à votre charge.",
-            "q3": "Où loger à Montréal ?",
-            "a3": "Le lieu est un hôtel du centre-ville et nous réservons un bloc de chambres à tarif réduit pour les délégués. Les détails de réservation accompagnent la confirmation de votre billet.",
-            "q4": "Comment fonctionne la chasse ?",
-            "a4": "Formez une équipe de quatre, récupérez votre premier indice à la cérémonie d'ouverture et poursuivez quarante indices dans le lieu et dans la ville. Le classement en direct tranche à la clôture.",
-            "q5": "Quelle est la politique de remboursement ?",
-            "a5": "Remboursement complet jusqu'au 15 décembre. Après cette date, les billets sont transférables à une autre personne — écrivez-nous."
+            "q1": "Quand et où se déroule CUSEC 2027 ?",
+            "a1": "<p>CUSEC 2027 aura lieu à Montréal du 8 au 10 janvier 2027, à :</p><p><b>Hôtel Omni Mont-Royal</b></p><p>1050, rue Sherbrooke Ouest, Montréal (Québec) H3A 2R6</p>",
+            "q2": "Où puis-je trouver l’horaire, les conférenciers et les commanditaires ?",
+            "a2": "<p>L’horaire sera bientôt publié sur le site, avec notre liste de conférenciers ! Nous travaillons à vous offrir la meilleure expérience possible, promis.</p>",
+            "q3": "Qui peut participer ? Y a-t-il des frais ?",
+            "a3": "<p>Les élèves du secondaire ainsi que les étudiants de premier cycle et des cycles supérieurs de partout au Canada sont les bienvenus.</p><ul><li><b>Billet étudiant</b> : 118 $ CAD — pour les personnes encore inscrites aux études en janvier 2027.</li><li><b>Billet professionnel</b> : 270 $ CAD — pour les professionnels ou les personnes diplômées avant janvier 2027.</li></ul><p>Les billets n’incluent ni le transport ni l’hébergement. Consultez la section Tarifs pour les détails sur ce qu’inclut chaque billet.</p>",
+            "q4": "Comment obtenir un billet ?",
+            "a4": "<p>La <b>prévente</b> s’ouvre d’abord aux écoles ayant un chef de délégation — parlez-en à votre chef de délégation pour les billets réservés à votre école.</p><p>L’<b>admission générale</b> ouvre ensuite et reste ouverte jusqu’à épuisement des billets. Les dates exactes seront annoncées à l’approche de l’événement. (<tickets>Acheter des billets</tickets>)</p>",
+            "q5": "Où réserver ma chambre d’hôtel ? Combien ça coûte ?",
+            "a5": "<p>Nous recommandons de loger à l’Hôtel Omni Mont-Royal, notre partenaire officiel et l’hébergement privilégié de tous les participants. Nous négocions un tarif réduit avec l’hôtel — le tarif et les détails du bloc de chambres seront communiqués à l’approche de l’événement.</p><p>Hôtel Omni Mont-Royal : <hotel>Lien de réservation</hotel></p>",
+            "q6": "Suis-je obligé de réserver une chambre d’hôtel ?",
+            "a6": "<p>Si vous participez à CUSEC au sein d’une délégation étudiante, oui — vous devez loger à l’hôtel officiel de CUSEC. Au fil des ans, nous avons rencontré plusieurs problèmes lorsque des participants ne logeaient pas à l’hôtel désigné.</p><p>Posez toutes vos questions d’hébergement à votre chef de délégation. En cas de circonstances exceptionnelles, demandez-lui d’en discuter avec le reste de l’équipe organisatrice.</p>",
+            "q7": "Puis-je obtenir un remboursement ou revendre mon billet ?",
+            "a7": "<p>Il est strictement interdit de revendre un billet CUSEC au-dessus du prix payé.</p><p>Les remboursements sont possibles jusqu’à 30 jours après l’achat, ou jusqu’au 27 décembre 2026 à 23 h 59 (HNE), selon la première échéance.</p><p>Si vous ne pouvez pas venir, écrivez à <email>info@cusec.net</email> en copiant votre chef de délégation s’il y a lieu. Nous ferons de notre mieux pour vous aider.</p>",
+            "q8": "Les repas sont-ils fournis pendant le séjour ?",
+            "a8": "<p>Du café et du thé seront offerts aux délégués. Les repas ne sont pas fournis, mais de nombreuses options se trouvent tout près pour découvrir la scène culinaire montréalaise !</p>"
         },
         "closing": {
             "heading": "À bientôt à Montréal.",
@@ -189,7 +165,7 @@
             "linkedin": "LinkedIn",
             "youtube": "YouTube",
             "github": "GitHub",
-            "legal": "© 2027 CUSEC · Fait avec 💚 · le lac est réel, la date limite aussi"
+            "legal": "© 2027 CUSEC · Fait avec 💚 · la rivière où coulent les rêves"
         }
     }
 }

@@ -1,7 +1,15 @@
+/* Design tokens, page shell and shared primitives first, then one stylesheet
+   per section — mirroring src/app/components/v2/<Section>/ */
 @import "./base.css";
-@import "./nav-hero.css";
+
+@import "./nav.css";
+@import "./hero.css";
 @import "./sky.css";
 @import "./dawn.css";
 @import "./archive.css";
-@import "./hunt-passes.css";
-@import "./sponsors-faq.css";
+@import "./hunt.css";
+@import "./passes.css";
+@import "./sponsors.css";
+@import "./faq.css";
+@import "./closing.css";
+@import "./footer.css";

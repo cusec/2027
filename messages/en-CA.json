@@ -1,32 +1,9 @@
 {
-    "HomePage": {
-        "title": "Home page (English)",
-        "description": "we goin mtl w ts ✌️🥀 (in English tho)"
-    },
-    "Navbar": {
-        "reduce-motion": "Reduce animations",
-        "enable-motion": "Enable animations"
-    },
-    "SplashPage": {
-        "title": "Canadian University Software Engineering Conference",
-        "edition-link": "25th Edition",
-        "attendance-interest": "Attendance Interest Form",
-        "attendance-label": "Email",
-        "attendance-placeholder": "Interested in attending CUSEC 2027?",
-        "attendance-submit": "Join Waitlist",
-        "attendance-success": "On the waitlist!",
-        "attendance-error": "Something went wrong. Try again.",
-        "attendance-duplicate": "You're already on the waitlist!",
-        "sponsorship-interest": "Sponsorship Interest Form",
-        "external-link-title": "Open External Link",
-        "external-link-message": "You are about to open a new tab.",
-        "external-link-confirm": "OK",
-        "external-link-cancel": "Cancel"
-    },
     "V2": {
         "nav": {
             "aria-label": "Main",
             "menu": "Menu",
+            "language": "Language",
             "about": "About",
             "speakers": "Speakers",
             "sponsors": "Sponsors",
@@ -42,9 +19,7 @@
             "cta-secondary": "Follow the road"
         },
         "sky": {
-            "eyebrow": "· · · the road to montréal starts here · · ·",
             "heading": "Twenty-five years of hallway conversations that became careers.",
-            "subline": "· and one very competitive side quest ·",
             "card-1-title": "20+ talks & workshops",
             "card-1-body": "Kernel hackers to design engineers — three stages, zero filler, beginner to deep-cut.",
             "card-2-title": "A career fair that hires",
@@ -65,7 +40,6 @@
             "stat-4-label": "come back",
             "player-title": "CUSEC.FM",
             "player-now-playing": "now playing · lofi_for_lakes.mp3",
-            "player-hint": "♪ tunes while you scroll · click to spin",
             "player-prev": "Previous track",
             "player-play": "Play",
             "player-pause": "Pause",
@@ -99,8 +73,6 @@
         },
         "archive": {
             "heading": "The Archive – pick a card, any year",
-            "caption": "the interactive archive — one SD card per edition, real photos inside",
-            "hint": "{year} loaded · tap a card to swap years",
             "camera-name": "CUSEC-CAM 2000",
             "power": "PWR",
             "play": "PLAY",
@@ -115,10 +87,9 @@
         },
         "hunt": {
             "badge": "Side quest · live Jan 8, 8 PM",
-            "title": "The city is the game board.",
-            "body": "Forty clues hidden in talks, the venue, and the streets of Montréal — those pins aren't decoration. Teams of four, a live leaderboard, and a $2,000 prize wall at closing ceremonies.",
+            "title": "The venue is the game board.",
+            "body": "Clues hidden all over the conference venue — in the talks, at the booths and down every hallway. Teams of four, a live leaderboard, and prizes announced closer to the event.",
             "cta": "Enter the Hunt",
-            "cta-note": "/scavenger",
             "board-title": "2026 final standings",
             "board-live": "LIVE",
             "team-1": "Null Pointers",
@@ -148,11 +119,10 @@
             "vip-perk-2": "Speaker dinners + VIP lounge",
             "vip-perk-3": "Merch drop + front of every line",
             "vip-cta": "Get VIP – $160",
-            "note": "secure checkout via Ticket Tailor at /pricing · refunds until dec 15"
+            "note": "secure checkout via Ticket Tailor · refunds until dec 27, 2026"
         },
         "sponsors": {
             "heading": "Backed by the best",
-            "caption": "30+ companies join us every year · hover a hex to flip it, click to visit — your logo fits right here",
             "become": "become a sponsor",
             "tier-platinum": "platinum logo",
             "tier-gold": "gold logo",
@@ -161,16 +131,22 @@
         },
         "faq": {
             "heading": "Questions, answered",
-            "q1": "Who can attend?",
-            "a1": "Any post-secondary student — plus grads & pros. Curiosity is the only prerequisite.",
-            "q2": "What's included in my ticket?",
-            "a2": "Every talk and workshop, the career fair, all three socials, a swag kit, and refreshments on site. Travel and lodging are on you.",
-            "q3": "Where do I stay in Montréal?",
-            "a3": "The venue is a downtown hotel and we hold a discounted room block for delegates. Booking details go out with your ticket confirmation.",
-            "q4": "How does the hunt work?",
-            "a4": "Form a team of four, pick up your first clue at opening ceremonies, and chase forty clues across the venue and the city. The live leaderboard settles it at closing.",
-            "q5": "What's the refund policy?",
-            "a5": "Full refunds until December 15. After that, tickets are transferable to another attendee — just email us."
+            "q1": "When and where is CUSEC 2027 happening?",
+            "a1": "<p>CUSEC 2027 will be held in Montréal from January 8th to 10th, 2027 at:</p><p><b>Hotel Omni Mont-Royal</b></p><p>1050 Sherbrooke St W, Montreal, Quebec H3A 2R6</p>",
+            "q2": "Where can I find the conference schedule, speakers, and sponsors?",
+            "a2": "<p>The schedule will be available on the website soon, along with our list of speakers! We are working to create the best conference experience for you, we promise.</p>",
+            "q3": "Who can attend? Are there any costs?",
+            "a3": "<p>High school, undergraduate, and graduate students from all across Canada are welcome to attend.</p><ul><li><b>Student Ticket</b>: $118 CAD — for students still registered as of January 2027.</li><li><b>Professional Ticket</b>: $270 CAD — for professionals, or students who have graduated by January 2027.</li></ul><p>Tickets do not include travel or accommodation costs. Check the Pricing section for more details on ticket benefits.</p>",
+            "q4": "How can I get a ticket?",
+            "a4": "<p><b>Pre-sale</b> opens first for schools with a Head Delegate — speak with your Head Delegate about pre-purchased tickets for your school.</p><p><b>General Admission</b> opens afterwards and stays open until tickets sell out. Exact dates are announced closer to the event. (<tickets>Buy Tickets</tickets>)</p>",
+            "q5": "Where should I book my hotel room? How much does it cost?",
+            "a5": "<p>We recommend booking your stay at Hotel Omni Mont-Royal, our official partner and the preferred accommodation for all attendees. We negotiate a discounted room rate with the hotel — the rate and room-block details go out closer to the event.</p><p>Hotel Omni Mont-Royal: <hotel>Booking Link</hotel></p>",
+            "q6": "Do I have to book a hotel room?",
+            "a6": "<p>If you are attending CUSEC as part of a student delegation, yes — you are required to stay at the official CUSEC hotel. Over the years we have run into a number of issues when attendees are not staying at the designated conference hotel.</p><p>Ask your Head Delegate any questions you may have about accommodation. For any exceptional circumstances, ask your Head Delegate to discuss your situation with the rest of the organizing team.</p>",
+            "q7": "Can I get a refund or resell my ticket?",
+            "a7": "<p>It is strictly forbidden to re-sell a CUSEC ticket above the purchased price.</p><p>Refunds are available 30 days after purchase, or until December 27, 2026 at 11:59 PM (EST), whichever comes first.</p><p>If you cannot attend, please email <email>info@cusec.net</email> and CC your Head Delegate if applicable. We will do our best to assist you.</p>",
+            "q8": "Will meals be provided during our stay?",
+            "a8": "<p>Coffee and tea will be available for delegates. While meals are not provided, there are numerous nearby dining options to explore Montréal’s culinary scene!</p>"
         },
         "closing": {
             "heading": "See you in Montréal.",
@@ -189,7 +165,7 @@
             "linkedin": "LinkedIn",
             "youtube": "YouTube",
             "github": "GitHub",
-            "legal": "© 2027 CUSEC · Made with 💚 · the lake is real, the deadline is too"
+            "legal": "© 2027 CUSEC · Made with 💚 · the river where dreams flow"
         }
     }
 }

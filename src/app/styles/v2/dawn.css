@@ -75,7 +75,6 @@
     background: rgba(14, 35, 24, 0.66);
     border: 1px solid rgba(195, 233, 86, 0.45);
     backdrop-filter: blur(6px);
-    -webkit-backdrop-filter: blur(6px);
 }
 
 .v2-stat__value {
@@ -98,7 +97,6 @@
     background: rgba(14, 35, 24, 0.82);
     border: 1px solid rgba(178, 254, 231, 0.4);
     backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px);
     box-shadow: var(--v2-shadow-card);
     transform: rotate(2deg);
 }
@@ -214,7 +212,7 @@
     align-items: center;
     justify-content: center;
     gap: 16px;
-    margin: 16px 0 12px;
+    margin: 16px 0 4px;
 }
 
 .v2-cd__btn {
@@ -234,13 +232,6 @@
     border-color: var(--v2-lime-deep);
     background: linear-gradient(180deg, #C3E956 0%, #8CC653 100%);
     color: var(--v2-ink);
-}
-
-.v2-cd__hint {
-    margin: 0;
-    text-align: center;
-    font-size: 11px;
-    color: rgba(255, 255, 255, 0.62);
 }
 
 /* --------------------------------------------------------------------------
