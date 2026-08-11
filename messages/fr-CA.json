@@ -166,6 +166,34 @@
             "youtube": "YouTube",
             "github": "GitHub",
             "legal": "© 2027 CUSEC · Fait avec 💚 · la rivière où coulent les rêves"
+        },
+        "speakers": {
+            "meta-title": "Conférenciers",
+            "badge": "Conférenciers · 30+ sur trois jours",
+            "heading": "Apprenez de ceux qui l’ont bâti.",
+            "subline": "La programmation 2027 sera dévoilée cet automne — les conférences d’ouverture d’abord, puis la grille complète.",
+            "keynote-eyebrow": "Conférence d’ouverture · annonce en octobre",
+            "keynote-title": "Quelqu’un dont vous avez assurément entendu parler.",
+            "keynote-body": "Chaque CUSEC s’ouvre avec une personne dont vous utilisez déjà le travail. En 2026, les billets se sont écoulés avant même l’annonce de la conférence d’ouverture — 2027 ira encore plus vite.",
+            "keynote-chip-1": "ouverture",
+            "keynote-chip-2": "jour 1 · 10 h",
+            "keynote-chip-3": "scène principale",
+            "photo-caption": "scène des ateliers · 2026",
+            "grid-heading": "La grille · 30+ conférences et ateliers · dévoilés un à un",
+            "announcing": "Annoncé cet automne",
+            "topic-ai-ml": "IA et AA",
+            "topic-systems": "Systèmes",
+            "topic-web": "Web et produit",
+            "topic-career": "Carrière et startups",
+            "topic-security": "Sécurité",
+            "topic-design": "Design Eng",
+            "topic-oss": "Logiciel libre",
+            "topic-grad": "Cycles supérieurs",
+            "pitch-title": "Vous avez une conférence en vous ?",
+            "pitch-body": "Nous réservons du temps de scène aux étudiants et aux nouveaux conférenciers chaque année.",
+            "pitch-cta": "Proposer une conférence",
+            "pitch-secondary": "Proposer quelqu’un",
+            "keynote-announced-eyebrow": "Conférence d’ouverture · annoncée"
         }
     }
 }

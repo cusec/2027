@@ -81,6 +81,17 @@
     background-color: #3A94D4;
 }
 
+/* Short pages show the top of the painting only — sky into cloud — rather than
+   the whole sky -> hills -> water journey.
+   This was briefly `background-size: 100% 100%` so a short page could show the
+   full scene, but squashing a 1:4.8 painting into a ~1:1.6 page turns every
+   painted bubble into a wide oval. There is no undistorted way to fit the
+   whole painting into a short, wide box: it would need roughly two thirds of
+   the image removed. Cropping is the only honest option, so short pages just
+   use `cover` like everything else. If a short page really needs the hills or
+   the water, it wants its own painting cropped to that band, not this one
+   rescaled. */
+
 /* --------------------------------------------------------------------------
    Shared primitives
    -------------------------------------------------------------------------- */

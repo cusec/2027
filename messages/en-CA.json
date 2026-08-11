@@ -166,6 +166,34 @@
             "youtube": "YouTube",
             "github": "GitHub",
             "legal": "© 2027 CUSEC · Made with 💚 · the river where dreams flow"
+        },
+        "speakers": {
+            "meta-title": "Speakers",
+            "badge": "Speakers · 30+ over three days",
+            "heading": "Learn from people who shipped it.",
+            "subline": "The 2027 lineup drops through the fall — keynotes first, then the full grid.",
+            "keynote-eyebrow": "Opening keynote · announcing October",
+            "keynote-title": "Someone you've definitely heard of.",
+            "keynote-body": "Every CUSEC opens with an engineer whose work you already use. 2026 sold out before the keynote was even announced — 2027 will go faster.",
+            "keynote-chip-1": "keynote",
+            "keynote-chip-2": "day 1 · 10:00",
+            "keynote-chip-3": "main stage",
+            "photo-caption": "workshop stage · 2026",
+            "grid-heading": "The grid · 30+ talks & workshops · revealed one at a time",
+            "announcing": "Announcing this Fall",
+            "topic-ai-ml": "AI & ML",
+            "topic-systems": "Systems",
+            "topic-web": "Web & Product",
+            "topic-career": "Career & Startups",
+            "topic-security": "Security",
+            "topic-design": "Design Eng",
+            "topic-oss": "Open Source",
+            "topic-grad": "Grad School",
+            "pitch-title": "Have a talk in you?",
+            "pitch-body": "We reserve stage time for students and first-time speakers every single year.",
+            "pitch-cta": "Pitch a talk",
+            "pitch-secondary": "Nominate a speaker",
+            "keynote-announced-eyebrow": "Keynote · announced"
         }
     }
 }

@@ -63,6 +63,7 @@ src/app/
   [locale]/
     layout.tsx          ← NextIntlClientProvider only
     page.tsx            ← the whole main site
+    speakers/page.tsx   ← /speakers
 ```
 
 The `[locale]` segment is internal routing only — it never appears in the browser URL bar. Keep the locale layout to providers; the page composes the sections.
@@ -92,7 +93,14 @@ components/v2/
   Faq/       V2Faq.tsx
   Closing/   V2Closing.tsx
   Footer/    V2Footer.tsx
+
+  Speakers/  V2SpeakersHero.tsx · V2Keynote.tsx · V2SpeakerGrid.tsx
+             V2SpeakerAvatar.tsx · V2SpeakerPitch.tsx · speakersData.ts
 ```
+
+`Nav/` and `Footer/` are shared by every page; `Speakers/` holds the whole
+`/speakers` page rather than one folder per section, since its sections are
+not reused anywhere else.
 
 | Component | Purpose |
 |---|---|
@@ -132,6 +140,7 @@ Everything is namespaced under a `.v2` root class.
 | `faq.css` | `.v2-faq*`, `.v2-pad*` |
 | `closing.css` | `.v2-closing*` |
 | `footer.css` | `.v2-footer*` |
+| `speakers.css` | everything on `/speakers` — `.v2-spk-*`, `.v2-keynote*`, `.v2-pitch*`, `.v2-btn--outline` |
 
 **Design tokens** live on `.v2` in `base.css`. The palette values were lifted
 verbatim from the Figma SVG exports rather than sampled by eye — do not
@@ -187,6 +196,14 @@ sky reads continuously behind it. `.v2-nav` is the fixed positioning layer and
 is `pointer-events: none`; `.v2-nav__bar` re-enables pointer events. Resting
 state is a light glass tint that deepens to `.is-lifted` past 40px of scroll.
 
+It also hides by scroll direction — scrolling down tucks it away, scrolling
+back up returns it. It always shows within the first 80px and never hides
+while the mobile menu is open.
+
+Links use the i18n `Link` (never a bare `<a>` to a route — that trips
+`no-html-link-for-pages`), and the link matching the current pathname gets
+`.is-active`, which renders as the lime pill.
+
 ### Archive interaction
 
 `V2Archive` holds `yearIndex` / `shotIndex`. Clicking an SD card sets a
@@ -199,6 +216,30 @@ The camera is `container-type: inline-size` with an `aspect-ratio`, and all its
 internals are sized in `cqi` — it scales as one physical object rather than
 reflowing. Below 1000px the decorative control column is dropped and the SD
 cards become a normal wrapped row.
+
+### Speakers page
+
+Everything is driven by `speakersData.ts`. `SPEAKERS` feeds the grid: an entry
+with no `announced` block renders the gradient disc, a pixel `?` and
+"Announcing this Fall"; adding `announced` swaps in their photo, name and
+role. `ANNOUNCED_KEYNOTES` feeds the cards under the unannounced keynote
+teaser — talk titles and names live in that file rather than in messages,
+since they aren't translated. `focus` sets `object-position` for headshots
+that aren't centred on the face.
+
+**Both files currently hold placeholders using a team member's photo — replace
+them before launch.**
+
+`/speakers` is far shorter than the painting, so it only ever shows the top of
+the scene — sky into cloud — not the full sky → hills → water journey the
+Figma frame implies. **That is deliberate; don't "fix" it by stretching.** A
+`background-size: 100% 100%` variant was tried and reverted: squashing a 1:4.8
+painting into a ~1:1.6 page turns every painted bubble into a wide oval, which
+is immediately obvious. Removing rows from the low-detail bands instead was
+also tried and fails for the same reason — at this page height roughly two
+thirds of the image has to go, and what survives is all treeline. If a short
+page needs the hills or the water behind it, give it its own painting cropped
+to that band rather than rescaling this one.
 
 ### FAQ
 
