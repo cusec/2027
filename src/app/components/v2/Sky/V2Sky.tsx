@@ -6,7 +6,7 @@ export default function V2Sky() {
 	const cards = [1, 2, 3] as const;
 
 	return (
-		<section className="v2-section v2-sky" id="about">
+		<section className="v2-section v2-sky v2-reveal" id="about">
 			<div className="v2-container">
 				<h2 className="v2-sky__heading v2-pixel">{t("heading")}</h2>
 

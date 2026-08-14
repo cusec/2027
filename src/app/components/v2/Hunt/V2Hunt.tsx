@@ -6,7 +6,7 @@ export default function V2Hunt() {
 	const t = useTranslations("V2.hunt");
 
 	return (
-		<section className="v2-section v2-hunt" id="hunt">
+		<section className="v2-section v2-hunt v2-reveal" id="hunt">
 			<div className="v2-container v2-hunt__inner">
 				<article className="v2-card v2-hunt__card">
 					<p className="v2-hunt__badge v2-pixel">

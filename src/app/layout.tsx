@@ -17,7 +17,7 @@ export const metadata: Metadata = {
   ),
 
   title: {
-    default: "CUSEC 2027 — Canadian University Software Engineering Conference",
+    default: "CUSEC 2027 - Canadian University Software Engineering Conference",
     template: "%s | CUSEC 2027",
   },
   description:
@@ -58,7 +58,7 @@ export const metadata: Metadata = {
   },
 
   openGraph: {
-    title: "CUSEC 2027 — Canadian University Software Engineering Conference",
+    title: "CUSEC 2027 - Canadian University Software Engineering Conference",
     description:
       "Join CUSEC 2027, the 26th annual student-led software engineering conference in Montréal, QC. Canada's premier student tech conference — January 2027.",
     url: "/",
@@ -71,7 +71,7 @@ export const metadata: Metadata = {
         url: "/cusec-logo.png",
         width: 1200,
         height: 630,
-        alt: "CUSEC 2027 — Canadian University Software Engineering Conference, Montréal · January 2027",
+        alt: "CUSEC 2027 - Canadian University Software Engineering Conference, Montréal · January 2027",
         type: "image/png",
       },
     ],
@@ -79,7 +79,7 @@ export const metadata: Metadata = {
 
   twitter: {
     card: "summary_large_image",
-    title: "CUSEC 2027 — Canadian University Software Engineering Conference",
+    title: "CUSEC 2027 - Canadian University Software Engineering Conference",
     description:
       "Canada's longest-running student-led software engineering conference. 26th edition — Montréal, QC · January 2027.",
     images: ["/cusec-logo.png"],

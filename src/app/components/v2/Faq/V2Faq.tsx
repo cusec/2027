@@ -34,7 +34,7 @@ export default function V2Faq() {
 	};
 
 	return (
-		<section className="v2-section v2-faq" id="faq">
+		<section className="v2-section v2-faq v2-reveal" id="faq">
 			<div className="v2-container">
 				<div className="v2-faq__head">
 					<h2 className="v2-heading-pill">{t("heading")}</h2>

@@ -63,12 +63,26 @@
     flex: 0 0 auto;
     text-decoration: none;
     color: var(--v2-ink-deep);
-    font-size: 17px;
+    font-size: 21px;
 }
 
 .v2-nav__brand img {
     width: 30px;
     height: 30px;
+}
+
+/* Optical centring against the logo. `align-items: center` already lines the
+   boxes up — measured, the span's box centre and the logo's centre agree — but
+   Retropix's ascent and descent are asymmetric, so the glyphs themselves sit
+   high inside their own line box and read as lifted. Measured with canvas
+   measureText: the glyph ink sat 2.0px above the logo's centre at this 19px
+   size, hence 0.105em. Kept in `em` so it tracks the font-size, though note the
+   ratio is not perfectly stable — Retropix is a pixel font and its ink bounds
+   snap to whole pixels, so the same correction was 0.09em at 17px. Re-measure
+   rather than scaling by hand if the brand size changes again. Not a fudge for
+   a layout bug: the boxes are centred correctly, only the ink is off. */
+.v2-nav__brand span {
+    transform: translateY(0.120em);
 }
 
 .v2-nav__links {

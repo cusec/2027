@@ -7,7 +7,7 @@ export default function V2Passes() {
 	const t = useTranslations("V2.passes");
 
 	return (
-		<section className="v2-section v2-passes" id="passes">
+		<section className="v2-section v2-passes v2-reveal" id="passes">
 			<div className="v2-container">
 				<div className="v2-passes__head">
 					<h2 className="v2-heading-pill v2-passes__heading">{t("heading")}</h2>

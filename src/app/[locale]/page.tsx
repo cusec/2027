@@ -1,5 +1,6 @@
 import V2Nav from "@/app/components/v2/Nav/V2Nav";
 import V2Scrollbar from "@/app/components/v2/Scrollbar/V2Scrollbar";
+import V2ScrollReveal from "@/app/components/v2/Reveal/V2ScrollReveal";
 import V2Hero from "@/app/components/v2/Hero/V2Hero";
 import V2Sky from "@/app/components/v2/Sky/V2Sky";
 import V2Dawn from "@/app/components/v2/Dawn/V2Dawn";
@@ -16,6 +17,12 @@ export default function HomePage() {
 		<div className="v2">
 			<V2Nav />
 			<V2Scrollbar />
+			<V2ScrollReveal />
+			{/* .v2-reveal starts hidden, so a client without JS has to be handed
+			    the content outright rather than left with empty sections */}
+			<noscript>
+				<style>{`.v2-reveal{opacity:1!important;translate:none!important}`}</style>
+			</noscript>
 			<div className="v2-scene">
 				<V2Hero />
 				<V2Sky />
