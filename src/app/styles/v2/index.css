@@ -2,6 +2,7 @@
    per section — mirroring src/app/components/v2/<Section>/ */
 @import "./base.css";
 
+@import "./scrollbar.css";
 @import "./nav.css";
 @import "./hero.css";
 @import "./sky.css";

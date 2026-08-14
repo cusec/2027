@@ -1,4 +1,5 @@
 import V2Nav from "@/app/components/v2/Nav/V2Nav";
+import V2Scrollbar from "@/app/components/v2/Scrollbar/V2Scrollbar";
 import V2Hero from "@/app/components/v2/Hero/V2Hero";
 import V2Sky from "@/app/components/v2/Sky/V2Sky";
 import V2Dawn from "@/app/components/v2/Dawn/V2Dawn";
@@ -14,6 +15,7 @@ export default function HomePage() {
 	return (
 		<div className="v2">
 			<V2Nav />
+			<V2Scrollbar />
 			<div className="v2-scene">
 				<V2Hero />
 				<V2Sky />
