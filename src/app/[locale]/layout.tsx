@@ -11,23 +11,23 @@ type Props = {
 
 const localeMetadata: Record<string, Partial<Metadata>> = {
   'en-CA': {
-    title: "CUSEC 2027 — Canadian University Software Engineering Conference",
+    title: "CUSEC 2027 - Canadian University Software Engineering Conference",
     description:
       "CUSEC 2027 is the 26th annual Canadian University Software Engineering Conference — Canada's longest-running student-led software engineering conference, held in Montréal, QC in January 2027.",
     openGraph: {
       locale: "en_CA",
-      title: "CUSEC 2027 — Canadian University Software Engineering Conference",
+      title: "CUSEC 2027 - Canadian University Software Engineering Conference",
       description:
         "Join CUSEC 2027, the 26th annual student-led software engineering conference in Montréal, QC. Canada's premier student tech conference — January 2027.",
     },
   },
   'fr-CA': {
-    title: "CUSEC 2027 — Conférence canadienne sur le génie logiciel",
+    title: "CUSEC 2027 - Conférence canadienne sur le génie logiciel",
     description:
       "CUSEC 2027 est la 26e édition de la Conférence canadienne sur le génie logiciel — la plus longue conférence étudiante en génie logiciel au Canada, à Montréal en janvier 2027.",
     openGraph: {
       locale: "fr_CA",
-      title: "CUSEC 2027 — Conférence canadienne sur le génie logiciel",
+      title: "CUSEC 2027 - Conférence canadienne sur le génie logiciel",
       description:
         "Participez à CUSEC 2027, la 26e édition de la conférence étudiante en génie logiciel à Montréal, QC — janvier 2027.",
     },

@@ -34,10 +34,6 @@
     margin-inline: auto;
     padding: 10px 12px 10px 22px;
     border-radius: 999px;
-    /* Frosted glass: mostly transparent, doing its work with a heavy blur so
-       whatever scrolls underneath becomes an indistinct wash rather than
-       competing text. brightness() lifts the plate just enough that the dark
-       labels stay legible even when a dark card passes behind it. */
     background: rgba(255, 255, 255, 0.22);
     border: 1px solid rgba(255, 255, 255, 0.55);
     backdrop-filter: blur(30px) saturate(1.6) brightness(1.18);
@@ -63,12 +59,16 @@
     flex: 0 0 auto;
     text-decoration: none;
     color: var(--v2-ink-deep);
-    font-size: 17px;
+    font-size: 21px;
 }
 
 .v2-nav__brand img {
     width: 30px;
     height: 30px;
+}
+
+.v2-nav__brand span {
+    transform: translateY(0.120em);
 }
 
 .v2-nav__links {
@@ -111,9 +111,13 @@
     text-shadow: none;
 }
 
-/* locale switcher --------------------------------------------------------- */
+/* locale switcher ----------------------------------------------------------*/
 .v2-locale {
     position: relative;
+    display: inline-flex;
+}
+
+.v2-locale__trigger {
     display: inline-flex;
     align-items: center;
     gap: 5px;
@@ -122,39 +126,131 @@
     background: rgba(31, 59, 44, 0.08);
     border: 1px solid rgba(31, 59, 44, 0.18);
     color: var(--v2-ink);
+    font: inherit;
     cursor: pointer;
-    transition: background-color 140ms ease;
+    transition: background-color 140ms ease, border-color 140ms ease;
 }
 
-.v2-locale:hover,
-.v2-locale:focus-within {
+.v2-locale__trigger:hover,
+.v2-locale.is-open .v2-locale__trigger {
     background: rgba(31, 59, 44, 0.15);
+    border-color: rgba(31, 59, 44, 0.3);
+}
+
+.v2-locale__trigger:focus-visible {
+    outline: 2px solid var(--v2-ink);
+    outline-offset: 2px;
 }
 
 .v2-locale__value {
     font-size: 13px;
     line-height: 1;
+    transform: translateY(1px);
 }
 
-/* stretched over the whole pill so any click on the control opens it */
-.v2-locale__select {
+.v2-locale__chev {
+    transition: transform 180ms ease;
+}
+
+.v2-locale.is-open .v2-locale__chev {
+    transform: rotate(180deg);
+}
+
+/* The menu ---------------------------------------------------------------- */
+.v2-locale__menu {
     position: absolute;
-    inset: 0;
-    width: 100%;
-    height: 100%;
+    top: calc(100% + 10px);
+    right: 0;
+    z-index: 2;
+    min-width: 178px;
     margin: 0;
-    padding: 0;
-    border: 0;
-    opacity: 0;
-    appearance: none;
-    -webkit-appearance: none;
-    background: transparent;
-    font: inherit;
-    cursor: pointer;
+    padding: 6px;
+    list-style: none;
+    border-radius: 16px;
+    background: rgba(14, 35, 24, 0.94);
+    border: 1px solid rgba(178, 254, 231, 0.34);
+    backdrop-filter: blur(14px);
+    box-shadow: var(--v2-shadow-card);
+    animation: v2-locale-drop 160ms cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 
-.v2-locale__select option {
-    color: var(--v2-ink-deep);
+/* little notch pointing back at the pill */
+.v2-locale__menu::before {
+    content: "";
+    position: absolute;
+    top: -5px;
+    right: 20px;
+    width: 10px;
+    height: 10px;
+    rotate: 45deg;
+    background: rgba(14, 35, 24, 0.94);
+    border-left: 1px solid rgba(178, 254, 231, 0.34);
+    border-top: 1px solid rgba(178, 254, 231, 0.34);
+    border-radius: 2px 0 0 0;
+}
+
+@keyframes v2-locale-drop {
+    from {
+        opacity: 0;
+        translate: 0 -6px;
+    }
+
+    to {
+        opacity: 1;
+        translate: 0 0;
+    }
+}
+
+.v2-locale__option {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 9px 12px;
+    border-radius: 11px;
+    color: var(--v2-mint);
+    font-size: 14px;
+    line-height: 1;
+    cursor: pointer;
+    transition: background-color 140ms ease, color 140ms ease;
+}
+
+.v2-locale__option:hover,
+.v2-locale__option:focus {
+    background: rgba(195, 233, 86, 0.16);
+    color: var(--v2-lime);
+    outline: none;
+}
+
+.v2-locale__option.is-current {
+    color: var(--v2-lime);
+}
+
+.v2-locale__option-code {
+    flex: 0 0 auto;
+    min-width: 26px;
+    padding: 4.5px 6px 1.5px;
+    border-radius: 6px;
+    background: rgba(178, 254, 231, 0.14);
+    font-family: var(--v2-font-pixel);
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    text-align: center;
+    color: var(--v2-mint-bright);
+}
+
+.v2-locale__option-name {
+    margin-right: auto;
+    transform: translateY(-1px);
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .v2-locale__menu {
+        animation: none;
+    }
+
+    .v2-locale__chev {
+        transition: none;
+    }
 }
 
 /* mobile ------------------------------------------------------------------ */

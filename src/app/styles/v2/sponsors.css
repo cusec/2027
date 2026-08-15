@@ -59,9 +59,6 @@
     text-decoration: none;
 }
 
-/* Logo area. Sat at the hexagon's vertical midpoint, where the shape is at
-   full width, and sized as a wide box rather than a thin bar — sponsor
-   wordmarks carry text and go unreadable in a small square. */
 .v2-hex__slot {
     width: 72%;
     aspect-ratio: 3.4 / 1;

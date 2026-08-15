@@ -2,7 +2,7 @@ import type { MetadataRoute } from "next";
 
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: "CUSEC 2027 — Canadian University Software Engineering Conference",
+    name: "CUSEC 2027 - Canadian University Software Engineering Conference",
     short_name: "CUSEC 2027",
     description:
       "Canada's longest-running student-led software engineering conference. 26th edition — Montréal, QC · January 2027.",

@@ -1,9 +1,3 @@
-/* ==========================================================================
-   v2 — The Archive: CUSEC-CAM 2000 + swappable CUSEC-SD cards
-   Geometry mirrors public/assets/v2/📷 CUSEC-CAM.svg (980x590 body) and
-   public/assets/v2/SD/*.svg (128x158 card).
-   ========================================================================== */
-
 .v2-archive {
     padding-block: 40px 90px;
 }
@@ -22,11 +16,6 @@
     position: relative;
 }
 
-/* --------------------------------------------------------------------------
-   Camera body
-   Sized by aspect ratio and made a query container, so every part inside can
-   be expressed as a percentage / cqi and the whole device scales as one object.
-   -------------------------------------------------------------------------- */
 .v2-cam {
     container-type: inline-size;
     position: relative;
@@ -557,10 +546,7 @@
     color: rgba(255, 255, 255, 0.75);
 }
 
-/* --------------------------------------------------------------------------
-   Responsive — below the breakpoint the camera goes full width, the decorative
-   control column is dropped, and the SD cards become a normal row underneath.
-   -------------------------------------------------------------------------- */
+
 @media (max-width: 1000px) {
     .v2-cam {
         width: 100%;

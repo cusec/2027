@@ -31,7 +31,6 @@
     box-shadow: var(--v2-shadow-card);
 }
 
-/* the two cards sit at slightly different angles in the Figma frame */
 .v2-pass--basic {
     background: var(--v2-white-pure);
     color: var(--v2-ink-deep);

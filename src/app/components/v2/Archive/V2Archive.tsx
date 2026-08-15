@@ -33,7 +33,7 @@ export default function V2Archive() {
 	}
 
 	return (
-		<section className="v2-section v2-archive" id="archive">
+		<section className="v2-section v2-archive v2-reveal" id="archive">
 			<div className="v2-container">
 				<div className="v2-archive__head">
 					<h2 className="v2-heading-pill">

@@ -14,7 +14,7 @@ export default function V2Dawn() {
 	const know = [1, 2, 3, 4] as const;
 
 	return (
-		<section className="v2-section v2-dawn" id="conference">
+		<section className="v2-section v2-dawn v2-reveal" id="conference">
 			<div className="v2-container">
 				{/* --- top row: polaroid · stats · CD player --- */}
 				<div className="v2-dawn__top">

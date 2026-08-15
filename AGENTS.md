@@ -77,13 +77,14 @@ The `[locale]` segment is internal routing only — it never appears in the brow
 One folder per page section, each named after the section and holding that
 section's component plus anything only it uses. Sections are composed in order
 by `[locale]/page.tsx`. All components are prefixed `V2`; only `V2Nav`,
-`V2LocaleSwitcher`, `V2CdPlayer`, `V2Archive` and `V2Faq` are client
-components, everything else is a server component.
+`V2LocaleSwitcher`, `V2CdPlayer`, `V2Archive`, `V2Wordmark`, `V2ScrollReveal`
+and `V2Faq` are client components, everything else is a server component.
 
 ```
 components/v2/
   Nav/       V2Nav.tsx · V2LocaleSwitcher.tsx
-  Hero/      V2Hero.tsx
+  Reveal/    V2ScrollReveal.tsx
+  Hero/      V2Hero.tsx · V2Wordmark.tsx
   Sky/       V2Sky.tsx
   Dawn/      V2Dawn.tsx · V2CdPlayer.tsx · V2Polaroid.tsx
   Archive/   V2Archive.tsx · V2SdCard.tsx · archiveData.ts
@@ -98,15 +99,17 @@ components/v2/
              V2SpeakerAvatar.tsx · V2SpeakerPitch.tsx · speakersData.ts
 ```
 
-`Nav/` and `Footer/` are shared by every page; `Speakers/` holds the whole
-`/speakers` page rather than one folder per section, since its sections are
-not reused anywhere else.
+`Nav/` and `Footer/` are shared by every page, and `Reveal/` is page-agnostic;
+`Speakers/` holds the whole `/speakers` page rather than one folder per section,
+since its sections are not reused anywhere else.
 
 | Component | Purpose |
 |---|---|
 | `V2Nav` | Floating capsule navbar (see below). Deepens its glass on scroll. |
-| `V2LocaleSwitcher` | Globe + `<select>` for en-CA / fr-CA. Uses `useRouter`/`usePathname` from `@/i18n/navigation`. |
+| `V2LocaleSwitcher` | Globe pill + a custom listbox for en-CA / fr-CA (see below). Uses `useRouter`/`usePathname` from `@/i18n/navigation`. |
 | `V2Hero` | Icosahedron, edition pill, `CUSEC 2027` wordmark, tagline, two CTAs. |
+| `V2Wordmark` | The `CUSEC 2027` wordmark: idle letter wave + cursor repel (see below). |
+| `V2ScrollReveal` | One IntersectionObserver that fades in every `.v2-reveal` section. Renders nothing. |
 | `V2Sky` | Statement heading + three frosted info cards. |
 | `V2Dawn` | The collage: polaroids, stat tiles, CUSEC.FM, about / who / good-to-know cards. |
 | `V2CdPlayer` | Decorative CUSEC.FM widget. Plays no audio — the button just spins the disc. |
@@ -129,6 +132,7 @@ Everything is namespaced under a `.v2` root class.
 | File | Covers |
 |---|---|
 | `base.css` | `@font-face` for Retropix, design tokens on `.v2`, `.v2-scene` backdrop, buttons, heading pills, cards, reduced-motion guard |
+| `reveal.css` | `.v2-reveal`, the hero entrance keyframes |
 | `nav.css` | `.v2-nav*`, `.v2-locale` |
 | `hero.css` | `.v2-hero*` |
 | `sky.css` | `.v2-sky*` |
@@ -188,6 +192,85 @@ baked in), on `.v2-scene` at `background-size: cover`. See the comment in
 version is that it keeps the bubbles circular on desktop *and* keeps the scene
 in step with the sections on tall narrow viewports. The footer sits outside
 `.v2-scene` on its own solid colour.
+
+### Locale switcher menu
+
+`V2LocaleSwitcher` is a hand-rolled listbox, **not a `<select>`**. It was a
+native select stretched invisibly over the pill, but a select's popup is drawn
+by the operating system: it takes no border-radius, no backdrop blur and no
+brand colour, so it was the one part of the navbar that ignored the design.
+`option` styling support is far too thin to fix that.
+
+The trade is that everything a select gives for free is now hand-written, so
+don't strip it: `aria-haspopup="listbox"` / `aria-expanded` on the trigger,
+`role="listbox"` / `role="option"` / `aria-selected` on the menu, arrow keys,
+Home/End, Enter/Space, Escape, Tab-to-close, click-outside-to-close, and focus
+returning to the trigger on select. DOM focus is moved onto the active option
+(rather than tracked with `aria-activedescendant`), which is why the option's
+`:hover` and `:focus` styles are one rule.
+
+Language names are endonyms — "English", "Français" — so they live in the
+component, not in `messages/`.
+
+### Entrance motion
+
+The hero animates on load and everything below it animates on scroll, and the
+two are deliberately different mechanisms. The hero is on screen by definition,
+so it is pure CSS: `v2-rise-in` with staggered `animation-delay`s down the
+stack. `animation-fill-mode: both` is what holds each element hidden through its
+delay instead of flashing at full opacity first.
+
+Everything else carries a `.v2-reveal` class and is faded in by
+`V2ScrollReveal`, a single IntersectionObserver mounted once in
+`[locale]/page.tsx`. It is one observer over the whole page rather than a
+wrapper component per section, which is what keeps every section a server
+component — it only adds `.is-in`. Reveals are one-way; targets are unobserved
+once shown.
+
+**`.v2-reveal` starts at `opacity: 0`, so anything that stops the observer must
+fall back to *showing* content, never hiding it.** Three guards exist for that,
+and all three matter: a `<noscript>` block in `page.tsx` unhides everything for
+JS-less clients; the component reveals everything outright if
+`IntersectionObserver` is missing or reduced motion is set; and a 2.5s backstop
+reveals everything if the observer has not delivered a single callback by then
+(an observer always reports every target's initial state shortly after
+`observe()`, so one callback having landed proves it is live). The backstop is
+not theoretical — headless Chrome under `--virtual-time-budget` never delivers
+IntersectionObserver callbacks at all.
+
+Reduced motion is handled in `reveal.css` by showing everything outright, not by
+collapsing durations. The global guard in `base.css` only shortens transitions,
+which would leave `.v2-reveal` stuck invisible until the observer fired.
+
+### Hero motion — ported from the deleted splash
+
+Two effects carried over from the old splash page, which is otherwise gone.
+
+`V2Wordmark` splits `CUSEC 2027` into **two nested spans per character**, and
+the split is load-bearing. The outer `.v2-hero__char` runs the idle
+`v2-wordmark-wave` keyframes on a `i * 0.12s` stagger, so a wave travels across
+the word; the inner `.v2-hero__char-repel` carries only the cursor-repel offset.
+One element cannot do both — whichever writes `transform` last wins, so a
+JS-written transform would silently kill the wave. For the same reason the
+pointer handler sets `--rx` / `--ry` custom properties and never touches
+`transform` itself. Repel is 20px max within a 140px radius, rAF-coalesced.
+
+On touch it only repels while a finger is held, and `.v2-hero__wordmark` sets
+`touch-action: none` so the hold-drag doesn't scroll. An `IntersectionObserver`
+stops the tracking once the hero scrolls away — this page is ~7500px tall, so
+unlike the splash it must not measure letters on every pointer move forever.
+
+`.v2-hero__logo` hovers with `scale` and `translate` as **individual CSS
+properties, never inside `transform`**. That is what lets the static pop
+(`scale: 1.06`) and the looping `v2-hover-float` bob (`translate`) stack instead
+of overwriting each other. Don't "tidy" either of these into a single
+`transform`.
+
+Both need explicit `prefers-reduced-motion` overrides in `hero.css` on top of
+the global guard in `base.css`: the guard can neutralise CSS animations but not
+the inline custom properties the repel writes, so the resting geometry is pinned
+with `transform: none` / `scale: 1` / `translate: 0 0`. `V2Wordmark` also checks
+the same media query and never attaches its listeners.
 
 ### Navbar
 

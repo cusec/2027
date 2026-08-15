@@ -15,12 +15,6 @@
     font-size: clamp(1.2rem, 2.6vw, 1.85rem);
 }
 
-/* Floating platforms: one flat pad per row, each indented by a different
-   amount so the column reads as scattered rather than as a list.
-
-   They are in normal flow (not absolutely positioned), so an opening answer
-   grows its row and pushes the pads below it down — overlap is structurally
-   impossible and the pads can sit close together. */
 .v2-faq__pond {
     display: flex;
     flex-direction: column;
@@ -28,9 +22,6 @@
     gap: 14px;
 }
 
-/* Each pad is only as wide as its own question until it opens. The answer is
-   width:0 while closed so it contributes nothing to the pad's max-content
-   width — that is what keeps the collapsed pills tight, as in the Figma frame. */
 .v2-pad {
     --pad-answer-w: 320px;
     --pad-x: 0%;
@@ -45,7 +36,6 @@
     transition: box-shadow 320ms ease, transform 320ms ease;
 }
 
-/* the open pad lifts off the water */
 .v2-pad.is-open {
     z-index: 2;
     transform: translateY(-2px);
@@ -91,12 +81,6 @@
     transform: rotate(0deg);
 }
 
-/* Opening animation.
-   The paragraph is held at a fixed width at all times, so its line breaks
-   never change — reflowing text mid-transition is what made this look rough.
-   Instead the wrapper animates from 0 to that width (and 0fr to 1fr in height)
-   and simply clips the paragraph into view. The wrapper being 0-wide when shut
-   is also what keeps the collapsed pill tight to its question. */
 .v2-pad__a {
     display: grid;
     grid-template-rows: 0fr;
@@ -164,9 +148,6 @@
     }
 }
 
-/* Per-pad indent. The rhythm — near-left, mid, far-right, then progressively
-   varied — is taken from the platforms reference; a couple of pads also get
-   extra top margin so the vertical spacing is not perfectly even either. */
 .v2-pad--1 { --pad-x: 2%; }
 .v2-pad--2 { --pad-x: 30%; }
 .v2-pad--3 { --pad-x: 56%; }
@@ -176,12 +157,6 @@
 .v2-pad--7 { --pad-x: 47%; }
 .v2-pad--8 { --pad-x: 4%; }
 
-/* --------------------------------------------------------------------------
-   Narrow screens: drop the scatter and run them as one straight full-width
-   column. The desktop trick of animating the answer's width can't survive
-   here — a fixed answer width is exactly what overflows a phone — so the
-   answer simply fills the pad and only its height animates.
-   -------------------------------------------------------------------------- */
 @media (max-width: 900px) {
     .v2-faq__pond {
         align-items: stretch;

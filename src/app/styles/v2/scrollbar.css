@@ -1,0 +1,46 @@
+/* --------------------------------------------------------------------------
+   V2Scrollbar — the lime knob that replaces the native root scrollbar.
+   The native one is hidden in globals.css; see the note in V2Scrollbar.tsx for
+   why a transparent native track can't get rid of the pale rail on its own.
+   -------------------------------------------------------------------------- */
+.v2-scrollbar {
+    position: fixed;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    width: 16px;
+    z-index: 70;
+    pointer-events: none;
+}
+
+.v2-scrollbar__knob {
+    position: absolute;
+    top: 0;
+    right: 4px;
+    width: 8px;
+    border-radius: 999px;
+    background: rgba(127, 168, 41, 0.7);
+    box-shadow: 0 2px 10px rgba(11, 26, 58, 0.28);
+    pointer-events: auto;
+    cursor: grab;
+    transition: background-color 320ms ease, width 320ms ease;
+    will-change: transform;
+}
+
+.v2-scrollbar__knob:hover,
+.v2-scrollbar__knob.is-active,
+.v2-scrollbar__knob.is-dragging {
+    width: 10px;
+    background: var(--v2-lime);
+    transition: background-color 140ms ease, width 140ms ease;
+}
+
+.v2-scrollbar__knob.is-dragging {
+    cursor: grabbing;
+}
+
+@media (hover: none) {
+    .v2-scrollbar {
+        display: none;
+    }
+}

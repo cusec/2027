@@ -23,7 +23,7 @@ export default function V2Sponsors() {
 	const t = useTranslations("V2.sponsors");
 
 	return (
-		<section className="v2-section v2-sponsors" id="sponsors">
+		<section className="v2-section v2-sponsors v2-reveal" id="sponsors">
 			<div className="v2-container">
 				<div className="v2-sponsors__head">
 					<h2 className="v2-heading-pill">
