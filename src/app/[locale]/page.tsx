@@ -18,8 +18,6 @@ export default function HomePage() {
 			<V2Nav />
 			<V2Scrollbar />
 			<V2ScrollReveal />
-			{/* .v2-reveal starts hidden, so a client without JS has to be handed
-			    the content outright rather than left with empty sections */}
 			<noscript>
 				<style>{`.v2-reveal{opacity:1!important;translate:none!important}`}</style>
 			</noscript>

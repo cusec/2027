@@ -26,10 +26,7 @@
     translate: 0 0;
 }
 
-/* Hero entrance ------------------------------------------------------------
-   Delays climb down the stack so the hero assembles top to bottom. `both` fill
-   holds the from-state during the delay, which is what stops every element
-   flashing at full opacity before its turn. */
+/* Hero entrance ------------------------------------------------------------*/
 .v2-hero__logo-wrap,
 .v2-hero__pill,
 .v2-hero__wordmark,
@@ -70,18 +67,11 @@
     }
 }
 
-/* The logo's entrance lives on a wrapper, not the image itself: the image
-   already owns `animation: v2-hover-float` on hover, and a second animation on
-   the same element would replace the entrance mid-flight if the pointer landed
-   on it early. */
 .v2-hero__logo-wrap {
     display: block;
 }
 
-/* Reduced motion -----------------------------------------------------------
-   The global guard in base.css collapses durations, which would leave
-   `.v2-reveal` stuck at opacity 0 until the observer fires — and never fade.
-   Show everything outright instead. */
+/* Reduced motion -----------------------------------------------------------*/
 @media (prefers-reduced-motion: reduce) {
     .v2-reveal,
     .v2-reveal.is-in {

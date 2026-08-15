@@ -1,7 +1,6 @@
 type Props = {
 	src: string;
 	caption: string;
-	/** degrees of tilt — the collage in the Figma frame alternates direction */
 	tilt?: number;
 	className?: string;
 };

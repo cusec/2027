@@ -9,7 +9,7 @@
     right: 0;
     bottom: 0;
     width: 16px;
-    z-index: 70; /* above the nav capsule (60) so it is never tucked behind it */
+    z-index: 70;
     pointer-events: none;
 }
 
@@ -19,22 +19,14 @@
     right: 4px;
     width: 8px;
     border-radius: 999px;
-    background: rgba(127, 168, 41, 0.7); /* --v2-lime-deep */
+    background: rgba(127, 168, 41, 0.7);
     box-shadow: 0 2px 10px rgba(11, 26, 58, 0.28);
     pointer-events: auto;
     cursor: grab;
-    /* Only the look transitions — animating transform would make the knob lag
-       behind the page while scrolling. Declared here, this is the *settle*
-       timing: it runs when the knob returns to rest. The wake-up timing lives
-       on the active rule below, so it snaps on and eases off. */
     transition: background-color 320ms ease, width 320ms ease;
     will-change: transform;
 }
 
-/* The woken-up look. `.is-active` is set for as long as the page is scrolling
-   and for a beat afterwards, so the knob reacts to an ordinary wheel scroll the
-   same way it does to being grabbed — which is the state anyone will actually
-   see, since nobody drags a scrollbar. */
 .v2-scrollbar__knob:hover,
 .v2-scrollbar__knob.is-active,
 .v2-scrollbar__knob.is-dragging {
@@ -47,8 +39,6 @@
     cursor: grabbing;
 }
 
-/* Touch devices have their own transient overlay indicator and no cursor to
-   grab with, so the knob is desktop-only. */
 @media (hover: none) {
     .v2-scrollbar {
         display: none;

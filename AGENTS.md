@@ -106,7 +106,7 @@ since its sections are not reused anywhere else.
 | Component | Purpose |
 |---|---|
 | `V2Nav` | Floating capsule navbar (see below). Deepens its glass on scroll. |
-| `V2LocaleSwitcher` | Globe + `<select>` for en-CA / fr-CA. Uses `useRouter`/`usePathname` from `@/i18n/navigation`. |
+| `V2LocaleSwitcher` | Globe pill + a custom listbox for en-CA / fr-CA (see below). Uses `useRouter`/`usePathname` from `@/i18n/navigation`. |
 | `V2Hero` | Icosahedron, edition pill, `CUSEC 2027` wordmark, tagline, two CTAs. |
 | `V2Wordmark` | The `CUSEC 2027` wordmark: idle letter wave + cursor repel (see below). |
 | `V2ScrollReveal` | One IntersectionObserver that fades in every `.v2-reveal` section. Renders nothing. |
@@ -192,6 +192,25 @@ baked in), on `.v2-scene` at `background-size: cover`. See the comment in
 version is that it keeps the bubbles circular on desktop *and* keeps the scene
 in step with the sections on tall narrow viewports. The footer sits outside
 `.v2-scene` on its own solid colour.
+
+### Locale switcher menu
+
+`V2LocaleSwitcher` is a hand-rolled listbox, **not a `<select>`**. It was a
+native select stretched invisibly over the pill, but a select's popup is drawn
+by the operating system: it takes no border-radius, no backdrop blur and no
+brand colour, so it was the one part of the navbar that ignored the design.
+`option` styling support is far too thin to fix that.
+
+The trade is that everything a select gives for free is now hand-written, so
+don't strip it: `aria-haspopup="listbox"` / `aria-expanded` on the trigger,
+`role="listbox"` / `role="option"` / `aria-selected` on the menu, arrow keys,
+Home/End, Enter/Space, Escape, Tab-to-close, click-outside-to-close, and focus
+returning to the trigger on select. DOM focus is moved onto the active option
+(rather than tracked with `aria-activedescendant`), which is why the option's
+`:hover` and `:focus` styles are one rule.
+
+Language names are endonyms — "English", "Français" — so they live in the
+component, not in `messages/`.
 
 ### Entrance motion
 

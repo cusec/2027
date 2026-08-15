@@ -59,19 +59,6 @@
     overflow-x: clip;
 }
 
-/* --------------------------------------------------------------------------
-   Painted backdrop
-   background.jpg is one continuous 1512x7300 painting (sky -> clouds -> forest
-   -> city -> hills -> lake) with the bubbles already baked in.
-
-   `cover` keeps the painting's aspect ratio — so the painted bubbles stay
-   circular — while always spanning the whole page. On desktop the page is
-   close to the art's own 1512x7300 proportions, so it scales to full width
-   with only a sliver cropped off the bottom. On narrow viewports the page is
-   proportionally much taller, so it scales to full height and crops the sides
-   instead, which keeps the sky -> forest -> city -> lake scene in step with
-   the sections rather than running out partway down.
-   -------------------------------------------------------------------------- */
 .v2-scene {
     position: relative;
     background-image: url("/assets/v2/background.jpg");
@@ -149,7 +136,7 @@
     outline-offset: 3px;
 }
 
-/* Heading pill (dark rounded plaque behind section titles) ----------------- */
+/* Heading pill ----------------- */
 .v2-heading-pill {
     display: inline-flex;
     align-items: center;
@@ -197,9 +184,6 @@
     margin: 0;
 }
 
-/* Reduced motion ----------------------------------------------------------
-   The splash page used a manual in-nav toggle instead of the OS setting; that
-   toggle went away with the splash, so v2 honours prefers-reduced-motion. */
 @media (prefers-reduced-motion: reduce) {
     .v2 *,
     .v2 *::before,

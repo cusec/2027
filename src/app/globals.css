@@ -13,12 +13,6 @@ body {
   background-color: #ffffff;
 }
 
-/* The root scrollbar's track lives in a gutter outside the page's content box,
-   so a transparent track just reveals the canvas as a pale rail beside the
-   painting — there is no way to paint background.jpg into that strip. Drop the
-   gutter entirely instead: the scene runs edge to edge and V2Scrollbar floats a
-   lime knob over it. Touch devices keep their native overlay indicator, which
-   costs no layout width and is what V2Scrollbar stands down for. */
 @media (hover: hover) {
   html {
     scrollbar-width: none;
@@ -29,8 +23,6 @@ body {
   }
 }
 
-/* Nested scrollers (an overflowing FAQ answer, the mobile menu) keep a real
-   scrollbar — styled to match the knob. */
 ::-webkit-scrollbar {
   width: 10px;
   height: 10px;
@@ -45,7 +37,7 @@ body {
 ::-webkit-scrollbar-thumb {
   border: 2px solid transparent;
   border-radius: 999px;
-  background-color: rgba(127, 168, 41, 0.65); /* --v2-lime-deep */
+  background-color: rgba(127, 168, 41, 0.65);
   background-clip: content-box;
 }
 
@@ -59,9 +51,6 @@ body {
   height: 0;
 }
 
-/* Firefox has no ::-webkit-scrollbar selector, so it gets the same look through
-   the standard properties. The root stays hidden — this is for nested scrollers
-   only. */
 @supports not selector(::-webkit-scrollbar) {
   * {
     scrollbar-width: thin;
