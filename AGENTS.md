@@ -29,7 +29,7 @@ This version has breaking changes — APIs, conventions, and file structure may 
 | i18n | next-intl 4.9.0 |
 | Icons | lucide-react |
 | React | 19.2.4 |
-| Display font | `Retropix` (custom woff2, pixel-art style) |
+| Display font | Geist Pixel Square via the `geist` package |
 | Body font | `Nunito` via `next/font/google` |
 
 ---
@@ -131,7 +131,7 @@ Everything is namespaced under a `.v2` root class.
 
 | File | Covers |
 |---|---|
-| `base.css` | `@font-face` for Retropix, design tokens on `.v2`, `.v2-scene` backdrop, buttons, heading pills, cards, reduced-motion guard |
+| `base.css` | Design tokens on `.v2`, `.v2-scene` backdrop, buttons, heading pills, cards, reduced-motion guard |
 | `reveal.css` | `.v2-reveal`, the hero entrance keyframes |
 | `nav.css` | `.v2-nav*`, `.v2-locale` |
 | `hero.css` | `.v2-hero*` |
@@ -392,7 +392,7 @@ There is no in-app motion toggle. `base.css` honours
 
 ## Known gaps
 
-- **Fonts.** Retropix matches the hero wordmark, but the Figma card titles use a
+- **Fonts.** Geist Pixel Square is used for display type, but the Figma card titles use a
   heavier rounded face that hasn't been supplied. Body copy is Nunito as a
   stand-in. Both are CSS variables (`--v2-font-pixel`, `--v2-font-body`).
 - **Archive photos.** Only 2026 has real photos (extracted from the CAM export).

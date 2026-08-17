@@ -15,6 +15,13 @@ import V2Footer from "@/app/components/v2/Footer/V2Footer";
 export default function HomePage() {
 	return (
 		<div className="v2">
+			<link
+				rel="preload"
+				as="image"
+				href="/assets/v2/background-unified.webp"
+				type="image/webp"
+				fetchPriority="high"
+			/>
 			<V2Nav />
 			<V2Scrollbar />
 			<V2ScrollReveal />
@@ -22,6 +29,15 @@ export default function HomePage() {
 				<style>{`.v2-reveal{opacity:1!important;translate:none!important}`}</style>
 			</noscript>
 			<div className="v2-scene">
+				<img
+					className="v2-scene__backdrop"
+					src="/assets/v2/background-unified.webp"
+					alt=""
+					width={2560}
+					height={12360}
+					fetchPriority="high"
+					aria-hidden="true"
+				/>
 				<V2Hero />
 				<V2Sky />
 				<V2Dawn />

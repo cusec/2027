@@ -1,4 +1,5 @@
 import type { Metadata, Viewport } from "next";
+import { GeistPixelSquare } from "geist/font/pixel";
 import { Nunito } from "next/font/google";
 import "./globals.css";
 import "./styles/v2/index.css";
@@ -130,7 +131,12 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en-CA" dir="ltr" className={bodyFont.variable} suppressHydrationWarning>
+    <html
+      lang="en-CA"
+      dir="ltr"
+      className={`${bodyFont.variable} ${GeistPixelSquare.variable}`}
+      suppressHydrationWarning
+    >
       <body>{children}</body>
     </html>
   );

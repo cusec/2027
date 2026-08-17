@@ -16,7 +16,6 @@ export default function V2ScrollReveal() {
 		const targets = Array.from(
 			document.querySelectorAll<HTMLElement>(".v2-reveal")
 		);
-		if (!targets.length) return;
 
 		const showAll = () => {
 			for (const el of targets) el.classList.add("is-in");

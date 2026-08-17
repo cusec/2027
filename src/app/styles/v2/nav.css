@@ -232,6 +232,7 @@
     border-radius: 6px;
     background: rgba(178, 254, 231, 0.14);
     font-family: var(--v2-font-pixel);
+    font-weight: var(--v2-font-pixel-weight);
     font-size: 11px;
     letter-spacing: 0.08em;
     text-align: center;
