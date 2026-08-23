@@ -12,7 +12,9 @@ interface LogAdminActionParams {
     | "claimAttempts"
     | "scheduleItem"
     | "shopItem"
-    | "collectible";
+    | "collectible"
+    | "challenge"
+    | "submission";
   targetUserEmail?: string;
   resourceId?: string;
   details?: LoggableData;

@@ -9,6 +9,7 @@ import {
   AlertCircle,
   Package,
   Pencil,
+  Send,
 } from "lucide-react";
 import { Auth0User, DbUser } from "@/lib/interface";
 import ItemClaim from "./user/ItemClaim";
@@ -16,6 +17,7 @@ import AdminPanel from "./admin/AdminPanel";
 import InventoryModal from "./user/InventoryModal";
 import EditDiscordModal from "./user/EditDiscordModal";
 import Modal from "@/components/ui/modal";
+import { Link } from "@/i18n/navigation";
 
 interface UserHuntProps {
   user: Auth0User;
@@ -120,6 +122,14 @@ const UserHunt = ({
               <Package className="mr-3 h-6 w-6" />
               Inventory
             </button>
+
+            <Link
+              href="/scavenger/submissions"
+              className="w-45 backdrop-blur-sm cursor-pointer select-none flex items-center justify-center px-4 py-2 text-md font-semibold border-2 rounded-4xl border-light-mode/50 register-hover"
+            >
+              <Send className="mr-3 h-6 w-6" />
+              Submissions
+            </Link>
 
             <a href={`/auth/logout?returnTo=${baseURL}/scavenger`}>
               <button className="w-45 backdrop-blur-sm cursor-pointer select-none flex items-center justify-center px-4 py-2 text-md font-semibold border-2 rounded-4xl border-light-mode/50 hover:bg-dark-mode/50">

@@ -136,6 +136,8 @@ const adminAuditLogSchema = new Schema(
         "scheduleItem",
         "shopItem",
         "collectible",
+        "challenge",
+        "submission",
       ],
       index: true,
     },
@@ -263,6 +265,74 @@ const registeredUserSchema = new Schema(
   }
 );
 
+// Challenge & Submission models
+//
+// Events host their own challenges (see TECHxEVENTS.txt) — tech's only job is
+// to let delegates submit a link against one. The activation-window fields
+// mirror huntItemSchema so the admin form and active/inactive logic behave
+// identically to hunt items.
+
+const challengeSchema = new Schema(
+  {
+    title: { type: String, required: true },
+    description: { type: String, default: "" },
+    eventName: { type: String, default: "" },
+    // Awarded to the delegate when an admin approves their submission.
+    points: { type: Number, default: 0 },
+    active: { type: Boolean, default: true },
+    activationStart: { type: Date, default: null },
+    activationEnd: { type: Date, default: null },
+    // null = unlimited
+    maxSubmissions: { type: Number, default: null },
+    submissionCount: { type: Number, default: 0 },
+    createdBy: {
+      type: Schema.Types.ObjectId,
+      ref: "User",
+    },
+  },
+  {
+    timestamps: true,
+  }
+);
+
+const submissionSchema = new Schema(
+  {
+    challengeId: {
+      type: Schema.Types.ObjectId,
+      ref: "Challenge",
+      required: true,
+      index: true,
+    },
+    userId: {
+      type: Schema.Types.ObjectId,
+      ref: "User",
+      required: true,
+      index: true,
+    },
+    userEmail: { type: String, required: true, index: true },
+    url: { type: String, required: true },
+    notes: { type: String, default: "" },
+    status: {
+      type: String,
+      enum: ["pending", "approved", "rejected"],
+      default: "pending",
+      index: true,
+    },
+    // How many points this submission actually granted on approval. Kept even
+    // after the status is reverted, so the admin can be told the exact amount
+    // they need to claw back by hand (points are never auto-deducted).
+    pointsAwarded: { type: Number, default: 0 },
+  },
+  {
+    timestamps: true,
+  }
+);
+
+// One submission per delegate per challenge — re-submitting replaces the
+// existing entry rather than creating a duplicate.
+submissionSchema.index({ challengeId: 1, userId: 1 }, { unique: true });
+submissionSchema.index({ createdAt: -1 });
+
 const Day = mongoose.models.Day || mongoose.model("Day", DaySchema);
 
 const User = mongoose.models.User || mongoose.model("User", userSchema);
@@ -282,6 +352,11 @@ const RegisteredUser =
   mongoose.models.RegisteredUser ||
   mongoose.model("RegisteredUser", registeredUserSchema);
 
+const Challenge =
+  mongoose.models.Challenge || mongoose.model("Challenge", challengeSchema);
+const Submission =
+  mongoose.models.Submission || mongoose.model("Submission", submissionSchema);
+
 export {
   User,
   HuntItem,
@@ -291,4 +366,6 @@ export {
   Notice,
   Collectible,
   RegisteredUser,
+  Challenge,
+  Submission,
 };
