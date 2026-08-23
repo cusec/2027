@@ -4,6 +4,7 @@ import { createPortal } from 'react-dom';
 import { useTranslations } from 'next-intl';
 import { ExternalLinkIcon } from '@/app/assets/FigmaSVGs';
 import { Link } from '@/i18n/navigation';
+import ExternalLinkConfirm from '../Shell/ExternalLinkConfirm';
 
 const SPONSORSHIP_URL = "https://forms.gle/TzbNoCKmALEYryLw7";
 
@@ -186,17 +187,12 @@ export default function SplashJoinWaitlist() {
                 <Link className="cta-btn" href="/tickets">
                     {t('get-tickets')}
                 </Link>
-                <a
-                    className="cta-btn"
-                    href={SPONSORSHIP_URL}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                >
+                <ExternalLinkConfirm className="cta-btn" href={SPONSORSHIP_URL}>
                     <span className="cta-link-label">
                         {t('sponsorship-interest')}
                         <ExternalLinkIcon className="cta-external-link-icon" />
                     </span>
-                </a>
+                </ExternalLinkConfirm>
             </div>
 
             {open && createPortal(modal, document.body)}

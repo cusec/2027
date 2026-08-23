@@ -1,11 +1,10 @@
 "use client";
 
-import Image from 'next/image';
 import { useSplashWindows, type SplashWindowId } from './SplashWindowsContext';
 
 const WINDOW_META: Record<SplashWindowId, { label: string; icon?: string }> = {
-    calendar: { label: 'Calendar', icon: '/assets/calendar.png' },
-    map: { label: 'Map', icon: '/assets/globe.png' },
+    calendar: { label: 'Calendar', icon: '/assets/calendar.webp' },
+    map: { label: 'Map', icon: '/assets/globe.webp' },
     countdown: { label: 'Countdown' },
 };
 
@@ -33,7 +32,7 @@ export default function TaskbarWindows() {
                         aria-label={`Restore ${meta.label}`}
                     >
                         {meta.icon ? (
-                            <Image src={meta.icon} alt="" aria-hidden width={14} height={14} />
+                            <img src={meta.icon} alt="" aria-hidden width={14} height={14} />
                         ) : (
                             <span className="taskbar-window-dot" aria-hidden>
                                 C

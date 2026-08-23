@@ -1,9 +1,11 @@
-import Image from 'next/image';
+import { preload } from 'react-dom';
 import { getTranslations } from 'next-intl/server';
 import { ExternalLinkIcon, FileFolder } from '@/app/assets/FigmaSVGs';
+import ExternalLinkConfirm from './Windows/Shell/ExternalLinkConfirm';
 import SplashJoinWaitlist from './Windows/Content/SplashJoinWaitlist';
 import SplashAnimationLock from './SplashAnimationLock';
 import VantaBirds from './VantaBirds';
+import SplashWaveform from './SplashWaveform';
 import SplashTitle from './SplashTitle';
 import TaskbarClock from './Windows/Launchers/TaskbarClock';
 import MontrealIcon from './Windows/Launchers/MontrealIcon';
@@ -14,6 +16,8 @@ import { SplashWindowsProvider } from './SplashWindowsContext';
 export default async function SplashPage() {
     const t = await getTranslations('SplashPage');
 
+    preload('/assets/splash_bg.webp', { as: 'image', fetchPriority: 'high' });
+
     return (
         <>
             <SplashAnimationLock />
@@ -23,10 +27,8 @@ export default async function SplashPage() {
 
             <SplashWindowsProvider>
                 <aside className="desktop-icons" aria-label="Quick links">
-                    <a
+                    <ExternalLinkConfirm
                         href="https://2026.cusec.net/"
-                        target="_blank"
-                        rel="noopener noreferrer"
                         className="desktop-icon"
                     >
                         <FileFolder width={88} height={67} />
@@ -34,7 +36,7 @@ export default async function SplashPage() {
                             {t('edition-link')}
                             <ExternalLinkIcon className="external-link-icon" />
                         </span>
-                    </a>
+                    </ExternalLinkConfirm>
                     <MontrealIcon />
                     <CalendarIcon />
                 </aside>
@@ -48,9 +50,9 @@ export default async function SplashPage() {
                 {/* Taskbar */}
                 <div className="splash-taskbar" role="toolbar" aria-label="Taskbar">
                     <div className="taskbar-left">
-                        <Image
+                        <img
                             className="taskbar-logo"
-                            src="/assets/cusec_aero_logo.png"
+                            src="/assets/cusec_aero_logo.webp"
                             alt="CUSEC logo"
                             width={28}
                             height={28}
@@ -62,17 +64,7 @@ export default async function SplashPage() {
                 </div>
             </SplashWindowsProvider>
 
-            <video
-                className="splash-waveform"
-                autoPlay
-                loop
-                muted
-                playsInline
-                preload="auto"
-                aria-hidden
-            >
-                <source src="/splash_waveform.webm" type="video/webm" />
-            </video>
+            <SplashWaveform />
             </div>
         </>
     );

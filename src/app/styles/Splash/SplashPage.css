@@ -388,7 +388,6 @@
     user-select: none;
     z-index: 1;
     animation: splash-waveform-fadein 1.2s ease-out both;
-    /* iOS Safari drops VP9 alpha; screen blend makes black transparent */
     mix-blend-mode: screen;
 }
 
@@ -409,6 +408,32 @@
 .splash-static .desktop-icons,
 .splash-static .splash-waveform {
     animation: none;
+}
+
+/* ---- Reduced motion ---- */
+.reduce-motion .splash-wrapper,
+.reduce-motion .splash-wrapper *,
+.reduce-motion .modal-overlay,
+.reduce-motion .modal-overlay * {
+    animation-duration: 0.001ms !important;
+    animation-delay: 0ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    transition-delay: 0ms !important;
+}
+
+/* JS-driven cursor repel + hover pop: force the resting geometry */
+.reduce-motion .splash-title-char,
+.reduce-motion .splash-title-repel {
+    transform: none !important;
+}
+
+.reduce-motion .desktop-icon,
+.reduce-motion .desktop-icon:hover,
+.reduce-motion .cta-btn,
+.reduce-motion .cta-btn:hover {
+    scale: 1 !important;
+    translate: 0 0 !important;
 }
 
 /* ---- Responsive ---- */
@@ -486,7 +511,6 @@
         overflow-y: auto;
     }
 
-    /* Flatten so icons can sit between the title and the buttons */
     .main-splash-content {
         display: contents;
     }
@@ -510,13 +534,10 @@
 
     .desktop-icon { width: 72px; }
 
-    /* Size by width so the folder matches the square icons' apparent size;
-       label alignment is handled by align-items: flex-end on the row */
     .desktop-icon :is(img, svg) { width: 74px; height: auto; }
 
     .desktop-icon span { font-size: 10px; }
 
-    /* Keep the external-link marker on the 25th Edition label on mobile too */
     .desktop-icon-label .external-link-icon {
         width: 8px;
         height: 8px;
