@@ -3,7 +3,7 @@
    ========================================================================== */
 
 .v2-sky {
-    padding-block: 150px 120px;
+    padding-block: var(--v2-section-pad);
     text-align: center;
 }
 

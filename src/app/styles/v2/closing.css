@@ -2,7 +2,7 @@
    v2 — Closing
    ========================================================================== */
 .v2-closing {
-    padding-block: 90px 130px;
+    padding-block: var(--v2-section-pad);
     text-align: center;
 }
 

@@ -2,7 +2,12 @@
    v2 — Hero
    ========================================================================== */
 .v2-hero {
-    padding-top: calc(var(--v2-nav-h) + 76px);
+    /* The section is a full viewport (base.css) and centres its stack, so these
+       are the clearances used when the stack is taller than the screen — the
+       top one has to keep the floating nav off the logo. The bottom is the
+       larger of the two on purpose: it lifts the block so the wordmark, which
+       sits below the stack's own midpoint, lands on the viewport's centre. */
+    padding-top: calc(var(--v2-nav-h) + 20px);
     padding-bottom: 150px;
     text-align: center;
 }
@@ -119,8 +124,8 @@
 
 @media (max-width: 760px) {
     .v2-hero {
-        padding-top: calc(var(--v2-nav-h) + 40px);
-        padding-bottom: 90px;
+        padding-top: calc(var(--v2-nav-h) + 16px);
+        padding-bottom: 110px;
     }
 
     .v2-hero__logo {
