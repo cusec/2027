@@ -28,7 +28,7 @@ export default function HomePage() {
 			<noscript>
 				<style>{`.v2-reveal{opacity:1!important;translate:none!important}`}</style>
 			</noscript>
-			<div className="v2-scene">
+			<div className="v2-scene v2-scene--screens">
 				<img
 					className="v2-scene__backdrop"
 					src="/assets/v2/background-unified.webp"

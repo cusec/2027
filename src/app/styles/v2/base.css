@@ -42,6 +42,11 @@
     /* vertical breathing room inside every scene section; with the
        full-viewport rule below, two of these are the gap between sections */
     --v2-section-pad: clamp(72px, 7vh, 128px);
+    /* how far up the painting rides — see .v2-scene__backdrop. Retuned after
+       the closing section stopped taking a full screen: that shortened the page
+       by ~1000px, which grew the painting's overhang and so the lift this
+       percentage buys. Judge it against the hero's two framing bubbles. */
+    --v2-scene-shift: 15%;
 
     /* --- elevation --- */
     --v2-shadow-card: 0 18px 40px rgba(11, 26, 58, 0.28);
@@ -69,7 +74,17 @@
     width: 100%;
     height: 100%;
     object-fit: cover;
-    object-position: top center;
+    /* `cover` scales the painting to the wider of the two axes. The scene is
+       taller than 1:4.83 nowhere near as often as it is wider, so in practice
+       the width wins and the painting ends up taller than the scene — roughly
+       1000px of it hangs past the bottom on a 2560-wide desktop.
+       --v2-scene-shift picks which slice of that overhang to show: 0% pins the
+       painting's top (the old `top center`, all the crop taken off the bottom),
+       100% pins its bottom. Because it is a percentage of whatever overhang
+       exists, it can never pull an edge into view — on a narrow viewport, where
+       the painting is cropped horizontally instead and there is no vertical
+       overhang at all, it simply does nothing. */
+    object-position: center var(--v2-scene-shift);
     animation: v2-scene-backdrop-in 600ms ease-out both;
 }
 
@@ -94,12 +109,20 @@
     mix-blend-mode: soft-light;
 }
 
+.v2-scene > .v2-section {
+    z-index: 1;
+}
+
 /* Each section of the scene claims at least a full viewport and centres its
    content in it, so on a tall display the sections read as separate screens
    rather than stacking tight under the nav. Taller sections just grow past it —
-   this is a floor, never a cap, so nothing can overflow its own box. */
-.v2-scene > .v2-section {
-    z-index: 1;
+   this is a floor, never a cap, so nothing can overflow its own box.
+   Opt-in via the modifier: /speakers shares .v2-scene but is deliberately a
+   short page, so it must not be stretched to four screens. The closing sign-off
+   is the one exception on the home page — a screen of its own would park it in
+   the middle of a screen of empty water, so it sizes to its content and lets
+   the footer come up to meet it. */
+.v2-scene--screens > .v2-section:not(.v2-closing) {
     display: flex;
     flex-direction: column;
     justify-content: center;
