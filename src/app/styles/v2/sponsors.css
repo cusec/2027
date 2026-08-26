@@ -3,7 +3,7 @@
    ========================================================================== */
 
 .v2-sponsors {
-    padding-block: 30px 60px;
+    padding-block: var(--v2-section-pad);
 }
 
 .v2-sponsors__head {

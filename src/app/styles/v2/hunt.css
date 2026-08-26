@@ -3,7 +3,7 @@
    ========================================================================== */
 
 .v2-hunt {
-    padding-block: 60px 120px;
+    padding-block: var(--v2-section-pad);
 }
 
 .v2-hunt__inner {

@@ -2,7 +2,7 @@
    v2 — FAQ lily pads
    ========================================================================== */
 .v2-faq {
-    padding-block: 60px 40px;
+    padding-block: var(--v2-section-pad);
 }
 
 .v2-faq__head {

@@ -2,7 +2,7 @@
    v2 — Ticket passes
    ========================================================================== */
 .v2-passes {
-    padding-block: 40px 90px;
+    padding-block: var(--v2-section-pad);
 }
 
 .v2-passes__head {

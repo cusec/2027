@@ -2,7 +2,9 @@
    v2 — Closing
    ========================================================================== */
 .v2-closing {
-    padding-block: 90px 130px;
+    /* Deliberately shorter below than above: the sign-off should sit just clear
+       of the footer rather than floating in the middle of the water. */
+    padding-block: var(--v2-section-pad) clamp(48px, 5vh, 84px);
     text-align: center;
 }
 
