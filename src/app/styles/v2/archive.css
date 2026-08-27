@@ -85,6 +85,17 @@
     transition: opacity 220ms ease, filter 220ms ease;
 }
 
+.v2-cam__empty {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    place-items: center;
+    padding: 24px;
+    color: rgba(223, 246, 238, 0.8);
+    font-size: 13px;
+    text-align: center;
+}
+
 /* faint CRT scanlines, as in the export */
 .v2-cam__scan {
     position: absolute;

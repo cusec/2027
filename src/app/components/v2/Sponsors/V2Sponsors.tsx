@@ -50,7 +50,10 @@ export default function V2Sponsors() {
 						className="v2-hex v2-hex--become"
 						style={{ "--hex-drop": "62px" } as React.CSSProperties}
 					>
-						<a className="v2-hex__inner" href="#sponsors">
+						<a
+							className="v2-hex__inner"
+							href="mailto:info@cusec.net?subject=CUSEC%202027%20sponsorship"
+						>
 							<Plus size={22} aria-hidden="true" />
 							<span className="v2-hex__tier">{t("become")}</span>
 						</a>

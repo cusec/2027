@@ -18,9 +18,8 @@
 
 .v2-passes__grid {
     display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 34px;
-    max-width: 1090px;
+    grid-template-columns: minmax(0, 760px);
+    justify-content: center;
     margin-inline: auto;
 }
 
@@ -37,62 +36,27 @@
     transform: rotate(-1.5deg);
 }
 
-.v2-pass--vip {
-    background: var(--v2-ink-deep);
-    color: var(--v2-mint);
-    transform: rotate(1deg);
-}
+/* Retained ticket-launch styling; pricing remains disabled until figures are announced.
+.v2-pass--vip { background: var(--v2-ink-deep); color: var(--v2-mint); transform: rotate(1deg); }
+.v2-pass--vip .v2-pass__name { color: var(--v2-white); }
+.v2-pass__badge { position: absolute; top: 28px; right: 30px; padding: 6px 12px; border-radius: 999px; background: var(--v2-lime); color: var(--v2-ink); font-size: 9.5px; letter-spacing: 0.14em; text-transform: uppercase; }
+.v2-pass__price { display: flex; align-items: center; gap: 12px; margin: 18px 0 22px; }
+.v2-pass__price > span:first-child { font-size: 44px; line-height: 1; }
+.v2-pass--basic .v2-pass__price > span:first-child { color: var(--v2-blue); }
+.v2-pass--vip .v2-pass__price > span:first-child { color: var(--v2-lime); }
+.v2-pass__price > span:last-child { font-size: 12px; line-height: 1.45; color: var(--v2-slate); }
+.v2-pass--vip .v2-pass__price > span:last-child { color: rgba(223, 246, 238, 0.6); }
+.v2-pass--vip .v2-pass__perks i { background: var(--v2-lime); }
+*/
 
 .v2-pass__name {
     margin: 0;
     font-size: 20px;
 }
 
-.v2-pass--vip .v2-pass__name {
-    color: var(--v2-white);
-}
-
-.v2-pass__badge {
-    position: absolute;
-    top: 28px;
-    right: 30px;
-    padding: 6px 12px;
-    border-radius: 999px;
-    background: var(--v2-lime);
-    color: var(--v2-ink);
-    font-size: 9.5px;
-    letter-spacing: 0.14em;
-    text-transform: uppercase;
-}
-
-.v2-pass__price {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    margin: 18px 0 22px;
-}
-
-.v2-pass__price > span:first-child {
-    font-size: 44px;
-    line-height: 1;
-}
-
-.v2-pass--basic .v2-pass__price > span:first-child {
-    color: var(--v2-blue);
-}
-
-.v2-pass--vip .v2-pass__price > span:first-child {
-    color: var(--v2-lime);
-}
-
-.v2-pass__price > span:last-child {
-    font-size: 12px;
-    line-height: 1.45;
-    color: var(--v2-slate);
-}
-
-.v2-pass--vip .v2-pass__price > span:last-child {
-    color: rgba(223, 246, 238, 0.6);
+.v2-pass .v2-card__body {
+    margin-block: 18px 24px;
+    color: var(--v2-ink-deep);
 }
 
 .v2-pass__perks {
@@ -118,10 +82,6 @@
     background: var(--v2-teal);
 }
 
-.v2-pass--vip .v2-pass__perks i {
-    background: var(--v2-lime);
-}
-
 .v2-pass__cta {
     display: flex;
     width: 100%;
@@ -144,13 +104,7 @@
 }
 
 @media (max-width: 900px) {
-    .v2-passes__grid {
-        grid-template-columns: 1fr;
-        gap: 22px;
-    }
-
-    .v2-pass--basic,
-    .v2-pass--vip {
+    .v2-pass--basic {
         transform: none;
     }
 }

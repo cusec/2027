@@ -18,37 +18,15 @@
     padding: 30px 32px;
 }
 
-.v2-hunt__badge {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    margin: 0 0 20px;
-    padding: 6px 14px;
-    border-radius: 999px;
-    border: 1px solid rgba(195, 233, 86, 0.7);
-    font-size: 10.5px;
-    letter-spacing: 0.16em;
-    text-transform: uppercase;
-    color: var(--v2-lime);
-}
-
-.v2-hunt__badge i {
-    width: 6px;
-    height: 6px;
-    border-radius: 50%;
-    background: var(--v2-lime);
-}
+/* Retained hunt chip and CTA styling for a future activation.
+.v2-hunt__badge { display: inline-flex; align-items: center; gap: 8px; margin: 0 0 20px; padding: 6px 14px; border-radius: 999px; border: 1px solid rgba(195, 233, 86, 0.7); font-size: 10.5px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--v2-lime); }
+.v2-hunt__badge i { width: 6px; height: 6px; border-radius: 50%; background: var(--v2-lime); }
+.v2-hunt__actions { display: flex; align-items: center; gap: 16px; margin: 26px 0 0; }
+*/
 
 .v2-hunt__title {
     max-width: 14ch;
     font-size: clamp(1.5rem, 2.6vw, 2rem);
-}
-
-.v2-hunt__actions {
-    display: flex;
-    align-items: center;
-    gap: 16px;
-    margin: 26px 0 0;
 }
 
 /* map pins ---------------------------------------------------------------- */

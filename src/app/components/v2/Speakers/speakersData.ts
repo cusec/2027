@@ -30,35 +30,10 @@ export type AnnouncedKeynote = {
 	to: string;
 };
 
-// TODO: placeholder keynote. Remove (or replace) once a real one is confirmed —
-// the unannounced teaser above it is the copy that should ship until then.
-export const ANNOUNCED_KEYNOTES: AnnouncedKeynote[] = [
-	{
-		name: "Angel Shinh",
-		role: "Software Engineer · placeholder",
-		talk: "How to larpmaxx",
-		photo: "/assets/speakers/avatar.jpeg",
-		focus: "50% 36%",
-		from: "#9FF4DB",
-		to: "#60D3B3",
-	},
-];
+export const ANNOUNCED_KEYNOTES: AnnouncedKeynote[] = [];
 
-// TODO: the first entry is a stand-in so the announced-card state is visible
-// and styled. Replace it (and drop `announced`) before this page goes live.
 export const SPEAKERS: Speaker[] = [
-	{
-		topic: "ai-ml",
-		from: "#B5E054",
-		to: "#89C24C",
-		announced: {
-			name: "Angel Shinh",
-			role: "Software Engineer · placeholder",
-			photo: "/assets/speakers/avatar.jpeg",
-			// tall 9:16 source with a comic frame — pull the crop onto the face
-			focus: "50% 36%",
-		},
-	},
+	{ topic: "ai-ml", from: "#B5E054", to: "#89C24C" },
 	{ topic: "systems", from: "#9FF4DB", to: "#60D3B3" },
 	{ topic: "web", from: "#94BBEA", to: "#78ADF3" },
 	{ topic: "career", from: "#F6E280", to: "#EBCA56" },

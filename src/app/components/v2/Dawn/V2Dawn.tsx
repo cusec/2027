@@ -1,9 +1,6 @@
 import { useTranslations } from "next-intl";
-import { BedDouble, Utensils, TrainFront, CalendarDays } from "lucide-react";
 import V2CdPlayer from "./V2CdPlayer";
 import V2Polaroid from "./V2Polaroid";
-
-const KNOW_ICONS = [BedDouble, Utensils, TrainFront, CalendarDays];
 
 export default function V2Dawn() {
 	const t = useTranslations("V2.dawn");
@@ -11,7 +8,6 @@ export default function V2Dawn() {
 	const stats = [1, 2, 3, 4] as const;
 	const tags = [1, 2, 3] as const;
 	const aboutStats = [1, 2, 3, 4] as const;
-	const know = [1, 2, 3, 4] as const;
 
 	return (
 		<section className="v2-section v2-dawn v2-reveal" id="conference">
@@ -39,7 +35,6 @@ export default function V2Dawn() {
 					<V2CdPlayer />
 				</div>
 
-				{/* --- collage row: about + who + photo + good-to-know --- */}
 				<div className="v2-dawn__grid">
 					<article className="v2-card v2-dawn__about">
 						<p className="v2-card__eyebrow">{t("about-eyebrow")}</p>
@@ -55,6 +50,9 @@ export default function V2Dawn() {
 							))}
 						</ul>
 
+						<p className="v2-dawn__about-stats-label v2-pixel">
+							{t("about-stats-label")}
+						</p>
 						<ul className="v2-dawn__about-stats">
 							{aboutStats.map((n) => (
 								<li key={n}>
@@ -81,20 +79,11 @@ export default function V2Dawn() {
 						className="v2-dawn__photo-2"
 					/>
 
+					{/* Retained for a future logistics brief; accommodation, meals, transit, and dates are not confirmed.
 					<article className="v2-card v2-dawn__know">
 						<p className="v2-card__eyebrow">{t("know-eyebrow")}</p>
-						<ul className="v2-dawn__know-list">
-							{know.map((n, i) => {
-								const Icon = KNOW_ICONS[i];
-								return (
-									<li key={n}>
-										<Icon size={17} aria-hidden="true" />
-										<span>{t(`know-${n}`)}</span>
-									</li>
-								);
-							})}
-						</ul>
-					</article>
+						<ul className="v2-dawn__know-list">{[1, 2, 3, 4].map((n) => <li key={n}><span>{t(`know-${n}`)}</span></li>)}</ul>
+					</article> */}
 				</div>
 			</div>
 		</section>

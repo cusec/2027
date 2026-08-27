@@ -1,7 +1,7 @@
 export type ArchivePhoto = {
 	src: string;
 	caption: string;
-	stamp: string;
+	stamp?: string;
 };
 
 export type ArchiveEdition = {
@@ -13,68 +13,60 @@ export type ArchiveEdition = {
 };
 
 
-const PLACEHOLDER = [
-	"/assets/v2/photos/cam_0.webp",
-	"/assets/v2/photos/cam_1.webp",
-	"/assets/v2/photos/cam_2.webp",
-	"/assets/v2/photos/cam_3.webp",
-];
-
-function shots(year: number, captions: string[]): ArchivePhoto[] {
-	return PLACEHOLDER.map((src, i) => ({
+function shots(captions: string[], sources: string[]): ArchivePhoto[] {
+	return sources.map((src, i) => ({
 		src,
 		caption: captions[i],
-		stamp: `JAN 0${9 - (i % 3)} ${year} · ${["23:42", "14:08", "19:27", "11:55"][i]}`,
 	}));
 }
 
 export const EDITIONS: ArchiveEdition[] = [
 	{
 		year: 2026,
-		count: 128,
+		count: 4,
 		from: "#1F3B2C",
 		to: "#0E2318",
-		photos: shots(2026, [
-			"all 500 of us · closing ceremony",
-			"hallway track",
-			"main stage",
-			"workshops",
+		photos: shots([
+			"audience · 2026",
+			"speaker session · 2026",
+			"speaker session · 2026",
+			"audience · 2026",
+		], [
+			"/assets/v2/photos/archive/2026-01.jpg",
+			"/assets/v2/photos/archive/2026-02.jpg",
+			"/assets/v2/photos/archive/2026-03.jpg",
+			"/assets/v2/photos/archive/2026-04.jpg",
 		]),
 	},
 	{
 		year: 2025,
-		count: 116,
+		count: 4,
 		from: "#2E4FC8",
 		to: "#1B2F77",
-		photos: shots(2025, [
-			"opening ceremony",
-			"career fair",
-			"keynote",
-			"game night",
+		photos: shots([
+			"group photo · 2025",
+			"audience · 2025",
+			"sponsor conversations · 2025",
+			"hallway conversations · 2025",
+		], [
+			"/assets/v2/photos/archive/2025-01.jpg",
+			"/assets/v2/photos/archive/2025-02.jpg",
+			"/assets/v2/photos/archive/2025-04.jpg",
+			"/assets/v2/photos/archive/2025-05.jpg",
 		]),
 	},
 	{
 		year: 2024,
-		count: 104,
+		count: 0,
 		from: "#4D7111",
 		to: "#2C4310",
-		photos: shots(2024, [
-			"delegates arriving",
-			"lightning talks",
-			"the big room",
-			"after hours",
-		]),
+		photos: [],
 	},
 	{
 		year: 2023,
-		count: 97,
+		count: 0,
 		from: "#8A1F5A",
 		to: "#571239",
-		photos: shots(2023, [
-			"back in person",
-			"sponsor booths",
-			"closing keynote",
-			"socials",
-		]),
+		photos: [],
 	},
 ];

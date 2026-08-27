@@ -9,17 +9,11 @@ export default function V2Hunt() {
 		<section className="v2-section v2-hunt v2-reveal" id="hunt">
 			<div className="v2-container v2-hunt__inner">
 				<article className="v2-card v2-hunt__card">
-					<p className="v2-hunt__badge v2-pixel">
-						<i aria-hidden="true" />
-						{t("badge")}
-					</p>
+					{/* Retained for a future hunt launch CTA; the current card is informational. */}
 					<h2 className="v2-card__title v2-hunt__title">{t("title")}</h2>
 					<p className="v2-card__body">{t("body")}</p>
-					<p className="v2-hunt__actions">
-						<a className="v2-btn v2-btn--primary" href="#hunt">
-							{t("cta")}
-						</a>
-					</p>
+					{/* <p className="v2-hunt__badge v2-pixel"><i aria-hidden="true" />{t("badge")}</p>
+					<p className="v2-hunt__actions"><a className="v2-btn v2-btn--primary" href="#hunt">{t("cta")}</a></p> */}
 				</article>
 
 				{/* the two map pins dropped on the path in the Figma frame */}

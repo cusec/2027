@@ -43,6 +43,7 @@
 }
 
 .v2-pad__q {
+    scroll-margin-top: var(--v2-nav-h);
     display: flex;
     align-items: center;
     gap: 10px;

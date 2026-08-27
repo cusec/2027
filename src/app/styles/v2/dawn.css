@@ -258,16 +258,17 @@
 
 .v2-dawn__photo-2 {
     grid-column: 1;
-    grid-row: 3;
+    grid-row: 2;
     width: 300px;
     margin: 40px 0 0 auto;
 }
 
-.v2-dawn__know {
-    grid-column: 2;
-    grid-row: 2 / span 2;
-    margin-top: 70px;
-}
+/* Retained Good to Know card styling for a future logistics brief.
+.v2-dawn__know { grid-column: 2; grid-row: 2 / span 2; margin-top: 70px; }
+.v2-dawn__know-list { display: grid; gap: 14px; margin: 0; padding: 0; list-style: none; }
+.v2-dawn__know-list li { display: grid; grid-template-columns: 22px 1fr; gap: 10px; align-items: start; font-size: 14px; line-height: 1.5; color: var(--v2-mint); }
+.v2-dawn__know-list svg { margin-top: 2px; color: var(--v2-lime); }
+*/
 
 .v2-dawn__photo-1 {
     width: 268px;
@@ -314,6 +315,14 @@
     list-style: none;
 }
 
+.v2-dawn__about-stats-label {
+    margin: 22px 0 0;
+    color: var(--v2-lime);
+    font-size: 11px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+}
+
 .v2-dawn__about-stats li {
     display: flex;
     flex-direction: column;
@@ -350,30 +359,6 @@
     text-decoration: underline;
 }
 
-/* good to know ------------------------------------------------------------ */
-.v2-dawn__know-list {
-    display: grid;
-    gap: 14px;
-    margin: 0;
-    padding: 0;
-    list-style: none;
-}
-
-.v2-dawn__know-list li {
-    display: grid;
-    grid-template-columns: 22px 1fr;
-    gap: 10px;
-    align-items: start;
-    font-size: 14px;
-    line-height: 1.5;
-    color: var(--v2-mint);
-}
-
-.v2-dawn__know-list svg {
-    margin-top: 2px;
-    color: var(--v2-lime);
-}
-
 /* --------------------------------------------------------------------------
    Responsive
    -------------------------------------------------------------------------- */
@@ -392,7 +377,6 @@
 
     .v2-dawn__about,
     .v2-dawn__who,
-    .v2-dawn__know,
     .v2-dawn__photo-2 {
         grid-column: 1;
         grid-row: auto;

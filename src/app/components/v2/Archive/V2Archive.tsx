@@ -29,6 +29,7 @@ export default function V2Archive() {
 
 	function step(delta: number) {
 		const n = edition.photos.length;
+		if (n === 0) return;
 		setShotIndex((i) => (i + delta + n) % n);
 	}
 
@@ -55,12 +56,16 @@ export default function V2Archive() {
 
 						{/* LCD */}
 						<div className="v2-cam__screen">
-							<img
-								className="v2-cam__photo"
-								src={photo.src}
-								alt=""
-								aria-hidden="true"
-							/>
+							{photo ? (
+								<img
+									className="v2-cam__photo"
+									src={photo.src}
+									alt=""
+									aria-hidden="true"
+								/>
+							) : (
+								<span className="v2-cam__empty">{t("empty-card")}</span>
+							)}
 							<span className="v2-cam__scan" aria-hidden="true" />
 
 							<span className="v2-cam__rec v2-pixel">
@@ -75,12 +80,15 @@ export default function V2Archive() {
 								<i />
 							</span>
 
-							<span className="v2-cam__caption">{photo.caption}</span>
-							<span className="v2-cam__meta v2-pixel">
-								SD:{edition.year}_MTL · IMG_
-								{String(shotIndex + 42).padStart(3, "0")}/{edition.count}
+							<span className="v2-cam__caption">
+								{photo?.caption ?? t("empty-card")}
 							</span>
-							<span className="v2-cam__stamp v2-pixel">{photo.stamp}</span>
+							<span className="v2-cam__meta v2-pixel">
+								SD:{edition.year}_MTL · {photo ? `PHOTO ${shotIndex + 1}/${edition.photos.length}` : "NO PHOTOS"}
+							</span>
+							{photo?.stamp ? (
+								<span className="v2-cam__stamp v2-pixel">{photo.stamp}</span>
+							) : null}
 						</div>
 
 						{/* right-hand controls — decorative */}
@@ -131,7 +139,11 @@ export default function V2Archive() {
 									<ChevronRight size={14} aria-hidden="true" />
 									<span className="v2-sr">{t("next-photo")}</span>
 								</button>
-								<span>{t("browse", { count: edition.count })}</span>
+							<span>
+								{edition.photos.length === 0
+									? t("empty-card")
+									: t("browse", { count: edition.count })}
+							</span>
 							</span>
 						</div>
 

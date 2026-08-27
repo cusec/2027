@@ -3,12 +3,13 @@
 import { useState, type ReactNode } from "react";
 import { useTranslations } from "next-intl";
 
-const PADS = [1, 2, 3, 4, 5, 6, 7, 8] as const;
+const PADS = [1, 2, 3, 4, 5] as const;
 
-const TICKETS_URL = "https://www.tickettailor.com/events/cusec";
-const HOTEL_URL =
-	"https://bookings.omnihotels.com/event/montreal-mont-royal/cusec-main-block";
-
+/* Retained FAQ slots and ticket/hotel link wiring for future announcements.
+const DISABLED_PADS = [1, 2, 3, 4, 5, 6, 7, 8] as const;
+const DISABLED_TICKETS_URL = "https://www.tickettailor.com/events/cusec";
+const DISABLED_HOTEL_URL = "https://bookings.omnihotels.com/event/montreal-mont-royal/cusec-main-block";
+*/
 export default function V2Faq() {
 	const t = useTranslations("V2.faq");
 	// exactly one pad open at a time; clicking the open one closes it
@@ -20,16 +21,6 @@ export default function V2Faq() {
 		b: (chunks: ReactNode) => <strong>{chunks}</strong>,
 		ul: (chunks: ReactNode) => <ul className="v2-pad__list">{chunks}</ul>,
 		li: (chunks: ReactNode) => <li>{chunks}</li>,
-		tickets: (chunks: ReactNode) => (
-			<a href={TICKETS_URL} target="_blank" rel="noreferrer noopener">
-				{chunks}
-			</a>
-		),
-		hotel: (chunks: ReactNode) => (
-			<a href={HOTEL_URL} target="_blank" rel="noreferrer noopener">
-				{chunks}
-			</a>
-		),
 		email: (chunks: ReactNode) => <a href="mailto:info@cusec.net">{chunks}</a>,
 	};
 

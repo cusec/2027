@@ -61,7 +61,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "CUSEC 2027 - Canadian University Software Engineering Conference",
     description:
-      "Join CUSEC 2027, the 26th annual student-led software engineering conference in Montréal, QC. Canada's premier student tech conference — January 2027.",
+      "Three days of talks, workshops, career conversations, and late-night ideas at Canada's longest-running student-led software engineering conference.",
     url: "/",
     siteName: "CUSEC 2027",
     type: "website",
