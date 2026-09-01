@@ -1,0 +1,285 @@
+/* ==========================================================================
+   CUSEC 2027 — Main site (v2) design tokens + page shell
+   Palette values are lifted verbatim from the Figma SVG exports in
+   public/assets/v2, so they are exact rather than eyeballed.
+   ========================================================================== */
+
+.v2 {
+    /* --- brand --- */
+    --v2-lime: #C3E956;
+    --v2-lime-deep: #7FA829;
+    --v2-lime-dark: #4D7111;
+
+    /* --- greens (cards, text) --- */
+    --v2-ink: #1F3B2C;
+    --v2-ink-deep: #0E2318;
+
+    /* --- mints / whites --- */
+    --v2-mint: #DFF6EE;
+    --v2-mint-bright: #B2FEE7;
+    --v2-teal: #4EC9A8;
+    --v2-white: #F4FFFC;
+    --v2-white-pure: #FDFFFE;
+
+    /* --- blues / neutrals --- */
+    --v2-navy: #0B1A3A;
+    --v2-slate: #5B6B7E;
+    --v2-slate-light: #9DBFE8;
+    --v2-blue: #416CED;
+
+    /* --- accents --- */
+    --v2-gold: #E8C34A;
+    --v2-red: #E8564A;
+
+    /* --- type --- */
+    --v2-font-pixel: var(--font-geist-pixel-square), "MS Sans Serif", monospace;
+    --v2-font-pixel-weight: 700;
+    --v2-font-body: var(--font-v2-body), "Segoe UI", system-ui, sans-serif;
+
+    /* --- layout --- */
+    --v2-container: 1220px;
+    --v2-nav-h: 82px;
+    /* vertical breathing room inside every scene section; with the
+       full-viewport rule below, two of these are the gap between sections */
+    --v2-section-pad: clamp(72px, 7vh, 128px);
+    /* how far up the painting rides — see .v2-scene__backdrop. Retuned after
+       the closing section stopped taking a full screen: that shortened the page
+       by ~1000px, which grew the painting's overhang and so the lift this
+       percentage buys. Judge it against the hero's two framing bubbles. */
+    --v2-scene-shift: 15%;
+
+    /* --- elevation --- */
+    --v2-shadow-card: 0 18px 40px rgba(11, 26, 58, 0.28);
+    --v2-shadow-float: 0 10px 28px rgba(11, 26, 58, 0.22);
+
+    font-family: var(--v2-font-body);
+    color: var(--v2-ink-deep);
+    letter-spacing: 0;
+    position: relative;
+    isolation: isolate;
+    overflow-x: clip;
+}
+
+.v2-scene {
+    position: relative;
+    background-color: #3A94D4;
+    isolation: isolate;
+}
+
+.v2-scene__backdrop {
+    position: absolute;
+    z-index: -1;
+    inset: 0;
+    pointer-events: none;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    /* `cover` scales the painting to the wider of the two axes. The scene is
+       taller than 1:4.83 nowhere near as often as it is wider, so in practice
+       the width wins and the painting ends up taller than the scene — roughly
+       1000px of it hangs past the bottom on a 2560-wide desktop.
+       --v2-scene-shift picks which slice of that overhang to show: 0% pins the
+       painting's top (the old `top center`, all the crop taken off the bottom),
+       100% pins its bottom. Because it is a percentage of whatever overhang
+       exists, it can never pull an edge into view — on a narrow viewport, where
+       the painting is cropped horizontally instead and there is no vertical
+       overhang at all, it simply does nothing. */
+    object-position: center var(--v2-scene-shift);
+    animation: v2-scene-backdrop-in 600ms ease-out both;
+}
+
+@keyframes v2-scene-backdrop-in {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+.v2-scene::after {
+    position: absolute;
+    z-index: 0;
+    inset: 0;
+    content: "";
+    pointer-events: none;
+    opacity: 0.045;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 180 180' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.85'/%3E%3C/svg%3E");
+    mix-blend-mode: soft-light;
+}
+
+.v2-scene > .v2-section {
+    z-index: 1;
+}
+
+/* Each section of the scene claims at least a full viewport and centres its
+   content in it, so on a tall display the sections read as separate screens
+   rather than stacking tight under the nav. Taller sections just grow past it —
+   this is a floor, never a cap, so nothing can overflow its own box.
+   Opt-in via the modifier: /speakers shares .v2-scene but is deliberately a
+   short page, so it must not be stretched to four screens. The closing sign-off
+   is the one exception on the home page — a screen of its own would park it in
+   the middle of a screen of empty water, so it sizes to its content and lets
+   the footer come up to meet it. */
+.v2-scene--screens > .v2-section:not(.v2-closing) {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    min-height: 100svh;
+}
+
+/* --------------------------------------------------------------------------
+   Shared primitives
+   -------------------------------------------------------------------------- */
+.v2-container {
+    width: 100%;
+    max-width: var(--v2-container);
+    margin-inline: auto;
+    padding-inline: 24px;
+}
+
+.v2-section {
+    position: relative;
+    z-index: 1;
+}
+
+/* Pixel display type ------------------------------------------------------ */
+.v2-pixel {
+    font-family: var(--v2-font-pixel);
+    font-weight: var(--v2-font-pixel-weight);
+    letter-spacing: 0.04em;
+    text-transform: none;
+}
+
+/* Buttons ----------------------------------------------------------------- */
+.v2-btn {
+    font-family: var(--v2-font-pixel);
+    font-weight: var(--v2-font-pixel-weight);
+    font-size: 15px;
+    letter-spacing: 0.06em;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 14px 26px;
+    border: 0;
+    border-radius: 999px;
+    text-decoration: none;
+    white-space: nowrap;
+    transition: transform 160ms ease, box-shadow 160ms ease, background-color 160ms ease;
+}
+
+.v2-btn--primary {
+    background: var(--v2-lime);
+    color: var(--v2-ink);
+    box-shadow: 0 6px 16px rgba(31, 59, 44, 0.28);
+}
+
+.v2-btn--primary:hover {
+    background: #cff063;
+    transform: translateY(-2px);
+    box-shadow: 0 10px 22px rgba(31, 59, 44, 0.32);
+}
+
+.v2-btn--ghost {
+    background: rgba(255, 255, 255, 0.26);
+    color: var(--v2-white);
+    backdrop-filter: blur(6px);
+    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.4);
+}
+
+.v2-btn--ghost:hover {
+    background: rgba(255, 255, 255, 0.38);
+    transform: translateY(-2px);
+}
+
+.v2-btn:focus-visible {
+    outline: 3px solid var(--v2-white);
+    outline-offset: 3px;
+}
+
+/* Heading pill ----------------- */
+.v2-heading-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    padding: 16px 34px;
+    border-radius: 18px;
+    background: rgba(14, 35, 24, 0.92);
+    color: var(--v2-white);
+    box-shadow: var(--v2-shadow-card);
+    font-family: var(--v2-font-pixel);
+    font-weight: var(--v2-font-pixel-weight);
+    letter-spacing: 0.03em;
+}
+
+/* Dark glass card --------------------------------------------------------- */
+.v2-card {
+    background: rgba(14, 35, 24, 0.9);
+    border-radius: 20px;
+    box-shadow: var(--v2-shadow-card);
+    color: var(--v2-mint);
+    padding: 26px 28px;
+    backdrop-filter: blur(2px);
+}
+
+.v2-card__eyebrow {
+    font-family: var(--v2-font-pixel);
+    font-weight: var(--v2-font-pixel-weight);
+    font-size: 11px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--v2-lime);
+    margin: 0 0 10px;
+}
+
+.v2-card__title {
+    font-family: var(--v2-font-pixel);
+    font-weight: var(--v2-font-pixel-weight);
+    font-size: 26px;
+    line-height: 1.35;
+    color: var(--v2-white);
+    margin: 0 0 14px;
+}
+
+.v2-card__body {
+    font-size: 15px;
+    line-height: 1.65;
+    color: var(--v2-mint);
+    margin: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .v2 *,
+    .v2 *::before,
+    .v2 *::after {
+        animation-duration: 0.001ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.001ms !important;
+        scroll-behavior: auto !important;
+    }
+}
+
+/* Screen-reader-only ------------------------------------------------------ */
+.v2-sr {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}
+
+@media (max-width: 760px) {
+    .v2-card__title {
+        font-size: 21px;
+    }
+
+    .v2-container {
+        padding-inline: 18px;
+    }
+}

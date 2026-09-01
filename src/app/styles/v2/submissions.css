@@ -1,0 +1,445 @@
+/* ==========================================================================
+   v2 — /scavenger/submissions
+   Challenge submission platform, restyled onto the main site's design system.
+   Follows the dark-glass-card-over-painting language of .v2-card / .v2-board
+   rather than the grayscale Tailwind theme the rest of the scavenger island
+   uses, so the page reads as part of the 2027 site.
+   ========================================================================== */
+
+/* The splash-era Win95 locale switcher / motion toggle is rendered for every
+   route by [locale]/layout.tsx. It clashes badly with the v2 painting, and on
+   this page it is dead weight anyway — the scavenger island is hardcoded
+   English, so the switcher changes nothing. Scoped to pages that opted into
+   `.v2`, so the splash page and /scavenger keep theirs. */
+body:has(.v2) .Navbar {
+    display: none;
+}
+
+/* The page is short, so the scene needs a floor or the painting would only
+   paint as far as the content reaches. Deliberately not .v2-scene--screens:
+   that stretches every child to a full viewport, which this page doesn't want. */
+.v2-sub-scene {
+    min-height: 100svh;
+}
+
+.v2-sub {
+    padding-block: var(--v2-section-pad);
+}
+
+.v2-sub__inner {
+    max-width: 860px;
+}
+
+/* header ------------------------------------------------------------------ */
+.v2-sub__head {
+    margin-bottom: 34px;
+}
+
+.v2-sub__title {
+    margin: 0;
+    font-family: var(--v2-font-pixel);
+    font-weight: var(--v2-font-pixel-weight);
+    font-size: clamp(1.9rem, 4.4vw, 2.9rem);
+    line-height: 1.15;
+    letter-spacing: 0.02em;
+    color: var(--v2-white);
+    text-shadow: 0 4px 18px rgba(11, 26, 58, 0.45);
+}
+
+.v2-sub__sub {
+    margin: 12px 0 0;
+    max-width: 52ch;
+    font-size: 1.02rem;
+    line-height: 1.6;
+    color: var(--v2-white);
+    text-shadow: 0 2px 10px rgba(11, 26, 58, 0.4);
+}
+
+.v2-sub__who {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin: 16px 0 0;
+    padding: 7px 15px;
+    border-radius: 999px;
+    background: rgba(14, 35, 24, 0.7);
+    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.16);
+    backdrop-filter: blur(4px);
+    font-size: 12.5px;
+    color: var(--v2-mint);
+}
+
+.v2-sub__who b {
+    font-weight: 600;
+    color: var(--v2-mint-bright);
+}
+
+/* event groups ------------------------------------------------------------ */
+.v2-sub__groups {
+    display: grid;
+    gap: 34px;
+}
+
+.v2-sub__group-title {
+    margin: 0 0 14px;
+    font-family: var(--v2-font-pixel);
+    font-weight: var(--v2-font-pixel-weight);
+    font-size: 11.5px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--v2-lime);
+    text-shadow: 0 2px 8px rgba(11, 26, 58, 0.5);
+}
+
+.v2-sub__list {
+    display: grid;
+    gap: 16px;
+}
+
+/* status strips ----------------------------------------------------------- */
+.v2-sub__error,
+.v2-sub__empty,
+.v2-sub__loading {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    margin-bottom: 22px;
+    padding: 16px 18px;
+    border-radius: 16px;
+    background: rgba(14, 35, 24, 0.88);
+    box-shadow: var(--v2-shadow-float);
+    backdrop-filter: blur(4px);
+    font-size: 14px;
+    line-height: 1.6;
+    color: var(--v2-mint);
+}
+
+.v2-sub__error {
+    box-shadow: var(--v2-shadow-float), inset 0 0 0 1.5px rgba(232, 86, 74, 0.65);
+}
+
+.v2-sub__error svg {
+    flex: none;
+    margin-top: 1px;
+    color: var(--v2-red);
+}
+
+.v2-sub__empty {
+    display: block;
+    margin-bottom: 0;
+}
+
+.v2-sub__empty b {
+    display: block;
+    margin-bottom: 6px;
+    font-family: var(--v2-font-pixel);
+    font-weight: var(--v2-font-pixel-weight);
+    font-size: 15px;
+    color: var(--v2-white);
+}
+
+/* --------------------------------------------------------------------------
+   Challenge card
+   -------------------------------------------------------------------------- */
+.v2-chal {
+    padding: 22px 24px;
+    border-radius: 18px;
+    background: rgba(14, 35, 24, 0.88);
+    box-shadow: var(--v2-shadow-card);
+    backdrop-filter: blur(4px);
+    transition: box-shadow 200ms ease, transform 200ms ease;
+}
+
+.v2-chal:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 22px 46px rgba(11, 26, 58, 0.34);
+}
+
+.v2-chal__head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.v2-chal__event {
+    margin: 0 0 5px;
+    font-family: var(--v2-font-pixel);
+    font-weight: var(--v2-font-pixel-weight);
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--v2-lime);
+}
+
+.v2-chal__title {
+    margin: 0;
+    font-family: var(--v2-font-pixel);
+    font-weight: var(--v2-font-pixel-weight);
+    font-size: 1.15rem;
+    line-height: 1.35;
+    color: var(--v2-white);
+}
+
+.v2-chal__points {
+    margin: 6px 0 0;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--v2-mint-bright);
+}
+
+/* status pill — lime approved, gold pending, red rejected */
+.v2-chal__status {
+    display: inline-flex;
+    flex: none;
+    align-items: center;
+    gap: 6px;
+    padding: 5px 12px;
+    border-radius: 999px;
+    font-family: var(--v2-font-pixel);
+    font-weight: var(--v2-font-pixel-weight);
+    font-size: 10px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    background: rgba(255, 255, 255, 0.08);
+    color: var(--v2-mint);
+}
+
+.v2-chal__status svg {
+    width: 13px;
+    height: 13px;
+}
+
+.v2-chal__status--approved {
+    background: var(--v2-lime);
+    color: var(--v2-ink);
+}
+
+.v2-chal__status--pending {
+    background: rgba(232, 195, 74, 0.18);
+    color: var(--v2-gold);
+    box-shadow: inset 0 0 0 1px rgba(232, 195, 74, 0.5);
+}
+
+.v2-chal__status--rejected {
+    background: rgba(232, 86, 74, 0.16);
+    color: var(--v2-red);
+    box-shadow: inset 0 0 0 1px rgba(232, 86, 74, 0.5);
+}
+
+.v2-chal__desc {
+    margin: 12px 0 0;
+    font-size: 14.5px;
+    line-height: 1.65;
+    color: var(--v2-mint);
+}
+
+.v2-chal__window {
+    margin: 10px 0 0;
+    font-size: 12px;
+    color: rgba(178, 254, 231, 0.66);
+}
+
+/* the delegate's existing entry ------------------------------------------- */
+.v2-chal__mine {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 16px;
+    margin-top: 14px;
+    padding: 11px 14px;
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.06);
+    font-size: 13.5px;
+}
+
+.v2-chal__link {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    min-width: 0;
+    color: var(--v2-mint-bright);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    word-break: break-all;
+}
+
+.v2-chal__link:hover {
+    color: var(--v2-lime);
+}
+
+.v2-chal__link svg {
+    flex: none;
+    width: 15px;
+    height: 15px;
+}
+
+.v2-chal__withdraw {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 0;
+    border: 0;
+    background: none;
+    color: rgba(223, 246, 238, 0.7);
+    font: inherit;
+    cursor: pointer;
+    transition: color 160ms ease;
+}
+
+.v2-chal__withdraw:hover {
+    color: var(--v2-red);
+}
+
+.v2-chal__withdraw svg {
+    width: 15px;
+    height: 15px;
+}
+
+.v2-chal__note {
+    margin: 14px 0 0;
+    font-size: 13.5px;
+    line-height: 1.6;
+    color: rgba(223, 246, 238, 0.72);
+}
+
+/* form -------------------------------------------------------------------- */
+.v2-chal__open {
+    margin-top: 16px;
+}
+
+.v2-chal__form {
+    display: grid;
+    gap: 14px;
+    margin-top: 16px;
+}
+
+.v2-chal__field {
+    display: grid;
+    gap: 6px;
+}
+
+.v2-chal__field > span {
+    font-size: 12.5px;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    color: var(--v2-mint-bright);
+}
+
+.v2-chal__field > span i {
+    font-style: normal;
+    font-weight: 400;
+    color: rgba(223, 246, 238, 0.55);
+}
+
+.v2-chal__field input,
+.v2-chal__field textarea {
+    width: 100%;
+    padding: 11px 14px;
+    border: 0;
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.08);
+    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.18);
+    color: var(--v2-white);
+    font-family: inherit;
+    font-size: 14px;
+    line-height: 1.5;
+    transition: box-shadow 160ms ease, background-color 160ms ease;
+}
+
+.v2-chal__field textarea {
+    min-height: 66px;
+    resize: vertical;
+}
+
+.v2-chal__field input::placeholder,
+.v2-chal__field textarea::placeholder {
+    color: rgba(223, 246, 238, 0.42);
+}
+
+.v2-chal__field input:focus,
+.v2-chal__field textarea:focus {
+    outline: none;
+    background: rgba(255, 255, 255, 0.12);
+    box-shadow: inset 0 0 0 1.5px var(--v2-lime);
+}
+
+.v2-chal__actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 10px;
+}
+
+.v2-chal__cancel {
+    padding: 12px 20px;
+    border: 0;
+    border-radius: 999px;
+    background: none;
+    color: rgba(223, 246, 238, 0.72);
+    font-family: var(--v2-font-pixel);
+    font-weight: var(--v2-font-pixel-weight);
+    font-size: 14px;
+    letter-spacing: 0.05em;
+    cursor: pointer;
+    transition: color 160ms ease;
+}
+
+.v2-chal__cancel:hover {
+    color: var(--v2-white);
+}
+
+.v2-chal .v2-btn:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+    transform: none;
+}
+
+/* --------------------------------------------------------------------------
+   Signed-out / not-open gate
+   -------------------------------------------------------------------------- */
+.v2-sub__gate {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    max-width: 560px;
+    margin-inline: auto;
+    padding: 40px 34px;
+    border-radius: 22px;
+    background: rgba(14, 35, 24, 0.9);
+    box-shadow: var(--v2-shadow-card);
+    backdrop-filter: blur(5px);
+    text-align: center;
+}
+
+.v2-sub__gate .v2-sub__title {
+    text-shadow: none;
+}
+
+.v2-sub__gate-body {
+    margin: 14px 0 26px;
+    font-size: 15px;
+    line-height: 1.65;
+    color: var(--v2-mint);
+}
+
+.v2-sub__gate-foot {
+    margin: 22px 0 0;
+    font-size: 13px;
+    color: rgba(178, 254, 231, 0.66);
+}
+
+@media (max-width: 760px) {
+    .v2-chal {
+        padding: 18px 18px;
+    }
+
+    .v2-chal__head {
+        flex-direction: column;
+    }
+
+    .v2-sub__gate {
+        padding: 32px 22px;
+    }
+}

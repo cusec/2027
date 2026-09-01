@@ -15,6 +15,9 @@ interface SubmissionsPageProps {
  * The single central submission page (TECHxEVENTS.txt): every open challenge
  * in one list, each with its own inline submit form. Events host the
  * challenges themselves — all this does is collect the links.
+ *
+ * Styled with the main site's v2 design system (see styles/v2/submissions.css)
+ * rather than the grayscale scavenger theme, so it matches 2027.cusec.net.
  */
 const SubmissionsPage = ({ userEmail }: SubmissionsPageProps) => {
   const {
@@ -41,56 +44,56 @@ const SubmissionsPage = ({ userEmail }: SubmissionsPageProps) => {
   }, [challenges]);
 
   return (
-    <div className="mx-auto max-w-3xl px-6 py-16">
-      <header className="mb-8">
-        <h1 className="text-3xl font-bold tracking-wide">SUBMISSIONS</h1>
-        <p className="mt-2 opacity-80">
-          Pick a challenge and share the link to your video.
-        </p>
-        <p className="mt-1 text-sm opacity-60">Submitting as {userEmail}</p>
-      </header>
+    <section className="v2-section v2-sub">
+      <div className="v2-container v2-sub__inner">
+        <header className="v2-sub__head">
+          <h1 className="v2-sub__title">Submissions</h1>
+          <p className="v2-sub__sub">
+            Pick a challenge and share the link to your video.
+          </p>
+          <p className="v2-sub__who">
+            Submitting as <b>{userEmail}</b>
+          </p>
+        </header>
 
-      {error && (
-        <div className="mb-6 flex items-start gap-2 rounded-2xl border-2 border-light-mode/30 bg-dark-mode/50 p-4 text-sm">
-          <AlertCircle className="mt-0.5 h-5 w-5 shrink-0" />
-          <span>{error}</span>
-        </div>
-      )}
+        {error && (
+          <div className="v2-sub__error" role="alert">
+            <AlertCircle aria-hidden="true" />
+            <span>{error}</span>
+          </div>
+        )}
 
-      {loading ? (
-        <p className="opacity-70">Loading challenges…</p>
-      ) : challenges.length === 0 ? (
-        <div className="rounded-2xl border-2 border-light-mode/30 bg-dark-mode/50 p-6">
-          <p className="font-semibold">No challenges yet.</p>
-          <p className="mt-1 text-sm opacity-70">
+        {loading ? (
+          <p className="v2-sub__loading">Loading challenges…</p>
+        ) : challenges.length === 0 ? (
+          <div className="v2-sub__empty">
+            <b>No challenges yet.</b>
             Challenges appear here once the events team publishes them. Check
             back closer to your event.
-          </p>
-        </div>
-      ) : (
-        <div className="space-y-8">
-          {grouped.map(([eventName, eventChallenges]) => (
-            <section key={eventName}>
-              <h2 className="mb-3 text-sm font-bold uppercase tracking-wider opacity-70">
-                {eventName}
-              </h2>
-              <div className="space-y-4">
-                {eventChallenges.map((challenge) => (
-                  <ChallengeCard
-                    key={challenge._id}
-                    challenge={challenge}
-                    submission={findSubmissionFor(submissions, challenge._id)}
-                    isSubmitting={isSubmitting}
-                    onSubmit={submit}
-                    onWithdraw={withdraw}
-                  />
-                ))}
-              </div>
-            </section>
-          ))}
-        </div>
-      )}
-    </div>
+          </div>
+        ) : (
+          <div className="v2-sub__groups">
+            {grouped.map(([eventName, eventChallenges]) => (
+              <section key={eventName}>
+                <h2 className="v2-sub__group-title">{eventName}</h2>
+                <div className="v2-sub__list">
+                  {eventChallenges.map((challenge) => (
+                    <ChallengeCard
+                      key={challenge._id}
+                      challenge={challenge}
+                      submission={findSubmissionFor(submissions, challenge._id)}
+                      isSubmitting={isSubmitting}
+                      onSubmit={submit}
+                      onWithdraw={withdraw}
+                    />
+                  ))}
+                </div>
+              </section>
+            ))}
+          </div>
+        )}
+      </div>
+    </section>
   );
 };
 

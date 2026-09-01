@@ -47,6 +47,7 @@ const ChallengeCard = ({
   const open = isChallengeOpen(challenge) || Boolean(submission);
   const status = submission ? STATUS_META[submission.status] : null;
   const window = formatWindow(challenge);
+  const isApproved = submission?.status === "approved";
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -55,63 +56,67 @@ const ChallengeCard = ({
   };
 
   return (
-    <div className="rounded-2xl border-2 border-light-mode/30 bg-dark-mode/50 p-5">
-      <div className="flex flex-wrap items-start justify-between gap-3">
-        <div className="min-w-0">
+    <article className="v2-chal">
+      <div className="v2-chal__head">
+        <div>
           {challenge.eventName && (
-            <p className="text-xs font-semibold uppercase tracking-wider opacity-70">
-              {challenge.eventName}
-            </p>
+            <p className="v2-chal__event">{challenge.eventName}</p>
           )}
-          <h3 className="text-lg font-bold">{challenge.title}</h3>
+          <h3 className="v2-chal__title">{challenge.title}</h3>
           {challenge.points > 0 && (
-            <p className="mt-0.5 text-sm font-semibold opacity-80">
+            <p className="v2-chal__points">
               {challenge.points} point{challenge.points === 1 ? "" : "s"} once
               approved
             </p>
           )}
         </div>
 
-        {status && (
-          <span className="inline-flex shrink-0 items-center gap-1.5 rounded-full border border-light-mode/30 px-3 py-1 text-xs font-semibold">
-            <status.Icon className="h-4 w-4" />
+        {status && submission && (
+          <span
+            className={`v2-chal__status v2-chal__status--${submission.status}`}
+          >
+            <status.Icon aria-hidden="true" />
             {status.label}
           </span>
         )}
       </div>
 
       {challenge.description && (
-        <p className="mt-2 text-sm opacity-80">{challenge.description}</p>
+        <p className="v2-chal__desc">{challenge.description}</p>
       )}
 
-      {window && <p className="mt-2 text-xs opacity-60">Open {window}</p>}
+      {window && <p className="v2-chal__window">Open {window}</p>}
 
       {submission && (
-        <div className="mt-3 flex flex-wrap items-center gap-3 text-sm">
+        <div className="v2-chal__mine">
           <a
             href={submission.url}
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center gap-1.5 underline underline-offset-2 break-all"
+            className="v2-chal__link"
           >
-            <ExternalLink className="h-4 w-4 shrink-0" />
+            <ExternalLink aria-hidden="true" />
             Your submission
           </a>
-          {submission.status !== "approved" && (
+
+          {/* Approved entries are locked: points are never clawed back
+              automatically, so withdrawing one would bank the points and
+              remove the evidence. The API rejects it too. */}
+          {!isApproved && (
             <button
               type="button"
+              className="v2-chal__withdraw"
               onClick={() => onWithdraw(submission._id)}
-              className="inline-flex items-center gap-1.5 opacity-70 hover:opacity-100"
             >
-              <Trash2 className="h-4 w-4" />
+              <Trash2 aria-hidden="true" />
               Withdraw
             </button>
           )}
         </div>
       )}
 
-      {submission?.status === "approved" ? (
-        <p className="mt-4 text-sm opacity-70">
+      {isApproved && submission ? (
+        <p className="v2-chal__note">
           Approved
           {submission.pointsAwarded > 0
             ? ` — ${submission.pointsAwarded} point${
@@ -121,28 +126,25 @@ const ChallengeCard = ({
           This entry is locked; ask an organizer if it needs changing.
         </p>
       ) : !open && !submission ? (
-        <p className="mt-4 text-sm opacity-60">
+        <p className="v2-chal__note">
           {challenge.active
             ? "This challenge is closed to new submissions."
             : "Not open yet."}
         </p>
       ) : !expanded ? (
-        <button
-          type="button"
-          onClick={() => setExpanded(true)}
-          className="register-hover mt-4 rounded-2xl border-2 border-light-mode/50 px-4 py-2 text-sm font-semibold"
-        >
-          {submission ? "Edit submission" : "Submit a link"}
-        </button>
+        <p className="v2-chal__open">
+          <button
+            type="button"
+            className="v2-btn v2-btn--primary"
+            onClick={() => setExpanded(true)}
+          >
+            {submission ? "Edit submission" : "Submit a link"}
+          </button>
+        </p>
       ) : (
-        <form onSubmit={handleSubmit} className="mt-4 space-y-3">
-          <div>
-            <label
-              htmlFor={`url-${challenge._id}`}
-              className="mb-1 block text-sm font-semibold"
-            >
-              Video link
-            </label>
+        <form className="v2-chal__form" onSubmit={handleSubmit}>
+          <label className="v2-chal__field" htmlFor={`url-${challenge._id}`}>
+            <span>Video link</span>
             <input
               id={`url-${challenge._id}`}
               type="url"
@@ -150,45 +152,40 @@ const ChallengeCard = ({
               value={url}
               onChange={(e) => setUrl(e.target.value)}
               placeholder="https://youtube.com/... or https://tiktok.com/..."
-              className="w-full rounded-xl border-2 border-light-mode/30 bg-dark-mode/60 px-3 py-2 text-sm"
             />
-          </div>
+          </label>
 
-          <div>
-            <label
-              htmlFor={`notes-${challenge._id}`}
-              className="mb-1 block text-sm font-semibold"
-            >
-              Notes <span className="font-normal opacity-60">(optional)</span>
-            </label>
+          <label className="v2-chal__field" htmlFor={`notes-${challenge._id}`}>
+            <span>
+              Notes <i>(optional)</i>
+            </span>
             <textarea
               id={`notes-${challenge._id}`}
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
               rows={2}
-              className="w-full rounded-xl border-2 border-light-mode/30 bg-dark-mode/60 px-3 py-2 text-sm"
             />
-          </div>
+          </label>
 
-          <div className="flex gap-2">
+          <div className="v2-chal__actions">
             <button
               type="submit"
+              className="v2-btn v2-btn--primary"
               disabled={isSubmitting}
-              className="register-hover rounded-2xl border-2 border-light-mode/50 px-4 py-2 text-sm font-semibold disabled:opacity-50"
             >
               {isSubmitting ? "Saving…" : submission ? "Replace" : "Submit"}
             </button>
             <button
               type="button"
+              className="v2-chal__cancel"
               onClick={() => setExpanded(false)}
-              className="rounded-2xl px-4 py-2 text-sm font-semibold opacity-70 hover:opacity-100"
             >
               Cancel
             </button>
           </div>
         </form>
       )}
-    </div>
+    </article>
   );
 };
 

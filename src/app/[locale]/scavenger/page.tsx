@@ -1,4 +1,3 @@
-import type React from "react";
 import { auth0 } from "@/lib/auth0";
 import { findOrCreateUser } from "@/lib/userService";
 import { RegisteredUser } from "@/lib/models";
@@ -37,46 +36,77 @@ export default async function ScavengerPage() {
     }
   }
 
-  const showDashboard = user && (scavengerEnabled || isUserAdmin || isUserVolunteer);
+  const showDashboard =
+    user && (scavengerEnabled || isUserAdmin || isUserVolunteer);
 
   return (
-    <main
-        className="relative min-h-screen text-light-mode overflow-x-hidden"
-        style={{
-          backgroundImage: "url('/assets/linking-screen-1.png')",
-          backgroundSize: "cover",
-          backgroundAttachment: "fixed",
-          backgroundPosition: "center",
-          "--color-light-mode": "#111827",
-        } as React.CSSProperties}
-      >
-      {showDashboard ? (
-        <Dashboard
-          user={user as Auth0User}
-          dbUser={dbUser}
-          baseURL={process.env.APP_BASE_URL || ""}
-          emailVerified={emailVerified}
+    // `.v2` scopes the main site's design tokens to this page — see
+    // src/app/styles/v2/base.css. The Tailwind theme the scavenger components
+    // themselves use is remapped onto the same palette in globals.css.
+    <div className="v2">
+      <link
+        rel="preload"
+        as="image"
+        href="/assets/v2/background-unified.webp"
+        type="image/webp"
+        fetchPriority="high"
+      />
+
+      <main className="v2-scene v2-hunt-scene text-light-mode">
+        {/* The painting, as an <img> rather than a CSS background so it can be
+            preloaded. Same asset and object-fit treatment as the main site. */}
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          className="v2-scene__backdrop"
+          src="/assets/v2/background-unified.webp"
+          alt=""
+          width={2560}
+          height={12360}
+          fetchPriority="high"
+          aria-hidden="true"
         />
-      ) : (
-        <div className="mx-auto max-w-2xl px-6 py-24 text-center">
-          <h1 className="text-4xl font-bold tracking-wide">SCAVENGER HUNT</h1>
-          <p className="mt-4 text-light-mode/80">
-            Scan codes, solve puzzles, and climb the leaderboard at CUSEC 2027.
-          </p>
-          <a
-            href="/auth/login?returnTo=/scavenger"
-            className="register-hover mt-8 inline-flex items-center gap-2 rounded-full border-2 border-light-mode/40 px-6 py-3 font-semibold"
-          >
-            <Trophy className="h-5 w-5" />
-            {scavengerEnabled ? "Start Hunting" : "Beta Access Login"}
-          </a>
-          {!scavengerEnabled && (
-            <p className="mt-6 text-sm text-light-mode/70">
-              The hunt opens closer to the conference.
-            </p>
-          )}
-        </div>
-      )}
-    </main>
+
+        {showDashboard ? (
+          <Dashboard
+            user={user as Auth0User}
+            dbUser={dbUser}
+            baseURL={process.env.APP_BASE_URL || ""}
+            emailVerified={emailVerified}
+          />
+        ) : (
+          <section className="v2-section v2-hunt-gate">
+            <div className="v2-container">
+              <div className="v2-sub__gate">
+                <h1 className="v2-sub__title">Scavenger Hunt</h1>
+                <p className="v2-sub__gate-body">
+                  Scan codes, solve puzzles, and climb the leaderboard at CUSEC
+                  2027.
+                </p>
+
+                {/*
+                  Not a Next.js page: proxy.ts hands `/auth/*` to Auth0's
+                  middleware, so this needs a real document request. A
+                  client-side <Link> would never reach the handler.
+                */}
+                {/* eslint-disable-next-line @next/next/no-html-link-for-pages */}
+                <a
+                  href="/auth/login?returnTo=/scavenger"
+                  className="v2-btn v2-btn--primary"
+                >
+                  <Trophy className="h-4 w-4" />
+                  {scavengerEnabled ? "Start Hunting" : "Beta Access Login"}
+                </a>
+
+                {!scavengerEnabled && (
+                  <p className="v2-sub__gate-foot">
+                    The hunt opens closer to the conference.
+                  </p>
+                )}
+              </div>
+            </div>
+          </section>
+        )}
+      </main>
+    </div>
   );
 }

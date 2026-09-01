@@ -1,0 +1,7 @@
+/* v2 design system, as used by the main site on site/v2.
+   Only what the authenticated pages need is pulled across: the design tokens
+   and page shell, plus one stylesheet per page. Everything is namespaced
+   under a `.v2` root class, so none of it reaches the splash page. */
+@import "./base.css";
+@import "./submissions.css";
+@import "./scavenger.css";

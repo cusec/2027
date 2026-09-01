@@ -99,7 +99,7 @@ const UserHunt = ({
             </button>
           </div>
           <p className="text-lg">
-            You have <span className="font-bold text-[#ce4d50]">{points}</span>{" "}
+            You have <span className="font-bold text-accent">{points}</span>{" "}
             points
           </p>
         </div>

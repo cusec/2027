@@ -1,4 +1,3 @@
-import type React from "react";
 import { auth0 } from "@/lib/auth0";
 import { findOrCreateUser } from "@/lib/userService";
 import SubmissionsPage from "@/components/submissions/SubmissionsPage";
@@ -27,46 +26,69 @@ export default async function SubmissionsRoute() {
     user && (submissionsEnabled || isUserAdmin || isUserVolunteer);
 
   return (
-    <main
-      className="relative min-h-screen text-light-mode overflow-x-hidden"
-      style={
-        {
-          backgroundImage: "url('/assets/linking-screen-1.png')",
-          backgroundSize: "cover",
-          backgroundAttachment: "fixed",
-          backgroundPosition: "center",
-          "--color-light-mode": "#111827",
-        } as React.CSSProperties
-      }
-    >
-      {showPlatform ? (
-        <SubmissionsPage userEmail={user.email ?? ""} />
-      ) : (
-        <div className="mx-auto max-w-2xl px-6 py-24 text-center">
-          <h1 className="text-4xl font-bold tracking-wide">SUBMISSIONS</h1>
-          <p className="mt-4 text-light-mode/80">
-            Submit your challenge videos for CUSEC 2027.
-          </p>
-          {/*
-            Not a Next.js page: proxy.ts hands `/auth/*` to Auth0's middleware,
-            so this needs a real document request. A client-side <Link> would
-            never reach the handler. Same pattern as the /scavenger page.
-          */}
-          {/* eslint-disable-next-line @next/next/no-html-link-for-pages */}
-          <a
-            href="/auth/login?returnTo=/scavenger/submissions"
-            className="register-hover mt-8 inline-flex items-center gap-2 rounded-full border-2 border-light-mode/40 px-6 py-3 font-semibold"
-          >
-            <Send className="h-5 w-5" />
-            {submissionsEnabled ? "Sign In to Submit" : "Beta Access Login"}
-          </a>
-          {!submissionsEnabled && (
-            <p className="mt-6 text-sm text-light-mode/70">
-              Submissions open on submission day.
-            </p>
-          )}
-        </div>
-      )}
-    </main>
+    // `.v2` scopes the main site's design tokens to this page — see
+    // src/app/styles/v2/base.css. The rest of the scavenger island keeps the
+    // grayscale Tailwind theme.
+    <div className="v2">
+      <link
+        rel="preload"
+        as="image"
+        href="/assets/v2/background-unified.webp"
+        type="image/webp"
+        fetchPriority="high"
+      />
+
+      <main className="v2-scene v2-sub-scene">
+        {/* The painting, as an <img> rather than a CSS background so it can be
+            preloaded and priced properly by the browser. Same asset and
+            object-fit treatment as the main site. */}
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          className="v2-scene__backdrop"
+          src="/assets/v2/background-unified.webp"
+          alt=""
+          width={2560}
+          height={12360}
+          fetchPriority="high"
+          aria-hidden="true"
+        />
+
+        {showPlatform ? (
+          <SubmissionsPage userEmail={user.email ?? ""} />
+        ) : (
+          <section className="v2-section v2-sub">
+            <div className="v2-container">
+              <div className="v2-sub__gate">
+                <h1 className="v2-sub__title">Submissions</h1>
+                <p className="v2-sub__gate-body">
+                  Submit your challenge videos for CUSEC 2027.
+                </p>
+
+                {/*
+                  Not a Next.js page: proxy.ts hands `/auth/*` to Auth0's
+                  middleware, so this needs a real document request. A
+                  client-side <Link> would never reach the handler. Same
+                  pattern as the /scavenger page.
+                */}
+                {/* eslint-disable-next-line @next/next/no-html-link-for-pages */}
+                <a
+                  href="/auth/login?returnTo=/scavenger/submissions"
+                  className="v2-btn v2-btn--primary"
+                >
+                  <Send className="h-4 w-4" />
+                  {submissionsEnabled ? "Sign In to Submit" : "Beta Access Login"}
+                </a>
+
+                {!submissionsEnabled && (
+                  <p className="v2-sub__gate-foot">
+                    Submissions open on submission day.
+                  </p>
+                )}
+              </div>
+            </div>
+          </section>
+        )}
+      </main>
+    </div>
   );
 }

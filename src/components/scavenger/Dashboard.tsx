@@ -47,7 +47,10 @@ const Dashboard = ({ user, dbUser, baseURL, emailVerified = false }: DashboardPr
   };
 
   return (
-    <div className="w-full">
+    // `.v2-hunt-page` is the hook the v2 stylesheet uses to lift these
+    // Tailwind-built sections onto the main site's type and card language —
+    // see src/app/styles/v2/scavenger.css.
+    <div className="w-full v2-section v2-hunt-page">
       {/* Full-page onboarding overlay */}
       {dbUser && onboardingMode && (
         <OnboardingFlow
@@ -65,13 +68,13 @@ const Dashboard = ({ user, dbUser, baseURL, emailVerified = false }: DashboardPr
           {/* Email link CTA (shown when intro done but no linked email) */}
           {hasSeenIntro && !linkedEmail && (
             <div className="mx-auto max-w-2xl px-6 py-4">
-              <div className="rounded-xl border border-teal-300 bg-teal-50 p-4 flex flex-col sm:flex-row items-center justify-between gap-3">
-                <p className="text-teal-800 text-sm font-medium">
+              <div className="rounded-xl border border-light-mode/15 bg-dark-mode/30 p-4 flex flex-col sm:flex-row items-center justify-between gap-3">
+                <p className="text-light-mode/85 text-sm font-medium">
                   Link your ticket email to scan codes and earn points.
                 </p>
                 <button
                   onClick={() => openOnboarding("link")}
-                  className="shrink-0 px-4 py-2 rounded-lg bg-teal-500 text-white text-sm font-semibold hover:bg-teal-600 transition-colors cursor-pointer"
+                  className="shrink-0 px-4 py-2 rounded-full bg-accent text-primary text-sm font-semibold hover:opacity-90 transition-opacity cursor-pointer"
                 >
                   Link Email
                 </button>

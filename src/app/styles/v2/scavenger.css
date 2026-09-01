@@ -1,0 +1,159 @@
+/* ==========================================================================
+   v2 — /scavenger dashboard
+   The hunt's own components are built from Tailwind utilities driven by the
+   @theme tokens in globals.css, which now resolve to the v2 palette. That
+   handles colour everywhere at once; this file supplies the two things tokens
+   can't: the display typeface, and enough surface contrast for translucent
+   cards to read over a bright painting.
+
+   Rules are scoped to `.v2-hunt-page` / `.v2-hunt-scene` so nothing here can
+   reach the splash page. A few selectors deliberately name Tailwind utility
+   classes (`.bg-dark-mode\/30`) — those strings are stable in the markup and
+   it is far less invasive than rewriting the class list on 60+ components.
+   ========================================================================== */
+
+.v2-hunt-scene {
+    min-height: 100svh;
+}
+
+/* The painting is bright sky at the top, and the hunt's cards are only ~30%
+   opaque, so without a scrim white body text sits directly on white cloud.
+   Deepens as the page goes on, matching how the painting itself darkens.
+   Only drawn behind the dashboard: the signed-out gate is a single solid card
+   and reads fine on its own, so it keeps the painting at full strength. */
+.v2-hunt-scene:has(.v2-hunt-page)::before {
+    position: absolute;
+    z-index: 0;
+    inset: 0;
+    content: "";
+    pointer-events: none;
+    background: linear-gradient(
+        to bottom,
+        rgba(14, 35, 24, 0.34) 0%,
+        rgba(14, 35, 24, 0.5) 45%,
+        rgba(14, 35, 24, 0.62) 100%
+    );
+}
+
+.v2-hunt-page {
+    position: relative;
+    z-index: 1;
+    padding-bottom: var(--v2-section-pad);
+}
+
+/* --------------------------------------------------------------------------
+   Type
+   -------------------------------------------------------------------------- */
+.v2-hunt-page h2,
+.v2-hunt-page h3 {
+    font-family: var(--v2-font-pixel);
+    font-weight: var(--v2-font-pixel-weight);
+    letter-spacing: 0.02em;
+    color: var(--v2-white);
+}
+
+.v2-hunt-page h2 {
+    text-shadow: 0 4px 18px rgba(11, 26, 58, 0.5);
+}
+
+/* The hunt's own headings ship with Tailwind sizes; only the face and colour
+   are ours, so sizing is left alone. */
+.v2-hunt-gate .v2-sub__title {
+    text-shadow: none;
+}
+
+/* --------------------------------------------------------------------------
+   Surfaces
+   Bring the translucent cards up to the v2 card weight so body copy has a
+   solid ground, and swap the hairline borders for the softer v2 edge.
+   -------------------------------------------------------------------------- */
+.v2-hunt-page .bg-dark-mode\/30,
+.v2-hunt-page .bg-dark-mode\/50 {
+    background-color: rgba(14, 35, 24, 0.86);
+    box-shadow: var(--v2-shadow-card);
+    backdrop-filter: blur(4px);
+}
+
+.v2-hunt-page .border-light-mode\/30 {
+    border-color: rgba(255, 255, 255, 0.14);
+}
+
+.v2-hunt-page .border-light-mode\/50 {
+    border-color: rgba(255, 255, 255, 0.28);
+}
+
+/* score / rank chips */
+.v2-hunt-page .bg-light-mode\/20 {
+    background-color: rgba(195, 233, 86, 0.9);
+    color: var(--v2-ink);
+    font-weight: 700;
+}
+
+/* podium plinths — these are decorative columns, so they stay translucent */
+.v2-hunt-page .bg-light-mode\/15 {
+    background-color: rgba(255, 255, 255, 0.16);
+}
+
+/* Loading skeletons and error text ship with stock Tailwind greys/reds that
+   read as foreign against the palette — retint rather than touching each
+   component's class list. */
+.v2-hunt-page .bg-gray-700 {
+    background-color: rgba(255, 255, 255, 0.09);
+}
+
+.v2-hunt-page .text-red-400 {
+    color: var(--v2-red);
+}
+
+.v2-hunt-page .text-yellow-500 {
+    color: var(--v2-gold);
+}
+
+/* --------------------------------------------------------------------------
+   Action buttons
+   The dashboard's pill buttons are `border-2 rounded-4xl .register-hover`.
+   Give them the v2 button face and a lime hover instead of the grey fill.
+   -------------------------------------------------------------------------- */
+.v2-hunt-page .register-hover,
+.v2-hunt-page a[href^="/auth/logout"] button {
+    font-family: var(--v2-font-pixel);
+    font-weight: var(--v2-font-pixel-weight);
+    letter-spacing: 0.05em;
+    background-color: rgba(14, 35, 24, 0.82);
+    color: var(--v2-white);
+    box-shadow: var(--v2-shadow-float);
+    backdrop-filter: blur(4px);
+    transition: background-color 160ms ease, transform 160ms ease,
+        color 160ms ease;
+}
+
+.v2-hunt-page .register-hover:hover,
+.v2-hunt-page a[href^="/auth/logout"] button:hover {
+    background-color: var(--v2-lime);
+    border-color: var(--v2-lime);
+    color: var(--v2-ink);
+    transform: translateY(-2px);
+}
+
+/* --------------------------------------------------------------------------
+   FAQ accordion
+   -------------------------------------------------------------------------- */
+.v2-hunt-page #Faq [data-slot="accordion-item"],
+.v2-hunt-page #Faq [data-radix-collection-item] {
+    border-radius: 14px;
+}
+
+.v2-hunt-page #Faq button {
+    font-family: var(--v2-font-pixel);
+    font-weight: var(--v2-font-pixel-weight);
+    color: var(--v2-white);
+}
+
+/* --------------------------------------------------------------------------
+   Modals
+   The hunt's overlays keep their own light forms — only the shared shell is
+   nudged so it doesn't clash with the painting behind it.
+   -------------------------------------------------------------------------- */
+.v2 [class*="bg-dark-mode/90"] {
+    background-color: rgba(14, 35, 24, 0.94);
+}
