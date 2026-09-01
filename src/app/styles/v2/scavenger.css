@@ -1,185 +1,635 @@
 /* ==========================================================================
-   v2 — /scavenger dashboard
-   The hunt's own components are built from Tailwind utilities driven by the
-   @theme tokens in globals.css, which now resolve to the v2 palette. That
-   handles colour everywhere at once; this file supplies the two things tokens
-   can't: the display typeface, and enough surface contrast for translucent
-   cards to read over a bright painting.
-
-   Rules are scoped to `.v2-hunt-page` / `.v2-hunt-scene` so nothing here can
-   reach the splash page. A few selectors deliberately name Tailwind utility
-   classes (`.bg-dark-mode\/30`) — those strings are stable in the markup and
-   it is far less invasive than rewriting the class list on 60+ components.
+   /scavenger — layout built on the aero primitives
    ========================================================================== */
 
-.v2-hunt-scene {
+.aero-scene {
     min-height: 100svh;
 }
 
-/* No scrim over the painting: the card override below already brings every
-   panel up to the v2 card weight, so the backdrop can stay at full strength
-   and match /scavenger/submissions. Loose text that sits directly on the sky
-   gets a shadow instead — see below. */
-
-.v2-hunt-page {
-    position: relative;
-    z-index: 1;
-    padding-bottom: var(--v2-section-pad);
-    /* Section headings, the welcome block and empty states sit straight on the
-       painting, and the brightest part of it is white cloud — a single soft
-       shadow isn't enough for white text there. A tight near-opaque halo plus
-       a wider glow keeps small copy legible without darkening the artwork the
-       way a full-page scrim did. Inherited so every loose string is covered;
-       switched off again inside cards and modals, which have their own ground. */
-    text-shadow: 0 1px 2px rgba(11, 26, 58, 0.92), 0 2px 16px rgba(11, 26, 58, 0.7);
+/* Content is inset by the rail on desktop and the bar on phones, so the dock
+   never covers anything. */
+.aero-stage {
+    padding-left: var(--aero-rail);
 }
 
-.v2-hunt-page .bg-dark-mode\/30,
-.v2-hunt-page .bg-dark-mode\/30 *,
-.v2-hunt-page .bg-dark-mode\/50,
-.v2-hunt-page .bg-dark-mode\/50 *,
-.v2-hunt-page .v2-modal,
-.v2-hunt-page .v2-modal * {
+.aero-page,
+.aero-hunt {
+    width: 100%;
+    max-width: 1120px;
+    margin-inline: auto;
+    padding: clamp(28px, 5vh, 56px) 24px calc(var(--v2-section-pad) + 20px);
+}
+
+/* --------------------------------------------------------------------------
+   Dock
+   -------------------------------------------------------------------------- */
+.aero-dock {
+    position: fixed;
+    z-index: 40;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    width: var(--aero-rail);
+}
+
+.aero-dock__inner {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 14px;
+    height: 100%;
+    padding: 20px 0;
+    border-right: 1px solid rgba(255, 255, 255, 0.28);
+    background: linear-gradient(
+        to bottom,
+        rgba(255, 255, 255, 0.38),
+        rgba(255, 255, 255, 0.14) 30%,
+        rgba(9, 28, 45, 0.24)
+    );
+    box-shadow: inset -1px 0 0 rgba(255, 255, 255, 0.3),
+        inset 0 1px 0 rgba(255, 255, 255, 0.7),
+        4px 0 26px rgba(9, 28, 45, 0.26);
+    backdrop-filter: blur(18px) saturate(1.5);
+    overflow-y: auto;
+    scrollbar-width: none;
+}
+
+.aero-dock__inner::-webkit-scrollbar {
+    display: none;
+}
+
+.aero-dock__item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 5px;
+    padding: 0;
+    border: 0;
+    background: none;
+    color: var(--aero-white);
+    font-family: var(--v2-font-pixel);
+    font-weight: var(--v2-font-pixel-weight);
+    font-size: 9.5px;
+    letter-spacing: 0.1em;
+    text-decoration: none;
+    text-transform: uppercase;
+    text-shadow: 0 1px 3px rgba(9, 28, 45, 0.8);
+    cursor: pointer;
+    opacity: 0.86;
+    transition: opacity 160ms ease;
+}
+
+.aero-dock__item:hover,
+.aero-dock__item.is-active {
+    opacity: 1;
+}
+
+/* the lit ring marking where you are */
+.aero-dock__item.is-active .aero-orb {
+    box-shadow:
+        0 0 0 3px rgba(195, 233, 86, 0.75),
+        0 6px 14px rgba(9, 28, 45, 0.45),
+        inset 0 -6px 12px rgba(255, 255, 255, 0.3);
+}
+
+.aero-dock__item--hero {
+    margin-bottom: 6px;
+}
+
+.aero-dock__item--end {
+    margin-top: auto;
+}
+
+/* --------------------------------------------------------------------------
+   Hero — name and score float, no container
+   -------------------------------------------------------------------------- */
+.aero-hero {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 22px;
+    margin-bottom: clamp(28px, 5vh, 52px);
+}
+
+.aero-hero__name {
+    margin: 0;
+    font-family: var(--v2-font-pixel);
+    font-weight: var(--v2-font-pixel-weight);
+    font-size: clamp(2rem, 5.5vw, 3.2rem);
+    line-height: 1.05;
+    color: var(--aero-white);
+    text-shadow: 0 1px 2px rgba(9, 28, 45, 0.9), 0 3px 20px rgba(9, 28, 45, 0.7);
+}
+
+.aero-hero__cta {
+    margin-top: 14px;
+}
+
+/* the score reads as a physical token, not a stat box */
+.aero-score {
+    position: relative;
+    display: grid;
+    place-items: center;
+    width: 128px;
+    height: 128px;
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    border-radius: 999px;
+    background:
+        radial-gradient(
+            farthest-corner at 50% 112%,
+            rgba(255, 255, 255, 0.8),
+            transparent 66%
+        ),
+        linear-gradient(to bottom, var(--aero-lime-deep), var(--aero-lime));
+    box-shadow: 0 12px 26px rgba(9, 28, 45, 0.4);
+    color: var(--aero-ink);
+    text-decoration: none;
+    transition: transform 200ms ease, box-shadow 200ms ease;
+}
+
+.aero-score:hover {
+    transform: translateY(-3px) scale(1.02);
+    box-shadow: 0 18px 34px rgba(9, 28, 45, 0.42);
+}
+
+.aero-score b {
+    position: relative;
+    z-index: 3;
+    font-family: var(--v2-font-pixel);
+    font-size: 2.4rem;
+    line-height: 1;
+    text-shadow: 0 1px 0 rgba(255, 255, 255, 0.45);
+}
+
+.aero-score span {
+    position: relative;
+    z-index: 3;
+    margin-top: 2px;
+    font-family: var(--v2-font-pixel);
+    font-size: 10px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    opacity: 0.75;
+}
+
+/* --------------------------------------------------------------------------
+   Sections
+   -------------------------------------------------------------------------- */
+.aero-sec {
+    margin-bottom: clamp(34px, 6vh, 64px);
+}
+
+.aero-sec__title {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 0 0 16px;
+    font-family: var(--v2-font-pixel);
+    font-weight: var(--v2-font-pixel-weight);
+    font-size: clamp(1.05rem, 2.4vw, 1.4rem);
+    color: var(--aero-white);
+    text-shadow: 0 1px 2px rgba(9, 28, 45, 0.9), 0 2px 14px rgba(9, 28, 45, 0.65);
+}
+
+.aero-sec__title svg {
+    width: 20px;
+    height: 20px;
+    color: var(--aero-lime);
+}
+
+.aero-notes {
+    display: grid;
+    gap: 14px;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+}
+
+.aero-note h3 {
+    margin: 0 0 6px;
+    font-family: var(--v2-font-pixel);
+    font-weight: var(--v2-font-pixel-weight);
+    font-size: 15px;
+    color: var(--aero-white);
+}
+
+.aero-note p {
+    margin: 0;
+    font-size: 14px;
+    line-height: 1.6;
+    color: rgba(244, 255, 252, 0.86);
+}
+
+.aero-note .aero-btn {
+    margin-top: 12px;
+}
+
+/* --- leaderboard --- */
+.aero-board {
+    padding: 14px;
+}
+
+.aero-board__rows {
+    display: grid;
+    gap: 8px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.aero-board__rows li {
+    display: grid;
+    grid-template-columns: 30px 1fr auto;
+    align-items: center;
+    gap: 12px;
+    padding: 11px 15px;
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.1);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.24);
+}
+
+.aero-board__rows li.is-ghost {
+    height: 44px;
+    opacity: 0.45;
+}
+
+.aero-board__rows li.is-top {
+    background: linear-gradient(
+        to bottom,
+        rgba(255, 255, 255, 0.26),
+        rgba(255, 255, 255, 0.09)
+    );
+}
+
+.aero-board__rows li.is-top-1 {
+    background: linear-gradient(
+        to bottom,
+        var(--aero-lime),
+        var(--aero-lime-deep)
+    );
+    color: var(--aero-ink);
     text-shadow: none;
 }
 
-/* The welcome block's linked-email / Discord lines are small and dimmed, the
-   hardest case on the page. Give them the same chip treatment the submissions
-   header uses for "Submitting as" rather than leaning on the shadow alone. */
-.v2-hunt-page .v2-hunt-meta {
+.aero-board__rank {
+    font-family: var(--v2-font-pixel);
+    font-weight: var(--v2-font-pixel-weight);
+    font-size: 13px;
+    color: var(--aero-lime);
+}
+
+.aero-board__rows li.is-top-1 .aero-board__rank {
+    color: var(--aero-ink);
+}
+
+.aero-board__name {
+    min-width: 0;
+    overflow: hidden;
+    font-size: 15px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.aero-board__score {
+    font-family: var(--v2-font-pixel);
+    font-weight: var(--v2-font-pixel-weight);
+    font-size: 13px;
+}
+
+/* --- shop --- */
+.aero-grid {
+    display: grid;
+    gap: 14px;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+}
+
+.aero-grid--wide {
+    margin-top: 14px;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+}
+
+/* --------------------------------------------------------------------------
+   Profile card
+   -------------------------------------------------------------------------- */
+.aero-card {
+    position: relative;
+    max-width: 640px;
+    margin-inline: auto;
+    padding: 28px;
+    border: 1px solid rgba(255, 255, 255, 0.36);
+    border-radius: 24px;
+    background:
+        linear-gradient(
+            to bottom,
+            rgba(255, 255, 255, 0.24),
+            rgba(255, 255, 255, 0.07) 40%,
+            rgba(9, 28, 45, 0.2)
+        ),
+        var(--aero-shade);
+    box-shadow:
+        0 20px 46px rgba(9, 28, 45, 0.4),
+        inset 0 1px 0 rgba(255, 255, 255, 0.65);
+    backdrop-filter: blur(16px) saturate(1.35);
+    color: var(--aero-white);
+    text-shadow: 0 1px 2px rgba(9, 28, 45, 0.55);
+}
+
+.aero-card__face {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 20px;
+}
+
+.aero-card__avatar {
+    position: relative;
+    display: grid;
+    place-items: center;
+    width: 92px;
+    height: 92px;
+    flex: none;
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    border-radius: 999px;
+    background:
+        radial-gradient(
+            farthest-corner at 50% 110%,
+            rgba(255, 255, 255, 0.75),
+            transparent 68%
+        ),
+        linear-gradient(to bottom, #1B7FA8, var(--aero-aqua));
+    box-shadow: 0 10px 22px rgba(9, 28, 45, 0.4);
+}
+
+.aero-card__avatar b {
+    position: relative;
+    z-index: 3;
+    font-family: var(--v2-font-pixel);
+    font-size: 2.2rem;
+    color: var(--aero-ink);
+    text-shadow: 0 1px 0 rgba(255, 255, 255, 0.5);
+}
+
+.aero-card__who {
+    flex: 1 1 200px;
+    min-width: 0;
+}
+
+.aero-card__name {
+    margin: 0;
+    font-family: var(--v2-font-pixel);
+    font-weight: var(--v2-font-pixel-weight);
+    font-size: clamp(1.5rem, 4vw, 2.1rem);
+    line-height: 1.1;
+}
+
+.aero-card__mail {
+    margin: 6px 0 0;
+    font-size: 13px;
+    word-break: break-all;
+    opacity: 0.75;
+}
+
+.aero-card__score {
+    display: grid;
+    place-items: center;
+    padding: 14px 22px;
+    border-radius: 16px;
+    background: linear-gradient(
+        to bottom,
+        var(--aero-lime),
+        var(--aero-lime-deep)
+    );
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.6);
+    color: var(--aero-ink);
+    text-shadow: none;
+}
+
+.aero-card__score b {
+    font-family: var(--v2-font-pixel);
+    font-size: 1.9rem;
+    line-height: 1;
+}
+
+.aero-card__score span {
+    margin-top: 2px;
+    font-family: var(--v2-font-pixel);
+    font-size: 9.5px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    opacity: 0.72;
+}
+
+.aero-card__stats {
+    display: grid;
+    gap: 12px;
+    grid-template-columns: repeat(3, 1fr);
+    margin-top: 24px;
+}
+
+.aero-card__stats div {
+    display: grid;
+    place-items: center;
+    padding: 14px 8px;
+    border-radius: 14px;
+    background: rgba(255, 255, 255, 0.1);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.28);
+}
+
+.aero-card__stats b {
+    font-family: var(--v2-font-pixel);
+    font-size: 1.25rem;
+    color: var(--aero-lime);
+}
+
+.aero-card__stats span {
+    margin-top: 3px;
+    font-size: 11px;
+    letter-spacing: 0.06em;
+    opacity: 0.75;
+}
+
+.aero-card__rows {
+    margin: 24px 0 0;
+}
+
+.aero-card__row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 0;
+    border-top: 1px solid rgba(255, 255, 255, 0.16);
+}
+
+.aero-card__row dt {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    width: 130px;
+    flex: none;
+    font-size: 12.5px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    opacity: 0.72;
+}
+
+.aero-card__row dt svg {
+    width: 15px;
+    height: 15px;
+    color: var(--aero-lime);
+}
+
+.aero-card__row dd {
+    display: flex;
+    flex: 1 1 160px;
+    align-items: center;
+    gap: 10px;
+    min-width: 0;
+    margin: 0;
+    font-size: 14.5px;
+    word-break: break-all;
+}
+
+.aero-card__ok {
     display: inline-flex;
     align-items: center;
-    justify-content: center;
-    gap: 8px;
-    padding: 6px 14px;
+    gap: 4px;
+    flex: none;
+    padding: 3px 9px;
     border-radius: 999px;
-    background: rgba(14, 35, 24, 0.72);
-    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.16);
-    backdrop-filter: blur(4px);
+    background: rgba(195, 233, 86, 0.9);
+    color: var(--aero-ink);
+    font-size: 10.5px;
+    font-style: normal;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
     text-shadow: none;
 }
 
-/* Empty states ("No items available yet", "No scores yet") are the default
-   view until an admin adds content, so they are seen often and sit on the
-   brightest part of the painting. Same treatment: give them a ground rather
-   than relying on the shadow. `.text-center.py-8` is the shared shape Shop,
-   Leaderboard and NoticeBoard all use for these. */
-.v2-hunt-page .text-center.py-8 {
-    max-width: 34rem;
+.aero-card__ok svg {
+    width: 11px;
+    height: 11px;
+}
+
+.aero-card__missing {
+    opacity: 0.6;
+}
+
+.aero-card__act {
+    flex: none;
+    padding: 8px 16px;
+    font-size: 11px;
+}
+
+.aero-card__act svg {
+    width: 13px;
+    height: 13px;
+}
+
+.aero-card__note {
+    margin: 20px 0 0;
+    font-size: 13.5px;
+    line-height: 1.6;
+    opacity: 0.8;
+}
+
+/* --------------------------------------------------------------------------
+   Signed-out gate
+   -------------------------------------------------------------------------- */
+.aero-gate {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    max-width: 520px;
     margin-inline: auto;
-    padding-inline: 1.5rem;
-    border-radius: 16px;
-    background: rgba(14, 35, 24, 0.72);
-    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.12);
-    backdrop-filter: blur(4px);
-    text-shadow: none;
+    padding: 38px 32px;
+    text-align: center;
+}
+
+.aero-gate p {
+    margin: 12px 0 24px;
+    font-size: 15px;
+    line-height: 1.65;
+}
+
+.aero-gate__foot {
+    margin: 20px 0 0;
+    font-size: 13px;
+    opacity: 0.75;
 }
 
 /* --------------------------------------------------------------------------
-   Type
+   Phones — the rail becomes a thumb-reach bar
    -------------------------------------------------------------------------- */
-.v2-hunt-page h2,
-.v2-hunt-page h3 {
-    font-family: var(--v2-font-pixel);
-    font-weight: var(--v2-font-pixel-weight);
-    letter-spacing: 0.02em;
-    color: var(--v2-white);
+@media (max-width: 900px) {
+    .aero-stage {
+        padding-left: 0;
+        padding-bottom: calc(var(--aero-bar-h) + env(safe-area-inset-bottom));
+    }
+
+    .aero-dock {
+        top: auto;
+        right: 0;
+        width: auto;
+        height: calc(var(--aero-bar-h) + env(safe-area-inset-bottom));
+    }
+
+    .aero-dock__inner {
+        flex-direction: row;
+        justify-content: flex-start;
+        gap: 18px;
+        padding: 8px 16px env(safe-area-inset-bottom);
+        border-top: 1px solid rgba(255, 255, 255, 0.3);
+        border-right: 0;
+        background: linear-gradient(
+            to bottom,
+            rgba(255, 255, 255, 0.36),
+            rgba(9, 28, 45, 0.32)
+        );
+        box-shadow: 0 -4px 24px rgba(9, 28, 45, 0.34);
+        overflow-x: auto;
+        overflow-y: hidden;
+    }
+
+    .aero-dock__item {
+        flex: none;
+    }
+
+    .aero-dock__item--hero,
+    .aero-dock__item--end {
+        margin: 0;
+    }
+
+    .aero-orb--hero {
+        width: 56px;
+        height: 56px;
+    }
+
+    .aero-orb--hero > svg {
+        width: 25px;
+        height: 25px;
+    }
+
+    .aero-hero {
+        justify-content: flex-start;
+    }
+
+    .aero-score {
+        width: 104px;
+        height: 104px;
+    }
+
+    .aero-card__stats {
+        grid-template-columns: 1fr;
+    }
+
+    .aero-card__row dt {
+        width: auto;
+    }
 }
 
-.v2-hunt-page h2 {
-    text-shadow: 0 4px 18px rgba(11, 26, 58, 0.5);
-}
-
-/* The hunt's own headings ship with Tailwind sizes; only the face and colour
-   are ours, so sizing is left alone. */
-.v2-hunt-gate .v2-sub__title {
-    text-shadow: none;
-}
-
-/* --------------------------------------------------------------------------
-   Surfaces
-   Bring the translucent cards up to the v2 card weight so body copy has a
-   solid ground, and swap the hairline borders for the softer v2 edge.
-   -------------------------------------------------------------------------- */
-.v2-hunt-page .bg-dark-mode\/30,
-.v2-hunt-page .bg-dark-mode\/50 {
-    background-color: rgba(14, 35, 24, 0.86);
-    box-shadow: var(--v2-shadow-card);
-    backdrop-filter: blur(4px);
-}
-
-.v2-hunt-page .border-light-mode\/30 {
-    border-color: rgba(255, 255, 255, 0.14);
-}
-
-.v2-hunt-page .border-light-mode\/50 {
-    border-color: rgba(255, 255, 255, 0.28);
-}
-
-/* score / rank chips */
-.v2-hunt-page .bg-light-mode\/20 {
-    background-color: rgba(195, 233, 86, 0.9);
-    color: var(--v2-ink);
-    font-weight: 700;
-}
-
-/* podium plinths — these are decorative columns, so they stay translucent */
-.v2-hunt-page .bg-light-mode\/15 {
-    background-color: rgba(255, 255, 255, 0.16);
-}
-
-/* Loading skeletons and error text ship with stock Tailwind greys/reds that
-   read as foreign against the palette — retint rather than touching each
-   component's class list. */
-.v2-hunt-page .bg-gray-700 {
-    background-color: rgba(255, 255, 255, 0.09);
-}
-
-.v2-hunt-page .text-red-400 {
-    color: var(--v2-red);
-}
-
-.v2-hunt-page .text-yellow-500 {
-    color: var(--v2-gold);
-}
-
-/* --------------------------------------------------------------------------
-   Action buttons
-   The dashboard's pill buttons are `border-2 rounded-4xl .register-hover`.
-   Give them the v2 button face and a lime hover instead of the grey fill.
-   -------------------------------------------------------------------------- */
-.v2-hunt-page .register-hover,
-.v2-hunt-page a[href^="/auth/logout"] button {
-    font-family: var(--v2-font-pixel);
-    font-weight: var(--v2-font-pixel-weight);
-    letter-spacing: 0.05em;
-    background-color: rgba(14, 35, 24, 0.82);
-    color: var(--v2-white);
-    box-shadow: var(--v2-shadow-float);
-    backdrop-filter: blur(4px);
-    transition: background-color 160ms ease, transform 160ms ease,
-        color 160ms ease;
-}
-
-.v2-hunt-page .register-hover:hover,
-.v2-hunt-page a[href^="/auth/logout"] button:hover {
-    background-color: var(--v2-lime);
-    border-color: var(--v2-lime);
-    color: var(--v2-ink);
-    transform: translateY(-2px);
-}
-
-/* --------------------------------------------------------------------------
-   FAQ lily pads
-   Same pattern as the main site's FAQ (site/v2 styles/v2/faq.css): white pads
-   scattered across the painting, each widening as it opens. The answer
-   wrapper animates grid-template-rows 0fr -> 1fr *and* width together, with
-   the body pinned to a fixed width inside it so the text never re-wraps
-   mid-animation.
-
-   Answers here are far longer than the marketing site's, so the pad is wider
-   (--pad-answer-w) and there are nine offsets rather than eight.
-   -------------------------------------------------------------------------- */
+/* ==========================================================================
+   FAQ lily pads — same pattern as the marketing site
+   ========================================================================== */
 .v2-faq {
     padding-block: var(--v2-section-pad);
 }
@@ -200,10 +650,6 @@
     flex-direction: column;
     align-items: flex-start;
     gap: 14px;
-    width: 100%;
-    max-width: var(--v2-container);
-    margin-inline: auto;
-    padding-inline: 24px;
 }
 
 .v2-pad {
@@ -310,7 +756,6 @@
     font-weight: 600;
 }
 
-/* scattered like stepping stones, same idea as the marketing site */
 .v2-pad--1 { --pad-x: 2%; }
 .v2-pad--2 { --pad-x: 26%; }
 .v2-pad--3 { --pad-x: 48%; }
@@ -321,21 +766,10 @@
 .v2-pad--8 { --pad-x: 4%; }
 .v2-pad--9 { --pad-x: 30%; margin-top: 10px; }
 
-@media (prefers-reduced-motion: reduce) {
-    .v2-pad__a,
-    .v2-pad__body,
-    .v2-pad__toggle::after {
-        transition: none;
-    }
-}
-
-/* On phones the scatter would overflow, so the pads become a plain stack and
-   the reveal animates height only. */
 @media (max-width: 900px) {
     .v2-faq__pond {
         align-items: stretch;
         gap: 12px;
-        padding-inline: 18px;
     }
 
     .v2-pad {
@@ -357,48 +791,30 @@
     }
 }
 
-/* --------------------------------------------------------------------------
-   Modals
-   These are admin/organizer tooling, so legibility beats brand here.
+@media (prefers-reduced-motion: reduce) {
+    .v2-pad__a,
+    .v2-pad__body,
+    .v2-pad__toggle::after {
+        transition: none;
+    }
+}
 
-   Modals render inline (no portal), so they are descendants of
-   .v2-hunt-page and inherit its rules. Most of them are white panels, so the
-   white heading colour above turned every title invisible. Headings inherit
-   their panel's own text colour instead, which is correct for both variants:
-   the action modals set `text-dark-mode` on the panel, and the admin panel
-   sets `text-light-mode` on a dark one.
+/* --------------------------------------------------------------------------
+   Modals — admin tooling keeps its own legible light forms
    -------------------------------------------------------------------------- */
-.v2-hunt-page .v2-modal h1,
-.v2-hunt-page .v2-modal h2,
-.v2-hunt-page .v2-modal h3,
-.v2-hunt-page .v2-modal h4 {
+.v2-aero .v2-modal h1,
+.v2-aero .v2-modal h2,
+.v2-aero .v2-modal h3,
+.v2-aero .v2-modal h4 {
     color: inherit;
     text-shadow: none;
 }
 
-/* Dense admin forms and tables read better in the body face; only the panel
-   title keeps the pixel display face. */
-.v2-hunt-page .v2-modal h2,
-.v2-hunt-page .v2-modal h3,
-.v2-hunt-page .v2-modal h4 {
-    font-family: var(--v2-font-body);
-    letter-spacing: 0;
-}
-
-.v2-hunt-page .v2-modal .v2-modal__title {
-    font-family: var(--v2-font-pixel);
-    font-weight: var(--v2-font-pixel-weight);
-    letter-spacing: 0.02em;
-}
-
-/* Keyboard focus has to be visible on both panel variants — `currentColor`
-   tracks whichever text colour the panel set. */
-.v2-hunt-page .v2-modal :is(button, a, input, select, textarea):focus-visible {
+.v2-aero .v2-modal :is(button, a, input, select, textarea):focus-visible {
     outline: 2px solid currentColor;
     outline-offset: 2px;
-    border-radius: 4px;
 }
 
-.v2 [class*="bg-dark-mode/90"] {
+.v2-aero [class*="bg-dark-mode/90"] {
     background-color: rgba(14, 35, 24, 0.94);
 }

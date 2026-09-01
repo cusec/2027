@@ -25,70 +25,27 @@ export default async function SubmissionsRoute() {
   const showPlatform =
     user && (submissionsEnabled || isUserAdmin || isUserVolunteer);
 
-  return (
-    // `.v2` scopes the main site's design tokens to this page — see
-    // src/app/styles/v2/base.css. The rest of the scavenger island keeps the
-    // grayscale Tailwind theme.
-    <div className="v2">
-      <link
-        rel="preload"
-        as="image"
-        href="/assets/v2/background-unified.webp"
-        type="image/webp"
-        fetchPriority="high"
-      />
-
-      <main className="v2-scene v2-sub-scene">
-        {/* The painting, as an <img> rather than a CSS background so it can be
-            preloaded and priced properly by the browser. Same asset and
-            object-fit treatment as the main site. */}
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
-          className="v2-scene__backdrop"
-          src="/assets/v2/background-unified.webp"
-          alt=""
-          width={2560}
-          height={12360}
-          fetchPriority="high"
-          aria-hidden="true"
-        />
-
-        {showPlatform ? (
-          <SubmissionsPage userEmail={user.email ?? ""} />
-        ) : (
-          <section className="v2-section v2-sub">
-            <div className="v2-container">
-              <div className="v2-sub__gate">
-                <h1 className="v2-sub__title">Submissions</h1>
-                <p className="v2-sub__gate-body">
-                  Submit your challenge videos for CUSEC 2027.
-                </p>
-
-                {/*
-                  Not a Next.js page: proxy.ts hands `/auth/*` to Auth0's
-                  middleware, so this needs a real document request. A
-                  client-side <Link> would never reach the handler. Same
-                  pattern as the /scavenger page.
-                */}
-                {/* eslint-disable-next-line @next/next/no-html-link-for-pages */}
-                <a
-                  href="/auth/login?returnTo=/scavenger/submissions"
-                  className="v2-btn v2-btn--primary"
-                >
-                  <Send className="h-4 w-4" />
-                  {submissionsEnabled ? "Sign In to Submit" : "Beta Access Login"}
-                </a>
-
-                {!submissionsEnabled && (
-                  <p className="v2-sub__gate-foot">
-                    Submissions open on submission day.
-                  </p>
-                )}
-              </div>
-            </div>
-          </section>
+  return showPlatform ? (
+    <SubmissionsPage userEmail={user.email ?? ""} />
+  ) : (
+    <section className="aero-page">
+      <div className="aero-panel aero-gate">
+        <h1 className="aero-title">Submissions</h1>
+        <p>Submit your challenge videos for CUSEC 2027.</p>
+        {/* eslint-disable-next-line @next/next/no-html-link-for-pages */}
+        <a
+          href="/auth/login?returnTo=/scavenger/submissions"
+          className="aero-btn"
+        >
+          <Send className="h-4 w-4" />
+          {submissionsEnabled ? "Sign in to submit" : "Beta access login"}
+        </a>
+        {!submissionsEnabled && (
+          <p className="aero-gate__foot">
+            Submissions open on submission day.
+          </p>
         )}
-      </main>
-    </div>
+      </div>
+    </section>
   );
 }

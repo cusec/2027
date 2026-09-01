@@ -44,76 +44,33 @@ const NoticeBoard = () => {
     }
   };
 
-  // Don't render anything if there are no notices
-  if (!loading && notices.length === 0) {
-    return null;
-  }
-
-  if (loading) {
-    return (
-      <></>
-      // <div className="w-full max-w-4xl mx-auto text-light-mode/90">
-      //   <div className="p-6">
-      //     <div className="flex items-center justify-center space-x-2 mb-6">
-      //       <Megaphone className="w-8 h-8" />
-      //       <h2 className="text-2xl md:text-4xl font-bold">Notice Board</h2>
-      //     </div>
-      //     <div className="space-y-3">
-      //       {[...Array(2)].map((_, i) => (
-      //         <div
-      //           key={i}
-      //           className="animate-pulse bg-gray-700 rounded-lg h-16"
-      //         />
-      //       ))}
-      //     </div>
-      //   </div>
-      // </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="w-full max-w-4xl mx-auto text-light-mode/90">
-        <div className="p-6">
-          <div className="flex items-center justify-center space-x-2 mb-6">
-            <Megaphone className="w-8 h-8" />
-            <h2 className="text-2xl md:text-4xl font-bold">Notice Board</h2>
-          </div>
-          <div className="text-center text-red-400">
-            <p>{error}</p>
-            <button
-              onClick={fetchNotices}
-              className="mt-2 text-sm underline hover:no-underline"
-            >
-              Try again
-            </button>
-          </div>
-        </div>
-      </div>
-    );
-  }
+  if (loading || (!error && notices.length === 0)) return null;
 
   return (
-    <div className="w-full max-w-4xl mx-auto text-light-mode/90">
-      <div className="p-6">
-        <div className="flex items-center justify-center space-x-2 mb-6">
-          <Megaphone className="w-8 h-8" />
-          <h2 className="text-2xl md:text-4xl font-bold">Notice Board</h2>
-        </div>
+    <section className="aero-sec aero-sec--notices">
+      <h2 className="aero-sec__title">
+        <Megaphone aria-hidden="true" />
+        Notice board
+      </h2>
 
-        <div className="space-y-4">
+      {error ? (
+        <div className="aero-panel aero-note">
+          <p>{error}</p>
+          <button type="button" onClick={fetchNotices} className="aero-btn aero-btn--glass">
+            Try again
+          </button>
+        </div>
+      ) : (
+        <div className="aero-notes">
           {notices.map((notice) => (
-            <div
-              key={notice._id}
-              className="flex flex-col items-center text-center p-4 backdrop-blur-sm rounded-xl border-2 border-light-mode/30 bg-dark-mode/30"
-            >
-              <h3 className="text-lg font-semibold mb-2">{notice.title}</h3>
-              <p className="text-light-mode/80">{notice.description}</p>
-            </div>
+            <article key={notice._id} className="aero-panel aero-note">
+              <h3>{notice.title}</h3>
+              <p>{notice.description}</p>
+            </article>
           ))}
         </div>
-      </div>
-    </div>
+      )}
+    </section>
   );
 };
 
