@@ -1,12 +1,31 @@
 import { NextResponse } from "next/server";
 import { auth0 } from "@/lib/auth0";
-import { Challenge, Submission, User } from "@/lib/models";
+import { Challenge, Submission, Team, User } from "@/lib/models";
 import connectMongoDB from "@/lib/mongodb";
 import isAdmin from "@/lib/isAdmin";
 import { logAdminAction, sanitizeDataForLogging } from "@/lib/adminAuditLogger";
 import { isValidSubmissionUrl } from "@/lib/challenges";
 
 const STATUSES = ["pending", "approved", "rejected"];
+
+/**
+ * Who may edit or withdraw an entry. Individual entries belong to whoever
+ * posted them; a group entry belongs to the whole team, so any current member
+ * counts — otherwise a team would be stuck whenever the poster went offline.
+ */
+async function callerOwns(
+  submission: { userEmail: string; teamId?: unknown },
+  email: string
+): Promise<boolean> {
+  if (submission.userEmail === email) return true;
+  if (!submission.teamId) return false;
+
+  const user = await User.findOne({ email });
+  if (!user) return false;
+
+  const team = await Team.findOne({ _id: submission.teamId, members: user._id });
+  return !!team;
+}
 
 // PUT - Owners edit their own link/notes; admins set the review status.
 export async function PUT(
@@ -34,7 +53,7 @@ export async function PUT(
     }
 
     const admin = await isAdmin();
-    const isOwner = submission.userEmail === session.user.email;
+    const isOwner = await callerOwns(submission, session.user.email);
 
     if (!admin && !isOwner) {
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
@@ -178,7 +197,7 @@ export async function DELETE(
     }
 
     const admin = await isAdmin();
-    const isOwner = submission.userEmail === session.user.email;
+    const isOwner = await callerOwns(submission, session.user.email);
 
     if (!admin && !isOwner) {
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });

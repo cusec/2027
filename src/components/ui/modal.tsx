@@ -63,7 +63,7 @@ const Modal = ({
       {/* Backdrop */}
       <div
         className={cn(
-          `absolute inset-0 bg-black/30 ${simple ? "" : "backdrop-blur-sm"}`,
+`v2-modal__scrim absolute inset-0 bg-black/30 ${simple ? "" : "backdrop-blur-sm"}`,
           isClosing
             ? "animate-out fade-out duration-200"
             : "animate-in fade-in duration-200"
@@ -90,7 +90,7 @@ const Modal = ({
       >
         {/* Header */}
         {title && (
-          <div className="flex items-center justify-between p-4 md:p-6 border-b border-gray-200">
+          <div className="v2-modal__head flex items-center justify-between p-4 md:p-6 border-b border-gray-200">
             <h2 className="v2-modal__title text-lg md:text-xl font-semibold">
               {title}
             </h2>

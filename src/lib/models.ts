@@ -138,6 +138,7 @@ const adminAuditLogSchema = new Schema(
         "collectible",
         "challenge",
         "submission",
+        "team",
       ],
       index: true,
     },
@@ -277,6 +278,14 @@ const challengeSchema = new Schema(
     title: { type: String, required: true },
     description: { type: String, default: "" },
     eventName: { type: String, default: "" },
+    // "group" challenges (Dev's Den) are submitted once per team rather than
+    // once per delegate; everything else about them behaves identically.
+    mode: {
+      type: String,
+      enum: ["individual", "group"],
+      default: "individual",
+      index: true,
+    },
     // Awarded to the delegate when an admin approves their submission.
     points: { type: Number, default: 0 },
     active: { type: Boolean, default: true },
@@ -289,6 +298,26 @@ const challengeSchema = new Schema(
       type: Schema.Types.ObjectId,
       ref: "User",
     },
+  },
+  {
+    timestamps: true,
+  }
+);
+
+// A team is a real-world unit, not a per-challenge one: you form it once and
+// it can submit to any group challenge. Membership is the source of truth —
+// there is no separate "leader" role, since any member submitting produces the
+// single entry the team is allowed.
+const teamSchema = new Schema(
+  {
+    name: { type: String, required: true, unique: true, trim: true },
+    members: {
+      type: [{ type: Schema.Types.ObjectId, ref: "User" }],
+      default: [],
+    },
+    createdBy: { type: Schema.Types.ObjectId, ref: "User" },
+    // Lets a team stay findable without browsing the whole list.
+    joinCode: { type: String, required: true, unique: true, index: true },
   },
   {
     timestamps: true,
@@ -310,6 +339,14 @@ const submissionSchema = new Schema(
       index: true,
     },
     userEmail: { type: String, required: true, index: true },
+    // Set only on group submissions; identifies which team the entry belongs
+    // to, so every member sees it rather than just whoever posted it.
+    teamId: {
+      type: Schema.Types.ObjectId,
+      ref: "Team",
+      default: null,
+      index: true,
+    },
     url: { type: String, required: true },
     notes: { type: String, default: "" },
     status: {
@@ -331,6 +368,15 @@ const submissionSchema = new Schema(
 // One submission per delegate per challenge — re-submitting replaces the
 // existing entry rather than creating a duplicate.
 submissionSchema.index({ challengeId: 1, userId: 1 }, { unique: true });
+// The group equivalent. Partial so individual submissions (teamId null) are
+// left out entirely rather than colliding with each other on null.
+submissionSchema.index(
+  { challengeId: 1, teamId: 1 },
+  {
+    unique: true,
+    partialFilterExpression: { teamId: { $type: "objectId" } },
+  }
+);
 submissionSchema.index({ createdAt: -1 });
 
 const Day = mongoose.models.Day || mongoose.model("Day", DaySchema);
@@ -352,6 +398,7 @@ const RegisteredUser =
   mongoose.models.RegisteredUser ||
   mongoose.model("RegisteredUser", registeredUserSchema);
 
+const Team = mongoose.models.Team || mongoose.model("Team", teamSchema);
 const Challenge =
   mongoose.models.Challenge || mongoose.model("Challenge", challengeSchema);
 const Submission =
@@ -368,4 +415,5 @@ export {
   RegisteredUser,
   Challenge,
   Submission,
+  Team,
 };

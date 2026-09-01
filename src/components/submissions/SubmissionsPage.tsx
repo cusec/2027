@@ -3,7 +3,8 @@
 import { useMemo } from "react";
 import { AlertCircle } from "lucide-react";
 import ChallengeCard from "./ChallengeCard";
-import { useSubmissions, findSubmissionFor } from "./submissionsDAO";
+import { useSubmissions, useTeams, findSubmissionFor } from "./submissionsDAO";
+import TeamPanel from "./TeamPanel";
 import type { Challenge } from "@/lib/interface";
 
 interface SubmissionsPageProps {
@@ -29,6 +30,9 @@ const SubmissionsPage = ({ userEmail }: SubmissionsPageProps) => {
     submit,
     withdraw,
   } = useSubmissions();
+
+  const teamState = useTeams();
+  const hasGroupChallenge = challenges.some((c) => c.mode === "group");
 
   // Group by event so a delegate scanning the page can find their event's
   // challenges without reading every card.
@@ -63,6 +67,8 @@ const SubmissionsPage = ({ userEmail }: SubmissionsPageProps) => {
           </div>
         )}
 
+        {hasGroupChallenge && <TeamPanel teams={teamState} />}
+
         {loading ? (
           <p className="v2-sub__loading">Loading challenges…</p>
         ) : challenges.length === 0 ? (
@@ -83,6 +89,7 @@ const SubmissionsPage = ({ userEmail }: SubmissionsPageProps) => {
                       challenge={challenge}
                       submission={findSubmissionFor(submissions, challenge._id)}
                       isSubmitting={isSubmitting}
+                      teamName={teamState.myTeam?.name ?? null}
                       onSubmit={submit}
                       onWithdraw={withdraw}
                     />

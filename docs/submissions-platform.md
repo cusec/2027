@@ -11,17 +11,13 @@ Built on `feature/challenge-submissions`, branched off `staging`.
 ## What is in scope
 
 - Admins create/edit/delete **challenges** (title, event, description,
-  **point value**, optional open/close window, optional submission cap).
+  **point value**, **individual or group mode**, optional open/close window,
+  optional submission cap).
 - Delegates open **one central page** (`/scavenger/submissions`), pick a challenge, and
   submit a link.
 - Admins review submissions per challenge and mark them
   `pending` / `approved` / `rejected`. **Approving credits the challenge's
   points to the delegate.**
-
-**Not built:** Dev's Den team formation (create/join a team, max 4, one
-submitter per team — `TECHxEVENTS.txt`, Kelly). That doc proposes offloading it
-to Devpost, which natively supports team caps and one-submission-per-team.
-There is no `Team` model here.
 
 **Not built:** file uploads. Links only.
 
@@ -38,6 +34,43 @@ on submission day without also opening the hunt.
 
 Everything else (MongoDB, Auth0, roles) is shared with the scavenger hunt — see
 `SCAVENGER_SETUP.md`. No new services and no new dependencies.
+
+---
+
+## Group challenges (Dev's Den)
+
+A challenge is `individual` (default) or `group`. Group challenges are answered
+**once per team** rather than once per delegate; everything else — points,
+review, activation windows, caps — behaves identically.
+
+**Teams are global, not per-challenge.** You form one once and it can submit to
+any group challenge, because a team is a real-world unit rather than a
+per-task grouping. Capped at `MAX_TEAM_SIZE` (4, `src/lib/challenges.ts`).
+
+**There is no leader role.** Any member can post the team's entry, and any
+member can edit or withdraw it — otherwise a team is stuck whenever whoever
+submitted goes offline. The submitter shown is simply whoever last saved it.
+The "only one person submits" rule is enforced as *one entry exists*, not *one
+person is allowed*.
+
+Delegates create a team, join one with space from the browse list, or join by
+its **join code**. Codes avoid `O/0/I/1/L` so they can be read aloud.
+
+| Route | Purpose |
+|---|---|
+| `GET /api/teams` | every team, plus the caller's own and the size cap |
+| `POST /api/teams` | create a team and join it |
+| `POST /api/teams/join` | join by `teamId` or `joinCode` |
+| `POST /api/teams/leave` | leave; the last member out deletes the team |
+
+**Enforcement.** One entry per team per challenge is a **partial unique index**
+on `{ challengeId, teamId }` — partial so individual submissions (`teamId`
+null) don't collide with each other. Joining re-reads team size after the write
+and rolls back if two people filled the last seat at once. Leaving is blocked
+once the team has submitted, so work isn't orphaned; an organizer can override.
+
+One team per delegate at a time: create and join both refuse if you're already
+on one.
 
 ---
 
@@ -76,8 +109,8 @@ inline.
 The activation-window fields mirror `huntItemSchema`, so open/closed behaves
 exactly like hunt items.
 
-**`Submission`** — `challengeId`, `userId`, `userEmail`, `url`, `notes`,
-`status`, `pointsAwarded` (what approval actually granted; retained after a
+**`Submission`** — `challengeId`, `userId`, `userEmail`, `teamId` (group
+entries only), `url`, `notes`, `status`, `pointsAwarded` (what approval actually granted; retained after a
 revert so the warning can name the exact figure).
 A **unique compound index on `{ challengeId, userId }`** is what enforces one
 submission per delegate per challenge; re-submitting replaces the existing row

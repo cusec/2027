@@ -433,3 +433,196 @@ body:has(.v2) .Navbar {
         padding: 32px 22px;
     }
 }
+
+/* --------------------------------------------------------------------------
+   Group challenges — team panel
+   -------------------------------------------------------------------------- */
+.v2-chal__mode {
+    margin: 5px 0 0;
+    font-family: var(--v2-font-pixel);
+    font-weight: var(--v2-font-pixel-weight);
+    font-size: 10.5px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--v2-mint-bright);
+}
+
+.aero-team {
+    margin-bottom: 26px;
+}
+
+.aero-team__head {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 14px;
+}
+
+.aero-team__name {
+    margin: 0;
+    font-family: var(--v2-font-pixel);
+    font-weight: var(--v2-font-pixel-weight);
+    font-size: 1.15rem;
+    color: var(--aero-white);
+}
+
+.aero-team__count {
+    flex: none;
+    padding: 5px 12px;
+    border-radius: 999px;
+    background: rgba(195, 233, 86, 0.9);
+    color: var(--aero-ink);
+    font-family: var(--v2-font-pixel);
+    font-size: 11px;
+    text-shadow: none;
+}
+
+.aero-team__hint {
+    margin: 8px 0 0;
+    font-size: 13.5px;
+    line-height: 1.6;
+    opacity: 0.82;
+}
+
+.aero-team__hint--list {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    margin-top: 20px;
+    font-family: var(--v2-font-pixel);
+    font-size: 11px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    opacity: 0.7;
+}
+
+.aero-team__hint--list svg {
+    width: 14px;
+    height: 14px;
+}
+
+.aero-team__members {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin: 14px 0 0;
+    padding: 0;
+    list-style: none;
+}
+
+.aero-team__members li {
+    padding: 5px 12px;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.12);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.24);
+    font-size: 13px;
+}
+
+.aero-team__code {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    margin: 14px 0 18px;
+    font-size: 13px;
+    opacity: 0.82;
+}
+
+.aero-team__code svg {
+    width: 14px;
+    height: 14px;
+    color: var(--aero-lime);
+}
+
+.aero-team__code b {
+    font-family: var(--v2-font-pixel);
+    letter-spacing: 0.16em;
+    color: var(--aero-lime);
+}
+
+.aero-team__form {
+    display: flex;
+    gap: 10px;
+    margin-top: 14px;
+}
+
+.aero-team__form input {
+    flex: 1 1 auto;
+    min-width: 0;
+    padding: 10px 14px;
+    border: 0;
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.12);
+    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.24);
+    color: var(--aero-white);
+    font-family: inherit;
+    font-size: 14px;
+}
+
+.aero-team__form input::placeholder {
+    color: rgba(244, 255, 252, 0.5);
+}
+
+.aero-team__form input:focus {
+    outline: none;
+    background: rgba(255, 255, 255, 0.18);
+    box-shadow: inset 0 0 0 1.5px var(--aero-lime);
+}
+
+.aero-team__list {
+    display: grid;
+    gap: 8px;
+    margin: 10px 0 0;
+    padding: 0;
+    list-style: none;
+}
+
+.aero-team__list li {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 9px 14px;
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.1);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.22);
+    font-size: 14px;
+}
+
+.aero-team__list li span {
+    flex: 1 1 auto;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.aero-team__list li i {
+    flex: none;
+    font-size: 12px;
+    font-style: normal;
+    opacity: 0.7;
+}
+
+.aero-team__list li .aero-btn {
+    flex: none;
+    padding: 7px 15px;
+    font-size: 11px;
+}
+
+.aero-team__error {
+    margin: 14px 0 0;
+    padding: 10px 14px;
+    border-radius: 12px;
+    background: rgba(232, 86, 74, 0.18);
+    box-shadow: inset 0 0 0 1px rgba(232, 86, 74, 0.5);
+    font-size: 13.5px;
+}
+
+@media (max-width: 620px) {
+    .aero-team__form {
+        flex-wrap: wrap;
+    }
+
+    .aero-team__list li {
+        flex-wrap: wrap;
+    }
+}

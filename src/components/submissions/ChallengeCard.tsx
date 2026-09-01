@@ -9,6 +9,8 @@ interface ChallengeCardProps {
   challenge: Challenge;
   submission?: Submission;
   isSubmitting: boolean;
+  /** The delegate's team name, or null when they aren't on one. */
+  teamName?: string | null;
   onSubmit: (challengeId: string, url: string, notes: string) => Promise<boolean>;
   onWithdraw: (submissionId: string) => Promise<boolean>;
 }
@@ -35,6 +37,7 @@ const ChallengeCard = ({
   challenge,
   submission,
   isSubmitting,
+  teamName = null,
   onSubmit,
   onWithdraw,
 }: ChallengeCardProps) => {
@@ -48,6 +51,10 @@ const ChallengeCard = ({
   const status = submission ? STATUS_META[submission.status] : null;
   const window = formatWindow(challenge);
   const isApproved = submission?.status === "approved";
+  // A group challenge can't be answered until the delegate is on a team; the
+  // API enforces the same rule, this just explains it before they try.
+  const isGroup = challenge.mode === "group";
+  const needsTeam = isGroup && !teamName;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -60,6 +67,12 @@ const ChallengeCard = ({
       <div className="v2-chal__head">
         <div>
           <h3 className="v2-chal__title">{challenge.title}</h3>
+          {isGroup && (
+            <p className="v2-chal__mode">
+              Group challenge
+              {teamName ? ` · submitting as ${teamName}` : ""}
+            </p>
+          )}
           {challenge.points > 0 && (
             <p className="v2-chal__points">
               {challenge.points} point{challenge.points === 1 ? "" : "s"} once
@@ -121,6 +134,10 @@ const ChallengeCard = ({
               } added to your total.`
             : "."}{" "}
           This entry is locked; ask an organizer if it needs changing.
+        </p>
+      ) : needsTeam ? (
+        <p className="v2-chal__note">
+          Create or join a team above before submitting to this one.
         </p>
       ) : !open && !submission ? (
         <p className="v2-chal__note">

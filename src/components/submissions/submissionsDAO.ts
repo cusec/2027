@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-import type { Challenge, Submission } from "@/lib/interface";
+import type { Challenge, Submission, SubmissionTeam } from "@/lib/interface";
 
 /**
  * Data access for the delegate-facing submission page.
@@ -130,3 +130,69 @@ export function findSubmissionFor(
     return id === challengeId;
   });
 }
+
+/** Team membership for group challenges (Dev's Den). */
+export const useTeams = () => {
+  const [teams, setTeams] = useState<SubmissionTeam[]>([]);
+  const [myTeam, setMyTeam] = useState<SubmissionTeam | null>(null);
+  const [maxTeamSize, setMaxTeamSize] = useState(4);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [busy, setBusy] = useState(false);
+
+  const fetchTeams = useCallback(async () => {
+    try {
+      setLoading(true);
+      const res = await fetch("/api/teams");
+      const data = await res.json();
+      if (!data.success) throw new Error(data.error || "Failed to load teams");
+      setTeams(data.teams);
+      setMyTeam(data.myTeam);
+      setMaxTeamSize(data.maxTeamSize ?? 4);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Failed to load teams");
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  const act = async (path: string, body?: Record<string, unknown>) => {
+    try {
+      setBusy(true);
+      setError(null);
+      const res = await fetch(path, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body ?? {}),
+      });
+      const data = await res.json();
+      if (!data.success) throw new Error(data.error || "Something went wrong");
+      await fetchTeams();
+      return true;
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Something went wrong");
+      return false;
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchTeams();
+  }, [fetchTeams]);
+
+  return {
+    teams,
+    myTeam,
+    maxTeamSize,
+    loading,
+    error,
+    busy,
+    setError,
+    createTeam: (name: string) => act("/api/teams", { name }),
+    joinTeam: (teamId: string) => act("/api/teams/join", { teamId }),
+    joinByCode: (joinCode: string) => act("/api/teams/join", { joinCode }),
+    leaveTeam: () => act("/api/teams/leave"),
+    refetch: fetchTeams,
+  };
+};

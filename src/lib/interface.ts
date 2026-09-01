@@ -254,6 +254,7 @@ export interface Challenge {
   title: string;
   description: string;
   eventName: string;
+  mode: "individual" | "group";
   points: number;
   active: boolean;
   activationStart: string | null;
@@ -269,11 +270,28 @@ export interface ChallengeFormData {
   title: string;
   description: string;
   eventName: string;
+  mode: "individual" | "group";
   points: number;
   active: boolean;
   activationStart: string | null;
   activationEnd: string | null;
   maxSubmissions: number | null;
+}
+
+export interface SubmissionTeamMember {
+  _id: string;
+  name?: string;
+  email?: string;
+}
+
+export interface SubmissionTeam {
+  _id: string;
+  name: string;
+  members: SubmissionTeamMember[];
+  createdBy?: string;
+  joinCode: string;
+  createdAt?: string;
+  updatedAt?: string;
 }
 
 export type SubmissionStatus = "pending" | "approved" | "rejected";
@@ -284,6 +302,8 @@ export interface Submission {
   challengeId: string | Challenge;
   userId: string;
   userEmail: string;
+  // Populated to a Team on group submissions.
+  teamId?: string | SubmissionTeam | null;
   url: string;
   notes: string;
   status: SubmissionStatus;

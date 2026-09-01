@@ -799,22 +799,167 @@
     }
 }
 
-/* --------------------------------------------------------------------------
-   Modals — admin tooling keeps its own legible light forms
-   -------------------------------------------------------------------------- */
-.v2-aero .v2-modal h1,
-.v2-aero .v2-modal h2,
-.v2-aero .v2-modal h3,
-.v2-aero .v2-modal h4 {
-    color: inherit;
-    text-shadow: none;
+/* ==========================================================================
+   Modals
+   The same glass the leaderboard and profile card are made of, rather than a
+   white sheet with a border. The hunt's modals were ported from 2026 and are
+   built from light-theme Tailwind utilities, so those neutrals are remapped
+   here instead of rewriting the class list on ~15 admin components.
+
+   Semantic colours (amber warnings, red errors, green/blue badges and
+   buttons) are deliberately left alone — they are light chips that read
+   clearly on glass and are supposed to stand out.
+   ========================================================================== */
+.v2-aero .v2-modal {
+    border: 1px solid rgba(255, 255, 255, 0.34);
+    border-radius: 20px;
+    background:
+        linear-gradient(
+            to bottom,
+            rgba(255, 255, 255, 0.28),
+            rgba(255, 255, 255, 0.08) 42%,
+            rgba(9, 28, 45, 0.16)
+        ),
+        var(--aero-shade-deep);
+    box-shadow:
+        0 26px 64px rgba(9, 28, 45, 0.5),
+        inset 0 1px 0 rgba(255, 255, 255, 0.6);
+    backdrop-filter: blur(18px) saturate(1.35);
+    color: var(--aero-white);
+}
+
+.v2-aero .v2-modal__scrim {
+    background: rgba(9, 28, 45, 0.46);
+    backdrop-filter: blur(4px) saturate(1.2);
+}
+
+.v2-aero .v2-modal__head {
+    border-top-left-radius: 19px;
+    border-top-right-radius: 19px;
+    background: linear-gradient(
+        to bottom,
+        rgba(255, 255, 255, 0.16),
+        rgba(255, 255, 255, 0.02)
+    );
+    border-bottom-color: rgba(255, 255, 255, 0.18);
+}
+
+.v2-aero .v2-modal__title {
+    font-family: var(--v2-font-pixel);
+    font-weight: var(--v2-font-pixel-weight);
+    letter-spacing: 0.02em;
+}
+
+/* Scrolling without the chunky native bar: no track, no arrows, just a slim
+   translucent thumb so long admin lists still show they can scroll. */
+.v2-aero .v2-modal {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(255, 255, 255, 0.32) transparent;
+}
+
+.v2-aero .v2-modal::-webkit-scrollbar {
+    width: 8px;
+}
+
+.v2-aero .v2-modal::-webkit-scrollbar-track,
+.v2-aero .v2-modal::-webkit-scrollbar-corner {
+    background: transparent;
+}
+
+.v2-aero .v2-modal::-webkit-scrollbar-button {
+    display: none;
+}
+
+.v2-aero .v2-modal::-webkit-scrollbar-thumb {
+    border: 2px solid transparent;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.3);
+    background-clip: content-box;
+}
+
+.v2-aero .v2-modal::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.48);
+    background-clip: content-box;
+}
+
+/* --- neutral surfaces become glass ---------------------------------------- */
+.v2-aero .v2-modal .bg-white {
+    background-color: rgba(255, 255, 255, 0.09);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.16);
+}
+
+.v2-aero .v2-modal .bg-gray-50,
+.v2-aero .v2-modal .bg-gray-100 {
+    background-color: rgba(255, 255, 255, 0.12);
+}
+
+.v2-aero .v2-modal .bg-gray-200,
+.v2-aero .v2-modal .bg-gray-300 {
+    background-color: rgba(255, 255, 255, 0.18);
+}
+
+.v2-aero .v2-modal .border-gray-200,
+.v2-aero .v2-modal .border-gray-300 {
+    border-color: rgba(255, 255, 255, 0.2);
+}
+
+/* --- neutral text lifts onto the glass ------------------------------------ */
+.v2-aero .v2-modal .text-gray-900,
+.v2-aero .v2-modal .text-gray-800,
+.v2-aero .v2-modal .text-gray-700,
+.v2-aero .v2-modal .text-dark-mode {
+    color: var(--aero-white);
+}
+
+.v2-aero .v2-modal .text-gray-600,
+.v2-aero .v2-modal .text-gray-500 {
+    color: rgba(244, 255, 252, 0.76);
+}
+
+.v2-aero .v2-modal .text-gray-400,
+.v2-aero .v2-modal .text-gray-300 {
+    color: rgba(244, 255, 252, 0.58);
+}
+
+/* --- fields get the era's inset well -------------------------------------- */
+.v2-aero .v2-modal :is(input, select, textarea) {
+    border-color: rgba(255, 255, 255, 0.24);
+    border-radius: 10px;
+    background-color: rgba(255, 255, 255, 0.12);
+    box-shadow: inset 0 1px 3px rgba(9, 28, 45, 0.28);
+    color: var(--aero-white);
+}
+
+.v2-aero .v2-modal :is(input, textarea)::placeholder {
+    color: rgba(244, 255, 252, 0.5);
+}
+
+.v2-aero .v2-modal :is(input, select, textarea):focus {
+    border-color: var(--aero-lime);
+    background-color: rgba(255, 255, 255, 0.18);
+    outline: none;
+}
+
+/* Native option lists are drawn by the OS, so they need a solid ground. */
+.v2-aero .v2-modal select option {
+    background-color: #12303f;
+    color: var(--aero-white);
+}
+
+.v2-aero .v2-modal button {
+    border-radius: 10px;
+}
+
+.v2-aero .v2-modal :is(button, .rounded-full).rounded-full {
+    border-radius: 999px;
 }
 
 .v2-aero .v2-modal :is(button, a, input, select, textarea):focus-visible {
-    outline: 2px solid currentColor;
+    outline: 2px solid var(--aero-lime);
     outline-offset: 2px;
 }
 
-.v2-aero [class*="bg-dark-mode/90"] {
-    background-color: rgba(14, 35, 24, 0.94);
+.v2-aero .v2-modal :is(h1, h2, h3, h4) {
+    color: var(--aero-white);
+    text-shadow: none;
 }

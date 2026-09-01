@@ -5,6 +5,31 @@
  * listing endpoints agree on exactly what "open" means.
  */
 
+/** Dev's Den teams cap at four (TECHxEVENTS.txt, Kelly). */
+export const MAX_TEAM_SIZE = 4;
+
+export type ChallengeMode = "individual" | "group";
+
+/** Join codes are short, unambiguous and easy to read out loud. */
+const CODE_ALPHABET = "ABCDEFGHJKMNPQRSTUVWXYZ23456789";
+
+export function generateJoinCode(length = 6): string {
+  let out = "";
+  for (let i = 0; i < length; i += 1) {
+    out += CODE_ALPHABET[Math.floor(Math.random() * CODE_ALPHABET.length)];
+  }
+  return out;
+}
+
+/** Team names are shown publicly, so keep them short and printable. */
+export function validateTeamName(value: unknown): string | null {
+  if (typeof value !== "string") return "Team name is required";
+  const name = value.trim();
+  if (name.length < 2) return "Team name must be at least 2 characters";
+  if (name.length > 40) return "Team name must be 40 characters or fewer";
+  return null;
+}
+
 interface ChallengeWindow {
   active?: boolean;
   activationStart?: Date | string | null;

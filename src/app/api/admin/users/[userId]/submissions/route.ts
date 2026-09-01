@@ -1,10 +1,17 @@
 import { NextResponse } from "next/server";
 import { auth0 } from "@/lib/auth0";
-import { User, Challenge, Submission } from "@/lib/models";
+import { User, Challenge, Submission, Team } from "@/lib/models";
 import connectMongoDB from "@/lib/mongodb";
 import isAdmin from "@/lib/isAdmin";
 import isVolunteer from "@/lib/isVolunteer";
 import { logAdminAction, sanitizeDataForLogging } from "@/lib/adminAuditLogger";
+
+interface LeanTeam {
+  _id: unknown;
+  name: string;
+  joinCode: string;
+  members: { _id: unknown; name?: string; email?: string }[];
+}
 
 // GET - Fetch a user's challenge submissions (Admin & Volunteer only)
 export async function GET(
@@ -66,9 +73,25 @@ export async function GET(
       };
     });
 
+    const team = await Team.findOne({ members: userId })
+      .populate("members", "name email")
+      .lean<LeanTeam | null>();
+
     return NextResponse.json({
       success: true,
       submissions,
+      team: team
+        ? {
+            _id: String(team._id),
+            name: team.name,
+            joinCode: team.joinCode,
+            members: (team.members || []).map((m) => ({
+              _id: String(m._id),
+              name: m.name,
+              email: m.email,
+            })),
+          }
+        : null,
     });
   } catch (error) {
     console.error("Error fetching user submissions:", error);

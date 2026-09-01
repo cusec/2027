@@ -11,6 +11,7 @@ import {
   Megaphone,
   Gem,
   Send,
+  Users2,
 } from "lucide-react";
 import Modal from "@/components/ui/modal";
 import HuntItemsModal from "./actions/huntItems/HuntItemsModal";
@@ -21,6 +22,7 @@ import AuditLogsModal from "./actions/AuditLogsModal";
 import NoticesModal from "./actions/notices/NoticesModal";
 import CollectiblesModal from "./actions/collectibles/CollectiblesModal";
 import ChallengesModal from "./actions/challenges/ChallengesModal";
+import TeamsModal from "./actions/teams/TeamsModal";
 import RegisteredUsersModal from "./actions/registeredUsers/RegisteredUsersModal";
 
 interface AdminPanelProps {
@@ -39,6 +41,7 @@ const AdminPanel = ({ isOpen, onClose, isAdmin }: AdminPanelProps) => {
   const [isNoticesModalOpen, setIsNoticesModalOpen] = useState(false);
   const [isCollectiblesModalOpen, setIsCollectiblesModalOpen] = useState(false);
   const [isChallengesModalOpen, setIsChallengesModalOpen] = useState(false);
+  const [isTeamsModalOpen, setIsTeamsModalOpen] = useState(false);
   const [isRegisteredUsersModalOpen, setIsRegisteredUsersModalOpen] =
     useState(false);
 
@@ -109,6 +112,14 @@ const AdminPanel = ({ isOpen, onClose, isAdmin }: AdminPanelProps) => {
                   >
                     <Send className="mr-3 h-6 w-6" />
                     Manage Challenges
+                  </button>
+
+                  <button
+                    onClick={() => setIsTeamsModalOpen(true)}
+                    className="select-none flex items-center justify-center px-4 py-2 text-md font-semibold border-2 rounded-2xl border-light-mode/50 bg-dark-mode/50 register-hover"
+                  >
+                    <Users2 className="mr-3 h-6 w-6" />
+                    Manage Teams
                   </button>
 
                   <button
@@ -189,6 +200,12 @@ const AdminPanel = ({ isOpen, onClose, isAdmin }: AdminPanelProps) => {
       <ChallengesModal
         isOpen={isChallengesModalOpen}
         onClose={() => setIsChallengesModalOpen(false)}
+      />
+
+      <TeamsModal
+        isOpen={isTeamsModalOpen}
+        onClose={() => setIsTeamsModalOpen(false)}
+        isAdmin={isAdmin}
       />
 
       <RegisteredUsersModal
