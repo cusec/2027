@@ -32,8 +32,10 @@ Two ticket-purchase flows exist in the flow diagram:
                              Logged out -> "Sign Up" (Auth0, screen_hint=signup)
                              Logged in  -> redirects to whichever step is incomplete
 
-/tickets/demographics        ~25-field confidential survey, split into 5 sub-steps
+/tickets/demographics        Short confidential survey, split into 3 sub-steps
                              (localStorage draft; saved to DemographicInfo on submit)
+                             Shows the "already have a ticket" modal instead if
+                             this account already holds one.
 /tickets/avatar              Existing placeholder AvatarCustomize component, reused as-is
 /tickets/purchase            TicketCard/TicketsSection + checkout in an on-page modal
 ```
@@ -48,6 +50,34 @@ trusted client-side flag.
 1 is just `/auth/login?screen_hint=signup`, and `findOrCreateUser` (the same
 helper the scavenger hunt already uses) creates the `User` doc. This means a
 wizard user's Auth0 account **is** their account from step 1 onward.
+
+**What the survey does NOT ask.** Ticket Tailor's own checkout already
+collects first name, last name, email, student email, university, expected
+graduation and degree. Asking again was the single biggest source of friction
+in the flow, so those six are deliberately absent from `DemographicInfo` — read
+them from the Ticket Tailor order or CSV export, not from Mongo. If TT's
+checkout questions change, this list is what has to change with it.
+
+**Student / professional split.** `attendeeType` picks which short branch the
+survey shows: students get field of study + head delegate, professionals get
+company + job title. This replaced a free-text "current affiliation" field that
+just restated whichever the attendee was, duplicating the school info we
+already had.
+
+**Previously attended** is a yes/no question plus a single year (2003-2026,
+`ATTENDED_YEAR_OPTIONS`), not the old checkbox grid. The year is cleared
+server-side and client-side whenever the answer is "no", so a stale value can
+never be stored.
+
+**Accommodation was removed.** Delegates are booked a room automatically, so
+asking whether they wanted one collected an answer nobody acted on.
+
+**One ticket per account.** If `getWizardStatus().purchaseComplete` is true,
+`/tickets/demographics` renders `AlreadyTicketedModal` instead of the form —
+naming the account, offering a logout link, and pointing at the dashboard.
+Before this, a ticketed user re-entering the wizard saw an empty form over
+their saved answers, which read as data loss and would have overwritten them
+on submit.
 
 **Auto-link on purchase.** Completing the demographics step immediately sets
 `User.hasSeenIntro = true`, which guarantees the legacy scavenger-hunt
@@ -119,10 +149,11 @@ matching a completed purchase render as disabled **"Purchased"**.
 | `src/lib/ticketWizard.ts` | `getWizardStatus(email)` — derives step completion from real data. |
 | `src/lib/ticketWizardOptions.ts` | Client-safe form option lists (t-shirt sizes, degree levels, etc.). Kept separate from `ticketWizard.ts` because that file imports Mongoose and can't be imported into client components. |
 | `src/app/api/demographics/route.ts` | GET/PUT the caller's own survey answers. |
+| `src/lib/ticketWizardOptions.ts` | Client-safe option lists (t-shirt, attendee type, head delegate, yes/no, attended years 2003-2026, excited events). Kept in sync by hand with the enums in `models.ts`. |
 | `src/app/api/ticket-wizard/{progress,status}/route.ts` | Mark avatar step done; poll wizard status from the purchase page. |
 | `src/app/api/ticket-tailor/webhook/route.ts` | Extended (not replaced) — now also auto-links `User`/`RegisteredUser` on a matching purchase. |
 | `src/app/[locale]/tickets/page.tsx` + `(wizard)/{demographics,avatar,purchase}/page.tsx` | The wizard routes. |
-| `src/app/components/TicketWizard/*` | `WizardStepNav`, `DemographicsForm`, `AvatarStepClient`, `PurchaseStepClient`. |
+| `src/app/components/TicketWizard/*` | `WizardStepNav`, `DemographicsForm`, `AlreadyTicketedModal`, `AvatarStepClient`, `PurchaseStepClient`. |
 | `src/lib/ticketTailor.ts` | Fixed — see "Ticket Tailor API gotchas" below. |
 
 ## Environment variables

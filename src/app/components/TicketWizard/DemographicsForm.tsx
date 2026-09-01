@@ -6,46 +6,43 @@ import { useRouter } from "@/i18n/navigation";
 import type { DemographicInfo } from "@/lib/interface";
 import {
   TSHIRT_SIZE_OPTIONS,
-  DEGREE_LEVEL_OPTIONS,
+  ATTENDEE_TYPE_OPTIONS,
   HEAD_DELEGATE_OPTIONS,
-  PREVIOUSLY_ATTENDED_OPTIONS,
+  YES_NO_OPTIONS,
+  ATTENDED_YEAR_OPTIONS,
   EXCITED_EVENT_OPTIONS,
 } from "@/lib/ticketWizardOptions";
 
 type FormState = Omit<DemographicInfo, "_id" | "user" | "createdAt" | "updatedAt">;
 
 const EMPTY_FORM: FormState = {
-  firstName: "",
-  lastName: "",
+  attendeeType: "student",
   pronoun: "",
   tshirtSize: "",
   dietaryRestrictions: "",
-  studentEmail: "",
-  personalEmail: "",
-  university: "",
   fieldOfStudy: "",
-  degreeCurrentlyPursuing: "",
-  highestDegree: "",
-  expectedGraduation: "",
   schoolHasHeadDelegate: "unsure",
-  currentAffiliation: "",
+  company: "",
+  jobTitle: "",
   resumeUrl: "",
   githubUrl: "",
   linkedinUrl: "",
   howDidYouHear: "",
-  previouslyAttendedCUSEC: [],
+  previouslyAttended: "no",
+  previouslyAttendedYear: "",
   excitedEvents: [],
-  wantsHotelBooking: false,
   whyAttendCUSEC: "",
   schoolCommunityInvolvement: "",
   cusecAssociation: "",
 };
 
-// The survey is long, so it's broken into sub-steps. Each renders a subset
-// of the fieldsets below; required-field validation is handled natively by
-// the browser, which only ever sees the fields currently in the DOM - so
-// pressing Continue validates exactly the current sub-step.
-const SECTIONS = ["about", "education", "professional", "conference", "optional"] as const;
+// Three sub-steps, down from five: Ticket Tailor's checkout already collects
+// name, email, student email, university, expected graduation and degree, so
+// none of those are asked again here. Each sub-step renders a subset of the
+// fieldsets below; required-field validation is handled natively by the
+// browser, which only ever sees the fields currently in the DOM — so pressing
+// Continue validates exactly the current sub-step.
+const SECTIONS = ["about", "background", "conference"] as const;
 type SectionId = (typeof SECTIONS)[number];
 
 interface DemographicsFormProps {
@@ -62,13 +59,13 @@ export default function DemographicsForm({ initialData, userId }: DemographicsFo
   const [stepIndex, setStepIndex] = useState(0);
   const [restored, setRestored] = useState(false);
 
-  // Draft persistence: the survey spans 5 sub-steps but only saves to the
-  // server at the end, so without this a refresh loses every answer.
+  // Draft persistence: the survey spans several sub-steps but only saves to
+  // the server at the end, so without this a refresh loses every answer.
   //
-  // Note this puts confidential survey data (names, emails, dietary
-  // restrictions) in the browser's localStorage: unencrypted, readable by
-  // any script on this origin, and persistent on shared machines. Mitigated
-  // by namespacing per user and clearing on successful submit. See
+  // Note this puts confidential survey data (pronoun, dietary restrictions)
+  // in the browser's localStorage: unencrypted, readable by any script on
+  // this origin, and persistent on shared machines. Mitigated by namespacing
+  // per user and clearing on successful submit. See
   // docs/ticket-tailor/KNOWN_ISSUES.md (C2).
   const storageKey = `cusec:demographics-draft:${userId}`;
 
@@ -104,6 +101,7 @@ export default function DemographicsForm({ initialData, userId }: DemographicsFo
 
   const section: SectionId = SECTIONS[stepIndex];
   const isLastSection = stepIndex === SECTIONS.length - 1;
+  const isStudent = form.attendeeType === "student";
   const progressPct = useMemo(
     () => Math.round(((stepIndex + 1) / SECTIONS.length) * 100),
     [stepIndex]
@@ -127,18 +125,6 @@ export default function DemographicsForm({ initialData, userId }: DemographicsFo
       }
       if (prev.excitedEvents.length >= 3) return prev;
       return { ...prev, excitedEvents: [...prev.excitedEvents, event] };
-    });
-  };
-
-  const toggleAttended = (year: string) => {
-    setForm((prev) => {
-      const has = prev.previouslyAttendedCUSEC.includes(year);
-      return {
-        ...prev,
-        previouslyAttendedCUSEC: has
-          ? prev.previouslyAttendedCUSEC.filter((y) => y !== year)
-          : [...prev.previouslyAttendedCUSEC, year],
-      };
     });
   };
 
@@ -227,25 +213,30 @@ export default function DemographicsForm({ initialData, userId }: DemographicsFo
       <fieldset className="wizard-fieldset">
         <legend>{t("section-personal")}</legend>
 
-        <label className="wizard-field">
-          {t("field-first-name")}
-          <input
-            type="text"
-            required
-            value={form.firstName}
-            onChange={(e) => set("firstName", e.target.value)}
-          />
-        </label>
+        <p className="wizard-field-hint wizard-field--wide">
+          {t("already-collected-notice")}
+        </p>
 
-        <label className="wizard-field">
-          {t("field-last-name")}
-          <input
-            type="text"
-            required
-            value={form.lastName}
-            onChange={(e) => set("lastName", e.target.value)}
-          />
-        </label>
+        <div className="wizard-field wizard-field--wide">
+          <span>{t("field-attendee-type")}</span>
+          <div className="wizard-checkbox-group">
+            {ATTENDEE_TYPE_OPTIONS.map((option) => (
+              <label className="wizard-checkbox" key={option.value}>
+                <input
+                  type="radio"
+                  name="attendeeType"
+                  value={option.value}
+                  checked={form.attendeeType === option.value}
+                  onChange={() =>
+                    set("attendeeType", option.value as FormState["attendeeType"])
+                  }
+                />
+                {t(`attendee-type-${option.value}`)}
+              </label>
+            ))}
+          </div>
+          <p className="wizard-field-hint">{t("field-attendee-type-hint")}</p>
+        </div>
 
         <label className="wizard-field">
           {t("field-pronoun")}
@@ -286,45 +277,11 @@ export default function DemographicsForm({ initialData, userId }: DemographicsFo
       </fieldset>
       )}
 
-      {section === "about" && (
-      <fieldset className="wizard-fieldset">
-        <legend>{t("section-contact")}</legend>
-
-        <label className="wizard-field">
-          {t("field-student-email")}
-          <input
-            type="email"
-            required
-            value={form.studentEmail}
-            onChange={(e) => set("studentEmail", e.target.value)}
-          />
-        </label>
-
-        <label className="wizard-field">
-          {t("field-personal-email")}
-          <input
-            type="email"
-            required
-            value={form.personalEmail}
-            onChange={(e) => set("personalEmail", e.target.value)}
-          />
-        </label>
-      </fieldset>
-      )}
-
-      {section === "education" && (
+      {/* Student branch — university/degree/graduation already came from
+          Ticket Tailor, so only the things it doesn't ask are here. */}
+      {section === "background" && isStudent && (
       <fieldset className="wizard-fieldset">
         <legend>{t("section-education")}</legend>
-
-        <label className="wizard-field">
-          {t("field-university")}
-          <input
-            type="text"
-            required
-            value={form.university}
-            onChange={(e) => set("university", e.target.value)}
-          />
-        </label>
 
         <label className="wizard-field">
           {t("field-field-of-study")}
@@ -335,58 +292,6 @@ export default function DemographicsForm({ initialData, userId }: DemographicsFo
             onChange={(e) => set("fieldOfStudy", e.target.value)}
           />
         </label>
-
-        <label className="wizard-field">
-          {t("field-degree-pursuing")}
-          <select
-            required
-            value={form.degreeCurrentlyPursuing}
-            onChange={(e) => set("degreeCurrentlyPursuing", e.target.value)}
-          >
-            <option value="" disabled>
-              {t("select-placeholder")}
-            </option>
-            {DEGREE_LEVEL_OPTIONS.map((degree) => (
-              <option key={degree} value={degree}>
-                {degree}
-              </option>
-            ))}
-          </select>
-        </label>
-
-        <label className="wizard-field">
-          {t("field-highest-degree")}
-          <select
-            required
-            value={form.highestDegree}
-            onChange={(e) => set("highestDegree", e.target.value)}
-          >
-            <option value="" disabled>
-              {t("select-placeholder")}
-            </option>
-            {DEGREE_LEVEL_OPTIONS.map((degree) => (
-              <option key={degree} value={degree}>
-                {degree}
-              </option>
-            ))}
-          </select>
-        </label>
-
-        <label className="wizard-field">
-          {t("field-expected-graduation")}
-          <input
-            type="month"
-            required
-            value={form.expectedGraduation}
-            onChange={(e) => set("expectedGraduation", e.target.value)}
-          />
-        </label>
-      </fieldset>
-      )}
-
-      {section === "education" && (
-      <fieldset className="wizard-fieldset">
-        <legend>{t("section-school-community")}</legend>
 
         <label className="wizard-field">
           {t("field-head-delegate")}
@@ -407,20 +312,36 @@ export default function DemographicsForm({ initialData, userId }: DemographicsFo
       </fieldset>
       )}
 
-      {section === "professional" && (
+      {/* Professional branch */}
+      {section === "background" && !isStudent && (
       <fieldset className="wizard-fieldset">
         <legend>{t("section-professional")}</legend>
 
-        <label className="wizard-field wizard-field--wide">
-          {t("field-current-affiliation")}
+        <label className="wizard-field">
+          {t("field-company")}
           <input
             type="text"
             required
-            placeholder={t("field-current-affiliation-placeholder")}
-            value={form.currentAffiliation}
-            onChange={(e) => set("currentAffiliation", e.target.value)}
+            value={form.company}
+            onChange={(e) => set("company", e.target.value)}
           />
         </label>
+
+        <label className="wizard-field">
+          {t("field-job-title")}
+          <input
+            type="text"
+            required
+            value={form.jobTitle}
+            onChange={(e) => set("jobTitle", e.target.value)}
+          />
+        </label>
+      </fieldset>
+      )}
+
+      {section === "background" && (
+      <fieldset className="wizard-fieldset">
+        <legend>{t("section-links")}</legend>
 
         <label className="wizard-field">
           {t("field-resume-url")}
@@ -464,21 +385,50 @@ export default function DemographicsForm({ initialData, userId }: DemographicsFo
           />
         </label>
 
-        <div className="wizard-field wizard-field--wide">
-          <span>{t("field-previously-attended")}</span>
-          <div className="wizard-checkbox-group">
-            {PREVIOUSLY_ATTENDED_OPTIONS.map((year) => (
-              <label className="wizard-checkbox" key={year}>
-                <input
-                  type="checkbox"
-                  checked={form.previouslyAttendedCUSEC.includes(year)}
-                  onChange={() => toggleAttended(year)}
-                />
-                {year === "none" ? t("no-first-time") : year}
-              </label>
+        <label className="wizard-field">
+          {t("field-previously-attended")}
+          <select
+            required
+            value={form.previouslyAttended}
+            onChange={(e) => {
+              const value = e.target.value as FormState["previouslyAttended"];
+              // Clear the year when switching back to "no" so a stale value
+              // can't be submitted.
+              setForm((prev) => ({
+                ...prev,
+                previouslyAttended: value,
+                previouslyAttendedYear:
+                  value === "yes" ? prev.previouslyAttendedYear : "",
+              }));
+            }}
+          >
+            {YES_NO_OPTIONS.map((option) => (
+              <option key={option.value} value={option.value}>
+                {option.label}
+              </option>
             ))}
-          </div>
-        </div>
+          </select>
+        </label>
+
+        {form.previouslyAttended === "yes" && (
+          <label className="wizard-field">
+            {t("field-attended-year")}
+            <select
+              required
+              value={form.previouslyAttendedYear}
+              onChange={(e) => set("previouslyAttendedYear", e.target.value)}
+            >
+              <option value="" disabled>
+                {t("select-placeholder")}
+              </option>
+              {ATTENDED_YEAR_OPTIONS.map((year) => (
+                <option key={year} value={year}>
+                  {year}
+                </option>
+              ))}
+            </select>
+          </label>
+        )}
 
         <div className="wizard-field wizard-field--wide">
           <span>{t("field-excited-events")}</span>
@@ -504,24 +454,6 @@ export default function DemographicsForm({ initialData, userId }: DemographicsFo
 
       {section === "conference" && (
       <fieldset className="wizard-fieldset">
-        <legend>{t("section-accommodation")}</legend>
-
-        <div className="wizard-field">
-          <span>{t("field-hotel-booking")}</span>
-          <label className="wizard-checkbox">
-            <input
-              type="checkbox"
-              checked={form.wantsHotelBooking}
-              onChange={(e) => set("wantsHotelBooking", e.target.checked)}
-            />
-            {t("yes")}
-          </label>
-        </div>
-      </fieldset>
-      )}
-
-      {section === "optional" && (
-      <fieldset className="wizard-fieldset">
         <legend>{t("section-optional")}</legend>
 
         <label className="wizard-field wizard-field--wide">
@@ -532,13 +464,15 @@ export default function DemographicsForm({ initialData, userId }: DemographicsFo
           />
         </label>
 
-        <label className="wizard-field wizard-field--wide">
-          {t("field-school-involvement")}
-          <textarea
-            value={form.schoolCommunityInvolvement}
-            onChange={(e) => set("schoolCommunityInvolvement", e.target.value)}
-          />
-        </label>
+        {isStudent && (
+          <label className="wizard-field wizard-field--wide">
+            {t("field-school-involvement")}
+            <textarea
+              value={form.schoolCommunityInvolvement}
+              onChange={(e) => set("schoolCommunityInvolvement", e.target.value)}
+            />
+          </label>
+        )}
 
         <label className="wizard-field wizard-field--wide">
           {t("field-cusec-association")}

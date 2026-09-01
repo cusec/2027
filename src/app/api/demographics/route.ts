@@ -19,7 +19,12 @@ function sanitizeArray(input: unknown): string[] {
 
 const TSHIRT_SIZES = ["XS", "S", "M", "L", "XL", "XXL", "XXXL"];
 const HEAD_DELEGATE_VALUES = ["yes", "no", "unsure"];
-const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const ATTENDEE_TYPES = ["student", "professional"];
+const YES_NO = ["yes", "no"];
+// CUSEC has run every year since 2003; 2026 is the latest past edition.
+const ATTENDED_YEARS = Array.from({ length: 2026 - 2003 + 1 }, (_, i) =>
+  String(2003 + i)
+);
 
 // GET - the caller's own demographic survey answers, or null if not submitted yet.
 // Scoped strictly to the authenticated session's own record.
@@ -53,62 +58,83 @@ export async function PUT(request: Request) {
     return NextResponse.json({ error: "Invalid JSON" }, { status: 400 });
   }
 
+  const attendeeType = sanitizeInput(body.attendeeType);
+  const isStudent = attendeeType === "student";
+  const previouslyAttended = sanitizeInput(body.previouslyAttended);
+
+  // Name, emails, university, graduation and degree are intentionally not
+  // accepted here — Ticket Tailor's checkout already collects them, and
+  // duplicating the ask is exactly what this survey was trimmed to avoid.
   const data = {
-    firstName: sanitizeInput(body.firstName),
-    lastName: sanitizeInput(body.lastName),
+    attendeeType,
     pronoun: sanitizeInput(body.pronoun),
     tshirtSize: sanitizeInput(body.tshirtSize),
     dietaryRestrictions: sanitizeInput(body.dietaryRestrictions),
-    studentEmail: sanitizeInput(body.studentEmail).toLowerCase(),
-    personalEmail: sanitizeInput(body.personalEmail).toLowerCase(),
-    university: sanitizeInput(body.university),
-    fieldOfStudy: sanitizeInput(body.fieldOfStudy),
-    degreeCurrentlyPursuing: sanitizeInput(body.degreeCurrentlyPursuing),
-    highestDegree: sanitizeInput(body.highestDegree),
-    expectedGraduation: sanitizeInput(body.expectedGraduation),
-    schoolHasHeadDelegate: sanitizeInput(body.schoolHasHeadDelegate),
-    currentAffiliation: sanitizeInput(body.currentAffiliation),
+
+    // The branch that does not apply is stored blank rather than left off,
+    // so switching the toggle can never leave stale answers behind.
+    fieldOfStudy: isStudent ? sanitizeInput(body.fieldOfStudy) : "",
+    schoolHasHeadDelegate: isStudent
+      ? sanitizeInput(body.schoolHasHeadDelegate)
+      : "unsure",
+    company: isStudent ? "" : sanitizeInput(body.company),
+    jobTitle: isStudent ? "" : sanitizeInput(body.jobTitle),
+
     resumeUrl: sanitizeInput(body.resumeUrl),
     githubUrl: sanitizeInput(body.githubUrl),
     linkedinUrl: sanitizeInput(body.linkedinUrl),
+
     howDidYouHear: sanitizeInput(body.howDidYouHear),
-    previouslyAttendedCUSEC: sanitizeArray(body.previouslyAttendedCUSEC),
+    previouslyAttended,
+    previouslyAttendedYear:
+      previouslyAttended === "yes"
+        ? sanitizeInput(body.previouslyAttendedYear)
+        : "",
     excitedEvents: sanitizeArray(body.excitedEvents),
-    wantsHotelBooking: body.wantsHotelBooking === true,
+
     whyAttendCUSEC: sanitizeInput(body.whyAttendCUSEC),
     schoolCommunityInvolvement: sanitizeInput(body.schoolCommunityInvolvement),
     cusecAssociation: sanitizeInput(body.cusecAssociation),
   };
 
   const requiredFields: [string, string][] = [
-    ["firstName", data.firstName],
-    ["lastName", data.lastName],
+    ["attendeeType", data.attendeeType],
     ["pronoun", data.pronoun],
     ["tshirtSize", data.tshirtSize],
-    ["studentEmail", data.studentEmail],
-    ["personalEmail", data.personalEmail],
-    ["university", data.university],
-    ["fieldOfStudy", data.fieldOfStudy],
-    ["degreeCurrentlyPursuing", data.degreeCurrentlyPursuing],
-    ["highestDegree", data.highestDegree],
-    ["expectedGraduation", data.expectedGraduation],
-    ["schoolHasHeadDelegate", data.schoolHasHeadDelegate],
-    ["currentAffiliation", data.currentAffiliation],
+    ["previouslyAttended", data.previouslyAttended],
   ];
+  if (isStudent) {
+    requiredFields.push(["fieldOfStudy", data.fieldOfStudy]);
+  } else {
+    requiredFields.push(["company", data.company]);
+    requiredFields.push(["jobTitle", data.jobTitle]);
+  }
   for (const [field, value] of requiredFields) {
     if (!value) {
       return NextResponse.json({ error: `${field} is required` }, { status: 400 });
     }
   }
 
+  if (!ATTENDEE_TYPES.includes(data.attendeeType)) {
+    return NextResponse.json({ error: "Invalid attendee type" }, { status: 400 });
+  }
   if (!TSHIRT_SIZES.includes(data.tshirtSize)) {
     return NextResponse.json({ error: "Invalid t-shirt size" }, { status: 400 });
   }
-  if (!HEAD_DELEGATE_VALUES.includes(data.schoolHasHeadDelegate)) {
+  if (isStudent && !HEAD_DELEGATE_VALUES.includes(data.schoolHasHeadDelegate)) {
     return NextResponse.json({ error: "Invalid head delegate answer" }, { status: 400 });
   }
-  if (!EMAIL_REGEX.test(data.studentEmail) || !EMAIL_REGEX.test(data.personalEmail)) {
-    return NextResponse.json({ error: "Invalid email format" }, { status: 400 });
+  if (!YES_NO.includes(data.previouslyAttended)) {
+    return NextResponse.json({ error: "Invalid previously-attended answer" }, { status: 400 });
+  }
+  if (
+    data.previouslyAttended === "yes" &&
+    !ATTENDED_YEARS.includes(data.previouslyAttendedYear)
+  ) {
+    return NextResponse.json(
+      { error: "Pick the year you attended (2003-2026)" },
+      { status: 400 }
+    );
   }
   if (data.excitedEvents.length !== 3) {
     return NextResponse.json({ error: "Pick exactly 3 events" }, { status: 400 });

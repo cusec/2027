@@ -2,16 +2,20 @@
 // No server-only imports here (no mongoose/mongodb) so client components can
 // import this directly without pulling server code into the browser bundle.
 // Kept in sync by hand with the enums in src/lib/models.ts.
+//
+// Deliberately short: Ticket Tailor's own checkout already collects name,
+// email, student email, university, expected graduation and degree, so this
+// survey must not ask for any of them again.
 
 export const TSHIRT_SIZE_OPTIONS = ["XS", "S", "M", "L", "XL", "XXL", "XXXL"];
 
-export const DEGREE_LEVEL_OPTIONS = [
-  "High School",
-  "College Diploma",
-  "Bachelor's",
-  "Master's",
-  "PhD",
-  "Other",
+// Splits the survey: a professional has no school, so the education and
+// head-delegate questions are replaced by company/role. This is what removed
+// the old free-text "current affiliation" field, which just duplicated
+// whichever of the two the attendee happened to be.
+export const ATTENDEE_TYPE_OPTIONS: { value: string; label: string }[] = [
+  { value: "student", label: "Student" },
+  { value: "professional", label: "Professional" },
 ];
 
 export const HEAD_DELEGATE_OPTIONS: { value: string; label: string }[] = [
@@ -20,7 +24,17 @@ export const HEAD_DELEGATE_OPTIONS: { value: string; label: string }[] = [
   { value: "unsure", label: "Not sure" },
 ];
 
-export const PREVIOUSLY_ATTENDED_OPTIONS = ["2024", "2025", "2026", "none"];
+export const YES_NO_OPTIONS: { value: string; label: string }[] = [
+  { value: "no", label: "No" },
+  { value: "yes", label: "Yes" },
+];
+
+// CUSEC has run every year since 2003; 2026 is the most recent edition, so
+// 2027 (the one being bought) is deliberately not offered.
+export const ATTENDED_YEAR_OPTIONS = Array.from(
+  { length: 2026 - 2003 + 1 },
+  (_, i) => String(2026 - i)
+);
 
 // Placeholder until the real conference schedule exists (see timeline notes
 // in docs/ticket-tailor/ticket-tailor-flow.png — schedule lands closer to Dec).

@@ -260,27 +260,25 @@ export interface RegisteredUser {
 export interface DemographicInfo {
   _id?: string;
   user: string;
-  firstName: string;
-  lastName: string;
+  // Ticket Tailor's checkout owns name, emails, university, graduation and
+  // degree — they are deliberately absent here.
+  attendeeType: "student" | "professional";
   pronoun: string;
   tshirtSize: string;
   dietaryRestrictions?: string;
-  studentEmail: string;
-  personalEmail: string;
-  university: string;
-  fieldOfStudy: string;
-  degreeCurrentlyPursuing: string;
-  highestDegree: string;
-  expectedGraduation: string;
-  schoolHasHeadDelegate: "yes" | "no" | "unsure";
-  currentAffiliation: string;
+  // Student-only
+  fieldOfStudy?: string;
+  schoolHasHeadDelegate?: "yes" | "no" | "unsure";
+  // Professional-only
+  company?: string;
+  jobTitle?: string;
   resumeUrl?: string;
   githubUrl?: string;
   linkedinUrl?: string;
   howDidYouHear?: string;
-  previouslyAttendedCUSEC: string[];
+  previouslyAttended: "yes" | "no";
+  previouslyAttendedYear?: string;
   excitedEvents: string[];
-  wantsHotelBooking: boolean;
   whyAttendCUSEC?: string;
   schoolCommunityInvolvement?: string;
   cusecAssociation?: string;

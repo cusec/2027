@@ -4,6 +4,8 @@ import { findOrCreateUser } from "@/lib/userService";
 import connectMongoDB from "@/lib/mongodb";
 import { DemographicInfo } from "@/lib/models";
 import DemographicsForm from "@/app/components/TicketWizard/DemographicsForm";
+import AlreadyTicketedModal from "@/app/components/TicketWizard/AlreadyTicketedModal";
+import { getWizardStatus } from "@/lib/ticketWizard";
 
 export default async function DemographicsPage() {
   const t = await getTranslations("TicketWizard");
@@ -32,6 +34,20 @@ export default async function DemographicsPage() {
     email,
     name: session?.user?.name || "Attendee",
   });
+
+  // One ticket per account. If this account already has one, the survey is
+  // done and re-opening it would show a blank form over saved answers, so
+  // send them to log out and use another account instead.
+  const status = await getWizardStatus(email);
+  if (status.purchaseComplete) {
+    return (
+      <AlreadyTicketedModal
+        email={email}
+        ticketName={status.purchasedTicketName}
+        baseURL={process.env.APP_BASE_URL || ""}
+      />
+    );
+  }
 
   await connectMongoDB();
   const existing = await DemographicInfo.findOne({ user: user._id }).lean();

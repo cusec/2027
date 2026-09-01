@@ -418,3 +418,53 @@
         grid-template-columns: 1fr;
     }
 }
+
+/* --------------------------------------------------------------------------
+   Already-ticketed modal
+   Shown instead of the demographics form when the signed-in account already
+   holds a ticket. Matches the Win95 chrome of .wizard-intro-card.
+   -------------------------------------------------------------------------- */
+.wizard-modal-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1.5rem;
+    background: rgba(0, 0, 0, 0.55);
+    overflow-y: auto;
+}
+
+.wizard-modal {
+    width: 100%;
+    max-width: 520px;
+    padding: 1.75rem;
+    background: #c0c0c0;
+    border-top: 2px solid #ffffff;
+    border-left: 2px solid #ffffff;
+    border-right: 2px solid #2b2b2b;
+    border-bottom: 2px solid #2b2b2b;
+    box-shadow: inset 1px 1px 0 #dbdbdb;
+}
+
+.wizard-modal-heading {
+    margin: 0 0 1rem;
+    font-size: 1.35rem;
+    font-weight: 700;
+    color: #101010;
+}
+
+.wizard-modal-body {
+    margin: 0 0 0.9rem;
+    font-size: 0.95rem;
+    line-height: 1.55;
+    color: #1c1c1c;
+}
+
+.wizard-modal-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin-top: 1.4rem;
+}

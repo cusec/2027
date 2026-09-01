@@ -295,9 +295,20 @@ const demographicInfoSchema = new Schema(
       index: true,
     },
 
-    // Personal Information
-    firstName: { type: String, required: true },
-    lastName: { type: String, required: true },
+    // NOTE: name, personal email, student email, university, expected
+    // graduation and degree are intentionally NOT stored here — Ticket
+    // Tailor's checkout already asks for all six, and this survey exists to
+    // collect only what TT does not. Read those from the TT order/export.
+
+    // Splits the rest of the survey. Replaces the old free-text
+    // "currentAffiliation", which duplicated the school/company answer.
+    attendeeType: {
+      type: String,
+      required: true,
+      enum: ["student", "professional"],
+    },
+
+    // Personal
     pronoun: { type: String, required: true },
     tshirtSize: {
       type: String,
@@ -306,33 +317,33 @@ const demographicInfoSchema = new Schema(
     },
     dietaryRestrictions: { type: String, default: "" },
 
-    // Contact Information
-    studentEmail: { type: String, required: true },
-    personalEmail: { type: String, required: true },
-
-    // Education
-    university: { type: String, required: true },
-    fieldOfStudy: { type: String, required: true },
-    degreeCurrentlyPursuing: { type: String, required: true },
-    highestDegree: { type: String, required: true },
-    expectedGraduation: { type: String, required: true }, // "YYYY-MM"
-
-    // School and Community
+    // Student-only (blank for professionals)
+    fieldOfStudy: { type: String, default: "" },
     schoolHasHeadDelegate: {
       type: String,
-      required: true,
+      default: "unsure",
       enum: ["yes", "no", "unsure"],
     },
 
-    // Professional Information
-    currentAffiliation: { type: String, required: true },
+    // Professional-only (blank for students)
+    company: { type: String, default: "" },
+    jobTitle: { type: String, default: "" },
+
+    // Links — optional for everyone
     resumeUrl: { type: String, default: "" },
     githubUrl: { type: String, default: "" },
     linkedinUrl: { type: String, default: "" },
 
-    // Conference Information
+    // Conference
     howDidYouHear: { type: String, default: "" },
-    previouslyAttendedCUSEC: { type: [String], default: [] },
+    previouslyAttended: {
+      type: String,
+      required: true,
+      enum: ["yes", "no"],
+      default: "no",
+    },
+    // Only meaningful when previouslyAttended === "yes".
+    previouslyAttendedYear: { type: String, default: "" },
     excitedEvents: {
       type: [String],
       default: [],
@@ -342,10 +353,7 @@ const demographicInfoSchema = new Schema(
       },
     },
 
-    // Accommodation
-    wantsHotelBooking: { type: Boolean, required: true },
-
-    // Optional
+    // Optional free text
     whyAttendCUSEC: { type: String, default: "" },
     schoolCommunityInvolvement: { type: String, default: "" },
     cusecAssociation: { type: String, default: "" },
