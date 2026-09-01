@@ -1,4 +1,3 @@
-import type React from "react";
 import { auth0 } from "@/lib/auth0";
 import { findOrCreateUser } from "@/lib/userService";
 import { reconcileTicketPurchase } from "@/lib/ticketLinking";
@@ -14,7 +13,6 @@ export default async function ScavengerPage() {
   const isUserAdmin = user?.["cusec/roles"]?.includes("Admin") || false;
   const isUserVolunteer = user?.["cusec/roles"]?.includes("Volunteer") || false;
 
-  // Find or create the MongoDB user record once the visitor is authenticated.
   let dbUser = null;
   let emailVerified = false;
   if (user?.email) {
@@ -42,7 +40,6 @@ export default async function ScavengerPage() {
       dbUser = JSON.parse(
         JSON.stringify({ ...plainUser, points: plainUser.points || 0 })
       );
-      // Confirm the linked email is genuinely registered and marked as linked
       if (plainUser.linked_email) {
         const registeredUser = await RegisteredUser.findOne({
           linkedEmail: plainUser.linked_email,
@@ -53,46 +50,38 @@ export default async function ScavengerPage() {
     }
   }
 
-  const showDashboard = user && (scavengerEnabled || isUserAdmin || isUserVolunteer);
+  const showDashboard =
+    user && (scavengerEnabled || isUserAdmin || isUserVolunteer);
 
-  return (
-    <main
-        className="relative min-h-screen text-light-mode overflow-x-hidden"
-        style={{
-          backgroundImage: "url('/assets/linking-screen-1.png')",
-          backgroundSize: "cover",
-          backgroundAttachment: "fixed",
-          backgroundPosition: "center",
-          "--color-light-mode": "#111827",
-        } as React.CSSProperties}
-      >
-      {showDashboard ? (
-        <Dashboard
-          user={user as Auth0User}
-          dbUser={dbUser}
-          baseURL={process.env.APP_BASE_URL || ""}
-          emailVerified={emailVerified}
-        />
-      ) : (
-        <div className="mx-auto max-w-2xl px-6 py-24 text-center">
-          <h1 className="text-4xl font-bold tracking-wide">SCAVENGER HUNT</h1>
-          <p className="mt-4 text-light-mode/80">
+  if (!showDashboard) {
+    return (
+      <section className="aero-page">
+        <div className="aero-panel aero-gate">
+          <h1 className="aero-title">Scavenger Hunt</h1>
+          <p>
             Scan codes, solve puzzles, and climb the leaderboard at CUSEC 2027.
           </p>
-          <a
-            href="/auth/login?returnTo=/scavenger"
-            className="register-hover mt-8 inline-flex items-center gap-2 rounded-full border-2 border-light-mode/40 px-6 py-3 font-semibold"
-          >
-            <Trophy className="h-5 w-5" />
-            {scavengerEnabled ? "Start Hunting" : "Beta Access Login"}
+          {/* eslint-disable-next-line @next/next/no-html-link-for-pages */}
+          <a href="/auth/login?returnTo=/scavenger" className="aero-btn">
+            <Trophy className="h-4 w-4" />
+            {scavengerEnabled ? "Start hunting" : "Beta access login"}
           </a>
           {!scavengerEnabled && (
-            <p className="mt-6 text-sm text-light-mode/70">
+            <p className="aero-gate__foot">
               The hunt opens closer to the conference.
             </p>
           )}
         </div>
-      )}
-    </main>
+      </section>
+    );
+  }
+
+  return (
+    <Dashboard
+      user={user as Auth0User}
+      dbUser={dbUser}
+      baseURL={process.env.APP_BASE_URL || ""}
+      emailVerified={emailVerified}
+    />
   );
 }

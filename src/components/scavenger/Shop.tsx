@@ -90,96 +90,55 @@ const Shop = ({ user, dbUser }: ShopProps) => {
     setUserPoints(newPoints);
   };
 
-  if (loading) {
-    return (
-      <div className="w-full max-w-4xl mx-auto text-light-mode/90">
-        <div className="p-6">
-          <div className="flex flex-col items-center mb-6">
-            <div className="flex items-center justify-center space-x-2">
-              <ShoppingBag className="w-8 h-8" />
-              <h2 className="text-2xl md:text-4xl font-bold">Shop</h2>
-            </div>
-          </div>
-          <div className="space-y-3">
-            {[...Array(5)].map((_, i) => (
-              <div
-                key={i}
-                className="animate-pulse bg-gray-700 rounded-lg h-16"
-              />
-            ))}
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="w-full max-w-4xl mx-auto text-light-mode/90">
-        <div className="p-6">
-          <div className="flex flex-col items-center mb-6">
-            <div className="flex items-center justify-center space-x-2">
-              <ShoppingBag className="w-8 h-8" />
-              <h2 className="text-2xl md:text-4xl font-bold">Shop</h2>
-            </div>
-          </div>
-          <div className="text-center py-8">
-            <p className="text-red-400 mb-4">{error}</p>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
   return (
-    <div className="w-full max-w-4xl mx-auto text-light-mode/90">
-      <div className="p-8">
-        {/* Header */}
+    <section className="aero-sec" id="shop">
+      <h2 className="aero-sec__title">
+        <ShoppingBag aria-hidden="true" />
+        Shop
+      </h2>
 
-        <div className="flex items-center justify-center space-x-2">
-          <ShoppingBag className="w-8 h-8" />
-          <h2 className="text-2xl md:text-4xl font-bold">Shop</h2>
+      {loading ? (
+        <div className="aero-panel aero-note">
+          <p>Loading the shop…</p>
         </div>
+      ) : error ? (
+        <div className="aero-panel aero-note">
+          <p>{error}</p>
+        </div>
+      ) : shopItems.length === 0 && collectibles.length === 0 ? (
+        <div className="aero-panel aero-note">
+          <p>No items available yet. Check back soon!</p>
+        </div>
+      ) : (
+        <>
+          {shopItems.length > 0 && (
+            <div className="aero-grid">
+              {shopItems.map((item) => (
+                <ShopPrize
+                  key={item._id}
+                  item={item}
+                  isVolunteerOrAdmin={isVolunteerOrAdmin}
+                  onRedeemSuccess={handleShopPrizeRedeemSuccess}
+                />
+              ))}
+            </div>
+          )}
 
-        {/* Shop Items List */}
-        {shopItems.length === 0 && collectibles.length === 0 ? (
-          <div className="text-center py-8">
-            <ShoppingBag className="w-16 h-16 mx-auto mb-4" />
-            <p>No items available yet. Check back soon!</p>
-          </div>
-        ) : (
-          <>
-            {/* Shop Prizes Section */}
-            {shopItems.length > 0 && (
-              <div className="w-full flex flex-col items-center justify-center text-center sm:grid sm:grid-cols-2 md:grid-cols-3 gap-4 pt-6">
-                {shopItems.map((item) => (
-                  <ShopPrize
-                    key={item._id}
-                    item={item}
-                    isVolunteerOrAdmin={isVolunteerOrAdmin}
-                    onRedeemSuccess={handleShopPrizeRedeemSuccess}
-                  />
-                ))}
-              </div>
-            )}
-
-            {/* Collectibles Section */}
-            {collectibles.length > 0 && (
-              <div className="w-full flex flex-col items-center justify-center text-center md:grid md:grid-cols-2 gap-4 pt-4">
-                {collectibles.map((collectible) => (
-                  <ShopCollectible
-                    key={collectible._id}
-                    collectible={collectible}
-                    userPoints={userPoints}
-                    onRedeemSuccess={handleCollectibleRedeemSuccess}
-                  />
-                ))}
-              </div>
-            )}
-          </>
-        )}
-      </div>
-    </div>
+          {collectibles.length > 0 && (
+            <div className="aero-grid aero-grid--wide">
+              {collectibles.map((collectible) => (
+                <ShopCollectible
+                  key={collectible._id}
+                  collectible={collectible}
+                  userPoints={userPoints}
+                  onRedeemSuccess={handleCollectibleRedeemSuccess}
+                />
+              ))}
+            </div>
+          )}
+        </>
+      )}
+    </section>
   );
 };
 

@@ -74,24 +74,34 @@ const Modal = ({
       {/* Modal Content — reset CSS vars so dark-bg modals keep light text */}
       <div
         className={cn(
-          "relative z-10 w-full max-w-2xl max-h-[70vh] overflow-y-auto bg-white rounded-lg shadow-xl",
+          "v2-modal relative z-10 w-full max-w-2xl max-h-[70vh] overflow-y-auto bg-white rounded-lg shadow-xl",
           isClosing
             ? "animate-out fade-out zoom-out-95 duration-200"
             : "animate-in fade-in zoom-in-95 duration-200",
           className
         )}
         style={{
-          "--color-light-mode": "#f5f5f5",
-          "--color-dark-mode": "#111827",
+          // Pinned so a modal's own text colours never depend on whatever the
+          // page behind it set. Values track the v2 palette; both pairings are
+          // high contrast — ink-deep on white, and white on the dark panel.
+          "--color-light-mode": "#F4FFFC",
+          "--color-dark-mode": "#0E2318",
         } as React.CSSProperties}
       >
         {/* Header */}
         {title && (
           <div className="flex items-center justify-between p-4 md:p-6 border-b border-gray-200">
-            <h2 className="text-lg md:text-xl font-semibold">{title}</h2>
+            <h2 className="v2-modal__title text-lg md:text-xl font-semibold">
+              {title}
+            </h2>
+            {/* Opacity rather than a fixed grey: the old hover went *lighter*,
+                which on a white panel dropped contrast instead of raising it,
+                and it had to work on the dark admin panel too. */}
             <button
+              type="button"
               onClick={handleClose}
-              className="p-2 text-gray-400 hover:text-gray-200 transition-colors cursor-pointer"
+              aria-label="Close dialog"
+              className="p-2 rounded-md text-current opacity-60 hover:opacity-100 transition-opacity cursor-pointer"
             >
               <X size={20} />
             </button>

@@ -2,19 +2,28 @@
 
 /*
  * Scavenger-hunt theme tokens.
- * Ported from CUSEC 2026 but intentionally remapped to a neutral grayscale
- * palette ("no fancy color combos"). Tweak these values in one place to
- * restyle the entire scavenger UI.
+ *
+ * Remapped onto the main site's v2 palette (src/app/styles/v2/base.css) so the
+ * whole hunt reads as part of 2027.cusec.net rather than a separate grayscale
+ * app. Every scavenger component derives its colours from these eight tokens,
+ * so this block is still the one place to restyle the entire hunt.
+ *
+ * Values are the v2 tokens verbatim — keep the two in step.
  */
 @theme {
-  --color-primary: #1f2937;
-  --color-light-primary: #374151;
-  --color-secondary: #4b5563;
-  --color-dark-mode: #111827;
-  --color-light-mode: #f5f5f5;
-  --color-accent: #6b7280;
-  --color-sunset: #4b5563;
-  --color-sea: #374151;
+  /* deep greens — card and surface backgrounds */
+  --color-primary: #1F3B2C;        /* v2 ink */
+  --color-light-primary: #2C5540;  /* v2 ink, lifted for hover surfaces */
+  --color-dark-mode: #0E2318;      /* v2 ink-deep */
+
+  /* mints / whites — text and borders on those surfaces */
+  --color-light-mode: #F4FFFC;     /* v2 white */
+
+  /* lime — the brand accent, used for CTAs and highlights */
+  --color-accent: #C3E956;         /* v2 lime */
+  --color-secondary: #7FA829;      /* v2 lime-deep (register-hover fill) */
+  --color-sunset: #C3E956;         /* v2 lime */
+  --color-sea: #4EC9A8;            /* v2 teal */
 }
 
 :root {

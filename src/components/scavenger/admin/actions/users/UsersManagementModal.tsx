@@ -10,6 +10,7 @@ import {
   History,
   Gem,
   Gift,
+  Send,
   // Trash2,
   RefreshCw,
 } from "lucide-react";
@@ -17,6 +18,7 @@ import Modal from "@/components/ui/modal";
 import UserHistoryDetailsModal from "./UserHistoryDetailsModal";
 import UserCollectiblesModal from "./UserCollectiblesModal";
 import UserShopPrizesModal from "./UserShopPrizesModal";
+import UserSubmissionsModal from "./UserSubmissionsModal";
 
 interface User {
   _id: string;
@@ -66,6 +68,9 @@ const UsersManagementModal = ({
 
   // Shop prizes modal state
   const [shopPrizesModalOpen, setShopPrizesModalOpen] = useState(false);
+
+  // Challenge submissions modal state
+  const [submissionsModalOpen, setSubmissionsModalOpen] = useState(false);
 
   const fetchUsers = async () => {
     try {
@@ -192,6 +197,11 @@ const UsersManagementModal = ({
   const showUserCollectibles = (user: User) => {
     setSelectedUser(user);
     setCollectiblesModalOpen(true);
+  };
+
+  const showUserSubmissions = (user: User) => {
+    setSelectedUser(user);
+    setSubmissionsModalOpen(true);
   };
 
   const handleClose = () => {
@@ -405,6 +415,14 @@ const UsersManagementModal = ({
                             <Gem className="w-3 h-3" />
                             Collectibles
                           </button>
+                          <button
+                            onClick={() => showUserSubmissions(user)}
+                            className="flex items-center gap-1 px-3 py-1 bg-teal-600 text-white rounded hover:bg-teal-700 text-sm"
+                            title="View & Manage Challenge Submissions"
+                          >
+                            <Send className="w-3 h-3" />
+                            Submissions
+                          </button>
                           {isAdmin && (
                             <button
                               onClick={() => {
@@ -519,6 +537,16 @@ const UsersManagementModal = ({
       <UserCollectiblesModal
         isOpen={collectiblesModalOpen}
         onClose={() => setCollectiblesModalOpen(false)}
+        isAdmin={isAdmin}
+        userId={selectedUser?._id || null}
+        userName={selectedUser?.name || ""}
+        userEmail={selectedUser?.email || ""}
+      />
+
+      {/* User Challenge Submissions Modal */}
+      <UserSubmissionsModal
+        isOpen={submissionsModalOpen}
+        onClose={() => setSubmissionsModalOpen(false)}
         isAdmin={isAdmin}
         userId={selectedUser?._id || null}
         userName={selectedUser?.name || ""}

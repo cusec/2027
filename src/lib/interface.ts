@@ -285,3 +285,46 @@ export interface DemographicInfo {
   createdAt?: string;
   updatedAt?: string;
 }
+
+export interface Challenge {
+  _id: string;
+  title: string;
+  description: string;
+  eventName: string;
+  points: number;
+  active: boolean;
+  activationStart: string | null;
+  activationEnd: string | null;
+  maxSubmissions: number | null;
+  submissionCount: number;
+  createdBy?: string;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+export interface ChallengeFormData {
+  title: string;
+  description: string;
+  eventName: string;
+  points: number;
+  active: boolean;
+  activationStart: string | null;
+  activationEnd: string | null;
+  maxSubmissions: number | null;
+}
+
+export type SubmissionStatus = "pending" | "approved" | "rejected";
+
+export interface Submission {
+  _id: string;
+  // Populated to a Challenge when the admin review endpoint expands it.
+  challengeId: string | Challenge;
+  userId: string;
+  userEmail: string;
+  url: string;
+  notes: string;
+  status: SubmissionStatus;
+  pointsAwarded: number;
+  createdAt?: string;
+  updatedAt?: string;
+}
