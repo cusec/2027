@@ -59,9 +59,6 @@ const ChallengeCard = ({
     <article className="v2-chal">
       <div className="v2-chal__head">
         <div>
-          {challenge.eventName && (
-            <p className="v2-chal__event">{challenge.eventName}</p>
-          )}
           <h3 className="v2-chal__title">{challenge.title}</h3>
           {challenge.points > 0 && (
             <p className="v2-chal__points">

@@ -1,52 +1,59 @@
 "use client";
 
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from "@/components/ui/accordion";
 import { useState } from "react";
 
 import faqData from "./DashboardFAQData";
 
-const DashboardFAQ: React.FC = () => {
-  const [openItem, setOpenItem] = useState<string | undefined>(undefined);
+/**
+ * Lily-pad FAQ, matching the pattern the main site uses on 2027.cusec.net
+ * (site/v2 `V2Faq`): white pads scattered across the painting, exactly one
+ * open at a time, each widening to reveal its answer.
+ *
+ * Deliberately not the shared Radix accordion — the pad's reveal animates
+ * both height and width together, which the accordion's height-only
+ * transition can't express.
+ */
+const DashboardFAQ = () => {
+  // exactly one pad open at a time; clicking the open one closes it
+  const [openPad, setOpenPad] = useState<number | null>(null);
 
   return (
-    <div
-      id="Faq"
-      className="relative mt-24 mb-24 px-4 md:px-8 w-full flex flex-col justify-center mx-auto text-light-mode"
-    >
-      <div className="w-full flex justify-center text-center mb-8">
-        <h2 className="text-2xl md:text-4xl font-bold pb-4 text-light-mode select-none">
-          Additional Information
-        </h2>
+    <section className="v2-faq" id="Faq">
+      <div className="v2-faq__head">
+        <h2 className="v2-heading-pill">Additional Information</h2>
       </div>
-      <div className="w-full flex justify-center">
-        <Accordion
-          type="single"
-          collapsible
-          value={openItem}
-          onValueChange={setOpenItem}
-        >
-          {faqData.map((item, index) => (
-            <AccordionItem
-              key={index}
-              value={`item-${index}`}
-              className={`md:min-w-[700px] lg:min-w-[800px] max-w-[800px] text-start transition-opacity duration-300 ${
-                openItem && openItem !== `item-${index}`
-                  ? "opacity-50"
-                  : "opacity-100"
-              }`}
+
+      <div className="v2-faq__pond">
+        {faqData.map((item, index) => {
+          const n = index + 1;
+          const isOpen = openPad === n;
+
+          return (
+            <div
+              key={item.question}
+              className={`v2-pad v2-pad--${n}${isOpen ? " is-open" : ""}`}
             >
-              <AccordionTrigger>{item.question}</AccordionTrigger>
-              <AccordionContent>{item.answer}</AccordionContent>
-            </AccordionItem>
-          ))}
-        </Accordion>
+              <button
+                type="button"
+                className="v2-pad__q"
+                aria-expanded={isOpen}
+                aria-controls={`dash-faq-a-${n}`}
+                onClick={() => setOpenPad(isOpen ? null : n)}
+              >
+                {item.question}
+                <span className="v2-pad__toggle" aria-hidden="true" />
+              </button>
+
+              {/* 0fr -> 1fr on the wrapper reveals the answer without
+                  reflowing its text mid-animation */}
+              <div className="v2-pad__a" id={`dash-faq-a-${n}`} role="region">
+                <div className="v2-pad__body">{item.answer}</div>
+              </div>
+            </div>
+          );
+        })}
       </div>
-    </div>
+    </section>
   );
 };
 

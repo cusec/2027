@@ -5,7 +5,7 @@ const faqData: FAQItem[] = [
     question: "What are the rules for Scavenger Hunt?",
     answer: (
       <>
-        CUSEC 2026 Scavenger Hunt requires all participants to adhere to
+        CUSEC 2027 Scavenger Hunt requires all participants to adhere to
         CUSEC&apos;s{" "}
         <a
           href="/code-of-conduct"
@@ -40,7 +40,7 @@ const faqData: FAQItem[] = [
         <br />
         <br /> Support for Scavenger Hunt is available through the
         &apos;#scavenger-hunt-support&apos; forum/channel on the official
-        Discord server for 2026. <br />
+        Discord server for 2027. <br />
         <br />
         If you require further assistance, you can reach out to organizers at
         the conference, particularly at the Main Hall prize booth, at scheduled

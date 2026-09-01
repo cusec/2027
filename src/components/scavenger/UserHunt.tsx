@@ -83,11 +83,11 @@ const UserHunt = ({
           <h2 className="text-2xl md:text-4xl font-bold mb-1">
             Welcome {dbUser.name || "Hunter"}!
           </h2>
-          <div className="flex items-center justify-center gap-1 text-sm text-light-mode/70">
+          <div className="v2-hunt-meta flex items-center justify-center gap-1 text-sm text-light-mode/80 mt-2">
             <span>Linked Email:</span>
             <span>{linkedEmail || "Not set"}</span>
           </div>
-          <div className="flex items-center justify-center gap-1 text-sm text-light-mode/70 mb-6">
+          <div className="v2-hunt-meta flex items-center justify-center gap-1 text-sm text-light-mode/80 mt-2 mb-6">
             <span>Discord:</span>
             <span>{discordHandle || "Not set"}</span>
             <button

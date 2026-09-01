@@ -163,16 +163,6 @@ body:has(.v2) .Navbar {
     gap: 12px;
 }
 
-.v2-chal__event {
-    margin: 0 0 5px;
-    font-family: var(--v2-font-pixel);
-    font-weight: var(--v2-font-pixel-weight);
-    font-size: 10px;
-    letter-spacing: 0.2em;
-    text-transform: uppercase;
-    color: var(--v2-lime);
-}
-
 .v2-chal__title {
     margin: 0;
     font-family: var(--v2-font-pixel);

@@ -16,29 +16,63 @@
     min-height: 100svh;
 }
 
-/* The painting is bright sky at the top, and the hunt's cards are only ~30%
-   opaque, so without a scrim white body text sits directly on white cloud.
-   Deepens as the page goes on, matching how the painting itself darkens.
-   Only drawn behind the dashboard: the signed-out gate is a single solid card
-   and reads fine on its own, so it keeps the painting at full strength. */
-.v2-hunt-scene:has(.v2-hunt-page)::before {
-    position: absolute;
-    z-index: 0;
-    inset: 0;
-    content: "";
-    pointer-events: none;
-    background: linear-gradient(
-        to bottom,
-        rgba(14, 35, 24, 0.34) 0%,
-        rgba(14, 35, 24, 0.5) 45%,
-        rgba(14, 35, 24, 0.62) 100%
-    );
-}
+/* No scrim over the painting: the card override below already brings every
+   panel up to the v2 card weight, so the backdrop can stay at full strength
+   and match /scavenger/submissions. Loose text that sits directly on the sky
+   gets a shadow instead — see below. */
 
 .v2-hunt-page {
     position: relative;
     z-index: 1;
     padding-bottom: var(--v2-section-pad);
+    /* Section headings, the welcome block and empty states sit straight on the
+       painting, and the brightest part of it is white cloud — a single soft
+       shadow isn't enough for white text there. A tight near-opaque halo plus
+       a wider glow keeps small copy legible without darkening the artwork the
+       way a full-page scrim did. Inherited so every loose string is covered;
+       switched off again inside cards and modals, which have their own ground. */
+    text-shadow: 0 1px 2px rgba(11, 26, 58, 0.92), 0 2px 16px rgba(11, 26, 58, 0.7);
+}
+
+.v2-hunt-page .bg-dark-mode\/30,
+.v2-hunt-page .bg-dark-mode\/30 *,
+.v2-hunt-page .bg-dark-mode\/50,
+.v2-hunt-page .bg-dark-mode\/50 *,
+.v2-hunt-page .v2-modal,
+.v2-hunt-page .v2-modal * {
+    text-shadow: none;
+}
+
+/* The welcome block's linked-email / Discord lines are small and dimmed, the
+   hardest case on the page. Give them the same chip treatment the submissions
+   header uses for "Submitting as" rather than leaning on the shadow alone. */
+.v2-hunt-page .v2-hunt-meta {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 6px 14px;
+    border-radius: 999px;
+    background: rgba(14, 35, 24, 0.72);
+    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.16);
+    backdrop-filter: blur(4px);
+    text-shadow: none;
+}
+
+/* Empty states ("No items available yet", "No scores yet") are the default
+   view until an admin adds content, so they are seen often and sit on the
+   brightest part of the painting. Same treatment: give them a ground rather
+   than relying on the shadow. `.text-center.py-8` is the shared shape Shop,
+   Leaderboard and NoticeBoard all use for these. */
+.v2-hunt-page .text-center.py-8 {
+    max-width: 34rem;
+    margin-inline: auto;
+    padding-inline: 1.5rem;
+    border-radius: 16px;
+    background: rgba(14, 35, 24, 0.72);
+    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.12);
+    backdrop-filter: blur(4px);
+    text-shadow: none;
 }
 
 /* --------------------------------------------------------------------------
@@ -136,24 +170,235 @@
 }
 
 /* --------------------------------------------------------------------------
-   FAQ accordion
+   FAQ lily pads
+   Same pattern as the main site's FAQ (site/v2 styles/v2/faq.css): white pads
+   scattered across the painting, each widening as it opens. The answer
+   wrapper animates grid-template-rows 0fr -> 1fr *and* width together, with
+   the body pinned to a fixed width inside it so the text never re-wraps
+   mid-animation.
+
+   Answers here are far longer than the marketing site's, so the pad is wider
+   (--pad-answer-w) and there are nine offsets rather than eight.
    -------------------------------------------------------------------------- */
-.v2-hunt-page #Faq [data-slot="accordion-item"],
-.v2-hunt-page #Faq [data-radix-collection-item] {
-    border-radius: 14px;
+.v2-faq {
+    padding-block: var(--v2-section-pad);
 }
 
-.v2-hunt-page #Faq button {
-    font-family: var(--v2-font-pixel);
-    font-weight: var(--v2-font-pixel-weight);
-    color: var(--v2-white);
+.v2-faq__head {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 40px;
+}
+
+.v2-faq__head .v2-heading-pill {
+    font-size: clamp(1.05rem, 2.4vw, 1.5rem);
+    text-shadow: none;
+}
+
+.v2-faq__pond {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 14px;
+    width: 100%;
+    max-width: var(--v2-container);
+    margin-inline: auto;
+    padding-inline: 24px;
+}
+
+.v2-pad {
+    --pad-answer-w: 460px;
+    --pad-x: 0%;
+    position: relative;
+    margin-left: var(--pad-x);
+    width: max-content;
+    max-width: min(520px, 100%);
+    padding: 14px 22px;
+    border-radius: 22px;
+    background: var(--v2-white-pure);
+    box-shadow: 0 12px 26px rgba(11, 26, 58, 0.22);
+    text-shadow: none;
+    transition: box-shadow 320ms ease, transform 320ms ease;
+}
+
+.v2-pad.is-open {
+    z-index: 2;
+    transform: translateY(-2px);
+    box-shadow: 0 18px 36px rgba(11, 26, 58, 0.3);
+}
+
+.v2-pad__q {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    width: 100%;
+    padding: 0;
+    border: 0;
+    background: none;
+    text-align: left;
+    font-family: inherit;
+    font-size: 15px;
+    line-height: 1.4;
+    color: var(--v2-ink-deep);
+    cursor: pointer;
+}
+
+.v2-pad__toggle {
+    position: relative;
+    width: 12px;
+    height: 12px;
+    flex: 0 0 auto;
+}
+
+.v2-pad__toggle::before,
+.v2-pad__toggle::after {
+    position: absolute;
+    inset: 5px 0 auto;
+    height: 2px;
+    content: "";
+    background: var(--v2-lime-dark);
+}
+
+.v2-pad__toggle::after {
+    transform: rotate(90deg);
+    transition: transform 320ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.v2-pad.is-open .v2-pad__toggle::after {
+    transform: rotate(0deg);
+}
+
+.v2-pad__a {
+    display: grid;
+    grid-template-rows: 0fr;
+    width: 0;
+    overflow: hidden;
+    transition: grid-template-rows 480ms cubic-bezier(0.22, 1, 0.36, 1),
+        width 480ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.v2-pad.is-open .v2-pad__a {
+    grid-template-rows: 1fr;
+    width: var(--pad-answer-w);
+}
+
+.v2-pad__body {
+    width: var(--pad-answer-w);
+    min-width: var(--pad-answer-w);
+    overflow: hidden;
+    font-size: 14px;
+    line-height: 1.6;
+    color: var(--v2-slate);
+    opacity: 0;
+    transition: opacity 260ms ease 60ms,
+        padding-top 480ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.v2-pad.is-open .v2-pad__body {
+    padding-top: 10px;
+    opacity: 1;
+}
+
+.v2-pad__body a {
+    color: var(--v2-lime-dark);
+    text-decoration: underline;
+}
+
+.v2-pad__body strong {
+    color: var(--v2-ink-deep);
+    font-weight: 600;
+}
+
+/* scattered like stepping stones, same idea as the marketing site */
+.v2-pad--1 { --pad-x: 2%; }
+.v2-pad--2 { --pad-x: 26%; }
+.v2-pad--3 { --pad-x: 48%; }
+.v2-pad--4 { --pad-x: 6%; margin-top: 10px; }
+.v2-pad--5 { --pad-x: 34%; }
+.v2-pad--6 { --pad-x: 0%; margin-top: 10px; }
+.v2-pad--7 { --pad-x: 40%; }
+.v2-pad--8 { --pad-x: 4%; }
+.v2-pad--9 { --pad-x: 30%; margin-top: 10px; }
+
+@media (prefers-reduced-motion: reduce) {
+    .v2-pad__a,
+    .v2-pad__body,
+    .v2-pad__toggle::after {
+        transition: none;
+    }
+}
+
+/* On phones the scatter would overflow, so the pads become a plain stack and
+   the reveal animates height only. */
+@media (max-width: 900px) {
+    .v2-faq__pond {
+        align-items: stretch;
+        gap: 12px;
+        padding-inline: 18px;
+    }
+
+    .v2-pad {
+        --pad-x: 0%;
+        width: auto;
+        max-width: 100%;
+        margin-left: 0;
+        margin-top: 0;
+    }
+
+    .v2-pad__a,
+    .v2-pad.is-open .v2-pad__a {
+        width: auto;
+    }
+
+    .v2-pad__body {
+        width: auto;
+        min-width: 0;
+    }
 }
 
 /* --------------------------------------------------------------------------
    Modals
-   The hunt's overlays keep their own light forms — only the shared shell is
-   nudged so it doesn't clash with the painting behind it.
+   These are admin/organizer tooling, so legibility beats brand here.
+
+   Modals render inline (no portal), so they are descendants of
+   .v2-hunt-page and inherit its rules. Most of them are white panels, so the
+   white heading colour above turned every title invisible. Headings inherit
+   their panel's own text colour instead, which is correct for both variants:
+   the action modals set `text-dark-mode` on the panel, and the admin panel
+   sets `text-light-mode` on a dark one.
    -------------------------------------------------------------------------- */
+.v2-hunt-page .v2-modal h1,
+.v2-hunt-page .v2-modal h2,
+.v2-hunt-page .v2-modal h3,
+.v2-hunt-page .v2-modal h4 {
+    color: inherit;
+    text-shadow: none;
+}
+
+/* Dense admin forms and tables read better in the body face; only the panel
+   title keeps the pixel display face. */
+.v2-hunt-page .v2-modal h2,
+.v2-hunt-page .v2-modal h3,
+.v2-hunt-page .v2-modal h4 {
+    font-family: var(--v2-font-body);
+    letter-spacing: 0;
+}
+
+.v2-hunt-page .v2-modal .v2-modal__title {
+    font-family: var(--v2-font-pixel);
+    font-weight: var(--v2-font-pixel-weight);
+    letter-spacing: 0.02em;
+}
+
+/* Keyboard focus has to be visible on both panel variants — `currentColor`
+   tracks whichever text colour the panel set. */
+.v2-hunt-page .v2-modal :is(button, a, input, select, textarea):focus-visible {
+    outline: 2px solid currentColor;
+    outline-offset: 2px;
+    border-radius: 4px;
+}
+
 .v2 [class*="bg-dark-mode/90"] {
     background-color: rgba(14, 35, 24, 0.94);
 }
