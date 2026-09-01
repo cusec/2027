@@ -84,12 +84,14 @@
     opacity: 1;
 }
 
-/* the lit ring marking where you are */
+/* where you are reads as depth rather than an outline: the active orb sits
+   forward and casts a longer shadow than its neighbours */
 .aero-dock__item.is-active .aero-orb {
+    transform: translateY(-2px);
     box-shadow:
-        0 0 0 3px rgba(195, 233, 86, 0.75),
-        0 6px 14px rgba(9, 28, 45, 0.45),
-        inset 0 -6px 12px rgba(255, 255, 255, 0.3);
+        0 14px 24px rgba(9, 28, 45, 0.68),
+        0 4px 8px rgba(9, 28, 45, 0.5),
+        inset 0 -6px 12px rgba(255, 255, 255, 0.36);
 }
 
 .aero-dock__item--hero {
@@ -851,35 +853,54 @@
 }
 
 /* Scrolling without the chunky native bar: no track, no arrows, just a slim
-   translucent thumb so long admin lists still show they can scroll. */
-.v2-aero .v2-modal {
+   translucent thumb so long admin lists still show they can scroll. It runs
+   on the body rather than the panel — a gutter on the rounded, bordered
+   panel itself cuts a seam across its top-right corner. */
+.v2-aero .v2-modal :is(.v2-modal__body, [class*="overflow-y-"]) {
     scrollbar-width: thin;
     scrollbar-color: rgba(255, 255, 255, 0.32) transparent;
 }
 
-.v2-aero .v2-modal::-webkit-scrollbar {
+.v2-aero .v2-modal ::-webkit-scrollbar {
     width: 8px;
 }
 
-.v2-aero .v2-modal::-webkit-scrollbar-track,
-.v2-aero .v2-modal::-webkit-scrollbar-corner {
+.v2-aero .v2-modal ::-webkit-scrollbar-track,
+.v2-aero .v2-modal ::-webkit-scrollbar-corner {
     background: transparent;
 }
 
-.v2-aero .v2-modal::-webkit-scrollbar-button {
+.v2-aero .v2-modal ::-webkit-scrollbar-button {
     display: none;
 }
 
-.v2-aero .v2-modal::-webkit-scrollbar-thumb {
+.v2-aero .v2-modal ::-webkit-scrollbar-thumb {
     border: 2px solid transparent;
     border-radius: 999px;
     background: rgba(255, 255, 255, 0.3);
     background-clip: content-box;
 }
 
-.v2-aero .v2-modal::-webkit-scrollbar-thumb:hover {
+.v2-aero .v2-modal ::-webkit-scrollbar-thumb:hover {
     background: rgba(255, 255, 255, 0.48);
     background-clip: content-box;
+}
+
+/* One row of a list inside a modal. The admin modals get this surface for
+   free (their ported Tailwind neutrals are remapped just below); this is the
+   same well by name, for the delegate-facing modals that were written
+   against a flat dark panel instead. */
+.v2-aero .v2-modal__row {
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 14px;
+    background: rgba(255, 255, 255, 0.09);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.16);
+    transition: background-color 160ms ease, border-color 160ms ease;
+}
+
+.v2-aero button.v2-modal__row:hover {
+    border-color: rgba(255, 255, 255, 0.34);
+    background: rgba(255, 255, 255, 0.16);
 }
 
 /* --- neutral surfaces become glass ---------------------------------------- */
@@ -950,7 +971,8 @@
     border-radius: 10px;
 }
 
-.v2-aero .v2-modal :is(button, .rounded-full).rounded-full {
+.v2-aero .v2-modal :is(button, .rounded-full).rounded-full,
+.v2-aero .v2-modal button.aero-btn {
     border-radius: 999px;
 }
 

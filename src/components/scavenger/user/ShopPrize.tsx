@@ -202,7 +202,7 @@ const ShopPrize = ({
             ? `${item.name} (Price Updated)`
             : item.name
         }
-        className="max-w-md text-light-mode bg-dark-mode/85"
+        className="max-w-md text-light-mode"
       >
         <div className="space-y-4">
           {/* Large Image */}
@@ -241,7 +241,7 @@ const ShopPrize = ({
                 <span className="font-medium">Availability:</span>
                 <span
                   className={
-                    item.remaining > 0 ? "text-orange-600" : "text-red-600"
+                    item.remaining > 0 ? "text-orange-300" : "text-red-300"
                   }
                 >
                   {item.remaining > 0
@@ -260,7 +260,7 @@ const ShopPrize = ({
                 openRedeemModal();
               }}
               disabled={isSoldOut}
-              className="w-full py-2 text-white bg-light-mode/5 rounded-lg hover:bg-light-mode/10 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              className="aero-btn w-full disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {isSoldOut ? "Sold Out" : "Redeem for User"}
             </button>
@@ -273,19 +273,19 @@ const ShopPrize = ({
         isOpen={isRedeemModalOpen}
         onClose={closeRedeemModal}
         title={`Redeem: ${item.name}`}
-        className="max-w-md text-light-mode bg-dark-mode/85"
+        className="max-w-md text-light-mode"
       >
         <div className="space-y-4">
           {redeemSuccess ? (
             <div className="text-center py-4">
-              <div className="text-green-600 font-semibold mb-2">
+              <div className="text-green-300 font-semibold mb-2">
                 ✓ {redeemSuccess}
               </div>
             </div>
           ) : (
             <>
               {/* Item Info */}
-              <div className="flex items-center space-x-4 p-3 rounded-lg">
+              <div className="v2-modal__row flex items-center space-x-4 p-3">
                 {getImageSrc(item) && (
                   <div className="w-12 h-12 rounded-full overflow-hidden shrink-0">
                     {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -349,7 +349,7 @@ const ShopPrize = ({
 
                   {/* Points Check */}
                   {selectedUser.points < (item.discountedCost ?? item.cost) && (
-                    <p className="text-red-600 text-sm">
+                    <p className="text-red-300 text-sm">
                       ⚠️ This user doesn&apos;t have enough points (needs{" "}
                       {item.discountedCost ?? item.cost}, has{" "}
                       {selectedUser.points})
@@ -404,7 +404,7 @@ const ShopPrize = ({
 
               {/* Error Message */}
               {redeemError && (
-                <div className="p-3 bg-red-50 text-red-600 rounded-lg text-sm">
+                <div className="p-3 bg-red-500/15 border border-red-400/40 text-red-200 rounded-lg text-sm">
                   {redeemError}
                 </div>
               )}
@@ -417,7 +417,7 @@ const ShopPrize = ({
                   selectedUser.points < (item.discountedCost ?? item.cost) ||
                   isRedeeming
                 }
-                className="w-full py-2 text-white bg-light-mode/5 rounded-lg hover:bg-light-mode/10 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                className="aero-btn w-full disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {isRedeeming ? (
                   <>

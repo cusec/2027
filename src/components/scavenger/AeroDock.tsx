@@ -63,7 +63,7 @@ const AeroDock = ({
             onClick={scan}
             className="aero-dock__item aero-dock__item--hero"
           >
-            <span className="aero-orb aero-orb--lime aero-orb--hero">
+            <span className="aero-orb aero-orb--scan aero-orb--hero">
               <QrCode />
             </span>
             <span className="aero-dock__label">Scan</span>

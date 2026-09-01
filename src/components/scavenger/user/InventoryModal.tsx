@@ -1,9 +1,9 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Package, Gem, X, Gift } from "lucide-react";
+import { Package, Gem, Gift, Send, ExternalLink } from "lucide-react";
 import Modal from "@/components/ui/modal";
-import { HuntItem, ShopItem } from "@/lib/interface";
+import { HuntItem, ShopItem, Submission, Challenge } from "@/lib/interface";
 import { resolveImageSrc } from "@/lib/imageSrc";
 
 // Extended collectible interface for inventory (includes instance-specific fields)
@@ -33,6 +33,15 @@ interface InventoryResponse {
     collectibles: InventoryCollectible[];
   };
 }
+
+/** Approved entries carry the challenge they answered, populated by the API. */
+const challengeOf = (submission: Submission): Challenge | null =>
+  typeof submission.challengeId === "object" ? submission.challengeId : null;
+
+const teamNameOf = (submission: Submission): string | null =>
+  submission.teamId && typeof submission.teamId === "object"
+    ? submission.teamId.name
+    : null;
 
 // Helper function to get image source from shop item
 const getShopItemImageSrc = (item: ShopItem): string | null =>
@@ -81,6 +90,7 @@ const InventoryModal = ({ userId, isOpen, onClose }: InventoryModalProps) => {
   const [claimedItems, setClaimedItems] = useState<HuntItem[]>([]);
   const [shopPrizes, setShopPrizes] = useState<ShopItem[]>([]);
   const [collectibles, setCollectibles] = useState<InventoryCollectible[]>([]);
+  const [approved, setApproved] = useState<Submission[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -89,7 +99,12 @@ const InventoryModal = ({ userId, isOpen, onClose }: InventoryModalProps) => {
       setLoading(true);
       setError(null);
 
-      const response = await fetch(`/api/users/${userId}/inventory`);
+      const [response, submissionRes] = await Promise.all([
+        fetch(`/api/users/${userId}/inventory`),
+        // Approved entries live outside the inventory document, so they are
+        // fetched alongside it. A failure here must not empty the bag.
+        fetch("/api/submissions").catch(() => null),
+      ]);
       const data: InventoryResponse = await response.json();
 
       if (data.success) {
@@ -99,6 +114,15 @@ const InventoryModal = ({ userId, isOpen, onClose }: InventoryModalProps) => {
       } else {
         throw new Error("Failed to load inventory");
       }
+
+      const submissionData = submissionRes ? await submissionRes.json() : null;
+      setApproved(
+        submissionData?.success
+          ? (submissionData.submissions as Submission[]).filter(
+              (submission) => submission.status === "approved"
+            )
+          : []
+      );
     } catch (err) {
       console.error("Error fetching inventory:", err);
       setError("Failed to load inventory");
@@ -118,23 +142,10 @@ const InventoryModal = ({ userId, isOpen, onClose }: InventoryModalProps) => {
     <Modal
       isOpen={isOpen}
       onClose={onClose}
-      className="mx-4 overflow-y-hidden max-w-[90vw] md:max-w-2xl bg-dark-mode/85 text-light-mode rounded-2xl max-h-[80vh]"
+      title="Your Inventory"
+      className="mx-4 max-w-[90vw] md:max-w-2xl max-h-[80vh] text-light-mode"
     >
-      <div className="p-6">
-        {/* Header */}
-        <div className="flex justify-between items-center mb-6">
-          <h2 className="text-xl font-bold flex items-center gap-2">
-            <Package className="w-6 h-6" />
-            Your Inventory
-          </h2>
-          <button
-            onClick={onClose}
-            className="p-1 hover:bg-light-mode/10 rounded-full transition"
-          >
-            <X className="w-5 h-5" />
-          </button>
-        </div>
-
+      <>
         {loading ? (
           <div className="text-center py-8">
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-light-mode mx-auto mb-4"></div>
@@ -151,7 +162,7 @@ const InventoryModal = ({ userId, isOpen, onClose }: InventoryModalProps) => {
             </button>
           </div>
         ) : (
-          <div className="overflow-y-scroll space-y-6 max-h-[60vh] pr-2">
+          <div className="space-y-6">
             {/* Hunt Items Section */}
             <div>
               <div className="flex items-center gap-2 mb-4 top-0 py-2">
@@ -175,7 +186,7 @@ const InventoryModal = ({ userId, isOpen, onClose }: InventoryModalProps) => {
                   {claimedItems.map((item) => (
                     <div
                       key={item._id}
-                      className="flex items-center gap-4 p-4 border-l border-light-mode/40"
+                      className="v2-modal__row flex items-center gap-4 p-4"
                     >
                       <div className="w-10 h-10 hidden md:flex rounded-full bg-light-mode/10  items-center justify-center shrink-0">
                         <Package className="w-5 h-5 text-light-mode" />
@@ -230,7 +241,7 @@ const InventoryModal = ({ userId, isOpen, onClose }: InventoryModalProps) => {
                   {shopPrizes.map((prize) => (
                     <div
                       key={prize._id}
-                      className="flex items-center gap-4 p-4 border-l border-light-mode/40"
+                      className="v2-modal__row flex items-center gap-4 p-4"
                     >
                       {getShopItemImageSrc(prize) && (
                         <div className="w-10 h-10 hidden md:flex rounded-full overflow-hidden shrink-0 bg-light-mode/10">
@@ -291,7 +302,7 @@ const InventoryModal = ({ userId, isOpen, onClose }: InventoryModalProps) => {
                   {groupCollectiblesByName(collectibles).map((collectible) => (
                     <div
                       key={collectible.name}
-                      className="flex items-center gap-4 p-4 border-l border-light-mode/40"
+                      className="v2-modal__row flex items-center gap-4 p-4"
                     >
                       {resolveImageSrc(
                         collectible.imageData,
@@ -342,9 +353,77 @@ const InventoryModal = ({ userId, isOpen, onClose }: InventoryModalProps) => {
                 </div>
               )}
             </div>
+
+            {/* Divider */}
+            <div className="border-t border-light-mode/20"></div>
+
+            {/* Approved Submissions Section */}
+            <div>
+              <div className="flex items-center gap-2 mb-4 top-0 py-2">
+                <Send className="w-5 h-5 text-sea" />
+                <h3 className="text-lg font-semibold">
+                  Approved Submissions ({approved.length})
+                </h3>
+              </div>
+              {approved.length === 0 ? (
+                <div className="text-center py-6 rounded-lg">
+                  <Send className="w-12 h-12 mx-auto mb-2 text-light-mode/30" />
+                  <p className="text-light-mode/50">
+                    No approved submissions yet.
+                  </p>
+                  <p className="text-light-mode/40 text-sm mt-1">
+                    Enter a challenge — approved entries land here.
+                  </p>
+                </div>
+              ) : (
+                <div className="grid gap-3">
+                  {approved.map((submission) => {
+                    const challenge = challengeOf(submission);
+                    const team = teamNameOf(submission);
+
+                    return (
+                      <div
+                        key={submission._id}
+                        className="v2-modal__row flex items-center gap-4 p-4"
+                      >
+                        <div className="w-10 h-10 hidden md:flex rounded-full bg-light-mode/10 items-center justify-center shrink-0">
+                          <Send className="w-5 h-5 text-light-mode" />
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <p className="font-semibold wrap-break-word text-light-mode">
+                            {challenge?.title ?? "Challenge"}
+                          </p>
+                          <p className="text-sm text-light-mode/60 wrap-break-word">
+                            {challenge?.eventName}
+                            {team ? ` · with ${team}` : ""}
+                          </p>
+                          <a
+                            href={submission.url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="inline-flex items-center gap-1.5 mt-1 text-sm text-light-mode/70 hover:text-light-mode underline underline-offset-2 wrap-break-word"
+                          >
+                            <ExternalLink className="w-3.5 h-3.5 shrink-0" />
+                            View entry
+                          </a>
+                        </div>
+                        <div className="shrink-0 text-right">
+                          <span className="text-light-mode font-bold">
+                            {submission.pointsAwarded}
+                          </span>
+                          <span className="text-light-mode/60 text-sm ml-1">
+                            pts
+                          </span>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
           </div>
         )}
-      </div>
+      </>
     </Modal>
   );
 };

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { QrCode, Keyboard, X } from "lucide-react";
+import { QrCode, Keyboard } from "lucide-react";
 import Modal from "@/components/ui/modal";
 import ScannerPage from "./ScannerPage";
 
@@ -173,19 +173,10 @@ const ItemClaim = ({
     <Modal
       isOpen={isOpen}
       onClose={handleClose}
-      className="mx-4 max-w-[80vw] md:max-w-lg bg-dark-mode/90 text-light-mode rounded-2xl"
+      title="Claim Hunt Item"
+      className="mx-4 max-w-[80vw] md:max-w-lg text-light-mode"
     >
-      <div className="p-6">
-        {/* Header */}
-        <div className="flex justify-between items-center mb-6">
-          <h2 className="text-xl font-bold">Claim Hunt Item</h2>
-          <button
-            onClick={handleClose}
-            className="p-1 hover:bg-light-mode/10 rounded-full transition"
-          >
-            <X className="w-5 h-5" />
-          </button>
-        </div>
+      <>
 
         {/* Method Selection */}
         {claimMethod === "select" && !claimResult && !error && (
@@ -220,14 +211,14 @@ const ItemClaim = ({
               <div className="flex flex-col gap-3">
                 <button
                   onClick={() => setClaimMethod("manual")}
-                  className="flex items-center justify-center gap-3 w-full px-6 py-4 bg-light-mode/10 hover:bg-light-mode/20 rounded-xl transition font-semibold"
+                  className="v2-modal__row flex items-center justify-center gap-3 w-full px-6 py-4 hover:bg-light-mode/20 transition font-semibold"
                 >
                   <Keyboard className="w-5 h-5" />
                   Enter Code
                 </button>
                 <button
                   onClick={() => setClaimMethod("scan")}
-                  className="flex items-center justify-center gap-3 w-full px-6 py-4 bg-light-mode/10 hover:bg-light-mode/20 rounded-xl transition font-semibold"
+                  className="v2-modal__row flex items-center justify-center gap-3 w-full px-6 py-4 hover:bg-light-mode/20 transition font-semibold"
                 >
                   <QrCode className="w-5 h-5" />
                   Scan QR Code
@@ -268,7 +259,7 @@ const ItemClaim = ({
               <button
                 type="submit"
                 disabled={isSubmitting || !manualCode.trim()}
-                className="w-full px-6 py-3 bg-light-mode/10 hover:bg-light-mode/20 disabled:opacity-50 disabled:cursor-not-allowed text-light-mode font-semibold rounded-xl transition"
+                className="aero-btn w-full disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {isSubmitting ? "Claiming..." : "Claim Item"}
               </button>
@@ -392,7 +383,7 @@ const ItemClaim = ({
             </div>
           </div>
         )}
-      </div>
+      </>
     </Modal>
   );
 };

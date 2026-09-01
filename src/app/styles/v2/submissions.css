@@ -231,6 +231,42 @@ body:has(.v2) .Navbar {
     color: rgba(178, 254, 231, 0.66);
 }
 
+/* the team strip: who the entry is filed under, and the way in ------------ */
+.v2-chal__team {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 12px;
+    margin-top: 14px;
+    padding: 10px 10px 10px 14px;
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.06);
+    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.12);
+    font-size: 13.5px;
+    color: var(--v2-mint);
+}
+
+.v2-chal__team p {
+    flex: 1 1 180px;
+    min-width: 0;
+    margin: 0;
+}
+
+.v2-chal__team b {
+    color: var(--v2-mint-bright);
+}
+
+.v2-chal__team .v2-btn {
+    flex: none;
+    padding: 9px 18px;
+    font-size: 12px;
+}
+
+.v2-chal__team .v2-btn svg {
+    width: 14px;
+    height: 14px;
+}
+
 /* the delegate's existing entry ------------------------------------------- */
 .v2-chal__mine {
     display: flex;
@@ -447,10 +483,6 @@ body:has(.v2) .Navbar {
     color: var(--v2-mint-bright);
 }
 
-.aero-team {
-    margin-bottom: 26px;
-}
-
 .aero-team__head {
     display: flex;
     align-items: flex-start;
@@ -625,4 +657,25 @@ body:has(.v2) .Navbar {
     .aero-team__list li {
         flex-wrap: wrap;
     }
+}
+
+/* modal-only divider between creating a team and joining one */
+.aero-team__divide {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 20px 0 0;
+    font-family: var(--v2-font-pixel);
+    font-size: 10.5px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    opacity: 0.6;
+}
+
+.aero-team__divide::before,
+.aero-team__divide::after {
+    flex: 1 1 auto;
+    height: 1px;
+    content: "";
+    background: rgba(255, 255, 255, 0.18);
 }

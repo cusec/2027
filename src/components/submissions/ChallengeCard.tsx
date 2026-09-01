@@ -1,7 +1,14 @@
 "use client";
 
 import { useState } from "react";
-import { CheckCircle2, Clock, XCircle, ExternalLink, Trash2 } from "lucide-react";
+import {
+  CheckCircle2,
+  Clock,
+  XCircle,
+  ExternalLink,
+  Trash2,
+  Users,
+} from "lucide-react";
 import type { Challenge, Submission } from "@/lib/interface";
 import { isChallengeOpen } from "@/lib/challenges";
 
@@ -11,6 +18,10 @@ interface ChallengeCardProps {
   isSubmitting: boolean;
   /** The delegate's team name, or null when they aren't on one. */
   teamName?: string | null;
+  /** Seats per team, shown before a delegate has one. */
+  maxTeamSize?: number;
+  /** Opens the create / join team modal. */
+  onOpenTeam?: () => void;
   onSubmit: (challengeId: string, url: string, notes: string) => Promise<boolean>;
   onWithdraw: (submissionId: string) => Promise<boolean>;
 }
@@ -38,6 +49,8 @@ const ChallengeCard = ({
   submission,
   isSubmitting,
   teamName = null,
+  maxTeamSize = 4,
+  onOpenTeam,
   onSubmit,
   onWithdraw,
 }: ChallengeCardProps) => {
@@ -67,12 +80,7 @@ const ChallengeCard = ({
       <div className="v2-chal__head">
         <div>
           <h3 className="v2-chal__title">{challenge.title}</h3>
-          {isGroup && (
-            <p className="v2-chal__mode">
-              Group challenge
-              {teamName ? ` · submitting as ${teamName}` : ""}
-            </p>
-          )}
+          {isGroup && <p className="v2-chal__mode">Group challenge</p>}
           {challenge.points > 0 && (
             <p className="v2-chal__points">
               {challenge.points} point{challenge.points === 1 ? "" : "s"} once
@@ -96,6 +104,33 @@ const ChallengeCard = ({
       )}
 
       {window && <p className="v2-chal__window">Open {window}</p>}
+
+      {/* Teams are met here, on the challenge that needs one, rather than in a
+          panel at the top of the page. */}
+      {isGroup && (
+        <div className="v2-chal__team">
+          {teamName ? (
+            <p>
+              Submitting as <b>{teamName}</b> — one entry counts for the whole
+              team.
+            </p>
+          ) : (
+            <p>
+              One entry per team of up to {maxTeamSize}. Join a team to submit.
+            </p>
+          )}
+          <button
+            type="button"
+            className={`v2-btn ${
+              teamName ? "v2-btn--ghost" : "v2-btn--primary"
+            }`}
+            onClick={onOpenTeam}
+          >
+            <Users aria-hidden="true" />
+            {teamName ? "Manage team" : "Join a team"}
+          </button>
+        </div>
+      )}
 
       {submission && (
         <div className="v2-chal__mine">
@@ -135,11 +170,7 @@ const ChallengeCard = ({
             : "."}{" "}
           This entry is locked; ask an organizer if it needs changing.
         </p>
-      ) : needsTeam ? (
-        <p className="v2-chal__note">
-          Create or join a team above before submitting to this one.
-        </p>
-      ) : !open && !submission ? (
+      ) : needsTeam ? null : !open && !submission ? (
         <p className="v2-chal__note">
           {challenge.active
             ? "This challenge is closed to new submissions."

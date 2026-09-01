@@ -137,11 +137,11 @@ const ShopCollectible = ({
             ? `${collectible.name} (Price Updated)`
             : collectible.name
         }
-        className="max-w-md text-light-mode bg-dark-mode/85"
+        className="max-w-md text-light-mode"
       >
         {redeemSuccess ? (
           <div className="text-center py-4">
-            <div className="text-green-600 font-semibold mb-2">
+            <div className="text-green-300 font-semibold mb-2">
               ✓ {redeemSuccess}
             </div>
             <p className="text-sm">
@@ -187,8 +187,8 @@ const ShopCollectible = ({
                   <span
                     className={
                       collectible.remaining > 0
-                        ? "text-orange-600"
-                        : "text-red-600"
+                        ? "text-orange-300"
+                        : "text-red-300"
                     }
                   >
                     {collectible.remaining > 0
@@ -201,14 +201,14 @@ const ShopCollectible = ({
 
             {/* Sold Out Warning */}
             {isSoldOut && (
-              <div className="p-3 bg-red-50 text-red-700 rounded-lg text-sm">
+              <div className="p-3 bg-red-500/15 border border-red-400/40 text-red-200 rounded-lg text-sm">
                 This collectible is sold out.
               </div>
             )}
 
             {/* Points Warning */}
             {!canAfford && !isSoldOut && (
-              <div className="p-3 bg-light-mode/70 text-dark-mode rounded-lg text-sm">
+              <div className="v2-modal__row p-3 text-sm">
                 You need{" "}
                 {Math.abs(
                   (collectible.discountedCost ?? collectible.cost) - userPoints
@@ -219,7 +219,7 @@ const ShopCollectible = ({
 
             {/* Error Message */}
             {redeemError && (
-              <div className="p-3 bg-red-50 text-red-600 rounded-lg text-sm">
+              <div className="p-3 bg-red-500/15 border border-red-400/40 text-red-200 rounded-lg text-sm">
                 {redeemError}
               </div>
             )}
@@ -228,7 +228,7 @@ const ShopCollectible = ({
             <button
               onClick={handleRedeem}
               disabled={!canAfford || isRedeeming || isSoldOut}
-              className="w-full cursor-pointer py-2 text-white bg-light-mode/5 rounded-lg hover:bg-light-mode/10 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+              className="aero-btn w-full disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {isRedeeming ? (
                 <>

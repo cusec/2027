@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { X, Save } from "lucide-react";
+import { Save } from "lucide-react";
 import Modal from "@/components/ui/modal";
 
 interface EditDiscordModalProps {
@@ -62,19 +62,10 @@ const EditDiscordModal = ({
     <Modal
       isOpen={isOpen}
       onClose={handleClose}
-      className="mx-4 max-w-sm bg-dark-mode/95 text-light-mode rounded-xl"
+      title="Edit Discord Handle"
+      className="mx-4 max-w-sm text-light-mode"
     >
-      <div className="p-4">
-        <div className="flex justify-between items-center mb-4">
-          <h3 className="text-lg font-semibold">Edit Discord Handle</h3>
-          <button
-            onClick={handleClose}
-            className="p-1 hover:bg-light-mode/10 rounded-full transition"
-          >
-            <X className="w-4 h-4" />
-          </button>
-        </div>
-
+      <>
         <input
           type="text"
           value={handle}
@@ -92,12 +83,12 @@ const EditDiscordModal = ({
         <button
           onClick={handleSave}
           disabled={isSubmitting}
-          className="w-full flex items-center justify-center gap-2 px-4 py-2 text-light-mode rounded-lg bg-light-mode/5 hover:bg-light-mode/15 disabled:opacity-50 disabled:cursor-not-allowed font-semibold"
+          className="aero-btn w-full disabled:opacity-50 disabled:cursor-not-allowed"
         >
           <Save className="w-4 h-4" />
           {isSubmitting ? "Saving..." : "Save"}
         </button>
-      </div>
+      </>
     </Modal>
   );
 };

@@ -71,10 +71,13 @@ const Modal = ({
         onClick={handleClose}
       />
 
-      {/* Modal Content — reset CSS vars so dark-bg modals keep light text */}
+      {/* Modal content. The panel itself never scrolls: a scrollbar on the
+          element that carries the rounded corners leaves a seam where the
+          gutter meets the radius, so the body below does the scrolling and
+          the panel just clips it. */}
       <div
         className={cn(
-          "v2-modal relative z-10 w-full max-w-2xl max-h-[70vh] overflow-y-auto bg-white rounded-lg shadow-xl",
+          "v2-modal relative z-10 flex flex-col w-full max-w-2xl max-h-[70vh] overflow-hidden bg-white rounded-lg shadow-xl",
           isClosing
             ? "animate-out fade-out zoom-out-95 duration-200"
             : "animate-in fade-in zoom-in-95 duration-200",
@@ -90,7 +93,7 @@ const Modal = ({
       >
         {/* Header */}
         {title && (
-          <div className="v2-modal__head flex items-center justify-between p-4 md:p-6 border-b border-gray-200">
+          <div className="v2-modal__head shrink-0 flex items-center justify-between p-4 md:p-6 border-b border-gray-200">
             <h2 className="v2-modal__title text-lg md:text-xl font-semibold">
               {title}
             </h2>
@@ -109,7 +112,9 @@ const Modal = ({
         )}
 
         {/* Content */}
-        <div className={cn("p-6", title)}>{children}</div>
+        <div className="v2-modal__body min-h-0 flex-1 overflow-y-auto p-6">
+          {children}
+        </div>
       </div>
     </div>
   );
