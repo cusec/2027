@@ -355,6 +355,45 @@ Two details make the open animation smooth, and both matter:
   wrapper is also what keeps a closed pill tight to its question — otherwise
   the answer inflates the pad's `max-content` width.
 
+### Light glass cards
+
+The six info surfaces — the three sky tiles and the About / Who comes / Good to
+know cards — are **light "bubble glass"**, not the dark panel. One primitive,
+`.v2-glass` in `base.css`, carries the whole recipe (gradient fill, 1.5px white
+edge, backdrop blur, drop shadow + inner top highlight); `.v2-glass--blue`
+swaps the tint tokens for the sky variant. Values come from the Figma card
+exports, so don't eyeball them.
+
+`.v2-glass` is deliberately **separate from `.v2-card`** rather than a
+replacement for it: `V2Hunt` uses `.v2-card` and stays dark. Restyling
+`.v2-card` itself would drag the hunt card along with it.
+
+Text on the glass uses its own inks — `--v2-ink-glass-deep` (titles),
+`--v2-ink-glass` (body), `--v2-teal-deep` (eyebrows, links). Lime is still the
+tag chips, but lime *text* is unreadable on this surface; don't reach for
+`--v2-lime` inside a glass card.
+
+### SD cards travel in a case
+
+Each `V2SdCard` is a clear sleeve (152×184) wrapping the card (128×158) — the
+button is the case, `.v2-sd__card` is the card, and the notch/pins/label
+position against the card. The resting slots in `archive.css` are spaced and
+z-ordered for the sleeve's extra 24×26px; shrinking the sleeve without
+re-checking those will overlap the cards' brand strips.
+
+### The Figma frames are placeholder copy
+
+`src/assets_for_referenec/` and the exports carry invented numbers — 25
+editions, 500+ attendees, $115 / $160 tickets. **`messages/` is the source of
+truth for every string and figure.** Use the frames for geometry and colour
+only. In particular there are no ticket prices anywhere on this site: passes
+are pre-sale ("Tickets open soon"), so never introduce a price from a mockup.
+
+The Good to know card is built from facts the site already states elsewhere
+(the hero pill's dates, the FAQ's ticket and refund answers). It was previously
+removed for asserting an unconfirmed venue, meals and transit; keep new bullets
+sourced the same way.
+
 ### Sponsor hexes
 
 Tier drives both the hex size and its edge colour. The logo area is a wide box

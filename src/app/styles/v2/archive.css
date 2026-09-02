@@ -431,48 +431,100 @@
     left: 70%;
     top: -12%;
     transform: rotate(-90deg) scale(0.92);
-    z-index: 3;
+    z-index: 6;
 }
 
-/* the three resting spots down the right-hand side */
+/* The three resting spots down the right-hand side. Spacing and the left
+   insets both allow for the case, which is 24px wider and 26px taller than the
+   card it holds; the z-order runs top-down so each card's brand strip stays
+   clear of the one below it. */
 .v2-archive__slot--rest-0 {
-    left: 84%;
-    top: 26%;
+    left: 81%;
+    top: 6%;
     transform: rotate(6deg);
+    z-index: 4;
 }
 
 .v2-archive__slot--rest-1 {
-    left: 89%;
-    top: 52%;
+    left: 85%;
+    top: 38%;
     transform: rotate(-4deg);
+    z-index: 3;
 }
 
 .v2-archive__slot--rest-2 {
-    left: 86%;
-    top: 78%;
+    left: 82%;
+    top: 70%;
     transform: rotate(8deg);
+    z-index: 2;
 }
 
-/* The card itself ---------------------------------------------------------- */
+/* The case ------------------------------------------------------------------
+   Each card now travels in a clear plastic sleeve (Figma: "SD Case", 152x184
+   around the 128x158 card, so a 12px/13px inset). The button is the case and
+   the card is a child of it, which keeps the existing absolute positioning of
+   the notch/pins/label working against the card rather than the sleeve.
+   Standard backdrop-filter only — see AGENTS.md on the -webkit- pair. */
 .v2-sd {
     position: relative;
-    display: block;
-    width: 128px;
-    height: 158px;
+    display: grid;
+    place-items: center;
+    width: 152px;
+    height: 184px;
     padding: 0;
-    border-radius: 10px;
-    background: linear-gradient(160deg, var(--sd-from) 0%, var(--sd-to) 100%);
-    border: 2px solid rgba(11, 26, 58, 0.8);
-    box-shadow: 0 12px 26px rgba(11, 26, 58, 0.35);
-    transition: transform 180ms ease, box-shadow 180ms ease, border-color 180ms ease;
+    border-radius: 12px;
+    background: linear-gradient(
+        180deg,
+        rgba(255, 255, 255, 0.42) 0%,
+        rgba(219, 242, 255, 0.18) 45%,
+        rgba(255, 255, 255, 0.34) 100%
+    );
+    border: 1.5px solid rgba(255, 255, 255, 0.7);
+    backdrop-filter: blur(3px);
+    box-shadow:
+        0 8px 18px -4px rgba(10, 36, 23, 0.3),
+        inset 0 1.5px 1px rgba(255, 255, 255, 0.85);
+    transition: transform 180ms ease, box-shadow 180ms ease;
+}
+
+/* the sheen down the left of the sleeve */
+.v2-sd::after {
+    position: absolute;
+    top: 3px;
+    left: 18px;
+    width: 52px;
+    height: 174px;
+    border-radius: 8px;
+    background: linear-gradient(
+        90deg,
+        rgba(255, 255, 255, 0.45) 0%,
+        rgba(255, 255, 255, 0.05) 100%
+    );
+    content: "";
+    pointer-events: none;
 }
 
 .v2-sd:hover {
     transform: translateY(-6px);
-    box-shadow: 0 18px 34px rgba(11, 26, 58, 0.45);
+    box-shadow:
+        0 16px 30px -6px rgba(10, 36, 23, 0.38),
+        inset 0 1.5px 1px rgba(255, 255, 255, 0.9);
 }
 
-.v2-sd--inserted {
+/* The card itself ---------------------------------------------------------- */
+.v2-sd__card {
+    position: relative;
+    z-index: 1;
+    width: 128px;
+    height: 158px;
+    border-radius: 10px;
+    background: linear-gradient(160deg, var(--sd-from) 0%, var(--sd-to) 100%);
+    border: 2px solid rgba(11, 26, 58, 0.8);
+    box-shadow: 0 12px 26px rgba(11, 26, 58, 0.35);
+    transition: border-color 180ms ease, box-shadow 180ms ease;
+}
+
+.v2-sd--inserted .v2-sd__card {
     border: 3px solid var(--v2-lime);
     box-shadow: 0 0 26px rgba(195, 233, 86, 0.45);
 }
@@ -595,6 +647,18 @@
 
 @media (max-width: 620px) {
     .v2-sd {
+        width: 128px;
+        height: 154px;
+    }
+
+    .v2-sd::after {
+        top: 3px;
+        left: 15px;
+        width: 43px;
+        height: 145px;
+    }
+
+    .v2-sd__card {
         width: 104px;
         height: 128px;
     }

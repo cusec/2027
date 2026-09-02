@@ -25,26 +25,24 @@
     text-align: left;
 }
 
+/* The blue glass tile — 390x131 in the Figma frame, which is what the
+   three-up grid above already resolves to at container width. */
 .v2-sky__card {
     min-height: 131px;
     padding: 20px 24px;
-    border-radius: 18px;
-    background: rgba(11, 26, 58, 0.45);
-    border: 1px solid rgba(178, 254, 231, 0.4);
-    backdrop-filter: blur(8px);
 }
 
 .v2-sky__card-title {
     margin: 0 0 10px;
     font-size: 17px;
-    color: var(--v2-lime);
+    color: var(--v2-ink-glass);
 }
 
 .v2-sky__card-body {
     margin: 0;
     font-size: 14.5px;
     line-height: 1.55;
-    color: rgba(255, 255, 255, 0.88);
+    color: var(--v2-teal-deep);
 }
 
 @media (max-width: 900px) {

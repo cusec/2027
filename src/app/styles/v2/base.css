@@ -27,6 +27,20 @@
     --v2-slate-light: #9DBFE8;
     --v2-blue: #416CED;
 
+    /* --- light "bubble glass" surface (Figma: About / Who / Good To Know /
+       sky tiles). One recipe, two tints — swap --v2-glass-mid/-end. The green
+       is the default; .v2-glass--blue overrides to the sky tint. --- */
+    --v2-glass-top: rgba(255, 255, 255, 0.76);
+    --v2-glass-mid: rgba(242, 255, 250, 0.52);
+    --v2-glass-end: rgba(199, 242, 219, 0.46);
+    --v2-glass-edge: rgba(255, 255, 255, 0.82);
+    --v2-glass-shadow: 0 14px 32px -8px rgba(10, 36, 23, 0.28);
+
+    /* inks that sit on the glass */
+    --v2-ink-glass-deep: #09251A;
+    --v2-ink-glass: #1A382B;
+    --v2-teal-deep: #0E664D;
+
     /* --- accents --- */
     --v2-gold: #E8C34A;
     --v2-red: #E8564A;
@@ -248,6 +262,51 @@
     line-height: 1.65;
     color: var(--v2-mint);
     margin: 0;
+}
+
+/* Light glass card -------------------------------------------------------- */
+/* The redesigned info surfaces. Deliberately a separate class rather than a
+   change to .v2-card: the hunt card keeps the dark treatment and shares that
+   base. Only the standard backdrop-filter is written here — authoring the
+   -webkit- pair as well makes Lightning CSS drop the standard one and every
+   glass surface on the site renders flat (see AGENTS.md). */
+.v2-glass {
+    background: linear-gradient(
+        180deg,
+        var(--v2-glass-top) 0%,
+        var(--v2-glass-mid) 50%,
+        var(--v2-glass-end) 100%
+    );
+    border: 1.5px solid var(--v2-glass-edge);
+    border-radius: 28px;
+    backdrop-filter: blur(11px);
+    box-shadow:
+        var(--v2-glass-shadow),
+        inset 0 1.5px 1px rgba(255, 255, 255, 0.9);
+    color: var(--v2-ink-glass);
+}
+
+.v2-glass--blue {
+    --v2-glass-top: rgba(255, 255, 255, 0.72);
+    --v2-glass-mid: rgba(240, 252, 255, 0.46);
+    --v2-glass-end: rgba(184, 235, 252, 0.42);
+    --v2-glass-edge: rgba(255, 255, 255, 0.8);
+    --v2-glass-shadow: 0 12px 28px -8px rgba(10, 26, 59, 0.22);
+    border-radius: 26px;
+    backdrop-filter: blur(10px);
+}
+
+/* Card internals, restated for the light surface. */
+.v2-card.v2-glass .v2-card__eyebrow {
+    color: var(--v2-teal-deep);
+}
+
+.v2-card.v2-glass .v2-card__title {
+    color: var(--v2-ink-glass-deep);
+}
+
+.v2-card.v2-glass .v2-card__body {
+    color: var(--v2-ink-glass);
 }
 
 @media (prefers-reduced-motion: reduce) {

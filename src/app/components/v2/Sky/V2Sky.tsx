@@ -12,7 +12,7 @@ export default function V2Sky() {
 
 				<ul className="v2-sky__cards">
 					{cards.map((n) => (
-						<li key={n} className="v2-sky__card">
+						<li key={n} className="v2-sky__card v2-glass v2-glass--blue">
 							<h3 className="v2-sky__card-title v2-pixel">
 								{t(`card-${n}-title`)}
 							</h3>
