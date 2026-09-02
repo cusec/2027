@@ -26,6 +26,7 @@
     --v2-slate: #5B6B7E;
     --v2-slate-light: #9DBFE8;
     --v2-blue: #416CED;
+    --v2-aqua: #5CD6F0;
 
     /* --- light "bubble glass" surface (Figma: About / Who / Good To Know /
        sky tiles). One recipe, two tints -- swap --v2-glass-mid/-end. The green
@@ -265,11 +266,8 @@
 }
 
 /* Light glass card -------------------------------------------------------- */
-/* The redesigned info surfaces. Deliberately a separate class rather than a
-   change to .v2-card: the hunt card keeps the dark treatment and shares that
-   base. Only the standard backdrop-filter is written here -- authoring the
-   -webkit- pair as well makes Lightning CSS drop the standard one and every
-   glass surface on the site renders flat (see AGENTS.md). */
+/* Never author the -webkit- backdrop-filter pair here: Lightning CSS then
+   drops the standard one and every glass surface renders flat. */
 .v2-glass {
     background: linear-gradient(
         180deg,

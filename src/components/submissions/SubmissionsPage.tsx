@@ -12,14 +12,7 @@ interface SubmissionsPageProps {
   userEmail: string;
 }
 
-/**
- * The single central submission page (TECHxEVENTS.txt): every open challenge
- * in one list, each with its own inline submit form. Events host the
- * challenges themselves — all this does is collect the links.
- *
- * Styled with the main site's v2 design system (see styles/v2/submissions.css)
- * rather than the grayscale scavenger theme, so it matches 2027.cusec.net.
- */
+/** Every open challenge in one list, each with its own inline submit form. */
 const SubmissionsPage = ({ userEmail }: SubmissionsPageProps) => {
   const {
     challenges,
@@ -35,8 +28,6 @@ const SubmissionsPage = ({ userEmail }: SubmissionsPageProps) => {
   const hasGroupChallenge = challenges.some((c) => c.mode === "group");
   const [teamOpen, setTeamOpen] = useState(false);
 
-  // Group by event so a delegate scanning the page can find their event's
-  // challenges without reading every card.
   const grouped = useMemo(() => {
     const groups = new Map<string, Challenge[]>();
     challenges.forEach((challenge) => {

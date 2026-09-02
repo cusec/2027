@@ -18,10 +18,7 @@
     --aero-shade: rgba(11, 42, 62, 0.44);
     --aero-shade-deep: rgba(10, 34, 50, 0.64);
 
-    /* the recessed wells inside a card (leaderboard rows, stat tiles,
-       inputs) and the accent its small type uses. Both are re-pointed on
-       .v2-glass, which is how one class flips a whole card to the light
-       surface without any child rule knowing about it. */
+    /* Re-pointed on .v2-glass, which is what flips a card to the light surface. */
     --aero-well: rgba(255, 255, 255, 0.1);
     --aero-well-edge: rgba(255, 255, 255, 0.24);
     --aero-accent-ink: var(--aero-lime);
@@ -77,9 +74,7 @@
     box-shadow: 0 2px 5px rgba(9, 28, 45, 0.5);
 }
 
-/* the scan CTA carries its own green — deeper and grassier than the lime the
-   rest of the hunt uses, so the one action that has to be found instantly is
-   the only thing wearing it */
+/* Its own green: the one action that has to be found instantly. */
 .aero-orb--scan {
     --orb: #6FCB4F;
     --orb-deep: #6FCB4F;

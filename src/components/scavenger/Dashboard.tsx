@@ -8,6 +8,7 @@ import NoticeBoard from "./NoticeBoard";
 import Leaderboard from "./Leaderboard";
 import Shop from "./Shop";
 import DashboardFAQ from "./faqs/DashboardFAQ";
+import { Dust } from "./profile/Signature";
 
 interface DashboardProps {
   user: Auth0User;
@@ -62,10 +63,8 @@ const Dashboard = ({ user, dbUser, emailVerified = false }: DashboardProps) => {
             )}
           </div>
 
-          <Link
-            href="/scavenger/profile"
-            className="aero-score"
-          >
+          <Link href="/scavenger/profile" className="aero-score">
+            <Dust seed={dbUser._id || dbUser.email || "cusec"} />
             <b>{dbUser.points ?? 0}</b>
             <span>points</span>
           </Link>

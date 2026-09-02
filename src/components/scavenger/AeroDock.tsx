@@ -1,16 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import {
-  QrCode,
-  Compass,
-  UserRound,
-  Send,
-  Package,
-  Shield,
-  LogOut,
-  AlertCircle,
-} from "lucide-react";
+import { AlertCircle } from "lucide-react";
 import { useSearchParams } from "next/navigation";
 import { Link, usePathname, useRouter } from "@/i18n/navigation";
 import type { Auth0User, DbUser } from "@/lib/interface";
@@ -18,6 +9,15 @@ import ItemClaim from "./user/ItemClaim";
 import InventoryModal from "./user/InventoryModal";
 import AdminPanel from "./admin/AdminPanel";
 import Modal from "@/components/ui/modal";
+import {
+  AdminIcon,
+  BagIcon,
+  HuntIcon,
+  OutIcon,
+  ProfileIcon,
+  ScanIcon,
+  SubmitIcon,
+} from "./DockIcons";
 
 interface AeroDockProps {
   user: Auth0User;
@@ -26,11 +26,7 @@ interface AeroDockProps {
   baseURL: string;
 }
 
-/**
- * The hunt's only navigation: a left rail on desktop, a bottom bar on phones.
- * It owns the scan / inventory / admin overlays so every primary action is one
- * tap from anywhere in the hunt, rather than buried in a page section.
- */
+/** The hunt's navigation: a left rail on desktop, a bottom bar on phones. */
 const AeroDock = ({
   user,
   dbUser,
@@ -43,8 +39,7 @@ const AeroDock = ({
   const isVolunteer = user?.["cusec/roles"]?.includes("Volunteer") ?? false;
   const canScan = Boolean(linkedEmail) && dbUser.active;
 
-  // A scanned QR lands on /scavenger?identifier=… — resolve it during render
-  // so the claim is already open on first paint rather than flashing in.
+  // Resolved during render so the claim is open on first paint.
   const hasCode = Boolean(useSearchParams().get("identifier"));
 
   const [claimOpen, setClaimOpen] = useState(hasCode && canScan);
@@ -64,7 +59,7 @@ const AeroDock = ({
             className="aero-dock__item aero-dock__item--hero"
           >
             <span className="aero-orb aero-orb--scan aero-orb--hero">
-              <QrCode />
+              <ScanIcon />
             </span>
             <span className="aero-dock__label">Scan</span>
           </button>
@@ -76,7 +71,7 @@ const AeroDock = ({
             }`}
           >
             <span className="aero-orb">
-              <Compass />
+              <HuntIcon />
             </span>
             <span className="aero-dock__label">Hunt</span>
           </Link>
@@ -88,7 +83,7 @@ const AeroDock = ({
             }`}
           >
             <span className="aero-orb">
-              <UserRound />
+              <ProfileIcon />
             </span>
             <span className="aero-dock__label">Profile</span>
           </Link>
@@ -100,7 +95,7 @@ const AeroDock = ({
             }`}
           >
             <span className="aero-orb">
-              <Send />
+              <SubmitIcon />
             </span>
             <span className="aero-dock__label">Submit</span>
           </Link>
@@ -111,7 +106,7 @@ const AeroDock = ({
             className="aero-dock__item"
           >
             <span className="aero-orb">
-              <Package />
+              <BagIcon />
             </span>
             <span className="aero-dock__label">Bag</span>
           </button>
@@ -123,7 +118,7 @@ const AeroDock = ({
               className="aero-dock__item"
             >
               <span className="aero-orb aero-orb--ghost">
-                <Shield />
+                <AdminIcon />
               </span>
               <span className="aero-dock__label">Admin</span>
             </button>
@@ -134,7 +129,7 @@ const AeroDock = ({
             className="aero-dock__item aero-dock__item--end"
           >
             <span className="aero-orb aero-orb--ghost">
-              <LogOut />
+              <OutIcon />
             </span>
             <span className="aero-dock__label">Out</span>
           </a>

@@ -71,10 +71,8 @@ const Modal = ({
         onClick={handleClose}
       />
 
-      {/* Modal content. The panel itself never scrolls: a scrollbar on the
-          element that carries the rounded corners leaves a seam where the
-          gutter meets the radius, so the body below does the scrolling and
-          the panel just clips it. */}
+      {/* The panel never scrolls: a gutter on the rounded corners leaves a
+          seam, so the body below does the scrolling. */}
       <div
         className={cn(
           "v2-modal relative z-10 flex flex-col w-full max-w-2xl max-h-[70vh] overflow-hidden bg-white rounded-lg shadow-xl",
@@ -84,9 +82,7 @@ const Modal = ({
           className
         )}
         style={{
-          // Pinned so a modal's own text colours never depend on whatever the
-          // page behind it set. Values track the v2 palette; both pairings are
-          // high contrast — ink-deep on white, and white on the dark panel.
+          // Pinned so a modal never inherits the page's text colours.
           "--color-light-mode": "#F4FFFC",
           "--color-dark-mode": "#0E2318",
         } as React.CSSProperties}
@@ -97,9 +93,6 @@ const Modal = ({
             <h2 className="v2-modal__title text-lg md:text-xl font-semibold">
               {title}
             </h2>
-            {/* Opacity rather than a fixed grey: the old hover went *lighter*,
-                which on a white panel dropped contrast instead of raising it,
-                and it had to work on the dark admin panel too. */}
             <button
               type="button"
               onClick={handleClose}

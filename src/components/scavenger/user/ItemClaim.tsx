@@ -169,6 +169,17 @@ const ItemClaim = ({
     setManualCode("");
   };
 
+  if (isOpen && claimMethod === "scan" && !claimResult && !error) {
+    return (
+      <ScannerPage
+        isOpen
+        onClose={resetToSelect}
+        onScanSuccess={handleScanSuccess}
+        onError={handleScanError}
+      />
+    );
+  }
+
   return (
     <Modal
       isOpen={isOpen}
@@ -264,24 +275,6 @@ const ItemClaim = ({
                 {isSubmitting ? "Claiming..." : "Claim Item"}
               </button>
             </form>
-          </div>
-        )}
-
-        {/* QR Scanner */}
-        {claimMethod === "scan" && !claimResult && !error && (
-          <div className="space-y-4">
-            <button
-              onClick={resetToSelect}
-              className="text-light-mode/70 hover:text-light-mode text-sm flex items-center gap-1 transition"
-            >
-              ← Back
-            </button>
-            <ScannerPage
-              isOpen={true}
-              onClose={resetToSelect}
-              onScanSuccess={handleScanSuccess}
-              onError={handleScanError}
-            />
           </div>
         )}
 

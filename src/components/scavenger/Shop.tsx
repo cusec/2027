@@ -31,9 +31,6 @@ const Shop = ({ user, dbUser }: ShopProps) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [userPoints, setUserPoints] = useState(dbUser?.points || 0);
-  // The shop lists everything by default; the filter narrows it to what the
-  // delegate can pay for right now, which is the question they are actually
-  // asking when they open it.
   const [affordableOnly, setAffordableOnly] = useState(false);
 
   // Check if user is volunteer or admin
@@ -178,9 +175,6 @@ const Shop = ({ user, dbUser }: ShopProps) => {
 
               {visibleCollectibles.length > 0 && (
                 <>
-                  {/* Collectibles are bought here like anything else, but they
-                      look different enough from the prize tiles that delegates
-                      were not finding them. */}
                   <p className="aero-shop__note">
                     <Gem aria-hidden="true" />
                     Collectibles are sold here too &mdash; buy them with points

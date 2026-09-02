@@ -101,8 +101,7 @@ const InventoryModal = ({ userId, isOpen, onClose }: InventoryModalProps) => {
 
       const [response, submissionRes] = await Promise.all([
         fetch(`/api/users/${userId}/inventory`),
-        // Approved entries live outside the inventory document, so they are
-        // fetched alongside it. A failure here must not empty the bag.
+        // Outside the inventory document; a failure here must not empty the bag.
         fetch("/api/submissions").catch(() => null),
       ]);
       const data: InventoryResponse = await response.json();

@@ -1,12 +1,13 @@
 "use client";
 
 import { useState } from "react";
-import { Pencil, Mail, MessageCircle, Sparkles } from "lucide-react";
+import { IdCard, Trophy } from "lucide-react";
 import type { Auth0User, DbUser } from "@/lib/interface";
 import OnboardingFlow, {
   type OnboardingMode,
 } from "../onboarding/OnboardingFlow";
 import EditDiscordModal from "../user/EditDiscordModal";
+import Signature from "./Signature";
 
 interface ProfileCardProps {
   user: Auth0User;
@@ -20,8 +21,15 @@ const ProfileCard = ({ user, dbUser, emailVerified }: ProfileCardProps) => {
   const [discordOpen, setDiscordOpen] = useState(false);
   const [onboarding, setOnboarding] = useState<OnboardingMode | null>(null);
 
+  const roles = user?.["cusec/roles"] ?? [];
+  const role = roles.includes("Admin")
+    ? "Admin"
+    : roles.includes("Volunteer")
+      ? "Volunteer"
+      : "Delegate";
+
   const name = dbUser.name || "Hunter";
-  const initial = name.trim().charAt(0).toUpperCase() || "?";
+  const points = dbUser.points ?? 0;
   const claimed = dbUser.claimedItems?.length ?? 0;
   const collectibles = dbUser.collectibles?.length ?? 0;
   const prizes = dbUser.shopPrizes?.length ?? 0;
@@ -40,95 +48,105 @@ const ProfileCard = ({ user, dbUser, emailVerified }: ProfileCardProps) => {
         />
       )}
 
-      <div className="v2-card v2-glass aero-card">
-        {/* Placeholder identity art — swapped for real graphics later. */}
-        <div className="aero-card__face">
-          <span className="aero-card__avatar">
-            <b>{initial}</b>
+      <div className="v2-profile">
+        <article className="v2-sig">
+          {/* Seeded from the record, so renaming yourself does not redraw you. */}
+          <Signature seed={dbUser._id || dbUser.email || name} />
+
+          <span className="v2-sig__frame" aria-hidden="true" />
+          <span className="v2-sig__edition" aria-hidden="true">
+            XXVI
           </span>
 
-          <div className="aero-card__who">
-            <p className="aero-eyebrow">Delegate</p>
-            <h1 className="aero-card__name">{name}</h1>
-            <p className="aero-card__mail">{dbUser.email}</p>
-          </div>
+          <p className="v2-sig__eyebrow">{role}</p>
+          <h1 className="v2-sig__name">{name}</h1>
 
-          <div className="aero-card__score">
-            <b>{dbUser.points ?? 0}</b>
-            <span>points</span>
-          </div>
-        </div>
-
-        <div className="aero-card__stats">
-          <div>
-            <b>{claimed}</b>
-            <span>items found</span>
-          </div>
-          <div>
-            <b>{collectibles}</b>
-            <span>collectibles</span>
-          </div>
-          <div>
-            <b>{prizes}</b>
-            <span>prizes</span>
-          </div>
-        </div>
-
-        <dl className="aero-card__rows">
-          <div className="aero-card__row">
-            <dt>
-              <Mail aria-hidden="true" />
-              Ticket email
-            </dt>
-            <dd>
-              {linkedEmail ? (
-                <>
-                  <span>{linkedEmail}</span>
-                  {emailVerified && (
-                    <i className="aero-card__ok">
-                      <Sparkles aria-hidden="true" />
-                      verified
-                    </i>
-                  )}
-                </>
-              ) : (
-                <span className="aero-card__missing">Not linked yet</span>
-              )}
-            </dd>
-            <button
-              type="button"
-              className="aero-btn aero-btn--glass aero-card__act"
-              onClick={() => setOnboarding(linkedEmail ? "edit" : "link")}
-            >
-              {linkedEmail ? "Change" : "Link now"}
-            </button>
-          </div>
-
-          <div className="aero-card__row">
-            <dt>
-              <MessageCircle aria-hidden="true" />
-              Discord
-            </dt>
-            <dd>
-              {discord || <span className="aero-card__missing">Not set</span>}
-            </dd>
-            <button
-              type="button"
-              className="aero-btn aero-btn--glass aero-card__act"
-              onClick={() => setDiscordOpen(true)}
-            >
-              <Pencil aria-hidden="true" />
-              Edit
-            </button>
-          </div>
-        </dl>
-
-        {!linkedEmail && (
-          <p className="aero-card__note">
-            Link the email on your ticket to start scanning codes and earning
-            points.
+          <p className="v2-sig__hero">
+            <b>{points.toLocaleString("en-CA")}</b>
+            <span>points earned so far</span>
           </p>
-        )}
+
+          <p className="v2-sig__meta">
+            <span>CUSEC 2027</span>
+            <span>26th edition</span>
+            <span>Montréal, QC</span>
+          </p>
+        </article>
+
+        <section className="aero-sec">
+          <h2 className="aero-sec__title">
+            <Trophy aria-hidden="true" />
+            Your progress
+          </h2>
+          <div className="v2-card v2-glass v2-tally">
+            <div className="v2-tally__cell">
+              <b>{claimed}</b>
+              <span>items found</span>
+            </div>
+            <div className="v2-tally__cell">
+              <b>{collectibles}</b>
+              <span>collectibles</span>
+            </div>
+            <div className="v2-tally__cell">
+              <b>{prizes}</b>
+              <span>prizes</span>
+            </div>
+          </div>
+        </section>
+
+        <section className="aero-sec">
+          <h2 className="aero-sec__title">
+            <IdCard aria-hidden="true" />
+            Account
+          </h2>
+          <dl className="v2-card v2-glass v2-acct">
+            <div className="v2-acct__row">
+              <dt>Ticket email</dt>
+              <dd>
+                {linkedEmail ? (
+                  <>
+                    <span className="v2-acct__value">{linkedEmail}</span>
+                    {emailVerified && <i className="v2-acct__ok">verified</i>}
+                  </>
+                ) : (
+                  <span className="v2-acct__none">Not linked yet</span>
+                )}
+              </dd>
+              <button
+                type="button"
+                className="aero-btn aero-btn--glass v2-acct__act"
+                onClick={() => setOnboarding(linkedEmail ? "edit" : "link")}
+              >
+                {linkedEmail ? "Change" : "Link now"}
+              </button>
+            </div>
+
+            <div className="v2-acct__row">
+              <dt>Discord</dt>
+              <dd>
+                {discord ? (
+                  <span className="v2-acct__value">{discord}</span>
+                ) : (
+                  <span className="v2-acct__none">Not set</span>
+                )}
+              </dd>
+              <button
+                type="button"
+                className="aero-btn aero-btn--glass v2-acct__act"
+                onClick={() => setDiscordOpen(true)}
+              >
+                Edit
+              </button>
+            </div>
+
+            {!linkedEmail && (
+              <p className="v2-acct__note">
+                Link the email on your ticket to start scanning codes and
+                earning points.
+              </p>
+            )}
+          </dl>
+        </section>
       </div>
 
       <EditDiscordModal

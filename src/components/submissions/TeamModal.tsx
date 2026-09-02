@@ -14,11 +14,7 @@ interface TeamModalProps {
   teams: TeamsState;
 }
 
-/**
- * Team membership for group challenges, opened from the challenge that needs
- * it rather than sitting at the top of the page — a delegate only meets it
- * when a group challenge actually asks for a team.
- */
+/** Team membership, opened from the challenge that needs it. */
 const TeamModal = ({ isOpen, onClose, teams: t }: TeamModalProps) => {
   const {
     teams,

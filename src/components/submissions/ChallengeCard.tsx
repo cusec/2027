@@ -58,14 +58,11 @@ const ChallengeCard = ({
   const [url, setUrl] = useState(submission?.url ?? "");
   const [notes, setNotes] = useState(submission?.notes ?? "");
 
-  // An existing submission can always be edited, even once the challenge is
-  // full — the cap only gates brand-new entries.
+  // The cap only gates new entries; an existing one stays editable.
   const open = isChallengeOpen(challenge) || Boolean(submission);
   const status = submission ? STATUS_META[submission.status] : null;
   const window = formatWindow(challenge);
   const isApproved = submission?.status === "approved";
-  // A group challenge can't be answered until the delegate is on a team; the
-  // API enforces the same rule, this just explains it before they try.
   const isGroup = challenge.mode === "group";
   const needsTeam = isGroup && !teamName;
 
@@ -105,8 +102,6 @@ const ChallengeCard = ({
 
       {window && <p className="v2-chal__window">Open {window}</p>}
 
-      {/* Teams are met here, on the challenge that needs one, rather than in a
-          panel at the top of the page. */}
       {isGroup && (
         <div className="v2-chal__team">
           {teamName ? (
