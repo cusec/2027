@@ -6,7 +6,7 @@ export default function V2SpeakerPitch() {
 	return (
 		<section className="v2-section v2-pitch">
 			<div className="v2-container">
-				<div className="v2-pitch__card">
+				<div className="v2-pitch__card v2-glass">
 					<h2 className="v2-pitch__title v2-pixel">{t("pitch-title")}</h2>
 					<p className="v2-pitch__body">{t("pitch-body")}</p>
 

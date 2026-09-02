@@ -1,15 +1,20 @@
 import { useTranslations } from "next-intl";
+import { Link } from "@/i18n/navigation";
 
-const LINKS = [
-	"about",
-	"speakers",
-	"schedule",
-	"sponsors",
-	"team",
-	"hunt",
-	"conduct",
-	"privacy",
-] as const;
+/**
+ * `route` marks a link that leaves the current page, so it renders through the
+ * i18n Link rather than a bare anchor. The rest are in-page fragments.
+ */
+const LINKS: { key: string; route?: string }[] = [
+	{ key: "about" },
+	{ key: "speakers", route: "/speakers" },
+	{ key: "schedule" },
+	{ key: "sponsors", route: "/sponsors" },
+	{ key: "team" },
+	{ key: "hunt" },
+	{ key: "conduct" },
+	{ key: "privacy" },
+];
 
 const SOCIALS = [
 	{ key: "instagram", href: "https://www.instagram.com/cusecofficial/" },
@@ -36,11 +41,17 @@ export default function V2Footer() {
 				</a>
 
 				<nav className="v2-footer__links">
-					{LINKS.map((key) => (
-						<a key={key} href={`#${key}`}>
-							{t(key)}
-						</a>
-					))}
+					{LINKS.map(({ key, route }) =>
+						route ? (
+							<Link key={key} href={route}>
+								{t(key)}
+							</Link>
+						) : (
+							<a key={key} href={`#${key}`}>
+								{t(key)}
+							</a>
+						),
+					)}
 				</nav>
 
 				<nav className="v2-footer__socials">

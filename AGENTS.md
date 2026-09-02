@@ -68,6 +68,7 @@ src/app/
     layout.tsx          ← NextIntlClientProvider only
     page.tsx            ← the whole main site
     speakers/page.tsx   ← /speakers
+    sponsors/page.tsx   ← /sponsors
 ```
 
 The `[locale]` segment is internal routing only — it never appears in the browser URL bar. Keep the locale layout to providers; the page composes the sections.
@@ -87,6 +88,7 @@ and `V2Faq` are client components, everything else is a server component.
 ```
 components/v2/
   Nav/       V2Nav.tsx · V2LocaleSwitcher.tsx
+  Scene/     V2Scene.tsx
   Reveal/    V2ScrollReveal.tsx
   Hero/      V2Hero.tsx · V2Wordmark.tsx
   Sky/       V2Sky.tsx
@@ -94,7 +96,8 @@ components/v2/
   Archive/   V2Archive.tsx · V2SdCard.tsx · archiveData.ts
   Hunt/      V2Hunt.tsx
   Passes/    V2Passes.tsx
-  Sponsors/  V2Sponsors.tsx
+  Sponsors/  V2Sponsors.tsx · V2SponsorHexes.tsx · V2SponsorsHero.tsx
+             V2SponsorWhy.tsx · V2SponsorTiers.tsx · V2SponsorCta.tsx
   Faq/       V2Faq.tsx
   Closing/   V2Closing.tsx
   Footer/    V2Footer.tsx
@@ -123,7 +126,9 @@ since its sections are not reused anywhere else.
 | `archiveData.ts` | Per-edition photos, counts and card gradients. |
 | `V2Hunt` | Scavenger hunt card + 2026 leaderboard + map pins. |
 | `V2Passes` | Basic / VIP tickets. |
-| `V2Sponsors` | Hex honeycomb by tier. |
+| `V2Scene` | `.v2-scene` + the painted backdrop `<img>`. Every page renders one; `screens` opts into the full-viewport rhythm. |
+| `V2Sponsors` | Landing-page teaser: heading pill + `V2SponsorHexes`. |
+| `V2SponsorHexes` | The honeycomb itself, shared by the teaser and `/sponsors`. |
 | `V2Faq` | Lily-pad accordion. |
 | `V2Closing` / `V2Footer` | Closing CTA and footer. |
 
@@ -135,7 +140,7 @@ Everything is namespaced under a `.v2` root class.
 
 | File | Covers |
 |---|---|
-| `base.css` | Design tokens on `.v2`, `.v2-scene` backdrop, buttons, heading pills, cards, reduced-motion guard |
+| `base.css` | Design tokens on `.v2`, `.v2-scene` backdrop, buttons, `.v2-page-hero`, heading pills, cards, `.v2-glass`, reduced-motion guard |
 | `reveal.css` | `.v2-reveal`, the hero entrance keyframes |
 | `nav.css` | `.v2-nav*`, `.v2-locale` |
 | `hero.css` | `.v2-hero*` |
@@ -144,7 +149,7 @@ Everything is namespaced under a `.v2` root class.
 | `archive.css` | `.v2-cam*`, `.v2-sd*`, `.v2-archive*` |
 | `hunt.css` | `.v2-hunt*`, `.v2-board*` |
 | `passes.css` | `.v2-pass*`, `.v2-passes*` |
-| `sponsors.css` | `.v2-hex*`, `.v2-sponsors*` |
+| `sponsors.css` | `.v2-hex*`, `.v2-sponsors*`, and the `/sponsors` page's `.v2-spon-*` |
 | `faq.css` | `.v2-faq*`, `.v2-pad*` |
 | `closing.css` | `.v2-closing*` |
 | `footer.css` | `.v2-footer*` |
@@ -381,9 +386,27 @@ position against the card. The resting slots in `archive.css` are spaced and
 z-ordered for the sleeve's extra 24×26px; shrinking the sleeve without
 re-checking those will overlap the cards' brand strips.
 
+### Sub-pages: /speakers and /sponsors
+
+Both render `V2Scene` **without** `screens`, and neither mounts
+`V2ScrollReveal` — so their sections must not carry `.v2-reveal`, or they stay
+invisible. Both open with `.v2-page-hero` (badge · title · subline · optional
+actions), which lives in `base.css` because two pages share it.
+
+The cards on both pages are `.v2-glass`, matching the landing page rather than
+the dark panels in the Figma frames for these two pages. That was a deliberate
+instruction, not an oversight — don't "restore" the green cards from the SVGs.
+
+`/sponsors` has no confirmed sponsors, so the honeycomb slots are blank plates,
+exactly as the frame draws them. Its audience figures are read out of
+`V2.dawn` at render time rather than restated in `V2.sponsors`, so the sponsor
+pitch cannot drift from the numbers the landing page shows. The tier card
+deliberately describes only logo placement — no packages, benefits or prices
+are confirmed.
+
 ### The Figma frames are placeholder copy
 
-`src/assets_for_referenec/` and the exports carry invented numbers — 25
+`src/assets_for_reference/` and the exports carry invented numbers — 25
 editions, 500+ attendees, $115 / $160 tickets. **`messages/` is the source of
 truth for every string and figure.** Use the frames for geometry and colour
 only. In particular there are no ticket prices anywhere on this site: passes

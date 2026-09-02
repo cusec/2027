@@ -1,4 +1,5 @@
 import V2Nav from "@/app/components/v2/Nav/V2Nav";
+import V2Scene from "@/app/components/v2/Scene/V2Scene";
 import V2Scrollbar from "@/app/components/v2/Scrollbar/V2Scrollbar";
 import V2ScrollReveal from "@/app/components/v2/Reveal/V2ScrollReveal";
 import V2Hero from "@/app/components/v2/Hero/V2Hero";
@@ -28,16 +29,7 @@ export default function HomePage() {
 			<noscript>
 				<style>{`.v2-reveal{opacity:1!important;translate:none!important}`}</style>
 			</noscript>
-			<div className="v2-scene v2-scene--screens">
-				<img
-					className="v2-scene__backdrop"
-					src="/assets/v2/background-unified.webp"
-					alt=""
-					width={2560}
-					height={12360}
-					fetchPriority="high"
-					aria-hidden="true"
-				/>
+			<V2Scene screens>
 				<V2Hero />
 				<V2Sky />
 				<V2Dawn />
@@ -47,7 +39,7 @@ export default function HomePage() {
 				<V2Sponsors />
 				<V2Faq />
 				<V2Closing />
-			</div>
+			</V2Scene>
 			<V2Footer />
 		</div>
 	);

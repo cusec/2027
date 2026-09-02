@@ -3,53 +3,6 @@
    ========================================================================== */
 
 /* --------------------------------------------------------------------------
-   Hero
-   -------------------------------------------------------------------------- */
-.v2-spk-hero {
-    padding-top: calc(var(--v2-nav-h) + 84px);
-    padding-bottom: 150px;
-    text-align: center;
-}
-
-.v2-spk-hero__inner {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-}
-
-.v2-spk-hero__badge {
-    margin: 0 0 26px;
-    padding: 8px 22px;
-    border-radius: 999px;
-    background: rgba(31, 59, 44, 0.5);
-    backdrop-filter: blur(6px);
-    color: var(--v2-lime);
-    font-size: 11px;
-    letter-spacing: 0.2em;
-    text-transform: uppercase;
-}
-
-.v2-spk-hero__title {
-    max-width: 18ch;
-    margin: 0;
-    font-size: clamp(2.1rem, 5.2vw, 4rem);
-    line-height: 1.22;
-    color: var(--v2-white-pure);
-    text-shadow:
-        4px 4px 0 rgba(91, 107, 126, 0.7),
-        0 0 44px rgba(232, 255, 214, 0.45);
-}
-
-.v2-spk-hero__subline {
-    margin: 26px 0 0;
-    font-size: clamp(0.95rem, 1.3vw, 1.05rem);
-    color: var(--v2-white);
-    text-shadow:
-        0 1px 3px rgba(11, 26, 58, 0.55),
-        0 2px 16px rgba(11, 26, 58, 0.7);
-}
-
-/* --------------------------------------------------------------------------
    Gradient avatar disc — shared by the keynote card and the grid
    -------------------------------------------------------------------------- */
 .v2-spk-avatar {
@@ -105,9 +58,9 @@
 }
 
 .v2-spk-chip--dark {
-    border-color: rgba(195, 233, 86, 0.7);
-    background: transparent;
-    color: var(--v2-lime);
+    border-color: transparent;
+    background: var(--v2-lime);
+    color: var(--v2-ink);
 }
 
 /* --------------------------------------------------------------------------
@@ -136,9 +89,7 @@
     align-items: center;
     gap: 34px;
     padding: 34px 38px;
-    border-radius: 20px;
-    background: rgba(14, 35, 24, 0.92);
-    box-shadow: var(--v2-shadow-card);
+    border-radius: 24px;
 }
 
 .v2-keynote__eyebrow {
@@ -146,27 +97,27 @@
     font-size: 11px;
     letter-spacing: 0.18em;
     text-transform: uppercase;
-    color: var(--v2-lime);
+    color: var(--v2-teal-deep);
 }
 
 .v2-keynote__title {
     margin: 0 0 14px;
     font-size: clamp(1.35rem, 2.4vw, 1.95rem);
     line-height: 1.3;
-    color: var(--v2-white);
+    color: var(--v2-ink-glass-deep);
 }
 
 .v2-keynote__speaker {
     margin: 0 0 4px;
     font-size: 15px;
-    color: var(--v2-lime);
+    color: var(--v2-teal-deep);
 }
 
 .v2-keynote__text {
     margin: 0;
     font-size: 15px;
     line-height: 1.6;
-    color: var(--v2-mint);
+    color: var(--v2-ink-glass);
 }
 
 .v2-keynote__chips {
@@ -260,22 +211,20 @@
     max-width: 800px;
     margin-inline: auto;
     padding: 40px 40px 36px;
-    border-radius: 22px;
-    background: rgba(14, 35, 24, 0.92);
-    box-shadow: var(--v2-shadow-card);
+    border-radius: 24px;
     text-align: center;
 }
 
 .v2-pitch__title {
     margin: 0 0 14px;
     font-size: clamp(1.5rem, 3.2vw, 2.2rem);
-    color: var(--v2-white-pure);
+    color: var(--v2-ink-glass-deep);
 }
 
 .v2-pitch__body {
     margin: 0 0 26px;
     font-size: 15px;
-    color: var(--v2-mint);
+    color: var(--v2-ink-glass);
 }
 
 .v2-pitch__actions {
@@ -285,14 +234,16 @@
     gap: 14px;
 }
 
+/* Sits on the light glass pitch card, so it is a white pill with ink type
+   rather than the white-on-dark outline it used to be. */
 .v2-btn--outline {
-    background: transparent;
-    color: var(--v2-white);
-    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.45);
+    background: rgba(255, 255, 255, 0.82);
+    color: var(--v2-ink-glass-deep);
+    box-shadow: inset 0 0 0 1.5px rgba(255, 255, 255, 0.9);
 }
 
 .v2-btn--outline:hover {
-    background: rgba(255, 255, 255, 0.12);
+    background: var(--v2-white-pure);
     transform: translateY(-2px);
 }
 
@@ -306,11 +257,6 @@
 }
 
 @media (max-width: 900px) {
-    .v2-spk-hero {
-        padding-top: calc(var(--v2-nav-h) + 30px);
-        padding-bottom: 110px;
-    }
-
     .v2-keynote__inner {
         grid-template-columns: 1fr;
         gap: 30px;

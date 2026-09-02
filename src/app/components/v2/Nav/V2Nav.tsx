@@ -8,7 +8,7 @@ import V2LocaleSwitcher from "./V2LocaleSwitcher";
 const LINKS = [
 	{ key: "about", href: "/#about" },
 	{ key: "speakers", href: "/speakers" },
-	{ key: "sponsors", href: "/#sponsors" },
+	{ key: "sponsors", href: "/sponsors" },
 	{ key: "conference", href: "/#conference" },
 	{ key: "hunt", href: "/#hunt" },
 	{ key: "team", href: "/#team" },

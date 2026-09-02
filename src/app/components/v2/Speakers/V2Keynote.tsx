@@ -13,7 +13,7 @@ export default function V2Keynote() {
 			<div className="v2-container v2-keynote__inner">
 				<div className="v2-keynote__stack">
 					{/* still-unannounced opening keynote */}
-					<article className="v2-keynote__card">
+					<article className="v2-keynote__card v2-glass">
 						<V2SpeakerAvatar
 							from="#B5E054"
 							to="#89C24C"
@@ -44,7 +44,7 @@ export default function V2Keynote() {
 
 					{/* keynotes that have been revealed */}
 					{ANNOUNCED_KEYNOTES.map((keynote) => (
-						<article key={keynote.name} className="v2-keynote__card">
+						<article key={keynote.name} className="v2-keynote__card v2-glass">
 							<V2SpeakerAvatar
 								from={keynote.from}
 								to={keynote.to}

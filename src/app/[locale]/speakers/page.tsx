@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
 import V2Nav from "@/app/components/v2/Nav/V2Nav";
+import V2Scene from "@/app/components/v2/Scene/V2Scene";
 import V2Scrollbar from "@/app/components/v2/Scrollbar/V2Scrollbar";
 import V2SpeakersHero from "@/app/components/v2/Speakers/V2SpeakersHero";
 import V2Keynote from "@/app/components/v2/Speakers/V2Keynote";
@@ -26,12 +27,12 @@ export default function SpeakersPage() {
 		<div className="v2">
 			<V2Nav />
 			<V2Scrollbar />
-			<div className="v2-scene">
+			<V2Scene>
 				<V2SpeakersHero />
 				<V2Keynote />
 				<V2SpeakerGrid />
 				<V2SpeakerPitch />
-			</div>
+			</V2Scene>
 			<V2Footer />
 		</div>
 	);
