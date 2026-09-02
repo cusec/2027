@@ -21,7 +21,7 @@ const AvatarCustomize = ({ onComplete }: AvatarCustomizeProps) => {
       </div>
 
       {/* Card */}
-      <div className="relative z-10 w-full max-w-md mx-4 bg-white/90 backdrop-blur-sm rounded-2xl shadow-xl p-8 text-center">
+      <div className="v2-glass relative z-10 w-full max-w-md mx-4 p-8 text-center">
         <div className="w-20 h-20 rounded-full bg-teal-100 flex items-center justify-center mx-auto mb-5">
           <span className="text-4xl">🎨</span>
         </div>

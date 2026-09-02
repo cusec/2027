@@ -59,11 +59,12 @@
 }
 
 .aero-dock__item {
+    position: relative;
     display: flex;
     flex-direction: column;
     align-items: center;
     gap: 5px;
-    padding: 0;
+    padding: 7px 8px 6px;
     border: 0;
     background: none;
     color: var(--aero-white);
@@ -76,22 +77,63 @@
     text-shadow: 0 1px 3px rgba(9, 28, 45, 0.8);
     cursor: pointer;
     opacity: 0.86;
-    transition: opacity 160ms ease;
+    transition: opacity 160ms ease, transform 160ms ease;
+}
+
+/* The orb and its word are one control, so the shade belongs to the pair. It
+   used to be the orb that lifted, which meant the orb dropped its shadow
+   straight across the word underneath it; this pools behind both instead.
+   A radial wash rather than a filled tile -- no edge to read as a button,
+   just enough shade to seat the icon and its label. */
+.aero-dock__item::before {
+    position: absolute;
+    inset: -10px -12px;
+    content: "";
+    background: radial-gradient(
+        70% 64% at 50% 46%,
+        rgba(9, 28, 45, 0.52),
+        rgba(9, 28, 45, 0) 74%
+    );
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 180ms ease;
+}
+
+/* The orb is already positioned; the label needs to be, so both paint over
+   the wash rather than under it. */
+.aero-dock__label {
+    position: relative;
 }
 
 .aero-dock__item:hover,
+.aero-dock__item:focus-visible,
 .aero-dock__item.is-active {
     opacity: 1;
 }
 
-/* where you are reads as depth rather than an outline: the active orb sits
-   forward and casts a longer shadow than its neighbours */
+.aero-dock__item:hover::before,
+.aero-dock__item:focus-visible::before {
+    opacity: 0.8;
+}
+
+/* where you are reads as depth rather than an outline */
+.aero-dock__item.is-active::before {
+    opacity: 1;
+}
+
+.aero-dock__item:active {
+    transform: translateY(1px);
+}
+
+/* Depth is the pill's job now, so the orb keeps only the small seat shadow
+   that makes it read as a bead -- nothing of its own to cast downward. */
+.aero-dock__item .aero-orb,
+.aero-dock__item:hover .aero-orb,
 .aero-dock__item.is-active .aero-orb {
-    transform: translateY(-2px);
+    transform: none;
     box-shadow:
-        0 14px 24px rgba(9, 28, 45, 0.68),
-        0 4px 8px rgba(9, 28, 45, 0.5),
-        inset 0 -6px 12px rgba(255, 255, 255, 0.36);
+        0 2px 5px rgba(9, 28, 45, 0.34),
+        inset 0 -6px 12px rgba(255, 255, 255, 0.3);
 }
 
 .aero-dock__item--hero {
@@ -218,7 +260,7 @@
     margin: 0;
     font-size: 14px;
     line-height: 1.6;
-    color: rgba(244, 255, 252, 0.86);
+    color: color-mix(in srgb, var(--aero-white) 86%, transparent);
 }
 
 .aero-note .aero-btn {
@@ -245,8 +287,8 @@
     gap: 12px;
     padding: 11px 15px;
     border-radius: 12px;
-    background: rgba(255, 255, 255, 0.1);
-    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.24);
+    background: var(--aero-well);
+    box-shadow: inset 0 1px 0 var(--aero-well-edge);
 }
 
 .aero-board__rows li.is-ghost {
@@ -276,7 +318,7 @@
     font-family: var(--v2-font-pixel);
     font-weight: var(--v2-font-pixel-weight);
     font-size: 13px;
-    color: var(--aero-lime);
+    color: var(--aero-accent-ink);
 }
 
 .aero-board__rows li.is-top-1 .aero-board__rank {
@@ -298,6 +340,102 @@
 }
 
 /* --- shop --- */
+/* Standing on the painting rather than in a card, so this row is white ink
+   with the same lift the section titles use. */
+.aero-shop__bar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin: -4px 0 14px;
+}
+
+.aero-shop__points {
+    margin: 0;
+    font-size: 14px;
+    color: var(--aero-white);
+    text-shadow: 0 1px 3px rgba(9, 28, 45, 0.8);
+}
+
+.aero-shop__points b {
+    font-family: var(--v2-font-pixel);
+    font-weight: var(--v2-font-pixel-weight);
+    font-size: 15px;
+    color: var(--aero-lime);
+}
+
+/* A view switch, not a submit: a glass pill that fills with lime once it is
+   holding the list back, so its state is readable at a glance. */
+.aero-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    padding: 8px 16px;
+    border: 1px solid rgba(255, 255, 255, 0.42);
+    border-radius: 999px;
+    background: linear-gradient(
+        to bottom,
+        rgba(255, 255, 255, 0.28),
+        rgba(255, 255, 255, 0.1)
+    );
+    box-shadow:
+        0 4px 10px rgba(9, 28, 45, 0.28),
+        inset 0 1px 0 rgba(255, 255, 255, 0.5);
+    backdrop-filter: blur(10px);
+    color: var(--aero-white);
+    font-family: var(--v2-font-pixel);
+    font-weight: var(--v2-font-pixel-weight);
+    font-size: 11px;
+    letter-spacing: 0.06em;
+    text-shadow: 0 1px 2px rgba(9, 28, 45, 0.6);
+    cursor: pointer;
+    transition: background-color 160ms ease, box-shadow 160ms ease,
+        transform 160ms ease;
+}
+
+.aero-chip svg {
+    width: 15px;
+    height: 15px;
+}
+
+.aero-chip:hover {
+    transform: translateY(-1px);
+    box-shadow:
+        0 7px 14px rgba(9, 28, 45, 0.3),
+        inset 0 1px 0 rgba(255, 255, 255, 0.55);
+}
+
+.aero-chip.is-on {
+    border-color: rgba(255, 255, 255, 0.6);
+    background: linear-gradient(
+        to bottom,
+        var(--aero-lime),
+        var(--aero-lime-deep)
+    );
+    color: var(--aero-ink);
+    text-shadow: 0 1px 0 rgba(255, 255, 255, 0.4);
+}
+
+/* Collectibles sell alongside the prizes but do not look like them, so the
+   second grid says out loud what it is. */
+.aero-shop__note {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 18px 0 12px;
+    font-size: 13.5px;
+    color: var(--aero-white);
+    text-shadow: 0 1px 3px rgba(9, 28, 45, 0.8);
+}
+
+.aero-shop__note svg {
+    width: 16px;
+    height: 16px;
+    flex: none;
+    color: var(--aero-lime);
+}
+
 .aero-grid {
     display: grid;
     gap: 14px;
@@ -317,22 +455,6 @@
     max-width: 640px;
     margin-inline: auto;
     padding: 28px;
-    border: 1px solid rgba(255, 255, 255, 0.36);
-    border-radius: 24px;
-    background:
-        linear-gradient(
-            to bottom,
-            rgba(255, 255, 255, 0.24),
-            rgba(255, 255, 255, 0.07) 40%,
-            rgba(9, 28, 45, 0.2)
-        ),
-        var(--aero-shade);
-    box-shadow:
-        0 20px 46px rgba(9, 28, 45, 0.4),
-        inset 0 1px 0 rgba(255, 255, 255, 0.65);
-    backdrop-filter: blur(16px) saturate(1.35);
-    color: var(--aero-white);
-    text-shadow: 0 1px 2px rgba(9, 28, 45, 0.55);
 }
 
 .aero-card__face {
@@ -432,14 +554,14 @@
     place-items: center;
     padding: 14px 8px;
     border-radius: 14px;
-    background: rgba(255, 255, 255, 0.1);
-    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.28);
+    background: var(--aero-well);
+    box-shadow: inset 0 1px 0 var(--aero-well-edge);
 }
 
 .aero-card__stats b {
     font-family: var(--v2-font-pixel);
     font-size: 1.25rem;
-    color: var(--aero-lime);
+    color: var(--aero-accent-ink);
 }
 
 .aero-card__stats span {
@@ -459,7 +581,7 @@
     align-items: center;
     gap: 12px;
     padding: 14px 0;
-    border-top: 1px solid rgba(255, 255, 255, 0.16);
+    border-top: 1px solid var(--aero-well-edge);
 }
 
 .aero-card__row dt {
@@ -477,7 +599,7 @@
 .aero-card__row dt svg {
     width: 15px;
     height: 15px;
-    color: var(--aero-lime);
+    color: var(--aero-accent-ink);
 }
 
 .aero-card__row dd {
@@ -563,6 +685,12 @@
    Phones — the rail becomes a thumb-reach bar
    -------------------------------------------------------------------------- */
 @media (max-width: 900px) {
+    /* the hover pill adds a few pixels around every item, so the bar grows to
+       match rather than clipping the labels */
+    .v2-aero {
+        --aero-bar-h: 86px;
+    }
+
     .aero-stage {
         padding-left: 0;
         padding-bottom: calc(var(--aero-bar-h) + env(safe-area-inset-bottom));
@@ -594,6 +722,7 @@
 
     .aero-dock__item {
         flex: none;
+        padding: 4px 9px 3px;
     }
 
     .aero-dock__item--hero,
@@ -984,4 +1113,300 @@
 .v2-aero .v2-modal :is(h1, h2, h3, h4) {
     color: var(--aero-white);
     text-shadow: none;
+}
+
+/* --------------------------------------------------------------------------
+   Tinted status panels inside modals
+   The ported admin screens lean on Tailwind's -50/-100 tints for notes,
+   alerts and badges. Those are near-white, and the block above lifts the
+   neutral text on top of them to white -- so the challenge edit form (a
+   bg-blue-50 panel full of text-dark-mode labels) rendered white on white.
+   Every hue is restated here as a translucent wash with light ink, so the
+   meaning survives the move onto dark glass.
+   -------------------------------------------------------------------------- */
+
+/* --- surfaces --- */
+.v2-aero .v2-modal :is(.bg-red-50, .bg-red-100, .bg-red-200) {
+    background-color: rgba(248, 113, 113, 0.18);
+}
+
+.v2-aero .v2-modal :is(.bg-amber-50, .bg-amber-100, .bg-yellow-50, .bg-yellow-100) {
+    background-color: rgba(251, 191, 36, 0.18);
+}
+
+.v2-aero .v2-modal :is(.bg-orange-50, .bg-orange-100) {
+    background-color: rgba(251, 146, 60, 0.18);
+}
+
+.v2-aero .v2-modal :is(.bg-blue-50, .bg-blue-100) {
+    background-color: rgba(96, 165, 250, 0.18);
+}
+
+.v2-aero .v2-modal :is(.bg-green-50, .bg-green-100, .bg-green-200) {
+    background-color: rgba(74, 222, 128, 0.18);
+}
+
+.v2-aero .v2-modal :is(.bg-purple-50, .bg-purple-100) {
+    background-color: rgba(192, 132, 252, 0.18);
+}
+
+.v2-aero .v2-modal :is(.bg-teal-50, .bg-teal-100) {
+    background-color: rgba(45, 212, 191, 0.18);
+}
+
+/* --- edges --- */
+.v2-aero .v2-modal :is(.border-red-200, .border-red-300, .border-red-400, .border-red-500) {
+    border-color: rgba(248, 113, 113, 0.5);
+}
+
+.v2-aero .v2-modal :is(.border-amber-200, .border-amber-300, .border-amber-400, .border-yellow-200) {
+    border-color: rgba(251, 191, 36, 0.5);
+}
+
+.v2-aero .v2-modal :is(.border-blue-200, .border-blue-300) {
+    border-color: rgba(96, 165, 250, 0.5);
+}
+
+.v2-aero .v2-modal :is(.border-green-200, .border-green-300) {
+    border-color: rgba(74, 222, 128, 0.5);
+}
+
+.v2-aero .v2-modal .border-purple-200 {
+    border-color: rgba(192, 132, 252, 0.5);
+}
+
+.v2-aero .v2-modal :is(.border-teal-500, .border-teal-200) {
+    border-color: rgba(45, 212, 191, 0.55);
+}
+
+/* --- ink --- */
+.v2-aero .v2-modal :is(.text-red-500, .text-red-600, .text-red-700, .text-red-800),
+.v2-aero .v2-modal .hover\:text-red-600:hover,
+.v2-aero .v2-modal .hover\:text-red-800:hover {
+    color: #FECACA;
+}
+
+.v2-aero .v2-modal :is(.text-amber-600, .text-amber-700, .text-amber-800, .text-amber-900,
+    .text-yellow-600, .text-yellow-700, .text-yellow-800) {
+    color: #FDE68A;
+}
+
+.v2-aero .v2-modal :is(.text-orange-600, .text-orange-700, .text-orange-800) {
+    color: #FED7AA;
+}
+
+.v2-aero .v2-modal :is(.text-blue-500, .text-blue-600, .text-blue-700, .text-blue-800, .text-blue-900),
+.v2-aero .v2-modal .hover\:text-blue-600:hover {
+    color: #BFDBFE;
+}
+
+.v2-aero .v2-modal :is(.text-green-600, .text-green-700, .text-green-800) {
+    color: #BBF7D0;
+}
+
+.v2-aero .v2-modal :is(.text-purple-600, .text-purple-700, .text-purple-800) {
+    color: #E9D5FF;
+}
+
+.v2-aero .v2-modal .text-teal-700 {
+    color: #99F6E4;
+}
+
+/* Solid saturated buttons keep their own fill, so the white label on them
+   must not be lifted twice -- they are left exactly as the admin panel had
+   them and only the washes above change. */
+
+/* --------------------------------------------------------------------------
+   Hover states
+   A hover that paints a near-white ground under text this file has already
+   lifted to white makes the row vanish under the cursor. Every light hover
+   becomes a lift in the glass instead.
+   -------------------------------------------------------------------------- */
+.v2-aero .v2-modal :is(
+    .hover\:bg-gray-50, .hover\:bg-gray-100, .hover\:bg-gray-200, .hover\:bg-gray-300
+):hover {
+    background-color: rgba(255, 255, 255, 0.18);
+}
+
+.v2-aero .v2-modal .hover\:bg-red-50:hover,
+.v2-aero .v2-modal .hover\:bg-red-100:hover,
+.v2-aero .v2-modal .hover\:bg-red-200:hover {
+    background-color: rgba(248, 113, 113, 0.26);
+}
+
+.v2-aero .v2-modal .hover\:bg-blue-50:hover,
+.v2-aero .v2-modal .hover\:bg-blue-100:hover {
+    background-color: rgba(96, 165, 250, 0.26);
+}
+
+.v2-aero .v2-modal .hover\:bg-green-50:hover,
+.v2-aero .v2-modal .hover\:bg-green-200:hover {
+    background-color: rgba(74, 222, 128, 0.26);
+}
+
+.v2-aero .v2-modal .hover\:bg-purple-50:hover {
+    background-color: rgba(192, 132, 252, 0.26);
+}
+
+.v2-aero .v2-modal .hover\:border-blue-400:hover {
+    border-color: rgba(96, 165, 250, 0.7);
+}
+
+.v2-aero .v2-modal .hover\:border-green-300:hover {
+    border-color: rgba(74, 222, 128, 0.7);
+}
+
+.v2-aero .v2-modal .hover\:border-purple-300:hover {
+    border-color: rgba(192, 132, 252, 0.7);
+}
+
+.v2-aero .v2-modal .hover\:text-gray-600:hover,
+.v2-aero .v2-modal .hover\:text-gray-700:hover,
+.v2-aero .v2-modal .hover\:text-gray-800:hover {
+    color: var(--aero-white);
+}
+
+/* Native date and time pickers draw their indicator in the OS ink, which is
+   black -- invisible on a dark field. */
+.v2-aero .v2-modal ::-webkit-calendar-picker-indicator {
+    filter: invert(1) opacity(0.7);
+    cursor: pointer;
+}
+
+/* ==========================================================================
+   Cards
+   Every card in the hunt is now the main site card -- .v2-card.v2-glass,
+   lifted from site/v2 into base.css unchanged. Nothing below redefines that
+   surface. It only re-points the pieces that were drawn against the old dark
+   panel: the tokens their text and wells read from, and the handful of
+   accents that were picked to glow on navy rather than to read on mint.
+   ========================================================================== */
+/* The hunt scrolls a long way down the same painting the main site uses, so
+   its cards cross the busy forest half of it rather than sitting on sky. Same
+   recipe -- only the three tint stops the recipe already exposes are drawn a
+   little thicker, so the ink still reads down there. */
+.v2-aero {
+    --v2-glass-top: rgba(255, 255, 255, 0.86);
+    --v2-glass-mid: rgba(242, 255, 250, 0.7);
+    --v2-glass-end: rgba(199, 242, 219, 0.66);
+}
+
+.v2-aero .v2-glass {
+    /* One swap turns a whole card from white-on-dark to ink-on-light: every
+       child reads its colour through these, so no child rule has to know
+       which surface it landed on. */
+    --aero-white: var(--v2-ink-glass-deep);
+    --aero-accent-ink: var(--v2-teal-deep);
+    --aero-well: rgba(9, 37, 26, 0.07);
+    --aero-well-edge: rgba(9, 37, 26, 0.13);
+    --v2-white: var(--v2-ink-glass-deep);
+    --v2-mint: var(--v2-ink-glass);
+    --v2-mint-bright: var(--v2-teal-deep);
+    text-shadow: none;
+}
+
+/* Depth was carried by a dark drop shadow behind white text; on the glass it
+   is carried by the surface itself, so the shadow only muddies the ink. */
+.v2-aero .v2-glass :is(h1, h2, h3, h4, p, dt, dd, span, b, i, a, li) {
+    text-shadow: none;
+}
+
+/* --- pieces that were tuned for navy ------------------------------------- */
+
+/* the eyebrow was lime so it would glow against navy; on the card it takes
+   the same deep teal the site card uses for its own eyebrow */
+.v2-aero .v2-glass .aero-eyebrow {
+    color: var(--v2-teal-deep);
+}
+
+/* the podium rows: a mint wash instead of a white one */
+.v2-aero .v2-glass .aero-board__rows li.is-top:not(.is-top-1) {
+    background: linear-gradient(
+        to bottom,
+        rgba(78, 201, 168, 0.3),
+        rgba(78, 201, 168, 0.12)
+    );
+}
+
+/* the ghost button reads as a pressed-in tile, since a white fill is
+   invisible against a white card */
+.v2-aero .v2-glass .aero-btn--glass {
+    --btn: rgba(9, 37, 26, 0.1);
+    --btn-deep: rgba(9, 37, 26, 0.03);
+    border-color: rgba(9, 37, 26, 0.16);
+    box-shadow: 0 3px 8px rgba(10, 36, 23, 0.16);
+    color: var(--v2-ink-glass-deep);
+    text-shadow: none;
+}
+
+/* status pills: the same three meanings, at strengths that hold on mint */
+.v2-aero .v2-glass .v2-chal__status--pending {
+    background: rgba(184, 134, 11, 0.14);
+    color: #7A5A05;
+    box-shadow: inset 0 0 0 1px rgba(184, 134, 11, 0.45);
+}
+
+.v2-aero .v2-glass .v2-chal__status--rejected {
+    background: rgba(190, 46, 36, 0.12);
+    color: #9C2B22;
+    box-shadow: inset 0 0 0 1px rgba(190, 46, 36, 0.4);
+}
+
+.v2-aero .v2-glass .v2-chal__link:hover,
+.v2-aero .v2-glass .v2-chal__cancel:hover {
+    color: var(--v2-ink-glass-deep);
+}
+
+.v2-aero .v2-glass .v2-sub__error svg,
+.v2-aero .v2-glass .v2-chal__withdraw:hover {
+    color: #9C2B22;
+}
+
+/* --- shop tiles ---------------------------------------------------------- */
+/* The two shop tiles are cards as much as the notices are; they just carry
+   their layout in Tailwind. Only the padding and the two pills are stated
+   here -- the surface is the shared one. */
+.aero-tile {
+    padding: 14px;
+    cursor: pointer;
+    transition: transform 200ms ease, box-shadow 200ms ease;
+}
+
+.aero-tile:hover {
+    transform: translateY(-2px);
+    box-shadow:
+        0 20px 40px -10px rgba(10, 36, 23, 0.34),
+        inset 0 1.5px 1px rgba(255, 255, 255, 0.9);
+}
+
+.aero-tile p {
+    margin: 0;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--v2-ink-glass-deep);
+}
+
+.aero-tile__cost,
+.aero-tile__left {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 4px 10px;
+    border-radius: 999px;
+    font-family: var(--v2-font-pixel);
+    font-weight: var(--v2-font-pixel-weight);
+    font-size: 11px;
+    letter-spacing: 0.04em;
+}
+
+.aero-tile__cost {
+    background: rgba(9, 37, 26, 0.09);
+    box-shadow: inset 0 0 0 1px rgba(9, 37, 26, 0.14);
+    color: var(--v2-ink-glass-deep);
+}
+
+.aero-tile__left {
+    background: var(--v2-lime);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.6);
+    color: var(--v2-ink-deep);
 }

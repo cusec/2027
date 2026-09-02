@@ -76,7 +76,7 @@ const ChallengeCard = ({
   };
 
   return (
-    <article className="v2-chal">
+    <article className="v2-card v2-glass v2-chal">
       <div className="v2-chal__head">
         <div>
           <h3 className="v2-chal__title">{challenge.title}</h3>

@@ -158,7 +158,7 @@ const ShopPrize = ({
     <>
       <div
         onClick={openItemModal}
-        className="flex flex-col backdrop-blur-sm gap-2 mx-auto justify-center items-center text-center p-2 bg-dark-mode/85 h-62 w-62 rounded-2xl border-2 border-light-mode/20 text-light-mode hover:scale-101 transition-transform transition-duration-200"
+        className="v2-card v2-glass aero-tile flex flex-col gap-2 mx-auto justify-center items-center text-center h-62 w-62"
       >
         {getImageSrc(item) && (
           <div className="w-24 h-24 rounded-lg overflow-hidden">
@@ -174,7 +174,7 @@ const ShopPrize = ({
         <p>{item.name}</p>
 
         <div className="flex items-center justify-center space-x-1 text-xs md:text-sm">
-          <div className="flex items-center justify-center px-2 py-1 rounded-full bg-light-mode/20">
+          <div className="aero-tile__cost">
             {item.discountedCost != null ? (
               <>
                 <s>{item.cost} </s>&nbsp;
@@ -186,7 +186,7 @@ const ShopPrize = ({
           </div>
 
           {item.limited && (
-            <span className="bg-accent/80 px-2 py-1 rounded-full">
+            <span className="aero-tile__left">
               {item.remaining} left
             </span>
           )}

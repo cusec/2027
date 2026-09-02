@@ -40,7 +40,7 @@ const ProfileCard = ({ user, dbUser, emailVerified }: ProfileCardProps) => {
         />
       )}
 
-      <div className="aero-card">
+      <div className="v2-card v2-glass aero-card">
         {/* Placeholder identity art — swapped for real graphics later. */}
         <div className="aero-card__face">
           <span className="aero-card__avatar">

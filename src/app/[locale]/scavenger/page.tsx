@@ -40,7 +40,7 @@ export default async function ScavengerPage() {
   if (!showDashboard) {
     return (
       <section className="aero-page">
-        <div className="aero-panel aero-gate">
+        <div className="v2-card v2-glass aero-gate">
           <h1 className="aero-title">Scavenger Hunt</h1>
           <p>
             Scan codes, solve puzzles, and climb the leaderboard at CUSEC 2027.

@@ -62,16 +62,16 @@ const SubmissionsPage = ({ userEmail }: SubmissionsPageProps) => {
         </header>
 
         {error && (
-          <div className="v2-sub__error" role="alert">
+          <div className="v2-glass v2-sub__error" role="alert">
             <AlertCircle aria-hidden="true" />
             <span>{error}</span>
           </div>
         )}
 
         {loading ? (
-          <p className="v2-sub__loading">Loading challenges…</p>
+          <p className="v2-glass v2-sub__loading">Loading challenges…</p>
         ) : challenges.length === 0 ? (
-          <div className="v2-sub__empty">
+          <div className="v2-glass v2-sub__empty">
             <b>No challenges yet.</b>
             Challenges appear here once the events team publishes them. Check
             back closer to your event.
