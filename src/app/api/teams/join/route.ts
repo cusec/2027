@@ -21,12 +21,14 @@ export async function POST(request: Request) {
 
   const teamId = typeof body.teamId === "string" ? body.teamId : null;
   const joinCode =
-    typeof body.joinCode === "string" ? body.joinCode.trim().toUpperCase() : null;
+    typeof body.joinCode === "string"
+      ? body.joinCode.trim().toUpperCase()
+      : null;
 
   if (!teamId && !joinCode) {
     return NextResponse.json(
       { error: "Pick a team or enter a join code" },
-      { status: 400 }
+      { status: 400 },
     );
   }
 
@@ -39,14 +41,6 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "User not found" }, { status: 404 });
   }
 
-  const existing = await Team.findOne({ members: user._id });
-  if (existing) {
-    return NextResponse.json(
-      { error: "You're already in a team. Leave it before joining another." },
-      { status: 400 }
-    );
-  }
-
   const team = teamId
     ? await Team.findById(teamId)
     : await Team.findOne({ joinCode });
@@ -55,10 +49,26 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Team not found" }, { status: 404 });
   }
 
+  // Membership is per challenge, so only a team for the *same* challenge
+  // blocks this one.
+  const existing = await Team.findOne({
+    challengeId: team.challengeId,
+    members: user._id,
+  });
+  if (existing) {
+    return NextResponse.json(
+      {
+        error:
+          "You're already in a team for that challenge. Leave it before joining another.",
+      },
+      { status: 400 },
+    );
+  }
+
   if (team.members.length >= MAX_TEAM_SIZE) {
     return NextResponse.json(
       { error: `"${team.name}" is full (${MAX_TEAM_SIZE} members).` },
-      { status: 400 }
+      { status: 400 },
     );
   }
 
@@ -71,7 +81,7 @@ export async function POST(request: Request) {
     await Team.updateOne({ _id: team._id }, { $pull: { members: user._id } });
     return NextResponse.json(
       { error: `"${team.name}" just filled up.` },
-      { status: 409 }
+      { status: 409 },
     );
   }
 

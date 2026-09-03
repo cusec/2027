@@ -1,7 +1,12 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-import type { Challenge, Submission, SubmissionTeam } from "@/lib/interface";
+import type {
+  Challenge,
+  Submission,
+  SubmissionTeam,
+  TeamSummary,
+} from "@/lib/interface";
 
 /**
  * Data access for the delegate-facing submission page.
@@ -122,7 +127,7 @@ export const useSubmissions = () => {
 /** The delegate's existing submission for a challenge, if any. */
 export function findSubmissionFor(
   submissions: Submission[],
-  challengeId: string
+  challengeId: string,
 ): Submission | undefined {
   return submissions.find((s) => {
     const id =
@@ -133,8 +138,8 @@ export function findSubmissionFor(
 
 /** Team membership for group challenges (Dev's Den). */
 export const useTeams = () => {
-  const [teams, setTeams] = useState<SubmissionTeam[]>([]);
-  const [myTeam, setMyTeam] = useState<SubmissionTeam | null>(null);
+  const [teams, setTeams] = useState<TeamSummary[]>([]);
+  const [myTeams, setMyTeams] = useState<Record<string, SubmissionTeam>>({});
   const [maxTeamSize, setMaxTeamSize] = useState(4);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -147,7 +152,7 @@ export const useTeams = () => {
       const data = await res.json();
       if (!data.success) throw new Error(data.error || "Failed to load teams");
       setTeams(data.teams);
-      setMyTeam(data.myTeam);
+      setMyTeams(data.myTeams ?? {});
       setMaxTeamSize(data.maxTeamSize ?? 4);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to load teams");
@@ -183,16 +188,23 @@ export const useTeams = () => {
 
   return {
     teams,
-    myTeam,
+    myTeams,
     maxTeamSize,
     loading,
     error,
     busy,
     setError,
-    createTeam: (name: string) => act("/api/teams", { name }),
+    /** The caller's team for one challenge, or null. */
+    teamFor: (challengeId: string) => myTeams[challengeId] ?? null,
+    /** Every team on one challenge, for the browse list. */
+    teamsFor: (challengeId: string) =>
+      teams.filter((t) => t.challengeId === challengeId),
+    createTeam: (challengeId: string, name: string) =>
+      act("/api/teams", { challengeId, name }),
     joinTeam: (teamId: string) => act("/api/teams/join", { teamId }),
     joinByCode: (joinCode: string) => act("/api/teams/join", { joinCode }),
-    leaveTeam: () => act("/api/teams/leave"),
+    leaveTeam: (challengeId: string) =>
+      act("/api/teams/leave", { challengeId }),
     refetch: fetchTeams,
   };
 };

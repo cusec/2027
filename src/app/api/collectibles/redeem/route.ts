@@ -17,7 +17,7 @@ export async function POST(request: Request) {
     if (!collectibleId) {
       return NextResponse.json(
         { error: "Collectible ID is required" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -28,7 +28,7 @@ export async function POST(request: Request) {
     if (!collectible) {
       return NextResponse.json(
         { error: "Collectible not found" },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
@@ -36,7 +36,7 @@ export async function POST(request: Request) {
     if (!collectible.purchasable) {
       return NextResponse.json(
         { error: "This collectible is not available for purchase" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -44,7 +44,7 @@ export async function POST(request: Request) {
     if (!collectible.active) {
       return NextResponse.json(
         { error: "This collectible is currently not available" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -56,59 +56,75 @@ export async function POST(request: Request) {
       if (now < startDate || now > endDate) {
         return NextResponse.json(
           { error: "This collectible is outside its availability period" },
-          { status: 400 }
+          { status: 400 },
         );
       }
     }
 
-    // Check if collectible is limited and has remaining stock
-    if (collectible.limited && collectible.remaining <= 0) {
-      return NextResponse.json(
-        { error: "This collectible is sold out" },
-        { status: 400 }
-      );
-    }
-
-    // Find the current user
     const user = await User.findOne({ email: session.user.email });
     if (!user) {
       return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
 
-    // Check if user has enough points
-    if (user.points < (collectible.discountedCost ?? collectible.cost)) {
+    const price = collectible.discountedCost ?? collectible.cost;
+
+    // Stock and points both move through conditional updates rather than a
+    // read-then-write: two requests firing together used to be able to buy the
+    // same last item, or spend the same points twice.
+    const reserved = await Collectible.findOneAndUpdate(
+      collectible.limited
+        ? { _id: collectible._id, remaining: { $gt: 0 } }
+        : { _id: collectible._id },
+      {
+        $inc: collectible.limited
+          ? { remaining: -1, claimCount: 1 }
+          : { claimCount: 1 },
+      },
+      { new: true },
+    );
+
+    if (!reserved) {
       return NextResponse.json(
-        {
-          error: "You do not have enough points",
-          required: collectible.discountedCost ?? collectible.cost,
-          available: user.points,
-        },
-        { status: 400 }
+        { error: "This collectible is sold out" },
+        { status: 400 },
       );
     }
 
-    // Deduct points from user
-    user.points -= collectible.discountedCost ?? collectible.cost;
+    const charged = await User.findOneAndUpdate(
+      { _id: user._id, points: { $gte: price } },
+      {
+        $inc: { points: -price },
+        $push: {
+          collectibles: {
+            collectibleId: collectible._id,
+            used: false,
+            addedAt: new Date(),
+          },
+        },
+      },
+      { new: true },
+    );
 
-    // Add collectible to user's collectibles array with used: false
-    if (!user.collectibles) {
-      user.collectibles = [];
+    if (!charged) {
+      // Give the reserved unit back rather than leaving it stranded.
+      await Collectible.updateOne(
+        { _id: collectible._id },
+        {
+          $inc: collectible.limited
+            ? { remaining: 1, claimCount: -1 }
+            : { claimCount: -1 },
+        },
+      );
+
+      return NextResponse.json(
+        {
+          error: "You do not have enough points",
+          required: price,
+          available: user.points,
+        },
+        { status: 400 },
+      );
     }
-    user.collectibles.push({
-      collectibleId: collectible._id,
-      used: false,
-      addedAt: new Date(),
-    });
-
-    await user.save();
-
-    // Decrement remaining count if limited
-    if (collectible.limited) {
-      collectible.remaining -= 1;
-    }
-
-    collectible.claimCount = (collectible.claimCount || 0) + 1;
-    await collectible.save();
 
     return NextResponse.json({
       success: true,
@@ -121,7 +137,7 @@ export async function POST(request: Request) {
           discountedCost: collectible.discountedCost,
         },
         user: {
-          newPoints: user.points,
+          newPoints: charged.points,
         },
       },
     });
@@ -129,7 +145,7 @@ export async function POST(request: Request) {
     console.error("Error redeeming collectible:", error);
     return NextResponse.json(
       { error: "Internal server error" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

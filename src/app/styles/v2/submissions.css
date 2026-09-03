@@ -674,3 +674,14 @@ body:has(.v2) .Navbar {
     content: "";
     background: rgba(255, 255, 255, 0.18);
 }
+
+/* Which challenge the open team modal is for. */
+.v2-aero .v2-modal .aero-team__scope {
+    margin: 0 0 14px;
+    font-family: var(--v2-font-pixel);
+    font-weight: var(--v2-font-pixel-weight);
+    font-size: 10px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--v2-mint-bright);
+}

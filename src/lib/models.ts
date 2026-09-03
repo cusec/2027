@@ -65,7 +65,7 @@ const userSchema = new Schema(
   },
   {
     timestamps: true,
-  }
+  },
 );
 
 const huntItemSchema = new Schema(
@@ -99,14 +99,14 @@ const huntItemSchema = new Schema(
           production: { type: String, default: null },
           staging: { type: String, default: null },
         },
-        { _id: false }
+        { _id: false },
       ),
       default: () => ({}),
     },
   },
   {
     timestamps: true,
-  }
+  },
 );
 
 const adminAuditLogSchema = new Schema(
@@ -169,7 +169,7 @@ const adminAuditLogSchema = new Schema(
   },
   {
     timestamps: true,
-  }
+  },
 );
 
 // Add indexes for better query performance
@@ -219,7 +219,7 @@ const shopItemSchema = new Schema(
   },
   {
     timestamps: true,
-  }
+  },
 );
 
 const noticeSchema = new Schema(
@@ -229,7 +229,7 @@ const noticeSchema = new Schema(
   },
   {
     timestamps: true,
-  }
+  },
 );
 
 const collectibleSchema = new Schema(
@@ -250,7 +250,7 @@ const collectibleSchema = new Schema(
   },
   {
     timestamps: true,
-  }
+  },
 );
 
 const registeredUserSchema = new Schema(
@@ -263,7 +263,7 @@ const registeredUserSchema = new Schema(
   },
   {
     timestamps: false,
-  }
+  },
 );
 
 // Challenge & Submission models
@@ -301,7 +301,7 @@ const challengeSchema = new Schema(
   },
   {
     timestamps: true,
-  }
+  },
 );
 
 // A team is a real-world unit, not a per-challenge one: you form it once and
@@ -310,7 +310,15 @@ const challengeSchema = new Schema(
 // single entry the team is allowed.
 const teamSchema = new Schema(
   {
-    name: { type: String, required: true, unique: true, trim: true },
+    // Teams are scoped to a challenge: the same people can pair up differently
+    // for each group challenge, and a name is only reserved within its own.
+    challengeId: {
+      type: Schema.Types.ObjectId,
+      ref: "Challenge",
+      required: true,
+      index: true,
+    },
+    name: { type: String, required: true, trim: true },
     members: {
       type: [{ type: Schema.Types.ObjectId, ref: "User" }],
       default: [],
@@ -321,7 +329,13 @@ const teamSchema = new Schema(
   },
   {
     timestamps: true,
-  }
+  },
+);
+
+// One team name per challenge, case-insensitively.
+teamSchema.index(
+  { challengeId: 1, name: 1 },
+  { unique: true, collation: { locale: "en", strength: 2 } },
 );
 
 const submissionSchema = new Schema(
@@ -348,7 +362,7 @@ const submissionSchema = new Schema(
       index: true,
     },
     url: { type: String, required: true },
-    notes: { type: String, default: "" },
+    notes: { type: String, default: "", maxlength: 2000 },
     status: {
       type: String,
       enum: ["pending", "approved", "rejected"],
@@ -362,7 +376,7 @@ const submissionSchema = new Schema(
   },
   {
     timestamps: true,
-  }
+  },
 );
 
 // One submission per delegate per challenge — re-submitting replaces the
@@ -375,7 +389,7 @@ submissionSchema.index(
   {
     unique: true,
     partialFilterExpression: { teamId: { $type: "objectId" } },
-  }
+  },
 );
 submissionSchema.index({ createdAt: -1 });
 

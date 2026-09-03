@@ -2,6 +2,8 @@ import { NextResponse } from "next/server";
 import { auth0 } from "@/lib/auth0";
 import { HuntItem, User, Collectible } from "@/lib/models";
 import connectMongoDB from "@/lib/mongodb";
+import isAdmin from "@/lib/isAdmin";
+import isVolunteer from "@/lib/isVolunteer";
 
 // Rate limiting configuration
 const RATE_LIMIT_MAX_ATTEMPTS = 10;
@@ -18,17 +20,17 @@ interface ClaimAttempt {
 function checkRateLimit(claimAttempts: ClaimAttempt[]) {
   const now = new Date();
   const windowStart = new Date(
-    now.getTime() - RATE_LIMIT_WINDOW_MINUTES * 60 * 1000
+    now.getTime() - RATE_LIMIT_WINDOW_MINUTES * 60 * 1000,
   );
 
   const recentFailedAttempts = claimAttempts.filter(
-    (attempt) => !attempt.success && new Date(attempt.timestamp) >= windowStart
+    (attempt) => !attempt.success && new Date(attempt.timestamp) >= windowStart,
   );
 
   const isRateLimited = recentFailedAttempts.length >= RATE_LIMIT_MAX_ATTEMPTS;
   const remainingAttempts = Math.max(
     0,
-    RATE_LIMIT_MAX_ATTEMPTS - recentFailedAttempts.length
+    RATE_LIMIT_MAX_ATTEMPTS - recentFailedAttempts.length,
   );
 
   let resetTime = null;
@@ -37,11 +39,11 @@ function checkRateLimit(claimAttempts: ClaimAttempt[]) {
     const oldestAttempt = recentFailedAttempts.reduce((oldest, current) =>
       new Date(current.timestamp) < new Date(oldest.timestamp)
         ? current
-        : oldest
+        : oldest,
     );
     resetTime = new Date(
       new Date(oldestAttempt.timestamp).getTime() +
-        RATE_LIMIT_WINDOW_MINUTES * 60 * 1000
+        RATE_LIMIT_WINDOW_MINUTES * 60 * 1000,
     );
   }
 
@@ -56,7 +58,7 @@ function checkRateLimit(claimAttempts: ClaimAttempt[]) {
 // POST - Claim a hunt item by identifier
 export async function POST(
   request: Request,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
     const session = await auth0.getSession();
@@ -72,7 +74,7 @@ export async function POST(
     if (!identifier) {
       return NextResponse.json(
         { error: "Identifier is required or invalid" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -88,14 +90,27 @@ export async function POST(
         {
           error: "User not found or unauthorized",
         },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
     if (!user.active) {
       return NextResponse.json(
         { error: "User account is inactive. Please contact support." },
-        { status: 403 }
+        { status: 403 },
+      );
+    }
+
+    // The page is flag-gated; so is the endpoint behind it, or the hunt can be
+    // played through the API before it opens.
+    if (
+      process.env.SCAVENGER_HUNT_ENABLED !== "true" &&
+      !(await isAdmin()) &&
+      !(await isVolunteer())
+    ) {
+      return NextResponse.json(
+        { error: "The hunt is not open yet." },
+        { status: 403 },
       );
     }
 
@@ -105,7 +120,7 @@ export async function POST(
           error:
             "Ticket Email not linked. Please link your email before claiming items.",
         },
-        { status: 403 }
+        { status: 403 },
       );
     }
 
@@ -120,7 +135,7 @@ export async function POST(
       const minutesUntilReset = rateLimitCheck.resetTime
         ? Math.ceil(
             (rateLimitCheck.resetTime.getTime() - new Date().getTime()) /
-              (1000 * 60)
+              (1000 * 60),
           )
         : RATE_LIMIT_WINDOW_MINUTES;
 
@@ -131,13 +146,10 @@ export async function POST(
           resetTime: rateLimitCheck.resetTime,
           remainingAttempts: 0,
         },
-        { status: 429 }
+        { status: 429 },
       );
     }
 
-    console.log(
-      `User ${user.email} is attempting to claim hunt item with identifier: ${identifier}`
-    );
     // Find the hunt item by identifier
     const huntItem = await HuntItem.findOne({ identifier });
 
@@ -172,7 +184,7 @@ export async function POST(
             windowMinutes: RATE_LIMIT_WINDOW_MINUTES,
           },
         },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
@@ -224,7 +236,7 @@ export async function POST(
             windowMinutes: RATE_LIMIT_WINDOW_MINUTES,
           },
         },
-        { status: 403 }
+        { status: 403 },
       );
     }
 
@@ -252,7 +264,7 @@ export async function POST(
             windowMinutes: RATE_LIMIT_WINDOW_MINUTES,
           },
         },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -284,16 +296,30 @@ export async function POST(
             windowMinutes: RATE_LIMIT_WINDOW_MINUTES,
           },
         },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
-    // Successful claim - update claim attempt and user data
+    // The claim itself is one conditional update: the filter refuses a second
+    // concurrent request for the same item, so two taps cannot both be paid.
+    const claimed = await User.findOneAndUpdate(
+      { _id: user._id, claimedItems: { $ne: huntItem._id } },
+      {
+        $push: { claimedItems: huntItem._id },
+        $inc: { points: huntItem.points || 0 },
+      },
+      { new: true },
+    );
+
+    if (!claimed) {
+      return NextResponse.json(
+        { error: "You have already claimed this hunt item." },
+        { status: 400 },
+      );
+    }
+
     claimAttempt.success = true;
-    user.claim_attempts.push(claimAttempt);
-    user.claimedItems.push(huntItem._id);
-    // Add the hunt item's points to the user's total
-    user.points = (user.points || 0) + (huntItem.points || 0);
+    claimed.claim_attempts.push(claimAttempt);
 
     // Award collectibles linked to this hunt item
     const awardedCollectibles: { _id: string; name: string }[] = [];
@@ -343,11 +369,32 @@ export async function POST(
           continue;
         }
 
-        if (!user.collectibles) {
-          user.collectibles = [];
+        // Same conditional-update reservation as the shop, so a limited
+        // collectible cannot be handed out past its last unit.
+        const reserved = await Collectible.findOneAndUpdate(
+          collectible.limited
+            ? { _id: collectible._id, remaining: { $gt: 0 } }
+            : { _id: collectible._id },
+          {
+            $inc: collectible.limited
+              ? { remaining: -1, claimCount: 1 }
+              : { claimCount: 1 },
+          },
+        );
+
+        if (!reserved) {
+          skippedCollectibles.push({
+            _id: collectible._id.toString(),
+            name: collectible.name,
+            reason: "Collectible is sold out",
+          });
+          continue;
         }
-        // Add the collectible to user's collection
-        user.collectibles.push({
+
+        if (!claimed.collectibles) {
+          claimed.collectibles = [];
+        }
+        claimed.collectibles.push({
           collectibleId: collectible._id,
           used: false,
           addedAt: new Date(),
@@ -356,23 +403,15 @@ export async function POST(
           _id: collectible._id.toString(),
           name: collectible.name,
         });
-
-        // Decrement remaining count if limited
-        if (collectible.limited) {
-          collectible.remaining -= 1;
-        }
-
-        // Increment claimCount on the collectible
-        collectible.claimCount = (collectible.claimCount || 0) + 1;
-        await collectible.save();
       }
     }
 
-    await user.save();
+    await claimed.save();
 
-    // Increment claimCount on the hunt item
-    huntItem.claimCount = (huntItem.claimCount || 0) + 1;
-    await huntItem.save();
+    await HuntItem.updateOne(
+      { _id: huntItem._id },
+      { $inc: { claimCount: 1 } },
+    );
 
     return NextResponse.json({
       success: true,
@@ -385,14 +424,14 @@ export async function POST(
       collectibles: awardedCollectibles,
       skippedCollectibles:
         skippedCollectibles.length > 0 ? skippedCollectibles : undefined,
-      newPoints: user.points,
-      totalItemsClaimed: user.claimedItems.length,
+      newPoints: claimed.points,
+      totalItemsClaimed: claimed.claimedItems.length,
     });
   } catch (error) {
     console.error("Error claiming hunt item:", error);
     return NextResponse.json(
       { error: "Internal server error" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

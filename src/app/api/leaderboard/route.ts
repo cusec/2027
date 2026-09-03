@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { auth0 } from "@/lib/auth0";
 import connectMongoDB from "@/lib/mongodb";
 import { User, HuntItem } from "@/lib/models";
 import { Types } from "mongoose";
@@ -6,6 +7,10 @@ import { Types } from "mongoose";
 // GET - Get top 10 users for leaderboard (calculated from claimed items)
 export async function GET() {
   try {
+    const session = await auth0.getSession();
+    if (!session?.user) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
     await connectMongoDB();
 
     // Strategy: Fetch all hunt items once, then calculate points in-memory
@@ -39,7 +44,7 @@ export async function GET() {
           const points = huntItemPointsMap.get(itemId.toString()) || 0;
           return sum + points;
         },
-        0
+        0,
       );
 
       return {
@@ -67,7 +72,7 @@ export async function GET() {
     console.error("Error fetching leaderboard:", error);
     return NextResponse.json(
       { error: "Internal server error" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

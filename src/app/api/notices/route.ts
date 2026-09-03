@@ -1,10 +1,15 @@
 import { NextResponse } from "next/server";
+import { auth0 } from "@/lib/auth0";
 import connectMongoDB from "@/lib/mongodb";
 import { Notice } from "@/lib/models";
 
-// GET - Fetch all notices (public)
+// GET - Fetch all notices
 export async function GET() {
   try {
+    const session = await auth0.getSession();
+    if (!session?.user) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
     await connectMongoDB();
 
     const notices = await Notice.find({}).sort({ createdAt: -1 });
@@ -23,7 +28,7 @@ export async function GET() {
     console.error("Error fetching notices:", error);
     return NextResponse.json(
       { error: "Internal server error" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

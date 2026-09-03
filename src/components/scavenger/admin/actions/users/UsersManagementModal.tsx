@@ -30,6 +30,7 @@ interface User {
   points: number;
   claimedItemsCount: number;
   claimAttemptsCount: number;
+  teams?: { _id: string; name: string }[];
   createdAt: string;
   updatedAt: string;
 }
@@ -174,8 +175,8 @@ const UsersManagementModal = ({
                   points: editForm.points,
                   active: editForm.active,
                 }
-              : user
-          )
+              : user,
+          ),
         );
         setEditingUser(null);
       } else {
@@ -467,6 +468,14 @@ const UsersManagementModal = ({
                             <span>
                               Discord:{" "}
                               <strong>{user.discord_handle || "None"}</strong>
+                            </span>
+                            <span>
+                              Teams:{" "}
+                              <strong>
+                                {user.teams?.length
+                                  ? user.teams.map((t) => t.name).join(", ")
+                                  : "None"}
+                              </strong>
                             </span>
                             <span>
                               Joined:{" "}

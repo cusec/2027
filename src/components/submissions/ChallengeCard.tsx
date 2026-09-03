@@ -22,7 +22,11 @@ interface ChallengeCardProps {
   maxTeamSize?: number;
   /** Opens the create / join team modal. */
   onOpenTeam?: () => void;
-  onSubmit: (challengeId: string, url: string, notes: string) => Promise<boolean>;
+  onSubmit: (
+    challengeId: string,
+    url: string,
+    notes: string,
+  ) => Promise<boolean>;
   onWithdraw: (submissionId: string) => Promise<boolean>;
 }
 

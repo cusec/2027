@@ -22,7 +22,7 @@ export async function POST(request: Request) {
     if (!isUserAdmin && !isUserVolunteer) {
       return NextResponse.json(
         { error: "Forbidden: Admin or Volunteer access required" },
-        { status: 403 }
+        { status: 403 },
       );
     }
 
@@ -31,14 +31,24 @@ export async function POST(request: Request) {
     if (!userId || !pointsToRedeem) {
       return NextResponse.json(
         { error: "User ID and points to redeem are required" },
-        { status: 400 }
+        { status: 400 },
+      );
+    }
+
+    if (
+      typeof pointsToRedeem !== "number" ||
+      !Number.isFinite(pointsToRedeem)
+    ) {
+      return NextResponse.json(
+        { error: "Points to redeem must be a number" },
+        { status: 400 },
       );
     }
 
     if (pointsToRedeem <= 0) {
       return NextResponse.json(
         { error: "Points to redeem must be a positive number" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -55,7 +65,7 @@ export async function POST(request: Request) {
     if (currentPoints < pointsToRedeem) {
       return NextResponse.json(
         { error: "User does not have enough points" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -106,7 +116,7 @@ export async function POST(request: Request) {
     console.error("Error redeeming points:", error);
     return NextResponse.json(
       { error: "Internal server error" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

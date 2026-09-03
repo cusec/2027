@@ -5,6 +5,8 @@ import connectMongoDB from "@/lib/mongodb";
 import { findOrCreateUser } from "@/lib/userService";
 import { isChallengeOpen, isValidSubmissionUrl } from "@/lib/challenges";
 
+const MAX_NOTES = 2000;
+
 // GET - The signed-in delegate's own submissions.
 export async function GET() {
   try {
@@ -40,7 +42,7 @@ export async function GET() {
     console.error("Error fetching submissions:", error);
     return NextResponse.json(
       { error: "Internal server error" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -59,7 +61,7 @@ export async function POST(request: Request) {
     if (process.env.SUBMISSIONS_ENABLED !== "true") {
       return NextResponse.json(
         { error: "Submissions are not open yet" },
-        { status: 403 }
+        { status: 403 },
       );
     }
 
@@ -68,14 +70,14 @@ export async function POST(request: Request) {
     if (!challengeId) {
       return NextResponse.json(
         { error: "A challenge must be selected" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
     if (!isValidSubmissionUrl(url)) {
       return NextResponse.json(
         { error: "Enter a valid http(s) link to your video" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -85,7 +87,7 @@ export async function POST(request: Request) {
     if (!challenge) {
       return NextResponse.json(
         { error: "Challenge not found" },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
@@ -104,14 +106,14 @@ export async function POST(request: Request) {
     let team = null;
 
     if (isGroup) {
-      team = await Team.findOne({ members: user._id });
+      team = await Team.findOne({ challengeId, members: user._id });
       if (!team) {
         return NextResponse.json(
           {
             error:
               "This is a group challenge — create or join a team before submitting.",
           },
-          { status: 400 }
+          { status: 400 },
         );
       }
     }
@@ -119,7 +121,7 @@ export async function POST(request: Request) {
     const existing = await Submission.findOne(
       isGroup
         ? { challengeId, teamId: team!._id }
-        : { challengeId, userId: user._id }
+        : { challengeId, userId: user._id },
     );
 
     // The submission cap only guards *new* entries — a delegate editing their
@@ -127,7 +129,7 @@ export async function POST(request: Request) {
     if (!existing && !isChallengeOpen(challenge)) {
       return NextResponse.json(
         { error: "This challenge is not currently accepting submissions" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -139,13 +141,13 @@ export async function POST(request: Request) {
           error:
             "This submission has already been approved and can no longer be changed. Contact an organizer if it needs updating.",
         },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
     if (existing) {
       existing.url = url.trim();
-      existing.notes = notes || "";
+      existing.notes = String(notes || "").slice(0, MAX_NOTES);
       // Whoever last edited it becomes the visible submitter.
       existing.userId = user._id;
       existing.userEmail = session.user.email;
@@ -166,7 +168,7 @@ export async function POST(request: Request) {
       userEmail: session.user.email,
       teamId: isGroup ? team!._id : null,
       url: url.trim(),
-      notes: notes || "",
+      notes: String(notes || "").slice(0, MAX_NOTES),
     });
 
     await submission.save();
@@ -184,7 +186,7 @@ export async function POST(request: Request) {
     console.error("Error creating submission:", error);
     return NextResponse.json(
       { error: "Internal server error" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

@@ -7,6 +7,7 @@ import { logAdminAction, sanitizeDataForLogging } from "@/lib/adminAuditLogger";
 import { isValidSubmissionUrl } from "@/lib/challenges";
 
 const STATUSES = ["pending", "approved", "rejected"];
+const MAX_NOTES = 2000;
 
 /**
  * Who may edit or withdraw an entry. Individual entries belong to whoever
@@ -15,7 +16,7 @@ const STATUSES = ["pending", "approved", "rejected"];
  */
 async function callerOwns(
   submission: { userEmail: string; teamId?: unknown },
-  email: string
+  email: string,
 ): Promise<boolean> {
   if (submission.userEmail === email) return true;
   if (!submission.teamId) return false;
@@ -23,14 +24,17 @@ async function callerOwns(
   const user = await User.findOne({ email });
   if (!user) return false;
 
-  const team = await Team.findOne({ _id: submission.teamId, members: user._id });
+  const team = await Team.findOne({
+    _id: submission.teamId,
+    members: user._id,
+  });
   return !!team;
 }
 
 // PUT - Owners edit their own link/notes; admins set the review status.
 export async function PUT(
   request: Request,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
     const session = await auth0.getSession();
@@ -48,7 +52,7 @@ export async function PUT(
     if (!submission) {
       return NextResponse.json(
         { error: "Submission not found" },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
@@ -59,12 +63,25 @@ export async function PUT(
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
 
+    // Approved entries are frozen for delegates here exactly as they are on
+    // create and withdraw: the points are already banked, so letting the link
+    // change afterwards would let a delegate swap what was judged.
+    if (!admin && submission.status === "approved") {
+      return NextResponse.json(
+        {
+          error:
+            "This submission has already been approved and can no longer be changed. Contact an organizer if it needs updating.",
+        },
+        { status: 400 },
+      );
+    }
+
     // Status is a review decision — admins only, whoever owns the entry.
     if (status !== undefined) {
       if (!admin) {
         return NextResponse.json(
           { error: "Forbidden: Admin access required to set status" },
-          { status: 403 }
+          { status: 403 },
         );
       }
       if (!STATUSES.includes(status)) {
@@ -83,13 +100,14 @@ export async function PUT(
       if (!isValidSubmissionUrl(url)) {
         return NextResponse.json(
           { error: "Enter a valid http(s) link to your video" },
-          { status: 400 }
+          { status: 400 },
         );
       }
       submission.url = url.trim();
     }
 
-    if (notes !== undefined) submission.notes = notes;
+    if (notes !== undefined)
+      submission.notes = String(notes).slice(0, MAX_NOTES);
 
     // --- Points -------------------------------------------------------------
     // Approving a submission credits the challenge's points to the delegate.
@@ -168,7 +186,7 @@ export async function PUT(
     console.error("Error updating submission:", error);
     return NextResponse.json(
       { error: "Internal server error" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -176,7 +194,7 @@ export async function PUT(
 // DELETE - Owners withdraw their own submission; admins can remove any.
 export async function DELETE(
   request: Request,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
     const session = await auth0.getSession();
@@ -192,7 +210,7 @@ export async function DELETE(
     if (!submission) {
       return NextResponse.json(
         { error: "Submission not found" },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
@@ -212,7 +230,7 @@ export async function DELETE(
           error:
             "This submission has already been approved and cannot be withdrawn. Contact an organizer if it needs to be removed.",
         },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -259,7 +277,7 @@ export async function DELETE(
     console.error("Error deleting submission:", error);
     return NextResponse.json(
       { error: "Internal server error" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

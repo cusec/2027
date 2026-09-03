@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { auth0 } from "@/lib/auth0";
-import { User } from "@/lib/models";
+import { Team, User } from "@/lib/models";
 import connectMongoDB from "@/lib/mongodb";
 import isAdmin from "@/lib/isAdmin";
 import isVolunteer from "@/lib/isVolunteer";
@@ -19,7 +19,7 @@ export async function GET(request: Request) {
     if (!((await isAdmin()) || (await isVolunteer()))) {
       return NextResponse.json(
         { error: "Forbidden: Admin access required" },
-        { status: 403 }
+        { status: 403 },
       );
     }
 
@@ -45,13 +45,29 @@ export async function GET(request: Request) {
 
     const users = await User.find(query)
       .select(
-        "email name linked_email discord_handle points active claimedItems claim_attempts createdAt updatedAt"
+        "email name linked_email discord_handle points active claimedItems claim_attempts createdAt updatedAt",
       )
       .sort({ createdAt: -1 })
       .skip(offset)
       .limit(limit);
 
     const totalUsers = await User.countDocuments(query);
+
+    // One lookup for the whole page rather than one per row. Teams are per
+    // challenge, so a delegate can appear in more than one.
+    const teams = await Team.find({ members: { $in: users.map((u) => u._id) } })
+      .select("name members")
+      .lean();
+
+    const teamsByMember = new Map<string, { _id: string; name: string }[]>();
+    for (const team of teams) {
+      for (const member of team.members) {
+        const key = String(member);
+        const list = teamsByMember.get(key) ?? [];
+        list.push({ _id: String(team._id), name: team.name });
+        teamsByMember.set(key, list);
+      }
+    }
 
     return NextResponse.json({
       success: true,
@@ -66,6 +82,7 @@ export async function GET(request: Request) {
           active: user.active,
           claimedItemsCount: user.claimedItems.length,
           claimAttemptsCount: user.claim_attempts?.length || 0,
+          teams: teamsByMember.get(String(user._id)) ?? [],
           createdAt: user.createdAt,
           updatedAt: user.updatedAt,
         };
@@ -81,7 +98,7 @@ export async function GET(request: Request) {
     console.error("Error fetching users:", error);
     return NextResponse.json(
       { error: "Internal server error" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -99,7 +116,7 @@ export async function PUT(request: Request) {
     if (!(await isAdmin())) {
       return NextResponse.json(
         { error: "Forbidden: Admin access required" },
-        { status: 403 }
+        { status: 403 },
       );
     }
 
@@ -108,7 +125,7 @@ export async function PUT(request: Request) {
     if (!userId) {
       return NextResponse.json(
         { error: "User ID is required" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -128,7 +145,7 @@ export async function PUT(request: Request) {
     ) {
       return NextResponse.json(
         { error: "Linked email already in use by another user" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -212,7 +229,7 @@ export async function PUT(request: Request) {
     console.error("Error updating user:", error);
     return NextResponse.json(
       { error: "Internal server error" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

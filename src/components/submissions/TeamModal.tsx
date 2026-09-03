@@ -12,18 +12,26 @@ interface TeamModalProps {
   isOpen: boolean;
   onClose: () => void;
   teams: TeamsState;
+  /** Teams belong to a challenge, so the modal always works on one. */
+  challengeId: string;
+  challengeTitle: string;
 }
 
 /** Team membership, opened from the challenge that needs it. */
-const TeamModal = ({ isOpen, onClose, teams: t }: TeamModalProps) => {
+const TeamModal = ({
+  isOpen,
+  onClose,
+  teams: t,
+  challengeId,
+  challengeTitle,
+}: TeamModalProps) => {
   const {
-    teams,
-    myTeam,
     maxTeamSize,
     loading,
     error,
     busy,
-    setError,
+    teamFor,
+    teamsFor,
     createTeam,
     joinTeam,
     joinByCode,
@@ -33,7 +41,10 @@ const TeamModal = ({ isOpen, onClose, teams: t }: TeamModalProps) => {
   const [name, setName] = useState("");
   const [code, setCode] = useState("");
 
-  const joinable = teams.filter((team) => team.members.length < maxTeamSize);
+  const myTeam = teamFor(challengeId);
+  const joinable = teamsFor(challengeId).filter(
+    (team) => team.memberCount < maxTeamSize,
+  );
 
   return (
     <Modal
@@ -42,6 +53,8 @@ const TeamModal = ({ isOpen, onClose, teams: t }: TeamModalProps) => {
       title={myTeam ? "Your team" : "Create or join a team"}
       className="max-w-lg"
     >
+      <p className="aero-team__scope">For {challengeTitle}</p>
+
       {loading ? (
         <p className="aero-team__hint">Loading teams…</p>
       ) : myTeam ? (
@@ -76,7 +89,7 @@ const TeamModal = ({ isOpen, onClose, teams: t }: TeamModalProps) => {
               type="button"
               className="aero-btn aero-btn--glass"
               disabled={busy}
-              onClick={leaveTeam}
+              onClick={() => leaveTeam(challengeId)}
             >
               <LogOut aria-hidden="true" />
               Leave team
@@ -86,8 +99,8 @@ const TeamModal = ({ isOpen, onClose, teams: t }: TeamModalProps) => {
       ) : (
         <>
           <p className="aero-team__hint">
-            Teams are capped at {maxTeamSize}. One entry per team — any member
-            can submit it.
+            Teams are capped at {maxTeamSize} and are separate for each
+            challenge. One entry per team — any member can submit it.
           </p>
 
           {error && <p className="aero-team__error">{error}</p>}
@@ -96,7 +109,7 @@ const TeamModal = ({ isOpen, onClose, teams: t }: TeamModalProps) => {
             className="aero-team__form"
             onSubmit={async (e) => {
               e.preventDefault();
-              if (await createTeam(name)) setName("");
+              if (await createTeam(challengeId, name)) setName("");
             }}
           >
             <input
@@ -151,14 +164,13 @@ const TeamModal = ({ isOpen, onClose, teams: t }: TeamModalProps) => {
                   <li key={team._id}>
                     <span>{team.name}</span>
                     <i>
-                      {team.members.length}/{maxTeamSize}
+                      {team.memberCount}/{maxTeamSize}
                     </i>
                     <button
                       type="button"
                       className="aero-btn aero-btn--glass"
                       disabled={busy}
                       onClick={() => {
-                        setError(null);
                         joinTeam(team._id);
                       }}
                     >

@@ -284,9 +284,16 @@ export interface SubmissionTeamMember {
   email?: string;
 }
 
-export interface SubmissionTeam {
+/** A team in the browse list: enough to pick one with space, nothing more. */
+export interface TeamSummary {
   _id: string;
+  challengeId: string;
   name: string;
+  memberCount: number;
+}
+
+/** The caller's own team — the only one whose roster and code they receive. */
+export interface SubmissionTeam extends TeamSummary {
   members: SubmissionTeamMember[];
   createdBy?: string;
   joinCode: string;

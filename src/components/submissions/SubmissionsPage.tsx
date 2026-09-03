@@ -26,7 +26,9 @@ const SubmissionsPage = ({ userEmail }: SubmissionsPageProps) => {
 
   const teamState = useTeams();
   const hasGroupChallenge = challenges.some((c) => c.mode === "group");
-  const [teamOpen, setTeamOpen] = useState(false);
+  const [teamForChallenge, setTeamForChallenge] = useState<Challenge | null>(
+    null,
+  );
 
   const grouped = useMemo(() => {
     const groups = new Map<string, Challenge[]>();
@@ -79,9 +81,9 @@ const SubmissionsPage = ({ userEmail }: SubmissionsPageProps) => {
                       challenge={challenge}
                       submission={findSubmissionFor(submissions, challenge._id)}
                       isSubmitting={isSubmitting}
-                      teamName={teamState.myTeam?.name ?? null}
+                      teamName={teamState.teamFor(challenge._id)?.name ?? null}
                       maxTeamSize={teamState.maxTeamSize}
-                      onOpenTeam={() => setTeamOpen(true)}
+                      onOpenTeam={() => setTeamForChallenge(challenge)}
                       onSubmit={submit}
                       onWithdraw={withdraw}
                     />
@@ -92,10 +94,12 @@ const SubmissionsPage = ({ userEmail }: SubmissionsPageProps) => {
           </div>
         )}
 
-        {hasGroupChallenge && (
+        {hasGroupChallenge && teamForChallenge && (
           <TeamModal
-            isOpen={teamOpen}
-            onClose={() => setTeamOpen(false)}
+            challengeId={teamForChallenge._id}
+            challengeTitle={teamForChallenge.title}
+            isOpen={Boolean(teamForChallenge)}
+            onClose={() => setTeamForChallenge(null)}
             teams={teamState}
           />
         )}

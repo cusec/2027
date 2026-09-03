@@ -6,10 +6,26 @@ import { User } from "@/lib/models";
 
 // POST - leave the caller's team. The last member out deletes the team, so
 // empty teams don't linger in the browse list.
-export async function POST() {
+export async function POST(request: Request) {
   const session = await auth0.getSession();
   if (!session?.user?.email) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
+  let body: Record<string, unknown>;
+  try {
+    body = await request.json();
+  } catch {
+    return NextResponse.json({ error: "Invalid JSON" }, { status: 400 });
+  }
+
+  const challengeId =
+    typeof body.challengeId === "string" ? body.challengeId : null;
+  if (!challengeId) {
+    return NextResponse.json(
+      { error: "A challenge is required" },
+      { status: 400 },
+    );
   }
 
   await connectMongoDB();
@@ -18,9 +34,12 @@ export async function POST() {
     return NextResponse.json({ error: "User not found" }, { status: 404 });
   }
 
-  const team = await Team.findOne({ members: user._id });
+  const team = await Team.findOne({ challengeId, members: user._id });
   if (!team) {
-    return NextResponse.json({ error: "You're not in a team" }, { status: 400 });
+    return NextResponse.json(
+      { error: "You're not in a team for this challenge" },
+      { status: 400 },
+    );
   }
 
   // A team's submissions belong to the team, not the leaver — blocking the
@@ -32,7 +51,7 @@ export async function POST() {
         error:
           "Your team has already submitted. Ask an organizer if you need to leave.",
       },
-      { status: 400 }
+      { status: 400 },
     );
   }
 

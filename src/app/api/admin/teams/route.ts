@@ -18,7 +18,7 @@ export async function GET() {
     if (!((await isAdmin()) || (await isVolunteer()))) {
       return NextResponse.json(
         { error: "Forbidden: Admin access required" },
-        { status: 403 }
+        { status: 403 },
       );
     }
 
@@ -26,6 +26,7 @@ export async function GET() {
 
     const teams = await Team.find({})
       .populate("members", "name email points")
+      .populate("challengeId", "title eventName")
       .sort({ createdAt: -1 })
       .lean();
 
@@ -42,16 +43,32 @@ export async function GET() {
       teams: teams.map((t) => ({
         _id: String(t._id),
         name: t.name,
+        challenge: t.challengeId
+          ? {
+              _id: String(
+                (t.challengeId as unknown as { _id: unknown })._id ??
+                  t.challengeId,
+              ),
+              title:
+                (t.challengeId as unknown as { title?: string }).title ??
+                "Unknown challenge",
+            }
+          : null,
         joinCode: t.joinCode,
         createdAt: t.createdAt,
         submissionCount: countBy.get(String(t._id)) ?? 0,
         members: (t.members || []).map(
-          (m: { _id: unknown; name?: string; email?: string; points?: number }) => ({
+          (m: {
+            _id: unknown;
+            name?: string;
+            email?: string;
+            points?: number;
+          }) => ({
             _id: String(m._id),
             name: m.name,
             email: m.email,
             points: m.points ?? 0,
-          })
+          }),
         ),
       })),
     });
@@ -59,7 +76,7 @@ export async function GET() {
     console.error("Error fetching teams:", error);
     return NextResponse.json(
       { error: "Internal server error" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

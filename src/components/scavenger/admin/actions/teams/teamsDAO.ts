@@ -12,6 +12,8 @@ export interface AdminTeamMember {
 export interface AdminTeam {
   _id: string;
   name: string;
+  /** Teams belong to one challenge; null only for pre-migration rows. */
+  challenge: { _id: string; title: string } | null;
   joinCode: string;
   createdAt?: string;
   submissionCount: number;
@@ -78,7 +80,7 @@ export const useAdminTeams = (isOpen: boolean) => {
   const deleteTeam = async (id: string, name: string) => {
     if (
       !confirm(
-        `Delete "${name}"? Its submissions are removed too. Points already granted are NOT reversed.`
+        `Delete "${name}"? Its submissions are removed too. Points already granted are NOT reversed.`,
       )
     ) {
       return false;
@@ -104,7 +106,7 @@ export const useAdminTeams = (isOpen: boolean) => {
     teamId: string,
     userId: string,
     label: string,
-    teamName: string
+    teamName: string,
   ) => {
     if (!confirm(`Remove ${label} from "${teamName}"?`)) return false;
     try {
@@ -116,7 +118,8 @@ export const useAdminTeams = (isOpen: boolean) => {
         body: JSON.stringify({ userId }),
       });
       const data = await res.json();
-      if (!data.success) throw new Error(data.error || "Failed to remove member");
+      if (!data.success)
+        throw new Error(data.error || "Failed to remove member");
       if (data.teamDeleted) {
         setWarning(`"${teamName}" had no members left and was removed.`);
       }

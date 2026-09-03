@@ -13,11 +13,7 @@ import {
   KeyRound,
 } from "lucide-react";
 import Modal from "@/components/ui/modal";
-import {
-  useAdminTeams,
-  useTeamSubmissions,
-  type AdminTeam,
-} from "./teamsDAO";
+import { useAdminTeams, useTeamSubmissions, type AdminTeam } from "./teamsDAO";
 
 interface TeamsModalProps {
   isOpen: boolean;
@@ -60,11 +56,12 @@ const TeamsModal = ({ isOpen, onClose, isAdmin }: TeamsModalProps) => {
       (t) =>
         t.name.toLowerCase().includes(q) ||
         t.joinCode.toLowerCase().includes(q) ||
+        (t.challenge?.title || "").toLowerCase().includes(q) ||
         t.members.some(
           (m) =>
             (m.name || "").toLowerCase().includes(q) ||
-            (m.email || "").toLowerCase().includes(q)
-        )
+            (m.email || "").toLowerCase().includes(q),
+        ),
     );
   }, [teams, query]);
 
@@ -204,6 +201,9 @@ const TeamsModal = ({ isOpen, onClose, isAdmin }: TeamsModalProps) => {
                             {team.submissionCount} submission
                             {team.submissionCount === 1 ? "" : "s"}
                           </span>
+                          <span className="rounded-full bg-gray-100 px-2 py-0.5 text-xs font-medium text-gray-700">
+                            {team.challenge?.title ?? "No challenge"}
+                          </span>
                         </div>
                       )}
 
@@ -226,7 +226,7 @@ const TeamsModal = ({ isOpen, onClose, isAdmin }: TeamsModalProps) => {
                                     team._id,
                                     m._id,
                                     m.name || m.email || "this member",
-                                    team.name
+                                    team.name,
                                   )
                                 }
                                 disabled={isBusy}
@@ -243,9 +243,7 @@ const TeamsModal = ({ isOpen, onClose, isAdmin }: TeamsModalProps) => {
 
                     <div className="flex shrink-0 gap-1">
                       <button
-                        onClick={() =>
-                          setOpenTeam(expanded ? null : team._id)
-                        }
+                        onClick={() => setOpenTeam(expanded ? null : team._id)}
                         className="rounded-lg px-3 py-2 text-sm text-gray-600 hover:bg-gray-100 hover:text-blue-600"
                       >
                         {expanded ? "Hide" : "Submissions"}
@@ -298,7 +296,10 @@ const TeamsModal = ({ isOpen, onClose, isAdmin }: TeamsModalProps) => {
                                     rel="noopener noreferrer"
                                     className="mt-1 inline-flex items-center gap-1.5 break-all text-sm text-blue-600 underline underline-offset-2"
                                   >
-                                    <ExternalLink size={14} className="shrink-0" />
+                                    <ExternalLink
+                                      size={14}
+                                      className="shrink-0"
+                                    />
                                     {s.url}
                                   </a>
                                   <p className="mt-1 text-xs text-gray-500">

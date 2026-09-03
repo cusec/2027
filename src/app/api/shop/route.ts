@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { auth0 } from "@/lib/auth0";
 import connectMongoDB from "@/lib/mongodb";
 import { ShopItem } from "@/lib/models";
 
@@ -24,6 +25,10 @@ function isWithinActivationPeriod(item: {
 // Admins can pass includeAll=true to see all items
 export async function GET(request: Request) {
   try {
+    const session = await auth0.getSession();
+    if (!session?.user) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
     const { searchParams } = new URL(request.url);
     const includeAll = searchParams.get("includeAll") === "true";
 
@@ -36,7 +41,7 @@ export async function GET(request: Request) {
     const filteredItems = includeAll
       ? shopItems
       : shopItems.filter(
-          (item) => item.active && isWithinActivationPeriod(item)
+          (item) => item.active && isWithinActivationPeriod(item),
         );
 
     return NextResponse.json({
@@ -63,7 +68,7 @@ export async function GET(request: Request) {
     console.error("Error fetching shop items:", error);
     return NextResponse.json(
       { error: "Internal server error" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
