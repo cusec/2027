@@ -11,32 +11,55 @@ html {
 
 body {
   background-color: #ffffff;
-  letter-spacing: 0.06em;
 }
 
-/* ---- win95 style cursors ---- */
-:root {
-  --cursor-arrow: url("/assets/cursor-win95.webp") 1 1, auto;
-  --cursor-hand: url("/assets/pointer-win95.webp") 7 1, pointer;
+@media (hover: hover) {
+  html {
+    scrollbar-width: none;
+  }
+
+  html::-webkit-scrollbar {
+    display: none;
+  }
 }
 
-html {
-  cursor: var(--cursor-arrow);
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+  background: transparent;
 }
 
-a,
-button,
-select,
-summary,
-[role="button"],
-.desktop-icon,
-.cta-btn,
-.win95-close,
-.win95-minimize {
-  cursor: var(--cursor-hand);
+::-webkit-scrollbar-track,
+::-webkit-scrollbar-corner {
+  background: transparent;
 }
 
-input,
-textarea {
-  cursor: text;
+::-webkit-scrollbar-thumb {
+  border: 2px solid transparent;
+  border-radius: 999px;
+  background-color: rgba(127, 168, 41, 0.65);
+  background-clip: content-box;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(127, 168, 41, 0.9);
+}
+
+::-webkit-scrollbar-button {
+  display: none;
+  width: 0;
+  height: 0;
+}
+
+@supports not selector(::-webkit-scrollbar) {
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(127, 168, 41, 0.75) transparent;
+  }
+
+  @media (hover: hover) {
+    html {
+      scrollbar-width: none;
+    }
+  }
 }

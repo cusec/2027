@@ -1,0 +1,682 @@
+.v2-archive {
+    padding-block: var(--v2-section-pad);
+}
+
+.v2-archive__head {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 46px;
+}
+
+.v2-archive__head .v2-heading-pill {
+    font-size: clamp(1.05rem, 2.2vw, 1.6rem);
+}
+
+.v2-archive__stage {
+    position: relative;
+}
+
+.v2-cam {
+    container-type: inline-size;
+    position: relative;
+    width: 82%;
+    aspect-ratio: 980 / 590;
+    display: grid;
+    grid-template-columns: 1fr 20.5%;
+    grid-template-rows: 9.5% 1fr 12%;
+    column-gap: 2.2%;
+    padding: 0 3.8% 2.4%;
+    border-radius: 3%;
+    background: linear-gradient(160deg, #39434F 0%, #232B34 50%, #151B22 100%);
+    border: 2px solid #0B1A3A;
+    box-shadow: 0 26px 60px rgba(11, 26, 58, 0.42);
+}
+
+/* top strip ---------------------------------------------------------------- */
+.v2-cam__top {
+    grid-column: 1;
+    grid-row: 1;
+    display: flex;
+    align-items: center;
+    gap: 4cqi;
+}
+
+.v2-cam__name {
+    font-size: 2cqi;
+    letter-spacing: 0.16em;
+    color: #B8C4D0;
+}
+
+.v2-cam__pwr {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.9cqi;
+    font-size: 1.4cqi;
+    letter-spacing: 0.14em;
+    color: #7A8694;
+}
+
+.v2-cam__pwr i {
+    width: 1.02cqi;
+    height: 1.02cqi;
+    border-radius: 50%;
+    background: var(--v2-lime);
+    box-shadow: 0 0 1.2cqi rgba(195, 233, 86, 0.8);
+}
+
+/* LCD ---------------------------------------------------------------------- */
+.v2-cam__screen {
+    grid-column: 1;
+    grid-row: 2;
+    position: relative;
+    border-radius: 1.4cqi;
+    background: #0B0F14;
+    border: 2px solid #39434F;
+    overflow: hidden;
+}
+
+.v2-cam__photo {
+    position: absolute;
+    inset: 1.4cqi;
+    width: calc(100% - 2.8cqi);
+    height: calc(100% - 2.8cqi);
+    object-fit: cover;
+    border-radius: 0.9cqi;
+    transition: opacity 220ms ease, filter 220ms ease;
+}
+
+.v2-cam__empty {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    place-items: center;
+    padding: 24px;
+    color: rgba(223, 246, 238, 0.8);
+    font-size: 13px;
+    text-align: center;
+}
+
+/* faint CRT scanlines, as in the export */
+.v2-cam__scan {
+    position: absolute;
+    inset: 1.4cqi;
+    pointer-events: none;
+    background: repeating-linear-gradient(
+        to bottom,
+        rgba(255, 255, 255, 0.05) 0 3px,
+        transparent 3px 100px
+    );
+}
+
+.v2-cam__rec {
+    position: absolute;
+    top: 3.1cqi;
+    left: 3.2cqi;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.9cqi;
+    font-size: 1.8cqi;
+    letter-spacing: 0.1em;
+    color: #ffffff;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8);
+}
+
+.v2-cam__rec i {
+    width: 1.22cqi;
+    height: 1.22cqi;
+    border-radius: 50%;
+    background: #FF4B3E;
+}
+
+.v2-cam__rec b {
+    width: 1.5cqi;
+    height: 1.5cqi;
+    background: #ffffff;
+}
+
+.v2-cam__battery {
+    position: absolute;
+    top: 3.1cqi;
+    right: 4.2cqi;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3cqi;
+    padding: 0.4cqi;
+    width: 4.28cqi;
+    height: 1.84cqi;
+    border: 2px solid rgba(255, 255, 255, 0.9);
+    border-radius: 0.2cqi;
+}
+
+.v2-cam__battery::after {
+    content: "";
+    position: absolute;
+    right: -0.8cqi;
+    width: 0.4cqi;
+    height: 1cqi;
+    border-radius: 0.1cqi;
+    background: rgba(255, 255, 255, 0.9);
+}
+
+.v2-cam__battery i {
+    flex: 1;
+    height: 100%;
+    background: var(--v2-lime);
+}
+
+.v2-cam__caption,
+.v2-cam__meta,
+.v2-cam__stamp {
+    position: absolute;
+    text-shadow: 0 1px 4px rgba(0, 0, 0, 0.9);
+}
+
+.v2-cam__caption {
+    left: 3.4cqi;
+    bottom: 6.4cqi;
+    font-size: 1.65cqi;
+    color: #ffffff;
+}
+
+.v2-cam__meta {
+    left: 3.4cqi;
+    bottom: 3.2cqi;
+    font-size: 1.55cqi;
+    letter-spacing: 0.08em;
+    color: #ffffff;
+}
+
+.v2-cam__stamp {
+    right: 3.4cqi;
+    bottom: 3.2cqi;
+    font-size: 1.55cqi;
+    letter-spacing: 0.08em;
+    color: var(--v2-lime);
+}
+
+/* screen reacts while a card is being swapped in */
+.v2-cam.is-swapping .v2-cam__photo {
+    opacity: 0.15;
+    filter: contrast(2) saturate(0.2);
+}
+
+/* controls ----------------------------------------------------------------- */
+.v2-cam__controls {
+    grid-column: 2;
+    grid-row: 1 / span 2;
+    position: relative;
+}
+
+.v2-cam__speaker {
+    position: absolute;
+    top: 1.8cqi;
+    left: 0;
+    width: 12cqi;
+    height: 6.2cqi;
+    background-image: radial-gradient(#0B0F14 40%, transparent 42%);
+    background-size: 1.94cqi 1.63cqi;
+}
+
+.v2-cam__dial {
+    position: absolute;
+    top: 9.2cqi;
+    left: 1.2cqi;
+    display: grid;
+    place-items: center;
+    width: 10.4cqi;
+    height: 10.4cqi;
+    border-radius: 50%;
+    background: linear-gradient(180deg, #4A5561 0%, #232B34 100%);
+    border: 2px solid #0B0F14;
+}
+
+.v2-cam__dial i {
+    position: absolute;
+    top: 1.1cqi;
+    width: 0.61cqi;
+    height: 2.24cqi;
+    border-radius: 0.3cqi;
+    background: var(--v2-lime);
+}
+
+.v2-cam__dial b {
+    font-size: 1.8cqi;
+    font-weight: 400;
+    color: var(--v2-lime);
+}
+
+.v2-cam__dial-label {
+    position: absolute;
+    top: 20.8cqi;
+    left: 0;
+    width: 12.8cqi;
+    text-align: center;
+    font-size: 1.35cqi;
+    letter-spacing: 0.1em;
+    color: #7A8694;
+}
+
+.v2-cam__dpad {
+    position: absolute;
+    top: 25.5cqi;
+    left: 1.2cqi;
+    display: grid;
+    place-items: center;
+    width: 11.3cqi;
+    height: 11.3cqi;
+}
+
+.v2-cam__dpad i {
+    position: absolute;
+    background: linear-gradient(180deg, #4A5561 0%, #232B34 100%);
+    border: 1.5px solid #0B0F14;
+    border-radius: 1.15cqi;
+}
+
+.v2-cam__dpad-v {
+    width: 3.72cqi;
+    height: 11.3cqi;
+}
+
+.v2-cam__dpad-h {
+    width: 11.3cqi;
+    height: 3.72cqi;
+}
+
+.v2-cam__dpad b {
+    position: relative;
+    display: grid;
+    place-items: center;
+    width: 4.5cqi;
+    height: 4.5cqi;
+    border-radius: 50%;
+    background: var(--v2-lime);
+    color: var(--v2-ink);
+    font-size: 1.4cqi;
+    font-weight: 400;
+}
+
+.v2-cam__rocker,
+.v2-cam__menu {
+    position: absolute;
+    left: 1.2cqi;
+    display: grid;
+    place-items: center;
+    background: linear-gradient(180deg, #4A5561 0%, #232B34 100%);
+    border: 1.5px solid #0B0F14;
+    color: #B8C4D0;
+}
+
+.v2-cam__rocker {
+    top: 39.6cqi;
+    grid-auto-flow: column;
+    width: 12.1cqi;
+    height: 3.3cqi;
+    border-radius: 1.65cqi;
+    font-size: 1.4cqi;
+}
+
+.v2-cam__rocker span {
+    width: 6cqi;
+    text-align: center;
+}
+
+.v2-cam__rocker span:first-child {
+    border-right: 2px solid #0B0F14;
+}
+
+.v2-cam__menu {
+    top: 44.5cqi;
+    left: 2.4cqi;
+    width: 7.1cqi;
+    height: 3cqi;
+    border-radius: 0.95cqi;
+    font-size: 1.4cqi;
+    letter-spacing: 0.1em;
+}
+
+/* thumbnail strip ---------------------------------------------------------- */
+.v2-cam__strip {
+    grid-column: 1;
+    grid-row: 3;
+    display: flex;
+    align-items: center;
+    gap: 1.5cqi;
+    padding-top: 1.2cqi;
+}
+
+.v2-cam__thumb {
+    flex: 0 0 auto;
+    width: 8.27cqi;
+    height: 5cqi;
+    padding: 0;
+    border: 1.5px solid #4A5561;
+    border-radius: 0.55cqi;
+    overflow: hidden;
+    background: #0B0F14;
+    transition: border-color 160ms ease, transform 160ms ease;
+}
+
+.v2-cam__thumb img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.v2-cam__thumb:hover {
+    transform: translateY(-2px);
+}
+
+.v2-cam__thumb.is-active {
+    border: 3px solid var(--v2-lime);
+}
+
+.v2-cam__browse {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.8cqi;
+    margin-left: 1cqi;
+    font-size: 1.5cqi;
+    color: #B8C4D0;
+}
+
+.v2-cam__browse button {
+    display: grid;
+    place-items: center;
+    width: 2.4cqi;
+    height: 2.4cqi;
+    padding: 0;
+    border: 0;
+    border-radius: 0.3cqi;
+    background: #4A5561;
+    color: #E8EEF4;
+}
+
+.v2-cam__browse button:hover {
+    background: var(--v2-lime);
+    color: var(--v2-ink);
+}
+
+/* the vertical SD slot cut into the camera's top-right shoulder */
+.v2-cam__slot {
+    position: absolute;
+    top: -3%;
+    right: 6%;
+    width: 2.2%;
+    height: 32%;
+    border-radius: 2px;
+    background: #10241C;
+    box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.5);
+}
+
+/* --------------------------------------------------------------------------
+   CUSEC-SD cards
+   -------------------------------------------------------------------------- */
+.v2-archive__cards {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+}
+
+.v2-archive__slot {
+    position: absolute;
+    pointer-events: auto;
+    transition: left 520ms cubic-bezier(0.34, 1.28, 0.64, 1),
+        top 520ms cubic-bezier(0.34, 1.28, 0.64, 1),
+        transform 520ms cubic-bezier(0.34, 1.28, 0.64, 1);
+}
+
+/* loaded: standing in the camera's slot */
+.v2-archive__slot.is-inserted {
+    left: 70%;
+    top: -12%;
+    transform: rotate(-90deg) scale(0.92);
+    z-index: 6;
+}
+
+/* The three resting spots down the right-hand side. Spacing and the left
+   insets both allow for the case, which is 24px wider and 26px taller than the
+   card it holds; the z-order runs top-down so each card's brand strip stays
+   clear of the one below it. */
+.v2-archive__slot--rest-0 {
+    left: 81%;
+    top: 6%;
+    transform: rotate(6deg);
+    z-index: 4;
+}
+
+.v2-archive__slot--rest-1 {
+    left: 85%;
+    top: 38%;
+    transform: rotate(-4deg);
+    z-index: 3;
+}
+
+.v2-archive__slot--rest-2 {
+    left: 82%;
+    top: 70%;
+    transform: rotate(8deg);
+    z-index: 2;
+}
+
+/* The case ------------------------------------------------------------------
+   Each card now travels in a clear plastic sleeve (Figma: "SD Case", 152x184
+   around the 128x158 card, so a 12px/13px inset). The button is the case and
+   the card is a child of it, which keeps the existing absolute positioning of
+   the notch/pins/label working against the card rather than the sleeve.
+   Standard backdrop-filter only — see AGENTS.md on the -webkit- pair. */
+.v2-sd {
+    position: relative;
+    display: grid;
+    place-items: center;
+    width: 152px;
+    height: 184px;
+    padding: 0;
+    border-radius: 12px;
+    background: linear-gradient(
+        180deg,
+        rgba(255, 255, 255, 0.42) 0%,
+        rgba(219, 242, 255, 0.18) 45%,
+        rgba(255, 255, 255, 0.34) 100%
+    );
+    border: 1.5px solid rgba(255, 255, 255, 0.7);
+    backdrop-filter: blur(3px);
+    box-shadow:
+        0 8px 18px -4px rgba(10, 36, 23, 0.3),
+        inset 0 1.5px 1px rgba(255, 255, 255, 0.85);
+    transition: transform 180ms ease, box-shadow 180ms ease;
+}
+
+/* the sheen down the left of the sleeve */
+.v2-sd::after {
+    position: absolute;
+    top: 3px;
+    left: 18px;
+    width: 52px;
+    height: 174px;
+    border-radius: 8px;
+    background: linear-gradient(
+        90deg,
+        rgba(255, 255, 255, 0.45) 0%,
+        rgba(255, 255, 255, 0.05) 100%
+    );
+    content: "";
+    pointer-events: none;
+}
+
+.v2-sd:hover {
+    transform: translateY(-6px);
+    box-shadow:
+        0 16px 30px -6px rgba(10, 36, 23, 0.38),
+        inset 0 1.5px 1px rgba(255, 255, 255, 0.9);
+}
+
+/* The card itself ---------------------------------------------------------- */
+.v2-sd__card {
+    position: relative;
+    z-index: 1;
+    width: 128px;
+    height: 158px;
+    border-radius: 10px;
+    background: linear-gradient(160deg, var(--sd-from) 0%, var(--sd-to) 100%);
+    border: 2px solid rgba(11, 26, 58, 0.8);
+    box-shadow: 0 12px 26px rgba(11, 26, 58, 0.35);
+    transition: border-color 180ms ease, box-shadow 180ms ease;
+}
+
+.v2-sd--inserted .v2-sd__card {
+    border: 3px solid var(--v2-lime);
+    box-shadow: 0 0 26px rgba(195, 233, 86, 0.45);
+}
+
+/* clipped corner */
+.v2-sd__notch {
+    position: absolute;
+    top: -8px;
+    left: -6px;
+    width: 30px;
+    height: 26px;
+    border-radius: 4px;
+    background: #10241C;
+    transform: rotate(-12deg);
+}
+
+.v2-sd__pins {
+    position: absolute;
+    top: 10px;
+    left: 0;
+    right: 0;
+    display: flex;
+    justify-content: center;
+    gap: 6px;
+    padding-left: 14px;
+}
+
+.v2-sd__pins i {
+    width: 10px;
+    height: 14px;
+    border-radius: 2px;
+    background: var(--v2-gold);
+}
+
+.v2-sd__label {
+    position: absolute;
+    top: 36px;
+    left: 14px;
+    width: 100px;
+    height: 92px;
+    padding: 8px 10px;
+    border-radius: 8px;
+    background: var(--v2-white);
+    overflow: hidden;
+    text-align: left;
+}
+
+.v2-sd__year {
+    display: block;
+    font-size: 26px;
+    line-height: 1.1;
+    color: var(--v2-ink-deep);
+}
+
+.v2-sd__meta {
+    display: block;
+    margin-top: 6px;
+    font-size: 10px;
+    color: var(--v2-lime-dark);
+}
+
+.v2-sd__stripe {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 10px;
+    height: 10px;
+    background: var(--v2-slate-light);
+}
+
+.v2-sd--inserted .v2-sd__stripe {
+    background: var(--v2-lime);
+}
+
+.v2-sd__brand {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 8px;
+    font-size: 10px;
+    letter-spacing: 0.18em;
+    color: rgba(255, 255, 255, 0.75);
+}
+
+
+@media (max-width: 1000px) {
+    .v2-cam {
+        width: 100%;
+        grid-template-columns: 1fr;
+        grid-template-rows: 10% 1fr 14%;
+        padding: 0 3% 3%;
+    }
+
+    .v2-cam__controls,
+    .v2-cam__slot {
+        display: none;
+    }
+
+    .v2-cam__screen {
+        grid-column: 1;
+    }
+
+    .v2-archive__cards {
+        position: static;
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 16px;
+        margin-top: 34px;
+        pointer-events: auto;
+    }
+
+    .v2-archive__slot,
+    .v2-archive__slot.is-inserted {
+        position: static;
+        transform: none;
+        transition: none;
+    }
+}
+
+@media (max-width: 620px) {
+    .v2-sd {
+        width: 128px;
+        height: 154px;
+    }
+
+    .v2-sd::after {
+        top: 3px;
+        left: 15px;
+        width: 43px;
+        height: 145px;
+    }
+
+    .v2-sd__card {
+        width: 104px;
+        height: 128px;
+    }
+
+    .v2-sd__label {
+        top: 30px;
+        left: 11px;
+        width: 82px;
+        height: 74px;
+        padding: 6px 8px;
+    }
+
+    .v2-sd__year {
+        font-size: 20px;
+    }
+
+    .v2-sd__pins i {
+        width: 8px;
+        height: 11px;
+    }
+}

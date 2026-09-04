@@ -1,0 +1,154 @@
+/* ==========================================================================
+   v2 — Scavenger hunt + leaderboard
+   ========================================================================== */
+
+.v2-hunt {
+    padding-block: var(--v2-section-pad);
+}
+
+.v2-hunt__inner {
+    position: relative;
+    display: grid;
+    grid-template-columns: minmax(0, 405px) minmax(0, 1fr);
+    align-items: start;
+    gap: 40px;
+}
+
+.v2-hunt__card {
+    padding: 30px 32px;
+}
+
+/* Retained hunt chip and CTA styling for a future activation.
+.v2-hunt__badge { display: inline-flex; align-items: center; gap: 8px; margin: 0 0 20px; padding: 6px 14px; border-radius: 999px; border: 1px solid rgba(195, 233, 86, 0.7); font-size: 10.5px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--v2-lime); }
+.v2-hunt__badge i { width: 6px; height: 6px; border-radius: 50%; background: var(--v2-lime); }
+.v2-hunt__actions { display: flex; align-items: center; gap: 16px; margin: 26px 0 0; }
+*/
+
+.v2-hunt__title {
+    max-width: 14ch;
+    font-size: clamp(1.5rem, 2.6vw, 2rem);
+}
+
+/* map pins ---------------------------------------------------------------- */
+.v2-hunt__pin {
+    position: absolute;
+    display: block;
+}
+
+.v2-hunt__pin--a {
+    top: 12%;
+    left: 47%;
+    width: 34px;
+    height: 34px;
+    border: 2.5px dashed rgba(77, 113, 17, 0.85);
+    border-radius: 50%;
+}
+
+.v2-hunt__pin--b {
+    top: 32%;
+    left: 58%;
+    width: 12px;
+    height: 12px;
+    border: 2px solid #ffffff;
+    border-radius: 50%;
+    background: var(--v2-lime-dark);
+    box-shadow: 0 4px 10px rgba(11, 26, 58, 0.4);
+}
+
+/* leaderboard ------------------------------------------------------------- */
+.v2-board {
+    justify-self: end;
+    width: min(434px, 100%);
+    margin-top: 60px;
+    padding: 18px 18px 14px;
+    border-radius: 18px;
+    background: rgba(14, 35, 24, 0.86);
+    box-shadow: var(--v2-shadow-card);
+    backdrop-filter: blur(4px);
+}
+
+.v2-board__head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 12px;
+    font-size: 11px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--v2-lime);
+}
+
+.v2-board__live {
+    color: var(--v2-red);
+}
+
+.v2-board__rows {
+    display: grid;
+    gap: 8px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    counter-reset: none;
+}
+
+.v2-board__rows li {
+    display: grid;
+    grid-template-columns: 26px 1fr auto;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 14px;
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.06);
+}
+
+.v2-board__rows li.is-lead {
+    background: var(--v2-lime);
+}
+
+.v2-board__rank {
+    font-size: 13px;
+    color: var(--v2-lime);
+}
+
+.v2-board__rows li.is-lead .v2-board__rank {
+    color: var(--v2-ink);
+}
+
+.v2-board__team {
+    font-size: 15px;
+    color: var(--v2-white);
+}
+
+.v2-board__rows li.is-lead .v2-board__team {
+    color: var(--v2-ink);
+}
+
+.v2-board__score {
+    font-size: 13px;
+    color: var(--v2-mint-bright);
+}
+
+.v2-board__rows li.is-lead .v2-board__score {
+    color: var(--v2-ink);
+}
+
+.v2-board__foot {
+    margin: 12px 0 0;
+    font-size: 12px;
+    color: rgba(178, 254, 231, 0.7);
+}
+
+@media (max-width: 900px) {
+    .v2-hunt__inner {
+        grid-template-columns: 1fr;
+    }
+
+    .v2-board {
+        justify-self: stretch;
+        margin-top: 0;
+    }
+
+    .v2-hunt__pin {
+        display: none;
+    }
+}
