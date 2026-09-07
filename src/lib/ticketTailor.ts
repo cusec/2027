@@ -24,6 +24,25 @@ export interface TicketWidgetConfig {
   // Same URL plus the query params Ticket Tailor's widget.js would append,
   // so it can be used as a plain <iframe src> without loading their script.
   checkoutEmbedUrl: string | null;
+  // Same event, same pre-fill, but without the widget chrome - for opening
+  // checkout as a full page in the current tab where an iframe is refused.
+  checkoutPageUrl: string | null;
+  // Origin of that URL. The purchase page listens for Ticket Tailor's own
+  // postMessage events and drops anything from another sender, so it needs
+  // the expected origin rather than guessing at it client-side.
+  checkoutOrigin: string | null;
+  // True once checkout is served from our own registrable domain, which is
+  // what makes its cookies first-party and lets it run inline at all.
+  inlineCapable: boolean;
+}
+
+// Fields Ticket Tailor accepts as checkout pre-fill. Their allowed list is
+// first_name / last_name / full_name / email / mobile_number / address_1-3 /
+// postcode / customFormElement; only the three we actually know are wired up.
+export interface CheckoutPrefill {
+  email?: string | null;
+  firstName?: string | null;
+  lastName?: string | null;
 }
 
 const MOCK_TICKETS: TicketType[] = [
@@ -137,7 +156,54 @@ export async function getTicketTypes(): Promise<TicketTypesResult> {
   }
 }
 
-export function getTicketWidgetConfig(): TicketWidgetConfig {
+function originOf(url: string | null): string | null {
+  if (!url) return null;
+  try {
+    return new URL(url).origin;
+  } catch {
+    return null;
+  }
+}
+
+// Mirrors widget.js's own URL assembly: it splits the fragment off first,
+// appends its query params, then re-attaches the fragment - so pre-fill
+// values (which live in the fragment as `p[field]=value`) survive. The
+// bracketed key names are sent literally; only the values are encoded.
+function buildEmbedUrl(
+  baseUrl: string,
+  prefill?: CheckoutPrefill,
+  widgetParams = "widget=true&minimal=true&show_logo=false&bg_fill=false"
+): string {
+  const hashAt = baseUrl.indexOf("#");
+  const base = hashAt === -1 ? baseUrl : baseUrl.slice(0, hashAt);
+  const existingFragment = hashAt === -1 ? "" : baseUrl.slice(hashAt + 1);
+
+  const fields: string[] = [];
+  const add = (key: string, value: string | null | undefined) => {
+    if (value && value.trim()) {
+      fields.push(`p[${key}]=${encodeURIComponent(value.trim())}`);
+    }
+  };
+  add("email", prefill?.email);
+  add("first_name", prefill?.firstName);
+  add("last_name", prefill?.lastName);
+
+  // Pre-filling the buyer's email with their CUSEC account email is what
+  // makes the purchase auto-link: the webhook and the reconciliation lookup
+  // both match an order to an account by that address.
+  const query = [widgetParams, fields.length ? "preset_data=1" : ""]
+    .filter(Boolean)
+    .join("&");
+  let url = base + (query ? (base.includes("?") ? "&" : "?") + query : "");
+
+  const fragment = [existingFragment, ...fields].filter(Boolean).join("&");
+  if (fragment) url += `#${fragment}`;
+  return url;
+}
+
+export function getTicketWidgetConfig(
+  prefill?: CheckoutPrefill
+): TicketWidgetConfig {
   // `||` (not `??`) so an empty-string env var (unset-but-present, as
   // TICKET_TAILOR_CUSTOM_DOMAIN commonly is until a custom domain is
   // connected) falls back to null instead of being passed to the widget as
@@ -160,23 +226,30 @@ export function getTicketWidgetConfig(): TicketWidgetConfig {
   const host = customDomain
     ? customDomain.replace(/^https?:\/\//, "").replace(/\/+$/, "")
     : "www.tickettailor.com";
+
+  // The `/events/{slug}/{id}` path is inferred, not documented. Ticket
+  // Tailor's dashboard hands out the real widget URL (Promote -> Widget
+  // embed code) in a `/checkout/new-session/id/...` form, and pre-fill only
+  // works on that event-specific form. Setting TICKET_TAILOR_WIDGET_URL to
+  // it verbatim overrides the guess without touching code.
+  const widgetUrl = process.env.TICKET_TAILOR_WIDGET_URL || null;
   const eventUrl =
-    boxOfficeName && eventId
+    widgetUrl ??
+    (boxOfficeName && eventId
       ? `https://${host}/events/${boxOfficeName}/${eventId}`
-      : null;
+      : null);
+
+  const checkoutEmbedUrl = eventUrl ? buildEmbedUrl(eventUrl, prefill) : null;
 
   return {
     boxOfficeName,
     eventId,
     customDomain,
     eventUrl,
-    // Query params copied from widget.js's own iframe-URL construction, so
-    // the embed renders identically to their official widget without taking
-    // on its script + iframe-resizer handshake (which silently leaves the
-    // frame unsized and unscrollable when it fails).
-    checkoutEmbedUrl: eventUrl
-      ? `${eventUrl}?widget=true&minimal=true&show_logo=false&bg_fill=false`
-      : null,
+    checkoutEmbedUrl,
+    checkoutPageUrl: eventUrl ? buildEmbedUrl(eventUrl, prefill, "") : null,
+    checkoutOrigin: originOf(checkoutEmbedUrl),
+    inlineCapable: Boolean(customDomain),
   };
 }
 

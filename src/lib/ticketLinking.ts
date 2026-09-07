@@ -17,10 +17,18 @@ export interface LinkResult {
 //   - A User is only auto-linked when it has no linked_email yet AND no other
 //     User already claims that address.
 //   - An already-linked RegisteredUser is never re-linked or reset.
+//
+// `accountEmail` is the CUSEC account the ticket attaches to, and defaults to
+// the purchase email - the automatic paths (webhook, reconciliation) only
+// ever link an order to the account that shares its address. It differs only
+// on the explicit claim flow, where a signed-in delegate says "I bought with
+// this other address"; the caller is responsible for having authenticated
+// that account first.
 export async function linkTicketPurchase(
   email: string,
   name: string,
-  ticket: PurchasedTicket
+  ticket: PurchasedTicket,
+  accountEmail: string = email
 ): Promise<LinkResult> {
   await connectMongoDB();
 
@@ -49,7 +57,7 @@ export async function linkTicketPurchase(
 
   if (!registeredUser) return { linked: false, purchasedTicketName: ticket.name };
 
-  const matchedUser = await User.findOne({ email });
+  const matchedUser = await User.findOne({ email: accountEmail });
   if (!matchedUser) return { linked: false, purchasedTicketName: ticket.name };
 
   // Already linked to this account - nothing to do, but report it as linked
@@ -65,6 +73,11 @@ export async function linkTicketPurchase(
 
   const alreadyLinkedElsewhere = await User.findOne({ linked_email: email });
   if (alreadyLinkedElsewhere) return { linked: false, purchasedTicketName: ticket.name };
+
+  // A RegisteredUser already marked linked belongs to some account (possibly
+  // matched through its student/personal address by /api/users/link-email,
+  // which the User.linked_email lookup above wouldn't catch). Never move it.
+  if (registeredUser.isLinked) return { linked: false, purchasedTicketName: ticket.name };
 
   matchedUser.linked_email = email;
   matchedUser.ticketWizard.currentStep = "completed";

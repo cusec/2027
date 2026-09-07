@@ -409,6 +409,63 @@
     text-decoration: underline;
 }
 
+/* Shown only when checkout closed without an order turning up - the retry
+   and the "I paid with another address" escape hatch. */
+
+.wizard-verify-card {
+    max-width: 34rem;
+    margin: 1rem auto 0;
+    padding: 0.9rem 1rem 1rem;
+    background: #c0c0c0;
+    border-top: 2px solid #ffffff;
+    border-left: 2px solid #ffffff;
+    border-right: 2px solid #2b2b2b;
+    border-bottom: 2px solid #2b2b2b;
+    box-shadow: inset 1px 1px 0 #dbdbdb;
+}
+
+.wizard-verify-actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+    margin-top: 0.6rem;
+}
+
+.wizard-verify-link {
+    background: none;
+    border: none;
+    padding: 0;
+    font-family: "Retropix", "MS Sans Serif", monospace;
+    font-size: 11px;
+    color: #103436;
+    text-decoration: underline;
+    cursor: pointer;
+}
+
+.wizard-claim-form {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+    margin-top: 0.9rem;
+    font-family: "Retropix", "MS Sans Serif", monospace;
+    font-size: 11px;
+    color: #103436;
+}
+
+.wizard-claim-form input {
+    padding: 0.45rem 0.5rem;
+    background: #ffffff;
+    color: #103436;
+    font-family: inherit;
+    font-size: 12px;
+    border-top: 2px solid #2b2b2b;
+    border-left: 2px solid #2b2b2b;
+    border-right: 2px solid #ffffff;
+    border-bottom: 2px solid #ffffff;
+}
+
 .ticket-card--purchased {
     outline: 3px solid #2f7d22;
 }

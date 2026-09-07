@@ -35,7 +35,18 @@ export default async function PurchasePage() {
   }
 
   const { tickets, source } = await getTicketTypes();
-  const widgetConfig = getTicketWidgetConfig();
+
+  // Pre-filling checkout with the account's own email is what keeps the
+  // purchase auto-linkable: every automatic path matches an order to an
+  // account by that address. Ticket Tailor only honours pre-fill on a custom
+  // domain, which is now configured. Names are a convenience only.
+  const profile = session?.user as { given_name?: string; family_name?: string } | undefined;
+  const [fallbackFirst, ...fallbackRest] = (session?.user?.name ?? "").trim().split(/\s+/);
+  const widgetConfig = getTicketWidgetConfig({
+    email,
+    firstName: profile?.given_name || fallbackFirst || null,
+    lastName: profile?.family_name || fallbackRest.join(" ") || null,
+  });
 
   return (
     <div className="tickets-wrapper">
@@ -50,6 +61,7 @@ export default async function PurchasePage() {
         widgetConfig={widgetConfig}
         alreadyComplete={status.purchaseComplete}
         purchasedTicketName={status.purchasedTicketName}
+        accountEmail={email}
       />
     </div>
   );

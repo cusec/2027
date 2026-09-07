@@ -52,14 +52,75 @@ mistakes don't get reintroduced.
 Things that work today but rest on a guess. Each notes how to confirm and
 what to change if the guess is wrong.
 
-### B1. Custom-domain URL path
+### B1. Custom-domain URL path ✅ confirmed
 
 `getTicketWidgetConfig()` (`src/lib/ticketTailor.ts`) builds
-`https://{custom-domain}/events/{slug}/{event-id}`. Ticket Tailor's docs
-never state the path format used on custom domains.
+`https://{custom-domain}/events/{slug}/{event-id}`. Ticket Tailor's docs never
+state the path format used on custom domains, so this was a guess.
 
-**Confirm:** once the domain is Active, open the box office on it and look at
-a real event URL. **If wrong:** one-line change in `getTicketWidgetConfig()`.
+**Verified** against the live domain: `https://tickets.cusec.net/events/cusec/2329159`
+returns 200 with the real event page (`<title>Select tickets - TEST 2027 -
+Centre Mont Royal</title>`) and a CSP of `frame-ancestors *`, so it is both the
+right path and embeddable. `TICKET_TAILOR_WIDGET_URL` now exists as an override
+if that ever changes, so it stays a config change rather than a code change.
+
+### B1b. Checkout may only be framed from `cusec.net` and its subdomains
+
+Measured, not documented. To a real browser the custom domain answers with:
+
+```
+Content-Security-Policy: ... frame-ancestors 'self' https://cusec.net https://*.cusec.net
+X-Frame-Options: SAMEORIGIN
+```
+
+(`frame-ancestors` wins where both are present, so `*.cusec.net` is the
+effective rule.) Consequences:
+
+- **In-page checkout cannot be tested on `localhost` or a `*.vercel.app`
+  preview** - the browser refuses the frame outright, before cookies even come
+  into it. Only a page served over https from `cusec.net` or a subdomain can
+  embed it.
+- `PurchaseStepClient` checks `window.location` against the checkout host's
+  registrable domain on mount and, where a frame would only be refused, opens
+  checkout in a tab straight from the click instead of rendering a dead embed.
+  Confirmation is unchanged either way - it never depended on the iframe.
+
+Note that curl sees `frame-ancestors *` on the same URL; their edge varies the
+response for non-browser requests, so verify this with a browser (or a net log)
+rather than a shell.
+
+### B1a. The postMessage contract is read from their code, not their docs
+
+The purchase page listens for Ticket Tailor's own `window.postMessage` events.
+None of them are documented; the list was read out of `widget.js` and
+`TTCheckout.js` (`app.tickettailorassets.com/js/TTCheckout.js`), and it is
+their private interface, so it can change without notice.
+
+| Message | Sent when | What we do |
+|---|---|---|
+| `tt-checkout-ready` / `tt-checkout-version` | checkout boots inside a widget frame | mark the embed alive |
+| `tt-event-page-checkout-open` / `tt-basket-widget-open` | the delegate clicks through to checkout | navigate **our** iframe to the given URL |
+| `tt-checkout-close` / `tt-checkout-overlay-close` / `tt-basket-overlay-close` | checkout asks to be dismissed | close the modal and verify |
+
+Two things make this safe to depend on:
+
+- **Nothing here is treated as proof of payment.** Completion is only ever
+  established server-side (webhook, or the API reconciliation in
+  `/api/ticket-wizard/status?reconcile=1`). If every message stopped arriving
+  tomorrow, the purchase would still confirm - just with polling latency and a
+  manual close.
+- **Every message is origin-checked** against the checkout host, and a
+  navigation request is followed only if its URL is on that same host.
+
+The one behaviour worth knowing: the embedded event page does **not** walk
+itself to checkout. It posts `tt-event-page-checkout-open` and waits for its
+parent - `widget.js` answers by navigating the whole host page. Ignoring that
+message is what makes an embedded checkout look frozen at the ticket list.
+When we follow it, we also set the frame's `name` to `tt-widget-modal`, which
+is how Ticket Tailor recognises a frame as its own modal and starts sending
+`tt-checkout-close`. That name is deliberately **not** set on the first load:
+on an *event* page a named frame makes `TTCheckout` immediately call
+`closeCheckoutModal()`, which would slam our modal shut on open.
 
 ### B2. Webhook → auto-link has never run end-to-end
 

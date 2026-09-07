@@ -5,21 +5,23 @@ import { reconcileTicketPurchase } from "@/lib/ticketLinking";
 
 // GET - the caller's own wizard progress. Used by the /tickets/purchase
 // client component to poll for purchase completion after checkout.
-export async function GET() {
+//
+// `?reconcile=1` additionally asks Ticket Tailor whether this email has a
+// completed order and links it on the spot. That covers a checkout finished
+// without a webhook (unregistered, unreachable, or delayed) and one finished
+// in a new tab. It costs an external API call, so the page only asks for it
+// once checkout has actually been opened - an idle poll stays a DB read.
+export async function GET(request: Request) {
   const session = await auth0.getSession();
   if (!session?.user?.email) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
   const email = session.user.email;
+  const reconcile = new URL(request.url).searchParams.get("reconcile") === "1";
   let status = await getWizardStatus(email);
 
-  // Not linked yet? Ask Ticket Tailor directly whether this email has a
-  // completed order. This is what lets a purchase be picked up when the
-  // webhook isn't registered/reachable - including a checkout finished in a
-  // new tab, which is the only path available until the custom domain is
-  // connected (see docs/ticket-tailor/REQUIRED.md).
-  if (!status.purchaseComplete) {
+  if (reconcile && !status.purchaseComplete) {
     const result = await reconcileTicketPurchase(email, session.user.name || "Attendee");
     if (result.linked) status = await getWizardStatus(email);
   }

@@ -135,11 +135,52 @@ Consequences to plan around:
 - The custom-domain URL path (`/events/{slug}/{id}`) is assumed to mirror the
   canonical one; confirm on first connection.
 
-Because a cross-origin iframe gives no "payment succeeded" callback, the page
-polls `/api/ticket-wizard/status` every 4s while open. When the webhook lands
-and auto-links the account, the modal closes and the confirmation state
-appears with the purchased ticket name and a **Go to Dashboard** link. Cards
-matching a completed purchase render as disabled **"Purchased"**.
+### From payment to dashboard
+
+A cross-origin iframe gives no "payment succeeded" callback, so completion is
+only ever established server-side. Four independent things have to fail before
+a delegate can pay and not get in:
+
+1. **Pre-fill.** The checkout's email field is pre-filled with the delegate's
+   CUSEC account email (`&preset_data=1#p[email]=...`, which Ticket Tailor only
+   honours on a custom domain). Every automatic link matches an order to an
+   account by that address, so pre-filling it is what makes the rest work by
+   default rather than by luck.
+2. **Webhook.** `order.created` links the account as it always did.
+3. **Reconciliation.** The page polls `/api/ticket-wizard/status`; once
+   checkout has actually been opened it passes `?reconcile=1`, which asks
+   Ticket Tailor's API directly whether that email has a completed order. This
+   is what covers an unregistered/late/failed webhook, and a purchase finished
+   in a new tab. Cadence follows what the page is doing - 12s idle, 4s with
+   checkout open, 1.5s for 90s after checkout closes - and a hidden tab stops
+   polling and catches up when it regains focus.
+4. **Manual claim.** If the delegate edited the email at checkout, none of the
+   above can match. After the 90s burst the page offers *"I checked out with a
+   different email"*, and `POST /api/ticket-wizard/claim` links that address to
+   the signed-in account - but only after asking Ticket Tailor for a
+   **completed** order against the configured event, and only if no other
+   account already owns it.
+
+On confirmation the page calls `router.refresh()` (so `/scavenger` re-renders
+with the ticket attached rather than the unlinked onboarding screen) and then
+routes to the dashboard. The Auth0 session was created back at step one, so
+there is no second sign-in.
+
+**Same tab, always.** Where the embed is allowed (a `cusec.net` host) checkout
+runs inside the modal. Where it is refused, the page navigates the current tab
+to `checkoutPageUrl` - the same event URL and pre-fill without the widget
+chrome - rather than opening a second tab. Coming back is handled by Ticket
+Tailor's redirect setting (`REQUIRED.md` 2b) or, failing that, by a
+sessionStorage resume flag that survives a back-button return; either way the
+page starts looking for the order the moment it mounts.
+
+**Did the iframe work?** `tt-checkout-ready` is expected within 8s of opening
+the modal. If it never arrives the status line says checkout could not load in
+this window and surfaces the new-tab link; if it does arrive, that escape hatch
+stays hidden. See `KNOWN_ISSUES.md` B1a for the full message contract, and for
+why the embedded event page needs its parent to walk it to checkout.
+
+Cards matching a completed purchase render as disabled **"Purchased"**.
 
 ## New/changed files
 
@@ -150,7 +191,8 @@ matching a completed purchase render as disabled **"Purchased"**.
 | `src/lib/ticketWizardOptions.ts` | Client-safe form option lists (t-shirt sizes, degree levels, etc.). Kept separate from `ticketWizard.ts` because that file imports Mongoose and can't be imported into client components. |
 | `src/app/api/demographics/route.ts` | GET/PUT the caller's own survey answers. |
 | `src/lib/ticketWizardOptions.ts` | Client-safe option lists (t-shirt, attendee type, head delegate, yes/no, attended years 2003-2026, excited events). Kept in sync by hand with the enums in `models.ts`. |
-| `src/app/api/ticket-wizard/{progress,status}/route.ts` | Mark avatar step done; poll wizard status from the purchase page. |
+| `src/app/api/ticket-wizard/{progress,status}/route.ts` | Mark avatar step done; poll wizard status from the purchase page. `status` reconciles against Ticket Tailor's API only when asked with `?reconcile=1`, so an idle poll stays a database read. |
+| `src/app/api/ticket-wizard/claim/route.ts` | Manual claim for a purchase made under a different email than the account's. |
 | `src/app/api/ticket-tailor/webhook/route.ts` | Extended (not replaced) — now also auto-links `User`/`RegisteredUser` on a matching purchase. |
 | `src/app/[locale]/tickets/page.tsx` + `(wizard)/{demographics,avatar,purchase}/page.tsx` | The wizard routes. |
 | `src/app/components/TicketWizard/*` | `WizardStepNav`, `DemographicsForm`, `AlreadyTicketedModal`, `AvatarStepClient`, `PurchaseStepClient`. |
@@ -165,7 +207,8 @@ during testing (see gotchas):
 TICKET_TAILOR_API_KEY=sk_...
 TICKET_TAILOR_EVENT_ID=            # the PUBLIC id, e.g. 2329159 (see below — do not use the internal ev_ id here)
 TICKET_TAILOR_BOX_OFFICE_NAME=     # the URL slug, e.g. "cusec" — NOT the display name
-TICKET_TAILOR_CUSTOM_DOMAIN=       # tickets.cusec.net once CNAME'd — REQUIRED for in-page checkout; blank = checkout opens in a new tab
+TICKET_TAILOR_CUSTOM_DOMAIN=       # tickets.cusec.net — REQUIRED for in-page checkout AND for checkout pre-fill; blank = checkout opens in a new tab
+TICKET_TAILOR_WIDGET_URL=          # optional — overrides the built event URL with the dashboard's own widget data-url
 TICKET_TAILOR_WEBHOOK_SECRET=
 ```
 
@@ -257,10 +300,10 @@ orders from the API confirmed the fields both helpers in
 - **"Pick 3 events" option list is a placeholder** (`EXCITED_EVENT_OPTIONS`
   in `src/lib/ticketWizardOptions.ts`) — the real conference schedule
   doesn't exist yet.
-- **Custom domain not connected — the one blocker for in-page checkout.**
-  Until a `cusec.net` subdomain is CNAME'd to Ticket Tailor and set as
-  `TICKET_TAILOR_CUSTOM_DOMAIN`, checkout bounces to a new tab for everyone.
-  Dashboard + DNS setup, not code. See the ⚠️ section above.
+- **Custom domain is connected** (`tickets.cusec.net`, Active, path verified).
+  What remains is setting `TICKET_TAILOR_CUSTOM_DOMAIN=tickets.cusec.net` in
+  Vercel and `.env.local` — until then the code still builds the embed against
+  `www.tickettailor.com` and checkout bounces to a new tab.
 - **Purchased-card matching is name-based.** `TicketsSection` marks a card
   "Purchased" by comparing the webhook's `line_items[].description` to the
   ticket type's name. Ticket Tailor sometimes prefixes descriptions (real

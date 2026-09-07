@@ -10,7 +10,12 @@ Ordered by priority. Item 1 is the only thing blocking in-page checkout.
 
 ---
 
-## 1. Custom domain (blocks in-page checkout)
+## 1. Custom domain (blocks in-page checkout) - DONE
+
+> **Status: `tickets.cusec.net` is connected and Active.** The path format was
+> verified against the live domain (`https://tickets.cusec.net/events/cusec/2329159`
+> serves the event page, and its CSP sends `frame-ancestors *`, so embedding is
+> allowed). The remaining work is the env var in step 6.
 
 **The problem it solves:** the checkout is embedded in an iframe served by
 Ticket Tailor. Browsers treat its session cookies as *third-party* and block
@@ -110,11 +115,24 @@ modal**, with no "opened in a new tab" message.
 
 ---
 
-## 2. Test on a deployed environment, not localhost
+## 2. Test on a `cusec.net` host - not localhost, not `*.vercel.app`
 
-**In-page checkout can never work on `localhost`** - it can't share a
-registrable domain with the Ticket Tailor host, so cookies are third-party no
-matter what. You will *always* see the "new tab" message locally.
+**In-page checkout can never work on `localhost`**, and two separate rules
+say so:
+
+1. **Framing.** The custom domain answers browsers with
+   `frame-ancestors 'self' https://cusec.net https://*.cusec.net`, so only a
+   page on `cusec.net` or a subdomain may embed checkout at all. Anywhere else
+   the browser refuses the frame ("tickets.cusec.net refused to connect").
+   This rules out `*.vercel.app` preview URLs too - they are a different
+   registrable domain.
+2. **Cookies.** Even if framing were allowed, checkout's session cookies would
+   be third-party off `cusec.net` and get blocked.
+
+The page detects case 1 up front and navigates the current tab to checkout
+instead - never a second tab - so the flow stays completable everywhere. It
+just isn't *in-page* until you test from a `cusec.net` host. Set up the
+redirect in 2b so buyers land back on the wizard automatically.
 
 So: test this specific behavior on a Vercel Preview or Production deploy.
 Everything else (ticket data, the wizard, the demographics form, the modal
@@ -123,6 +141,26 @@ itself) works fine locally.
 Whichever deployed URL you use, add it to **Auth0** - Application Settings →
 Allowed Callback URLs (`{url}/auth/callback`), Allowed Logout URLs, and
 Allowed Web Origins. Without this the wizard can't sign anyone in.
+
+---
+
+## 2b. Redirect buyers back after checkout
+
+Off a `cusec.net` host the browser refuses to frame checkout, so the page hands
+the whole tab over instead. This setting is what brings them back.
+
+**Events -> your event -> Edit event and tickets -> Advanced settings ->
+Redirect order confirmation page**, then set **Redirect to URL** to
+`https://2027.cusec.net/tickets/purchase` (or whichever host you are testing
+on - it is one URL per event, so point it at the environment being tested).
+
+Ticket Tailor appends `tt_order_id`, `tt_order_value`, `tt_currency` and
+`tt_event_id`. The page treats their presence purely as "a purchase just
+happened, look now" and strips them from the URL; the values authorise nothing.
+Without this setting the back button still works - a resume flag in
+sessionStorage triggers the same check.
+
+Source: [How to redirect ticket buyers back to your website](https://help.tickettailor.com/en/articles/2096942-how-to-redirect-ticket-buyers-back-to-your-website-after-buying-tickets)
 
 ---
 
@@ -171,7 +209,8 @@ Set in Vercel (Production + Preview), and `.env.local` for local dev:
 | `TICKET_TAILOR_API_KEY` | Box Office Settings → API | Read-only scope is enough. Server-side only. |
 | `TICKET_TAILOR_EVENT_ID` | The number in the public event URL, e.g. `2329159` in `buytickets.at/cusec/2329159` | **Public** id. Not the internal `ev_...` id. |
 | `TICKET_TAILOR_BOX_OFFICE_NAME` | The slug in that same URL - `cusec` | The URL slug, **not** the display name. |
-| `TICKET_TAILOR_CUSTOM_DOMAIN` | Item 1 above | Blank = checkout opens in a new tab. |
+| `TICKET_TAILOR_CUSTOM_DOMAIN` | Item 1 above | `tickets.cusec.net`. Blank = checkout opens in a new tab, and pre-fill is ignored. |
+| `TICKET_TAILOR_WIDGET_URL` | Optional. Promote -> Widget embed code, the `data-url` value | Overrides the event URL the embed is built from. Only needed if the `/events/{slug}/{id}` form ever stops working, or if Ticket Tailor restricts pre-fill to the `/checkout/new-session/...` widget URL. |
 | `TICKET_TAILOR_WEBHOOK_SECRET` | Item 3 above | Real secret. |
 
 Leaving `TICKET_TAILOR_API_KEY` / `TICKET_TAILOR_EVENT_ID` unset makes the
@@ -186,7 +225,8 @@ site render mock $0 tickets - useful for local UI work with no account.
 | API key + event configured | ✅ done (test event) |
 | Webhook secret set locally | ✅ done (dev placeholder) |
 | Webhook registered in Ticket Tailor dashboard | ❌ **todo** |
-| Custom domain + CNAME | ❌ **todo** - blocks in-page checkout |
+| Custom domain + CNAME | ✅ done - `tickets.cusec.net` Active |
+| `TICKET_TAILOR_CUSTOM_DOMAIN` set in Vercel + `.env.local` | ❌ **todo** - the code reads the domain from here, not from Ticket Tailor |
 | Tested on deployed environment | ❌ **todo** |
 | Stripe connected | ❌ todo (only needed for paid tickets) |
 | Real 2027 event created | ❌ todo |
