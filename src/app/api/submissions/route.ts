@@ -1,9 +1,11 @@
 import { NextResponse } from "next/server";
 import { auth0 } from "@/lib/auth0";
-import { Challenge, Submission } from "@/lib/models";
+import { Challenge, Submission, Team } from "@/lib/models";
 import connectMongoDB from "@/lib/mongodb";
 import { findOrCreateUser } from "@/lib/userService";
 import { isChallengeOpen, isValidSubmissionUrl } from "@/lib/challenges";
+
+const MAX_NOTES = 2000;
 
 // GET - The signed-in delegate's own submissions.
 export async function GET() {
@@ -25,8 +27,14 @@ export async function GET() {
       return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
 
-    const submissions = await Submission.find({ userId: user._id })
+    // A group entry is the whole team's, so every member must see it — not
+    // only whoever happened to post it.
+    const team = await Team.findOne({ members: user._id });
+    const submissions = await Submission.find({
+      $or: [{ userId: user._id }, ...(team ? [{ teamId: team._id }] : [])],
+    })
       .populate("challengeId")
+      .populate("teamId", "name")
       .sort({ createdAt: -1 });
 
     return NextResponse.json({ success: true, submissions });
@@ -34,7 +42,7 @@ export async function GET() {
     console.error("Error fetching submissions:", error);
     return NextResponse.json(
       { error: "Internal server error" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -53,7 +61,7 @@ export async function POST(request: Request) {
     if (process.env.SUBMISSIONS_ENABLED !== "true") {
       return NextResponse.json(
         { error: "Submissions are not open yet" },
-        { status: 403 }
+        { status: 403 },
       );
     }
 
@@ -62,14 +70,14 @@ export async function POST(request: Request) {
     if (!challengeId) {
       return NextResponse.json(
         { error: "A challenge must be selected" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
     if (!isValidSubmissionUrl(url)) {
       return NextResponse.json(
         { error: "Enter a valid http(s) link to your video" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -79,7 +87,7 @@ export async function POST(request: Request) {
     if (!challenge) {
       return NextResponse.json(
         { error: "Challenge not found" },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
@@ -92,17 +100,36 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
 
-    const existing = await Submission.findOne({
-      challengeId,
-      userId: user._id,
-    });
+    // Group challenges are answered once per team; individual ones once per
+    // delegate. Everything after this point is identical.
+    const isGroup = challenge.mode === "group";
+    let team = null;
+
+    if (isGroup) {
+      team = await Team.findOne({ challengeId, members: user._id });
+      if (!team) {
+        return NextResponse.json(
+          {
+            error:
+              "This is a group challenge — create or join a team before submitting.",
+          },
+          { status: 400 },
+        );
+      }
+    }
+
+    const existing = await Submission.findOne(
+      isGroup
+        ? { challengeId, teamId: team!._id }
+        : { challengeId, userId: user._id },
+    );
 
     // The submission cap only guards *new* entries — a delegate editing their
     // own existing submission must not be blocked by a full challenge.
     if (!existing && !isChallengeOpen(challenge)) {
       return NextResponse.json(
         { error: "This challenge is not currently accepting submissions" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -114,13 +141,16 @@ export async function POST(request: Request) {
           error:
             "This submission has already been approved and can no longer be changed. Contact an organizer if it needs updating.",
         },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
     if (existing) {
       existing.url = url.trim();
-      existing.notes = notes || "";
+      existing.notes = String(notes || "").slice(0, MAX_NOTES);
+      // Whoever last edited it becomes the visible submitter.
+      existing.userId = user._id;
+      existing.userEmail = session.user.email;
       // A replaced entry goes back into the review queue.
       existing.status = "pending";
       await existing.save();
@@ -136,8 +166,9 @@ export async function POST(request: Request) {
       challengeId,
       userId: user._id,
       userEmail: session.user.email,
+      teamId: isGroup ? team!._id : null,
       url: url.trim(),
-      notes: notes || "",
+      notes: String(notes || "").slice(0, MAX_NOTES),
     });
 
     await submission.save();
@@ -155,7 +186,7 @@ export async function POST(request: Request) {
     console.error("Error creating submission:", error);
     return NextResponse.json(
       { error: "Internal server error" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

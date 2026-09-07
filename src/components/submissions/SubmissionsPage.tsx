@@ -1,9 +1,10 @@
 "use client";
 
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { AlertCircle } from "lucide-react";
 import ChallengeCard from "./ChallengeCard";
-import { useSubmissions, findSubmissionFor } from "./submissionsDAO";
+import { useSubmissions, useTeams, findSubmissionFor } from "./submissionsDAO";
+import TeamModal from "./TeamModal";
 import type { Challenge } from "@/lib/interface";
 
 interface SubmissionsPageProps {
@@ -11,14 +12,7 @@ interface SubmissionsPageProps {
   userEmail: string;
 }
 
-/**
- * The single central submission page (TECHxEVENTS.txt): every open challenge
- * in one list, each with its own inline submit form. Events host the
- * challenges themselves — all this does is collect the links.
- *
- * Styled with the main site's v2 design system (see styles/v2/submissions.css)
- * rather than the grayscale scavenger theme, so it matches 2027.cusec.net.
- */
+/** Every open challenge in one list, each with its own inline submit form. */
 const SubmissionsPage = ({ userEmail }: SubmissionsPageProps) => {
   const {
     challenges,
@@ -30,8 +24,12 @@ const SubmissionsPage = ({ userEmail }: SubmissionsPageProps) => {
     withdraw,
   } = useSubmissions();
 
-  // Group by event so a delegate scanning the page can find their event's
-  // challenges without reading every card.
+  const teamState = useTeams();
+  const hasGroupChallenge = challenges.some((c) => c.mode === "group");
+  const [teamForChallenge, setTeamForChallenge] = useState<Challenge | null>(
+    null,
+  );
+
   const grouped = useMemo(() => {
     const groups = new Map<string, Challenge[]>();
     challenges.forEach((challenge) => {
@@ -57,16 +55,16 @@ const SubmissionsPage = ({ userEmail }: SubmissionsPageProps) => {
         </header>
 
         {error && (
-          <div className="v2-sub__error" role="alert">
+          <div className="v2-glass v2-sub__error" role="alert">
             <AlertCircle aria-hidden="true" />
             <span>{error}</span>
           </div>
         )}
 
         {loading ? (
-          <p className="v2-sub__loading">Loading challenges…</p>
+          <p className="v2-glass v2-sub__loading">Loading challenges…</p>
         ) : challenges.length === 0 ? (
-          <div className="v2-sub__empty">
+          <div className="v2-glass v2-sub__empty">
             <b>No challenges yet.</b>
             Challenges appear here once the events team publishes them. Check
             back closer to your event.
@@ -83,6 +81,9 @@ const SubmissionsPage = ({ userEmail }: SubmissionsPageProps) => {
                       challenge={challenge}
                       submission={findSubmissionFor(submissions, challenge._id)}
                       isSubmitting={isSubmitting}
+                      teamName={teamState.teamFor(challenge._id)?.name ?? null}
+                      maxTeamSize={teamState.maxTeamSize}
+                      onOpenTeam={() => setTeamForChallenge(challenge)}
                       onSubmit={submit}
                       onWithdraw={withdraw}
                     />
@@ -91,6 +92,16 @@ const SubmissionsPage = ({ userEmail }: SubmissionsPageProps) => {
               </section>
             ))}
           </div>
+        )}
+
+        {hasGroupChallenge && teamForChallenge && (
+          <TeamModal
+            challengeId={teamForChallenge._id}
+            challengeTitle={teamForChallenge.title}
+            isOpen={Boolean(teamForChallenge)}
+            onClose={() => setTeamForChallenge(null)}
+            teams={teamState}
+          />
         )}
       </div>
     </section>

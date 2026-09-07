@@ -57,7 +57,7 @@ const Leaderboard = () => {
       </h2>
 
       {loading ? (
-        <div className="aero-panel aero-board">
+        <div className="v2-card v2-glass aero-board">
           <ol className="aero-board__rows">
             {[...Array(5)].map((_, i) => (
               <li key={i} className="is-ghost" />
@@ -65,21 +65,18 @@ const Leaderboard = () => {
           </ol>
         </div>
       ) : error ? (
-        <div className="aero-panel aero-note">
+        <div className="v2-card v2-glass aero-note">
           <p>{error}</p>
         </div>
       ) : leaderboard.length === 0 ? (
-        <div className="aero-panel aero-note">
+        <div className="v2-card v2-glass aero-note">
           <p>No scores yet — be the first to earn points.</p>
         </div>
       ) : (
-        <div className="aero-panel aero-board">
+        <div className="v2-card v2-glass aero-board">
           <ol className="aero-board__rows">
             {leaderboard.map((entry) => (
-              <li
-                key={entry.rank}
-                className={entry.rank <= 3 ? `is-top is-top-${entry.rank}` : undefined}
-              >
+              <li key={entry.rank}>
                 <span className="aero-board__rank">{entry.rank}</span>
                 <span className="aero-board__name">{entry.name}</span>
                 <span className="aero-board__score">{entry.score}</span>

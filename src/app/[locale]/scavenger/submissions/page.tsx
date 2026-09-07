@@ -29,7 +29,7 @@ export default async function SubmissionsRoute() {
     <SubmissionsPage userEmail={user.email ?? ""} />
   ) : (
     <section className="aero-page">
-      <div className="aero-panel aero-gate">
+      <div className="v2-card v2-glass aero-gate">
         <h1 className="aero-title">Submissions</h1>
         <p>Submit your challenge videos for CUSEC 2027.</p>
         {/* eslint-disable-next-line @next/next/no-html-link-for-pages */}

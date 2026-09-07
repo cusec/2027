@@ -1,7 +1,12 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-import type { Challenge, Submission } from "@/lib/interface";
+import type {
+  Challenge,
+  Submission,
+  SubmissionTeam,
+  TeamSummary,
+} from "@/lib/interface";
 
 /**
  * Data access for the delegate-facing submission page.
@@ -122,7 +127,7 @@ export const useSubmissions = () => {
 /** The delegate's existing submission for a challenge, if any. */
 export function findSubmissionFor(
   submissions: Submission[],
-  challengeId: string
+  challengeId: string,
 ): Submission | undefined {
   return submissions.find((s) => {
     const id =
@@ -130,3 +135,76 @@ export function findSubmissionFor(
     return id === challengeId;
   });
 }
+
+/** Team membership for group challenges (Dev's Den). */
+export const useTeams = () => {
+  const [teams, setTeams] = useState<TeamSummary[]>([]);
+  const [myTeams, setMyTeams] = useState<Record<string, SubmissionTeam>>({});
+  const [maxTeamSize, setMaxTeamSize] = useState(4);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [busy, setBusy] = useState(false);
+
+  const fetchTeams = useCallback(async () => {
+    try {
+      setLoading(true);
+      const res = await fetch("/api/teams");
+      const data = await res.json();
+      if (!data.success) throw new Error(data.error || "Failed to load teams");
+      setTeams(data.teams);
+      setMyTeams(data.myTeams ?? {});
+      setMaxTeamSize(data.maxTeamSize ?? 4);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Failed to load teams");
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  const act = async (path: string, body?: Record<string, unknown>) => {
+    try {
+      setBusy(true);
+      setError(null);
+      const res = await fetch(path, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body ?? {}),
+      });
+      const data = await res.json();
+      if (!data.success) throw new Error(data.error || "Something went wrong");
+      await fetchTeams();
+      return true;
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Something went wrong");
+      return false;
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchTeams();
+  }, [fetchTeams]);
+
+  return {
+    teams,
+    myTeams,
+    maxTeamSize,
+    loading,
+    error,
+    busy,
+    setError,
+    /** The caller's team for one challenge, or null. */
+    teamFor: (challengeId: string) => myTeams[challengeId] ?? null,
+    /** Every team on one challenge, for the browse list. */
+    teamsFor: (challengeId: string) =>
+      teams.filter((t) => t.challengeId === challengeId),
+    createTeam: (challengeId: string, name: string) =>
+      act("/api/teams", { challengeId, name }),
+    joinTeam: (teamId: string) => act("/api/teams/join", { teamId }),
+    joinByCode: (joinCode: string) => act("/api/teams/join", { joinCode }),
+    leaveTeam: (challengeId: string) =>
+      act("/api/teams/leave", { challengeId }),
+    refetch: fetchTeams,
+  };
+};

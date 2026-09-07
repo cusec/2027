@@ -2,6 +2,8 @@
 
 import { useState, useEffect } from "react";
 import {
+  Users,
+  KeyRound,
   Send,
   Trash2,
   RefreshCw,
@@ -21,6 +23,13 @@ interface UserSubmission {
   challengeTitle: string;
   challengeEvent: string;
   challengePoints: number;
+}
+
+interface UserTeam {
+  _id: string;
+  name: string;
+  joinCode: string;
+  members: { _id: string; name?: string; email?: string }[];
 }
 
 interface UserSubmissionsModalProps {
@@ -47,6 +56,7 @@ const UserSubmissionsModal = ({
   userEmail,
 }: UserSubmissionsModalProps) => {
   const [submissions, setSubmissions] = useState<UserSubmission[]>([]);
+  const [team, setTeam] = useState<UserTeam | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [removingId, setRemovingId] = useState<string | null>(null);
@@ -65,6 +75,7 @@ const UserSubmissionsModal = ({
 
       if (data.success) {
         setSubmissions(data.submissions || []);
+        setTeam(data.team ?? null);
       } else {
         setError(data.error || "Failed to fetch user submissions");
       }
@@ -133,6 +144,7 @@ const UserSubmissionsModal = ({
 
   const handleClose = () => {
     setSubmissions([]);
+    setTeam(null);
     setError(null);
     setWarning(null);
     onClose();
@@ -187,6 +199,29 @@ const UserSubmissionsModal = ({
             >
               Dismiss
             </button>
+          </div>
+        )}
+
+        {team && (
+          <div className="rounded-lg border border-gray-200 bg-gray-50 p-3">
+            <div className="flex flex-wrap items-center gap-2">
+              <Users className="h-4 w-4 text-gray-500" />
+              <span className="font-semibold text-gray-900">{team.name}</span>
+              <span className="inline-flex items-center gap-1 rounded-full bg-blue-50 px-2 py-0.5 text-xs font-medium text-blue-800">
+                <KeyRound size={11} />
+                {team.joinCode}
+              </span>
+            </div>
+            <p className="mt-1.5 text-xs text-gray-600">
+              With {team.members
+                .filter((m) => m._id !== userId)
+                .map((m) => m.name || m.email)
+                .join(", ") || "no one else yet"}
+            </p>
+            <p className="mt-1 text-xs text-gray-500">
+              Group entries below belong to the whole team. Manage the team
+              itself in Manage Teams.
+            </p>
           </div>
         )}
 

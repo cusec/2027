@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect } from "react";
 import { X } from "lucide-react";
 import { useZxing } from "react-zxing";
 
@@ -10,6 +11,7 @@ interface ScannerPageProps {
   onError?: (error: string) => void;
 }
 
+/** A full-screen takeover: the camera gets the whole viewport, not a panel. */
 const ScannerPage = ({
   isOpen,
   onClose,
@@ -46,40 +48,46 @@ const ScannerPage = ({
     },
   });
 
-  const handleClose = () => {
-    onClose();
-  };
+  useEffect(() => {
+    if (!isOpen) return;
+
+    const escape = (event: KeyboardEvent) => {
+      if (event.key === "Escape") onClose();
+    };
+
+    document.addEventListener("keydown", escape);
+    document.body.style.overflow = "hidden";
+
+    return () => {
+      document.removeEventListener("keydown", escape);
+      document.body.style.overflow = "unset";
+    };
+  }, [isOpen, onClose]);
 
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-90 z-50 flex flex-col">
-      {/* Scanner Content */}
-      <div className="flex flex-col items-center justify-center p-4 mx-auto max-w-[85vw] md:max-w-[60vw] h-full">
-        <div className="w-full justify-around items-center text-center flex mb-4">
-          <h2 className="text-lg font-semibold ">Scan QR Code</h2>
-          <div className="flex items-center gap-2">
-            <button
-              onClick={handleClose}
-              className="p-2 rounded-lg bg-light-mode/10 hover:bg-light-mode/20 transition-colors"
-            >
-              <X size={20} />
-            </button>
-          </div>
-        </div>
-        <video ref={ref} className="border border-light-mode" />
-        <div className="text-xs sm:text-sm">
-          <p className="w-full mt-4 text-center">
-            If you don&apos;t see your camera feed above, please ensure your
-            browser has permission to access your camera & it isn&apos;t being
-            used by another application.
-          </p>
-          <p className="w-full mt-4 text-center">
-            You can also use your device&apos;s camera app to scan the QR code
-            directly.
-          </p>
-        </div>
+    <div className="aero-scan" role="dialog" aria-label="Scan a hunt item">
+      <video ref={ref} className="aero-scan__feed" playsInline muted />
+
+      <div className="aero-scan__bar">
+        <p className="aero-scan__title">Scan a hunt item</p>
+        <button
+          type="button"
+          onClick={onClose}
+          className="aero-scan__close"
+          aria-label="Close scanner"
+        >
+          <X size={20} />
+        </button>
       </div>
+
+      <div className="aero-scan__frame" aria-hidden="true" />
+
+      <p className="aero-scan__hint">
+        Point the camera at a CUSEC code. No feed? Check the camera permission
+        for this site, or scan with your phone&apos;s camera app instead.
+      </p>
     </div>
   );
 };

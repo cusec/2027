@@ -14,7 +14,7 @@ export default async function ProfilePage() {
   if (!user?.email) {
     return (
       <section className="aero-page">
-        <div className="aero-panel aero-gate">
+        <div className="v2-card v2-glass aero-gate">
           <h1 className="aero-title">Your profile</h1>
           <p>Sign in to see your hunt profile.</p>
           {/* eslint-disable-next-line @next/next/no-html-link-for-pages */}

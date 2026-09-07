@@ -63,7 +63,7 @@ const Modal = ({
       {/* Backdrop */}
       <div
         className={cn(
-          `absolute inset-0 bg-black/30 ${simple ? "" : "backdrop-blur-sm"}`,
+`v2-modal__scrim absolute inset-0 bg-black/30 ${simple ? "" : "backdrop-blur-sm"}`,
           isClosing
             ? "animate-out fade-out duration-200"
             : "animate-in fade-in duration-200"
@@ -71,32 +71,28 @@ const Modal = ({
         onClick={handleClose}
       />
 
-      {/* Modal Content — reset CSS vars so dark-bg modals keep light text */}
+      {/* The panel never scrolls: a gutter on the rounded corners leaves a
+          seam, so the body below does the scrolling. */}
       <div
         className={cn(
-          "v2-modal relative z-10 w-full max-w-2xl max-h-[70vh] overflow-y-auto bg-white rounded-lg shadow-xl",
+          "v2-modal relative z-10 flex flex-col w-full max-w-2xl max-h-[70vh] overflow-hidden bg-white rounded-lg shadow-xl",
           isClosing
             ? "animate-out fade-out zoom-out-95 duration-200"
             : "animate-in fade-in zoom-in-95 duration-200",
           className
         )}
         style={{
-          // Pinned so a modal's own text colours never depend on whatever the
-          // page behind it set. Values track the v2 palette; both pairings are
-          // high contrast — ink-deep on white, and white on the dark panel.
+          // Pinned so a modal never inherits the page's text colours.
           "--color-light-mode": "#F4FFFC",
           "--color-dark-mode": "#0E2318",
         } as React.CSSProperties}
       >
         {/* Header */}
         {title && (
-          <div className="flex items-center justify-between p-4 md:p-6 border-b border-gray-200">
+          <div className="v2-modal__head shrink-0 flex items-center justify-between p-4 md:p-6 border-b border-gray-200">
             <h2 className="v2-modal__title text-lg md:text-xl font-semibold">
               {title}
             </h2>
-            {/* Opacity rather than a fixed grey: the old hover went *lighter*,
-                which on a white panel dropped contrast instead of raising it,
-                and it had to work on the dark admin panel too. */}
             <button
               type="button"
               onClick={handleClose}
@@ -109,7 +105,9 @@ const Modal = ({
         )}
 
         {/* Content */}
-        <div className={cn("p-6", title)}>{children}</div>
+        <div className="v2-modal__body min-h-0 flex-1 overflow-y-auto p-6">
+          {children}
+        </div>
       </div>
     </div>
   );

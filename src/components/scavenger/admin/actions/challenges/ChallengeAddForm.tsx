@@ -74,6 +74,29 @@ const ChallengeAddForm = ({
 
       <div>
         <label className="mb-1 block text-sm font-medium text-dark-mode">
+          Type
+        </label>
+        <select
+          value={formData.mode}
+          onChange={(e) =>
+            setFormData({
+              ...formData,
+              mode: e.target.value as ChallengeFormData["mode"],
+            })
+          }
+          className={inputClass}
+        >
+          <option value="individual">Individual — one entry per delegate</option>
+          <option value="group">Group — one entry per team (Dev&apos;s Den)</option>
+        </select>
+        <p className="mt-1 text-xs text-gray-500">
+          Group challenges need delegates to create or join a team (max 4)
+          before they can submit. Only one entry is accepted per team.
+        </p>
+      </div>
+
+      <div>
+        <label className="mb-1 block text-sm font-medium text-dark-mode">
           Description
         </label>
         <textarea

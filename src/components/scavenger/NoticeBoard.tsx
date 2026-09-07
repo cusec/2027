@@ -54,7 +54,7 @@ const NoticeBoard = () => {
       </h2>
 
       {error ? (
-        <div className="aero-panel aero-note">
+        <div className="v2-card v2-glass aero-note">
           <p>{error}</p>
           <button type="button" onClick={fetchNotices} className="aero-btn aero-btn--glass">
             Try again
@@ -63,7 +63,7 @@ const NoticeBoard = () => {
       ) : (
         <div className="aero-notes">
           {notices.map((notice) => (
-            <article key={notice._id} className="aero-panel aero-note">
+            <article key={notice._id} className="v2-card v2-glass aero-note">
               <h3>{notice.title}</h3>
               <p>{notice.description}</p>
             </article>

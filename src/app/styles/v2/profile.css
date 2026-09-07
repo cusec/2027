@@ -1,0 +1,349 @@
+/* ==========================================================================
+   /scavenger/profile — a poster, then the plain sections under it
+   ========================================================================== */
+
+.v2-profile {
+    max-width: 720px;
+    margin-inline: auto;
+}
+
+.v2-sig {
+    position: relative;
+    isolation: isolate;
+    padding: clamp(128px, 21vw, 188px) clamp(52px, 8vw, 74px)
+        clamp(24px, 3vw, 32px) clamp(22px, 5vw, 52px);
+    margin-bottom: clamp(30px, 5vh, 52px);
+    overflow: hidden;
+    border-radius: 8px;
+    border: 1px solid rgba(223, 246, 238, 0.14);
+    background:
+        radial-gradient(
+            120% 86% at 10% 0%,
+            rgba(78, 201, 168, 0.22),
+            transparent 62%
+        ),
+        radial-gradient(
+            88% 70% at 100% 6%,
+            rgba(92, 214, 240, 0.16),
+            transparent 58%
+        ),
+        linear-gradient(158deg, #103436 0%, #0e2318 60%, #091b12 100%);
+    box-shadow: 0 30px 70px -20px rgba(6, 24, 16, 0.6);
+    color: var(--v2-mint);
+    animation: v2-sig-settle 720ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.v2-sig__dust {
+    position: absolute;
+    z-index: 0;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    fill: var(--v2-mint-bright);
+    pointer-events: none;
+}
+
+.v2-sig__edition {
+    position: absolute;
+    z-index: 4;
+    top: 50%;
+    right: clamp(26px, 4vw, 38px);
+    transform: translateY(-50%);
+    font-family: var(--v2-font-pixel);
+    font-weight: var(--v2-font-pixel-weight);
+    font-size: 0.95rem;
+    letter-spacing: 0.34em;
+    line-height: 1;
+    writing-mode: vertical-rl;
+    color: rgba(223, 246, 238, 0.26);
+    pointer-events: none;
+}
+
+.v2-sig__wave {
+    position: absolute;
+    z-index: 1;
+    top: -18px;
+    left: 0;
+    width: 100%;
+    height: clamp(176px, 29vw, 246px);
+    pointer-events: none;
+}
+
+.v2-sig__wave path {
+    stroke-dasharray: 1;
+    stroke-dashoffset: 1;
+    animation: v2-sig-draw 1500ms cubic-bezier(0.65, 0, 0.35, 1) both;
+}
+
+/* Shade under the type only; the waveform stays bright where it runs alone. */
+.v2-sig::before {
+    position: absolute;
+    z-index: 2;
+    inset: 0;
+    content: "";
+    pointer-events: none;
+    background: linear-gradient(
+        to bottom,
+        rgba(9, 27, 18, 0) 0%,
+        rgba(9, 27, 18, 0.35) 34%,
+        rgba(9, 27, 18, 0.82) 58%,
+        rgba(9, 27, 18, 0.94) 100%
+    );
+}
+
+.v2-sig__frame {
+    position: absolute;
+    z-index: 3;
+    inset: 14px;
+    border: 1px solid rgba(223, 246, 238, 0.16);
+    pointer-events: none;
+}
+
+/* Registration ticks on the two corners the eye lands on. */
+.v2-sig__frame::before,
+.v2-sig__frame::after {
+    position: absolute;
+    width: 12px;
+    height: 12px;
+    content: "";
+    border-color: var(--v2-lime);
+}
+
+.v2-sig__frame::before {
+    top: -1px;
+    left: -1px;
+    border-top: 1px solid;
+    border-left: 1px solid;
+}
+
+.v2-sig__frame::after {
+    right: -1px;
+    bottom: -1px;
+    border-right: 1px solid;
+    border-bottom: 1px solid;
+}
+
+.v2-sig > :is(p, h1) {
+    position: relative;
+    z-index: 4;
+}
+
+.v2-sig__eyebrow {
+    margin: 0 0 10px;
+    font-family: var(--v2-font-pixel);
+    font-weight: var(--v2-font-pixel-weight);
+    font-size: 10.5px;
+    letter-spacing: 0.26em;
+    text-transform: uppercase;
+    color: var(--v2-lime);
+}
+
+.v2-sig__name {
+    margin: 0;
+    font-family: var(--v2-font-pixel);
+    font-weight: var(--v2-font-pixel-weight);
+    font-size: clamp(1.9rem, 6vw, 3.1rem);
+    line-height: 1.05;
+    letter-spacing: -0.01em;
+    color: var(--v2-white);
+    overflow-wrap: anywhere;
+}
+
+.v2-sig__hero {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 14px;
+    margin: clamp(18px, 4vw, 30px) 0 0;
+}
+
+.v2-sig__hero b {
+    font-family: var(--v2-font-pixel);
+    font-weight: var(--v2-font-pixel-weight);
+    font-size: clamp(3.6rem, 15vw, 6.6rem);
+    line-height: 0.86;
+    letter-spacing: -0.045em;
+    color: var(--v2-lime);
+    text-shadow: 0 0 38px rgba(195, 233, 86, 0.32);
+}
+
+.v2-sig__hero span {
+    font-size: 14px;
+    line-height: 1.4;
+    color: rgba(223, 246, 238, 0.66);
+}
+
+.v2-sig__meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px 14px;
+    margin: clamp(26px, 5vw, 38px) 0 0;
+    padding-top: 16px;
+    border-top: 1px solid rgba(223, 246, 238, 0.14);
+    font-family: var(--v2-font-pixel);
+    font-weight: var(--v2-font-pixel-weight);
+    font-size: 9.5px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: rgba(223, 246, 238, 0.42);
+}
+
+.v2-sig__meta span + span::before {
+    margin-right: 14px;
+    content: "·";
+}
+
+/* --- the sections under the poster --------------------------------------- */
+.v2-tally {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+}
+
+.v2-tally__cell {
+    padding-left: clamp(14px, 3vw, 28px);
+    border-left: 1px solid rgba(9, 37, 26, 0.14);
+}
+
+.v2-tally__cell:first-child {
+    padding-left: 0;
+    border-left: 0;
+}
+
+.v2-tally__cell b {
+    display: block;
+    font-family: var(--v2-font-pixel);
+    font-weight: var(--v2-font-pixel-weight);
+    font-size: clamp(1.8rem, 5vw, 2.6rem);
+    line-height: 1;
+    color: var(--v2-ink-glass-deep);
+}
+
+.v2-tally__cell span {
+    display: block;
+    margin-top: 8px;
+    font-size: 12.5px;
+    color: var(--v2-teal-deep);
+}
+
+.v2-acct__row {
+    display: grid;
+    grid-template-columns: 118px minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 8px 16px;
+    padding: 16px 0;
+    border-top: 1px solid rgba(9, 37, 26, 0.12);
+}
+
+.v2-acct__row:first-child {
+    padding-top: 0;
+    border-top: 0;
+}
+
+.v2-acct__row dt {
+    font-size: 13px;
+    color: color-mix(in srgb, var(--v2-ink-glass) 62%, transparent);
+}
+
+.v2-acct__row dd {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 10px;
+    min-width: 0;
+    margin: 0;
+    font-size: 15px;
+    overflow-wrap: anywhere;
+}
+
+.v2-acct__value {
+    color: var(--v2-ink-glass-deep);
+}
+
+.v2-acct__none {
+    color: color-mix(in srgb, var(--v2-ink-glass) 52%, transparent);
+}
+
+.v2-acct__ok {
+    padding: 3px 9px;
+    border-radius: 999px;
+    background: rgba(195, 233, 86, 0.55);
+    font-family: var(--v2-font-pixel);
+    font-weight: var(--v2-font-pixel-weight);
+    font-size: 9.5px;
+    font-style: normal;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--v2-ink-deep);
+}
+
+.v2-acct__act {
+    padding: 8px 16px;
+    font-size: 11px;
+}
+
+.v2-acct__note {
+    margin: 16px 0 0;
+    padding-top: 16px;
+    border-top: 1px solid rgba(9, 37, 26, 0.12);
+    font-size: 13.5px;
+    line-height: 1.6;
+    color: var(--v2-ink-glass);
+}
+
+@keyframes v2-sig-settle {
+    from {
+        opacity: 0;
+        transform: translateY(18px) scale(0.985);
+    }
+
+    to {
+        opacity: 1;
+        transform: none;
+    }
+}
+
+@keyframes v2-sig-draw {
+    from {
+        stroke-dashoffset: 1;
+    }
+
+    to {
+        stroke-dashoffset: 0;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .v2-sig,
+    .v2-sig .v2-sig__wave path {
+        animation: none;
+    }
+
+    .v2-sig .v2-sig__wave path {
+        stroke-dashoffset: 0;
+    }
+}
+
+@media (max-width: 620px) {
+    .v2-tally {
+        grid-template-columns: 1fr;
+    }
+
+    .v2-tally__cell {
+        padding: 16px 0 0;
+        border-left: 0;
+        border-top: 1px solid rgba(9, 37, 26, 0.14);
+    }
+
+    .v2-tally__cell:first-child {
+        padding-top: 0;
+        border-top: 0;
+    }
+
+    .v2-acct__row {
+        grid-template-columns: minmax(0, 1fr) auto;
+    }
+
+    .v2-acct__row dt {
+        grid-column: 1 / -1;
+    }
+}

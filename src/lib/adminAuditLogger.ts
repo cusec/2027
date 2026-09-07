@@ -14,7 +14,8 @@ interface LogAdminActionParams {
     | "shopItem"
     | "collectible"
     | "challenge"
-    | "submission";
+    | "submission"
+    | "team";
   targetUserEmail?: string;
   resourceId?: string;
   details?: LoggableData;

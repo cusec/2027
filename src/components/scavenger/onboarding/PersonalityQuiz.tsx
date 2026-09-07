@@ -47,7 +47,7 @@ const PersonalityQuiz = ({ onComplete, onSkip }: PersonalityQuizProps) => {
       </div>
 
       {/* Card */}
-      <div className="relative z-10 w-full max-w-md mx-4 bg-white/90 backdrop-blur-sm rounded-2xl shadow-xl p-8 max-h-[90vh] overflow-y-auto">
+      <div className="v2-glass relative z-10 w-full max-w-md mx-4 p-8 max-h-[90vh] overflow-y-auto">
         <h1 className="text-2xl font-bold text-gray-800 mb-1">
           Quick — who are you?
         </h1>

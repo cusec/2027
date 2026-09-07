@@ -59,11 +59,12 @@
 }
 
 .aero-dock__item {
+    position: relative;
     display: flex;
     flex-direction: column;
     align-items: center;
     gap: 5px;
-    padding: 0;
+    padding: 7px 8px 6px;
     border: 0;
     background: none;
     color: var(--aero-white);
@@ -76,19 +77,56 @@
     text-shadow: 0 1px 3px rgba(9, 28, 45, 0.8);
     cursor: pointer;
     opacity: 0.86;
-    transition: opacity 160ms ease;
+    transition: opacity 160ms ease, transform 160ms ease;
+}
+
+/* One shade behind the orb and its word, so neither casts over the other. */
+.aero-dock__item::before {
+    position: absolute;
+    inset: -10px -12px;
+    content: "";
+    background: radial-gradient(
+        70% 64% at 50% 46%,
+        rgba(9, 28, 45, 0.52),
+        rgba(9, 28, 45, 0) 74%
+    );
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 180ms ease;
+}
+
+/* Positioned so it paints over the wash. */
+.aero-dock__label {
+    position: relative;
 }
 
 .aero-dock__item:hover,
+.aero-dock__item:focus-visible,
 .aero-dock__item.is-active {
     opacity: 1;
 }
 
-/* the lit ring marking where you are */
+.aero-dock__item:hover::before,
+.aero-dock__item:focus-visible::before {
+    opacity: 0.8;
+}
+
+/* where you are reads as depth rather than an outline */
+.aero-dock__item.is-active::before {
+    opacity: 1;
+}
+
+.aero-dock__item:active {
+    transform: translateY(1px);
+}
+
+/* The wash carries the depth; the orb keeps only its seat shadow. */
+.aero-dock__item .aero-orb,
+.aero-dock__item:hover .aero-orb,
 .aero-dock__item.is-active .aero-orb {
+    transform: none;
     box-shadow:
-        0 0 0 3px rgba(195, 233, 86, 0.75),
-        0 6px 14px rgba(9, 28, 45, 0.45),
+        0 2px 5px rgba(9, 28, 45, 0.34),
         inset 0 -6px 12px rgba(255, 255, 255, 0.3);
 }
 
@@ -126,31 +164,33 @@
     margin-top: 14px;
 }
 
-/* the score reads as a physical token, not a stat box */
+/* The same ground, waveform and dust as the profile poster, in a token. */
 .aero-score {
     position: relative;
+    isolation: isolate;
     display: grid;
     place-items: center;
     width: 128px;
     height: 128px;
-    border: 1px solid rgba(255, 255, 255, 0.5);
+    overflow: hidden;
+    border: 1px solid rgba(255, 255, 255, 0.32);
     border-radius: 999px;
     background:
         radial-gradient(
-            farthest-corner at 50% 112%,
-            rgba(255, 255, 255, 0.8),
-            transparent 66%
+            120% 90% at 20% 0%,
+            rgba(78, 201, 168, 0.3),
+            transparent 62%
         ),
-        linear-gradient(to bottom, var(--aero-lime-deep), var(--aero-lime));
-    box-shadow: 0 12px 26px rgba(9, 28, 45, 0.4);
-    color: var(--aero-ink);
+        linear-gradient(158deg, #103436 0%, #0e2318 62%, #091b12 100%);
+    box-shadow: 0 14px 30px rgba(9, 28, 45, 0.46);
+    color: var(--aero-white);
     text-decoration: none;
     transition: transform 200ms ease, box-shadow 200ms ease;
 }
 
 .aero-score:hover {
     transform: translateY(-3px) scale(1.02);
-    box-shadow: 0 18px 34px rgba(9, 28, 45, 0.42);
+    box-shadow: 0 20px 38px rgba(9, 28, 45, 0.5);
 }
 
 .aero-score b {
@@ -159,18 +199,19 @@
     font-family: var(--v2-font-pixel);
     font-size: 2.4rem;
     line-height: 1;
-    text-shadow: 0 1px 0 rgba(255, 255, 255, 0.45);
+    color: var(--aero-lime);
+    text-shadow: 0 0 22px rgba(195, 233, 86, 0.45);
 }
 
 .aero-score span {
     position: relative;
     z-index: 3;
-    margin-top: 2px;
+    margin-top: 3px;
     font-family: var(--v2-font-pixel);
     font-size: 10px;
     letter-spacing: 0.18em;
     text-transform: uppercase;
-    opacity: 0.75;
+    color: rgba(223, 246, 238, 0.6);
 }
 
 /* --------------------------------------------------------------------------
@@ -216,7 +257,7 @@
     margin: 0;
     font-size: 14px;
     line-height: 1.6;
-    color: rgba(244, 255, 252, 0.86);
+    color: color-mix(in srgb, var(--aero-white) 86%, transparent);
 }
 
 .aero-note .aero-btn {
@@ -224,61 +265,38 @@
 }
 
 /* --- leaderboard --- */
-.aero-board {
-    padding: 14px;
-}
-
 .aero-board__rows {
     display: grid;
-    gap: 8px;
     margin: 0;
     padding: 0;
     list-style: none;
 }
 
+/* Rank alone carries the standing; rows are only ruled apart. */
 .aero-board__rows li {
     display: grid;
     grid-template-columns: 30px 1fr auto;
     align-items: center;
     gap: 12px;
-    padding: 11px 15px;
-    border-radius: 12px;
-    background: rgba(255, 255, 255, 0.1);
-    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.24);
+    padding: 14px 2px;
+    border-top: 1px solid var(--aero-well-edge);
+}
+
+.aero-board__rows li:first-child {
+    padding-top: 0;
+    border-top: 0;
 }
 
 .aero-board__rows li.is-ghost {
-    height: 44px;
+    height: 46px;
     opacity: 0.45;
-}
-
-.aero-board__rows li.is-top {
-    background: linear-gradient(
-        to bottom,
-        rgba(255, 255, 255, 0.26),
-        rgba(255, 255, 255, 0.09)
-    );
-}
-
-.aero-board__rows li.is-top-1 {
-    background: linear-gradient(
-        to bottom,
-        var(--aero-lime),
-        var(--aero-lime-deep)
-    );
-    color: var(--aero-ink);
-    text-shadow: none;
 }
 
 .aero-board__rank {
     font-family: var(--v2-font-pixel);
     font-weight: var(--v2-font-pixel-weight);
     font-size: 13px;
-    color: var(--aero-lime);
-}
-
-.aero-board__rows li.is-top-1 .aero-board__rank {
-    color: var(--aero-ink);
+    opacity: 0.6;
 }
 
 .aero-board__name {
@@ -296,6 +314,97 @@
 }
 
 /* --- shop --- */
+.aero-shop__bar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin: -4px 0 14px;
+}
+
+.aero-shop__points {
+    margin: 0;
+    font-size: 14px;
+    color: var(--aero-white);
+    text-shadow: 0 1px 3px rgba(9, 28, 45, 0.8);
+}
+
+.aero-shop__points b {
+    font-family: var(--v2-font-pixel);
+    font-weight: var(--v2-font-pixel-weight);
+    font-size: 15px;
+    color: var(--aero-lime);
+}
+
+/* A view switch: fills with lime while it is holding the list back. */
+.aero-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    padding: 8px 16px;
+    border: 1px solid rgba(255, 255, 255, 0.42);
+    border-radius: 999px;
+    background: linear-gradient(
+        to bottom,
+        rgba(255, 255, 255, 0.28),
+        rgba(255, 255, 255, 0.1)
+    );
+    box-shadow:
+        0 4px 10px rgba(9, 28, 45, 0.28),
+        inset 0 1px 0 rgba(255, 255, 255, 0.5);
+    backdrop-filter: blur(10px);
+    color: var(--aero-white);
+    font-family: var(--v2-font-pixel);
+    font-weight: var(--v2-font-pixel-weight);
+    font-size: 11px;
+    letter-spacing: 0.06em;
+    text-shadow: 0 1px 2px rgba(9, 28, 45, 0.6);
+    cursor: pointer;
+    transition: background-color 160ms ease, box-shadow 160ms ease,
+        transform 160ms ease;
+}
+
+.aero-chip svg {
+    width: 15px;
+    height: 15px;
+}
+
+.aero-chip:hover {
+    transform: translateY(-1px);
+    box-shadow:
+        0 7px 14px rgba(9, 28, 45, 0.3),
+        inset 0 1px 0 rgba(255, 255, 255, 0.55);
+}
+
+.aero-chip.is-on {
+    border-color: rgba(255, 255, 255, 0.6);
+    background: linear-gradient(
+        to bottom,
+        var(--aero-lime),
+        var(--aero-lime-deep)
+    );
+    color: var(--aero-ink);
+    text-shadow: 0 1px 0 rgba(255, 255, 255, 0.4);
+}
+
+.aero-shop__note {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 18px 0 12px;
+    font-size: 13.5px;
+    color: var(--aero-white);
+    text-shadow: 0 1px 3px rgba(9, 28, 45, 0.8);
+}
+
+.aero-shop__note svg {
+    width: 16px;
+    height: 16px;
+    flex: none;
+    color: var(--aero-lime);
+}
+
 .aero-grid {
     display: grid;
     gap: 14px;
@@ -305,231 +414,6 @@
 .aero-grid--wide {
     margin-top: 14px;
     grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-}
-
-/* --------------------------------------------------------------------------
-   Profile card
-   -------------------------------------------------------------------------- */
-.aero-card {
-    position: relative;
-    max-width: 640px;
-    margin-inline: auto;
-    padding: 28px;
-    border: 1px solid rgba(255, 255, 255, 0.36);
-    border-radius: 24px;
-    background:
-        linear-gradient(
-            to bottom,
-            rgba(255, 255, 255, 0.24),
-            rgba(255, 255, 255, 0.07) 40%,
-            rgba(9, 28, 45, 0.2)
-        ),
-        var(--aero-shade);
-    box-shadow:
-        0 20px 46px rgba(9, 28, 45, 0.4),
-        inset 0 1px 0 rgba(255, 255, 255, 0.65);
-    backdrop-filter: blur(16px) saturate(1.35);
-    color: var(--aero-white);
-    text-shadow: 0 1px 2px rgba(9, 28, 45, 0.55);
-}
-
-.aero-card__face {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: 20px;
-}
-
-.aero-card__avatar {
-    position: relative;
-    display: grid;
-    place-items: center;
-    width: 92px;
-    height: 92px;
-    flex: none;
-    border: 1px solid rgba(255, 255, 255, 0.5);
-    border-radius: 999px;
-    background:
-        radial-gradient(
-            farthest-corner at 50% 110%,
-            rgba(255, 255, 255, 0.75),
-            transparent 68%
-        ),
-        linear-gradient(to bottom, #1B7FA8, var(--aero-aqua));
-    box-shadow: 0 10px 22px rgba(9, 28, 45, 0.4);
-}
-
-.aero-card__avatar b {
-    position: relative;
-    z-index: 3;
-    font-family: var(--v2-font-pixel);
-    font-size: 2.2rem;
-    color: var(--aero-ink);
-    text-shadow: 0 1px 0 rgba(255, 255, 255, 0.5);
-}
-
-.aero-card__who {
-    flex: 1 1 200px;
-    min-width: 0;
-}
-
-.aero-card__name {
-    margin: 0;
-    font-family: var(--v2-font-pixel);
-    font-weight: var(--v2-font-pixel-weight);
-    font-size: clamp(1.5rem, 4vw, 2.1rem);
-    line-height: 1.1;
-}
-
-.aero-card__mail {
-    margin: 6px 0 0;
-    font-size: 13px;
-    word-break: break-all;
-    opacity: 0.75;
-}
-
-.aero-card__score {
-    display: grid;
-    place-items: center;
-    padding: 14px 22px;
-    border-radius: 16px;
-    background: linear-gradient(
-        to bottom,
-        var(--aero-lime),
-        var(--aero-lime-deep)
-    );
-    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.6);
-    color: var(--aero-ink);
-    text-shadow: none;
-}
-
-.aero-card__score b {
-    font-family: var(--v2-font-pixel);
-    font-size: 1.9rem;
-    line-height: 1;
-}
-
-.aero-card__score span {
-    margin-top: 2px;
-    font-family: var(--v2-font-pixel);
-    font-size: 9.5px;
-    letter-spacing: 0.18em;
-    text-transform: uppercase;
-    opacity: 0.72;
-}
-
-.aero-card__stats {
-    display: grid;
-    gap: 12px;
-    grid-template-columns: repeat(3, 1fr);
-    margin-top: 24px;
-}
-
-.aero-card__stats div {
-    display: grid;
-    place-items: center;
-    padding: 14px 8px;
-    border-radius: 14px;
-    background: rgba(255, 255, 255, 0.1);
-    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.28);
-}
-
-.aero-card__stats b {
-    font-family: var(--v2-font-pixel);
-    font-size: 1.25rem;
-    color: var(--aero-lime);
-}
-
-.aero-card__stats span {
-    margin-top: 3px;
-    font-size: 11px;
-    letter-spacing: 0.06em;
-    opacity: 0.75;
-}
-
-.aero-card__rows {
-    margin: 24px 0 0;
-}
-
-.aero-card__row {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: 12px;
-    padding: 14px 0;
-    border-top: 1px solid rgba(255, 255, 255, 0.16);
-}
-
-.aero-card__row dt {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    width: 130px;
-    flex: none;
-    font-size: 12.5px;
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
-    opacity: 0.72;
-}
-
-.aero-card__row dt svg {
-    width: 15px;
-    height: 15px;
-    color: var(--aero-lime);
-}
-
-.aero-card__row dd {
-    display: flex;
-    flex: 1 1 160px;
-    align-items: center;
-    gap: 10px;
-    min-width: 0;
-    margin: 0;
-    font-size: 14.5px;
-    word-break: break-all;
-}
-
-.aero-card__ok {
-    display: inline-flex;
-    align-items: center;
-    gap: 4px;
-    flex: none;
-    padding: 3px 9px;
-    border-radius: 999px;
-    background: rgba(195, 233, 86, 0.9);
-    color: var(--aero-ink);
-    font-size: 10.5px;
-    font-style: normal;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    text-shadow: none;
-}
-
-.aero-card__ok svg {
-    width: 11px;
-    height: 11px;
-}
-
-.aero-card__missing {
-    opacity: 0.6;
-}
-
-.aero-card__act {
-    flex: none;
-    padding: 8px 16px;
-    font-size: 11px;
-}
-
-.aero-card__act svg {
-    width: 13px;
-    height: 13px;
-}
-
-.aero-card__note {
-    margin: 20px 0 0;
-    font-size: 13.5px;
-    line-height: 1.6;
-    opacity: 0.8;
 }
 
 /* --------------------------------------------------------------------------
@@ -561,6 +445,11 @@
    Phones — the rail becomes a thumb-reach bar
    -------------------------------------------------------------------------- */
 @media (max-width: 900px) {
+    /* Room for the padding the hover wash adds to every item. */
+    .v2-aero {
+        --aero-bar-h: 86px;
+    }
+
     .aero-stage {
         padding-left: 0;
         padding-bottom: calc(var(--aero-bar-h) + env(safe-area-inset-bottom));
@@ -592,6 +481,7 @@
 
     .aero-dock__item {
         flex: none;
+        padding: 4px 9px 3px;
     }
 
     .aero-dock__item--hero,
@@ -616,14 +506,6 @@
     .aero-score {
         width: 104px;
         height: 104px;
-    }
-
-    .aero-card__stats {
-        grid-template-columns: 1fr;
-    }
-
-    .aero-card__row dt {
-        width: auto;
     }
 }
 
@@ -799,22 +681,562 @@
     }
 }
 
-/* --------------------------------------------------------------------------
-   Modals — admin tooling keeps its own legible light forms
-   -------------------------------------------------------------------------- */
-.v2-aero .v2-modal h1,
-.v2-aero .v2-modal h2,
-.v2-aero .v2-modal h3,
-.v2-aero .v2-modal h4 {
-    color: inherit;
-    text-shadow: none;
+/* ==========================================================================
+   Modals
+   The same glass the leaderboard and profile card are made of, rather than a
+   white sheet with a border. The hunt's modals were ported from 2026 and are
+   built from light-theme Tailwind utilities, so those neutrals are remapped
+   here instead of rewriting the class list on ~15 admin components.
+
+   Semantic colours (amber warnings, red errors, green/blue badges and
+   buttons) are deliberately left alone — they are light chips that read
+   clearly on glass and are supposed to stand out.
+   ========================================================================== */
+.v2-aero .v2-modal {
+    border: 1px solid rgba(255, 255, 255, 0.34);
+    border-radius: 20px;
+    background:
+        linear-gradient(
+            to bottom,
+            rgba(255, 255, 255, 0.28),
+            rgba(255, 255, 255, 0.08) 42%,
+            rgba(9, 28, 45, 0.16)
+        ),
+        var(--aero-shade-deep);
+    box-shadow:
+        0 26px 64px rgba(9, 28, 45, 0.5),
+        inset 0 1px 0 rgba(255, 255, 255, 0.6);
+    backdrop-filter: blur(18px) saturate(1.35);
+    color: var(--aero-white);
+}
+
+.v2-aero .v2-modal__scrim {
+    background: rgba(9, 28, 45, 0.46);
+    backdrop-filter: blur(4px) saturate(1.2);
+}
+
+.v2-aero .v2-modal__head {
+    border-top-left-radius: 19px;
+    border-top-right-radius: 19px;
+    background: linear-gradient(
+        to bottom,
+        rgba(255, 255, 255, 0.16),
+        rgba(255, 255, 255, 0.02)
+    );
+    border-bottom-color: rgba(255, 255, 255, 0.18);
+}
+
+.v2-aero .v2-modal__title {
+    font-family: var(--v2-font-pixel);
+    font-weight: var(--v2-font-pixel-weight);
+    letter-spacing: 0.02em;
+}
+
+/* On the body, not the panel: a gutter on the rounded, bordered panel cuts a
+   seam across its top-right corner. */
+.v2-aero .v2-modal :is(.v2-modal__body, [class*="overflow-y-"]) {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(255, 255, 255, 0.32) transparent;
+}
+
+.v2-aero .v2-modal ::-webkit-scrollbar {
+    width: 8px;
+}
+
+.v2-aero .v2-modal ::-webkit-scrollbar-track,
+.v2-aero .v2-modal ::-webkit-scrollbar-corner {
+    background: transparent;
+}
+
+.v2-aero .v2-modal ::-webkit-scrollbar-button {
+    display: none;
+}
+
+.v2-aero .v2-modal ::-webkit-scrollbar-thumb {
+    border: 2px solid transparent;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.3);
+    background-clip: content-box;
+}
+
+.v2-aero .v2-modal ::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.48);
+    background-clip: content-box;
+}
+
+/* One row of a list inside a modal; the same well the remaps below produce. */
+.v2-aero .v2-modal__row {
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 14px;
+    background: rgba(255, 255, 255, 0.09);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.16);
+    transition: background-color 160ms ease, border-color 160ms ease;
+}
+
+.v2-aero button.v2-modal__row:hover {
+    border-color: rgba(255, 255, 255, 0.34);
+    background: rgba(255, 255, 255, 0.16);
+}
+
+/* --- neutral surfaces become glass ---------------------------------------- */
+.v2-aero .v2-modal .bg-white {
+    background-color: rgba(255, 255, 255, 0.09);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.16);
+}
+
+.v2-aero .v2-modal .bg-gray-50,
+.v2-aero .v2-modal .bg-gray-100 {
+    background-color: rgba(255, 255, 255, 0.12);
+}
+
+.v2-aero .v2-modal .bg-gray-200,
+.v2-aero .v2-modal .bg-gray-300 {
+    background-color: rgba(255, 255, 255, 0.18);
+}
+
+.v2-aero .v2-modal .border-gray-200,
+.v2-aero .v2-modal .border-gray-300 {
+    border-color: rgba(255, 255, 255, 0.2);
+}
+
+/* --- neutral text lifts onto the glass ------------------------------------ */
+.v2-aero .v2-modal .text-gray-900,
+.v2-aero .v2-modal .text-gray-800,
+.v2-aero .v2-modal .text-gray-700,
+.v2-aero .v2-modal .text-dark-mode {
+    color: var(--aero-white);
+}
+
+.v2-aero .v2-modal .text-gray-600,
+.v2-aero .v2-modal .text-gray-500 {
+    color: rgba(244, 255, 252, 0.76);
+}
+
+.v2-aero .v2-modal .text-gray-400,
+.v2-aero .v2-modal .text-gray-300 {
+    color: rgba(244, 255, 252, 0.58);
+}
+
+/* --- fields get the era's inset well -------------------------------------- */
+.v2-aero .v2-modal :is(input, select, textarea) {
+    border-color: rgba(255, 255, 255, 0.24);
+    border-radius: 10px;
+    background-color: rgba(255, 255, 255, 0.12);
+    box-shadow: inset 0 1px 3px rgba(9, 28, 45, 0.28);
+    color: var(--aero-white);
+}
+
+.v2-aero .v2-modal :is(input, textarea)::placeholder {
+    color: rgba(244, 255, 252, 0.5);
+}
+
+.v2-aero .v2-modal :is(input, select, textarea):focus {
+    border-color: var(--aero-lime);
+    background-color: rgba(255, 255, 255, 0.18);
+    outline: none;
+}
+
+/* Native option lists are drawn by the OS, so they need a solid ground. */
+.v2-aero .v2-modal select option {
+    background-color: #12303f;
+    color: var(--aero-white);
+}
+
+.v2-aero .v2-modal button {
+    border-radius: 10px;
+}
+
+.v2-aero .v2-modal :is(button, .rounded-full).rounded-full,
+.v2-aero .v2-modal button.aero-btn {
+    border-radius: 999px;
 }
 
 .v2-aero .v2-modal :is(button, a, input, select, textarea):focus-visible {
-    outline: 2px solid currentColor;
+    outline: 2px solid var(--aero-lime);
     outline-offset: 2px;
 }
 
-.v2-aero [class*="bg-dark-mode/90"] {
-    background-color: rgba(14, 35, 24, 0.94);
+.v2-aero .v2-modal :is(h1, h2, h3, h4) {
+    color: var(--aero-white);
+    text-shadow: none;
+}
+
+/* --------------------------------------------------------------------------
+   Tinted status panels inside modals
+   Tailwind's -50/-100 tints are near-white and the block above lifts the text
+   on them to white, so each hue becomes a translucent wash with light ink.
+   -------------------------------------------------------------------------- */
+
+/* --- surfaces --- */
+.v2-aero .v2-modal :is(.bg-red-50, .bg-red-100, .bg-red-200) {
+    background-color: rgba(248, 113, 113, 0.18);
+}
+
+.v2-aero .v2-modal :is(.bg-amber-50, .bg-amber-100, .bg-yellow-50, .bg-yellow-100) {
+    background-color: rgba(251, 191, 36, 0.18);
+}
+
+.v2-aero .v2-modal :is(.bg-orange-50, .bg-orange-100) {
+    background-color: rgba(251, 146, 60, 0.18);
+}
+
+.v2-aero .v2-modal :is(.bg-blue-50, .bg-blue-100) {
+    background-color: rgba(96, 165, 250, 0.18);
+}
+
+.v2-aero .v2-modal :is(.bg-green-50, .bg-green-100, .bg-green-200) {
+    background-color: rgba(74, 222, 128, 0.18);
+}
+
+.v2-aero .v2-modal :is(.bg-purple-50, .bg-purple-100) {
+    background-color: rgba(192, 132, 252, 0.18);
+}
+
+.v2-aero .v2-modal :is(.bg-teal-50, .bg-teal-100) {
+    background-color: rgba(45, 212, 191, 0.18);
+}
+
+/* --- edges --- */
+.v2-aero .v2-modal :is(.border-red-200, .border-red-300, .border-red-400, .border-red-500) {
+    border-color: rgba(248, 113, 113, 0.5);
+}
+
+.v2-aero .v2-modal :is(.border-amber-200, .border-amber-300, .border-amber-400, .border-yellow-200) {
+    border-color: rgba(251, 191, 36, 0.5);
+}
+
+.v2-aero .v2-modal :is(.border-blue-200, .border-blue-300) {
+    border-color: rgba(96, 165, 250, 0.5);
+}
+
+.v2-aero .v2-modal :is(.border-green-200, .border-green-300) {
+    border-color: rgba(74, 222, 128, 0.5);
+}
+
+.v2-aero .v2-modal .border-purple-200 {
+    border-color: rgba(192, 132, 252, 0.5);
+}
+
+.v2-aero .v2-modal :is(.border-teal-500, .border-teal-200) {
+    border-color: rgba(45, 212, 191, 0.55);
+}
+
+/* --- ink --- */
+.v2-aero .v2-modal :is(.text-red-500, .text-red-600, .text-red-700, .text-red-800),
+.v2-aero .v2-modal .hover\:text-red-600:hover,
+.v2-aero .v2-modal .hover\:text-red-800:hover {
+    color: #FECACA;
+}
+
+.v2-aero .v2-modal :is(.text-amber-600, .text-amber-700, .text-amber-800, .text-amber-900,
+    .text-yellow-600, .text-yellow-700, .text-yellow-800) {
+    color: #FDE68A;
+}
+
+.v2-aero .v2-modal :is(.text-orange-600, .text-orange-700, .text-orange-800) {
+    color: #FED7AA;
+}
+
+.v2-aero .v2-modal :is(.text-blue-500, .text-blue-600, .text-blue-700, .text-blue-800, .text-blue-900),
+.v2-aero .v2-modal .hover\:text-blue-600:hover {
+    color: #BFDBFE;
+}
+
+.v2-aero .v2-modal :is(.text-green-600, .text-green-700, .text-green-800) {
+    color: #BBF7D0;
+}
+
+.v2-aero .v2-modal :is(.text-purple-600, .text-purple-700, .text-purple-800) {
+    color: #E9D5FF;
+}
+
+.v2-aero .v2-modal .text-teal-700 {
+    color: #99F6E4;
+}
+
+/* --------------------------------------------------------------------------
+   Hover states — a near-white ground under white text makes the row vanish.
+   -------------------------------------------------------------------------- */
+.v2-aero .v2-modal :is(
+    .hover\:bg-gray-50, .hover\:bg-gray-100, .hover\:bg-gray-200, .hover\:bg-gray-300
+):hover {
+    background-color: rgba(255, 255, 255, 0.18);
+}
+
+.v2-aero .v2-modal .hover\:bg-red-50:hover,
+.v2-aero .v2-modal .hover\:bg-red-100:hover,
+.v2-aero .v2-modal .hover\:bg-red-200:hover {
+    background-color: rgba(248, 113, 113, 0.26);
+}
+
+.v2-aero .v2-modal .hover\:bg-blue-50:hover,
+.v2-aero .v2-modal .hover\:bg-blue-100:hover {
+    background-color: rgba(96, 165, 250, 0.26);
+}
+
+.v2-aero .v2-modal .hover\:bg-green-50:hover,
+.v2-aero .v2-modal .hover\:bg-green-200:hover {
+    background-color: rgba(74, 222, 128, 0.26);
+}
+
+.v2-aero .v2-modal .hover\:bg-purple-50:hover {
+    background-color: rgba(192, 132, 252, 0.26);
+}
+
+.v2-aero .v2-modal .hover\:border-blue-400:hover {
+    border-color: rgba(96, 165, 250, 0.7);
+}
+
+.v2-aero .v2-modal .hover\:border-green-300:hover {
+    border-color: rgba(74, 222, 128, 0.7);
+}
+
+.v2-aero .v2-modal .hover\:border-purple-300:hover {
+    border-color: rgba(192, 132, 252, 0.7);
+}
+
+.v2-aero .v2-modal .hover\:text-gray-600:hover,
+.v2-aero .v2-modal .hover\:text-gray-700:hover,
+.v2-aero .v2-modal .hover\:text-gray-800:hover {
+    color: var(--aero-white);
+}
+
+/* The OS draws this indicator in black, invisible on a dark field. */
+.v2-aero .v2-modal ::-webkit-calendar-picker-indicator {
+    filter: invert(1) opacity(0.7);
+    cursor: pointer;
+}
+
+/* ==========================================================================
+   Cards
+   Cards are .v2-card.v2-glass from base.css. Below only re-points the pieces
+   that were drawn against the old dark panel.
+   ========================================================================== */
+/* Drawn thicker than on the main site: the hunt scrolls past the busy half of
+   the same painting. */
+.v2-aero {
+    --v2-glass-top: rgba(255, 255, 255, 0.86);
+    --v2-glass-mid: rgba(242, 255, 250, 0.7);
+    --v2-glass-end: rgba(199, 242, 219, 0.66);
+}
+
+.v2-aero .v2-glass {
+    /* One swap turns a whole card from white-on-dark to ink-on-light. */
+    --aero-white: var(--v2-ink-glass-deep);
+    --aero-accent-ink: var(--v2-teal-deep);
+    --aero-well: rgba(9, 37, 26, 0.07);
+    --aero-well-edge: rgba(9, 37, 26, 0.13);
+    --v2-white: var(--v2-ink-glass-deep);
+    --v2-mint: var(--v2-ink-glass);
+    --v2-mint-bright: var(--v2-teal-deep);
+    text-shadow: none;
+}
+
+/* The glass carries the depth, so the shadow only muddies the ink. */
+.v2-aero .v2-glass :is(h1, h2, h3, h4, p, dt, dd, span, b, i, a, li) {
+    text-shadow: none;
+}
+
+/* --- pieces that were tuned for navy ------------------------------------- */
+
+.v2-aero .v2-glass .aero-eyebrow {
+    color: var(--v2-teal-deep);
+}
+
+/* A white fill is invisible against a white card. */
+.v2-aero .v2-glass .aero-btn--glass {
+    --btn: rgba(9, 37, 26, 0.1);
+    --btn-deep: rgba(9, 37, 26, 0.03);
+    border-color: rgba(9, 37, 26, 0.16);
+    box-shadow: 0 3px 8px rgba(10, 36, 23, 0.16);
+    color: var(--v2-ink-glass-deep);
+    text-shadow: none;
+}
+
+.v2-aero .v2-glass .v2-chal__status--pending {
+    background: rgba(184, 134, 11, 0.14);
+    color: #7A5A05;
+    box-shadow: inset 0 0 0 1px rgba(184, 134, 11, 0.45);
+}
+
+.v2-aero .v2-glass .v2-chal__status--rejected {
+    background: rgba(190, 46, 36, 0.12);
+    color: #9C2B22;
+    box-shadow: inset 0 0 0 1px rgba(190, 46, 36, 0.4);
+}
+
+.v2-aero .v2-glass .v2-chal__link:hover,
+.v2-aero .v2-glass .v2-chal__cancel:hover {
+    color: var(--v2-ink-glass-deep);
+}
+
+.v2-aero .v2-glass .v2-sub__error svg,
+.v2-aero .v2-glass .v2-chal__withdraw:hover {
+    color: #9C2B22;
+}
+
+/* --- shop tiles ---------------------------------------------------------- */
+.aero-tile {
+    padding: 14px;
+    cursor: pointer;
+    transition: transform 200ms ease, box-shadow 200ms ease;
+}
+
+.aero-tile:hover {
+    transform: translateY(-2px);
+    box-shadow:
+        0 20px 40px -10px rgba(10, 36, 23, 0.34),
+        inset 0 1.5px 1px rgba(255, 255, 255, 0.9);
+}
+
+.aero-tile p {
+    margin: 0;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--v2-ink-glass-deep);
+}
+
+.aero-tile__cost,
+.aero-tile__left {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 4px 10px;
+    border-radius: 999px;
+    font-family: var(--v2-font-pixel);
+    font-weight: var(--v2-font-pixel-weight);
+    font-size: 11px;
+    letter-spacing: 0.04em;
+}
+
+.aero-tile__cost {
+    background: rgba(9, 37, 26, 0.09);
+    box-shadow: inset 0 0 0 1px rgba(9, 37, 26, 0.14);
+    color: var(--v2-ink-glass-deep);
+}
+
+.aero-tile__left {
+    background: var(--v2-lime);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.6);
+    color: var(--v2-ink-deep);
+}
+
+/* --------------------------------------------------------------------------
+   Scanner takeover
+   -------------------------------------------------------------------------- */
+.aero-scan {
+    position: fixed;
+    z-index: 60;
+    inset: 0;
+    display: grid;
+    place-items: center;
+    background: #060f0b;
+    animation: aero-scan-in 220ms ease-out both;
+}
+
+.aero-scan__feed {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+/* The viewfinder darkens everything outside itself, so no separate veil. */
+.aero-scan__frame {
+    --tick: var(--aero-lime);
+    --tick-weight: 3px;
+    --tick-length: 34px;
+
+    position: relative;
+    width: min(74vw, 300px);
+    aspect-ratio: 1;
+    border-radius: 20px;
+    box-shadow: 0 0 0 100vmax rgba(6, 15, 11, 0.66);
+    background:
+        linear-gradient(var(--tick) 0 0) 0 0 / var(--tick-length)
+            var(--tick-weight) no-repeat,
+        linear-gradient(var(--tick) 0 0) 0 0 / var(--tick-weight)
+            var(--tick-length) no-repeat,
+        linear-gradient(var(--tick) 0 0) 100% 0 / var(--tick-length)
+            var(--tick-weight) no-repeat,
+        linear-gradient(var(--tick) 0 0) 100% 0 / var(--tick-weight)
+            var(--tick-length) no-repeat,
+        linear-gradient(var(--tick) 0 0) 0 100% / var(--tick-length)
+            var(--tick-weight) no-repeat,
+        linear-gradient(var(--tick) 0 0) 0 100% / var(--tick-weight)
+            var(--tick-length) no-repeat,
+        linear-gradient(var(--tick) 0 0) 100% 100% / var(--tick-length)
+            var(--tick-weight) no-repeat,
+        linear-gradient(var(--tick) 0 0) 100% 100% / var(--tick-weight)
+            var(--tick-length) no-repeat;
+}
+
+.aero-scan__bar {
+    position: absolute;
+    z-index: 2;
+    top: 0;
+    left: 0;
+    right: 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding: calc(16px + env(safe-area-inset-top)) 18px 16px;
+}
+
+.aero-scan__title {
+    margin: 0;
+    font-family: var(--v2-font-pixel);
+    font-weight: var(--v2-font-pixel-weight);
+    font-size: 12px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--aero-white);
+    text-shadow: 0 1px 4px rgba(6, 15, 11, 0.9);
+}
+
+.aero-scan__close {
+    display: grid;
+    place-items: center;
+    width: 40px;
+    height: 40px;
+    flex: none;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.14);
+    backdrop-filter: blur(10px);
+    color: var(--aero-white);
+    cursor: pointer;
+    transition: background-color 160ms ease;
+}
+
+.aero-scan__close:hover {
+    background: rgba(255, 255, 255, 0.24);
+}
+
+.aero-scan__hint {
+    position: absolute;
+    z-index: 2;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    max-width: 460px;
+    margin: 0 auto;
+    padding: 16px 24px calc(24px + env(safe-area-inset-bottom));
+    font-size: 13px;
+    line-height: 1.6;
+    text-align: center;
+    color: rgba(244, 255, 252, 0.78);
+    text-shadow: 0 1px 4px rgba(6, 15, 11, 0.9);
+}
+
+@keyframes aero-scan-in {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
 }
