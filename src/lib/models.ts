@@ -337,6 +337,16 @@ const demographicInfoSchema = new Schema(
     githubUrl: { type: String, default: "" },
     linkedinUrl: { type: String, default: "" },
 
+    // Travel — drives which delegates get told about which airline/hotel
+    // discount, so it is asked rather than inferred from the university.
+    travelFrom: { type: String, required: true },
+    travelMethod: {
+      type: String,
+      required: true,
+      enum: ["plane", "train", "bus", "car", "local", "undecided"],
+      default: "undecided",
+    },
+
     // Conference
     howDidYouHear: { type: String, default: "" },
     previouslyAttended: {

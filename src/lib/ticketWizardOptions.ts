@@ -29,6 +29,17 @@ export const YES_NO_OPTIONS: { value: string; label: string }[] = [
   { value: "yes", label: "Yes" },
 ];
 
+// Coarse on purpose: this only has to be good enough to decide who hears
+// about an airline discount and who hears about a hotel one.
+export const TRAVEL_METHOD_OPTIONS: { value: string; label: string }[] = [
+  { value: "plane", label: "Flying" },
+  { value: "train", label: "Train" },
+  { value: "bus", label: "Bus" },
+  { value: "car", label: "Driving" },
+  { value: "local", label: "Already in Montréal" },
+  { value: "undecided", label: "Not sure yet" },
+];
+
 // CUSEC has run every year since 2003; 2026 is the most recent edition, so
 // 2027 (the one being bought) is deliberately not offered.
 export const ATTENDED_YEAR_OPTIONS = Array.from(

@@ -21,6 +21,7 @@ const TSHIRT_SIZES = ["XS", "S", "M", "L", "XL", "XXL", "XXXL"];
 const HEAD_DELEGATE_VALUES = ["yes", "no", "unsure"];
 const ATTENDEE_TYPES = ["student", "professional"];
 const YES_NO = ["yes", "no"];
+const TRAVEL_METHODS = ["plane", "train", "bus", "car", "local", "undecided"];
 // CUSEC has run every year since 2003; 2026 is the latest past edition.
 const ATTENDED_YEARS = Array.from({ length: 2026 - 2003 + 1 }, (_, i) =>
   String(2003 + i)
@@ -84,6 +85,9 @@ export async function PUT(request: Request) {
     githubUrl: sanitizeInput(body.githubUrl),
     linkedinUrl: sanitizeInput(body.linkedinUrl),
 
+    travelFrom: sanitizeInput(body.travelFrom),
+    travelMethod: sanitizeInput(body.travelMethod),
+
     howDidYouHear: sanitizeInput(body.howDidYouHear),
     previouslyAttended,
     previouslyAttendedYear:
@@ -102,6 +106,8 @@ export async function PUT(request: Request) {
     ["pronoun", data.pronoun],
     ["tshirtSize", data.tshirtSize],
     ["previouslyAttended", data.previouslyAttended],
+    ["travelFrom", data.travelFrom],
+    ["travelMethod", data.travelMethod],
   ];
   if (isStudent) {
     requiredFields.push(["fieldOfStudy", data.fieldOfStudy]);
@@ -123,6 +129,9 @@ export async function PUT(request: Request) {
   }
   if (isStudent && !HEAD_DELEGATE_VALUES.includes(data.schoolHasHeadDelegate)) {
     return NextResponse.json({ error: "Invalid head delegate answer" }, { status: 400 });
+  }
+  if (!TRAVEL_METHODS.includes(data.travelMethod)) {
+    return NextResponse.json({ error: "Invalid travel method" }, { status: 400 });
   }
   if (!YES_NO.includes(data.previouslyAttended)) {
     return NextResponse.json({ error: "Invalid previously-attended answer" }, { status: 400 });

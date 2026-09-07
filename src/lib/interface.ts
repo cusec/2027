@@ -275,6 +275,8 @@ export interface DemographicInfo {
   resumeUrl?: string;
   githubUrl?: string;
   linkedinUrl?: string;
+  travelFrom: string;
+  travelMethod: "plane" | "train" | "bus" | "car" | "local" | "undecided";
   howDidYouHear?: string;
   previouslyAttended: "yes" | "no";
   previouslyAttendedYear?: string;

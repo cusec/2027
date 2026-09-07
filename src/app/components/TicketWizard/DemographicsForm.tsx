@@ -10,6 +10,7 @@ import {
   HEAD_DELEGATE_OPTIONS,
   YES_NO_OPTIONS,
   ATTENDED_YEAR_OPTIONS,
+  TRAVEL_METHOD_OPTIONS,
   EXCITED_EVENT_OPTIONS,
 } from "@/lib/ticketWizardOptions";
 
@@ -27,6 +28,8 @@ const EMPTY_FORM: FormState = {
   resumeUrl: "",
   githubUrl: "",
   linkedinUrl: "",
+  travelFrom: "",
+  travelMethod: "undecided",
   howDidYouHear: "",
   previouslyAttended: "no",
   previouslyAttendedYear: "",
@@ -368,6 +371,44 @@ export default function DemographicsForm({ initialData, userId }: DemographicsFo
             value={form.linkedinUrl}
             onChange={(e) => set("linkedinUrl", e.target.value)}
           />
+        </label>
+      </fieldset>
+      )}
+
+      {section === "conference" && (
+      <fieldset className="wizard-fieldset">
+        <legend>{t("section-travel")}</legend>
+
+        <p className="wizard-field-hint wizard-field--wide">
+          {t("travel-discount-note")}
+        </p>
+
+        <label className="wizard-field">
+          {t("field-travel-from")}
+          <input
+            type="text"
+            required
+            value={form.travelFrom}
+            onChange={(e) => set("travelFrom", e.target.value)}
+          />
+          <p className="wizard-field-hint">{t("field-travel-from-hint")}</p>
+        </label>
+
+        <label className="wizard-field">
+          {t("field-travel-method")}
+          <select
+            required
+            value={form.travelMethod}
+            onChange={(e) =>
+              set("travelMethod", e.target.value as FormState["travelMethod"])
+            }
+          >
+            {TRAVEL_METHOD_OPTIONS.map((option) => (
+              <option key={option.value} value={option.value}>
+                {option.label}
+              </option>
+            ))}
+          </select>
         </label>
       </fieldset>
       )}
