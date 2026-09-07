@@ -18,3 +18,6 @@
 
 /* /speakers */
 @import "./speakers.css";
+
+/* /privacy-policy, /code-of-conduct, /ticket-terms and the 404 */
+@import "./policy.css";

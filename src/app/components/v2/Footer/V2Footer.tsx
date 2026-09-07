@@ -12,8 +12,9 @@ const LINKS: { key: string; route?: string }[] = [
 	{ key: "sponsors", route: "/sponsors" },
 	{ key: "team" },
 	{ key: "hunt" },
-	{ key: "conduct" },
-	{ key: "privacy" },
+	{ key: "conduct", route: "/code-of-conduct" },
+	{ key: "privacy", route: "/privacy-policy" },
+	{ key: "terms", route: "/ticket-terms" },
 ];
 
 const SOCIALS = [
