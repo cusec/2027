@@ -6,6 +6,7 @@ import { redirect, Link } from "@/i18n/navigation";
 
 export default async function TicketsPage() {
   const t = await getTranslations("TicketWizard");
+  const tp = await getTranslations("TicketsPage");
   const locale = await getLocale();
   const session = await auth0.getSession();
   const email = session?.user?.email;
@@ -31,6 +32,21 @@ export default async function TicketsPage() {
             {t("intro-cta-signup")}
           </a>
         </div>
+
+        <ul className="wizard-facts">
+          <li>
+            <span>{tp("fact-when-label")}</span>
+            <b>{tp("fact-when")}</b>
+          </li>
+          <li>
+            <span>{tp("fact-where-label")}</span>
+            <b>{tp("fact-where")}</b>
+          </li>
+          <li>
+            <span>{tp("fact-edition-label")}</span>
+            <b>{tp("fact-edition")}</b>
+          </li>
+        </ul>
       </div>
     );
   }

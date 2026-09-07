@@ -284,7 +284,6 @@ export default function PurchaseStepClient({
       // Naming the frame is what makes Ticket Tailor treat it as its own
       // modal: from here it reports ready and posts tt-checkout-close on the
       // way out, instead of reaching for a parent document it cannot touch.
-      if (frameRef.current) frameRef.current.name = "tt-widget-modal";
       setEmbedState("loading");
       setFrameSrc(url.toString());
     },
@@ -383,9 +382,9 @@ export default function PurchaseStepClient({
       return;
     }
 
-    setReachedCheckout(false);
-    // Always reopen on the ticket list, never on a stale checkout session.
-    if (frameRef.current) frameRef.current.name = "";
+    // The embed is the checkout widget itself, so the delegate is already at
+    // the paying stage rather than browsing an event page.
+    setReachedCheckout(true);
     setFrameSrc(checkoutEmbedUrl);
     setCheckoutOpen(true);
   }, [canFrame, checkoutEmbedUrl, checkoutPageUrl]);
@@ -545,6 +544,12 @@ export default function PurchaseStepClient({
             */}
             <iframe
               ref={frameRef}
+              // Ticket Tailor recognises a frame with this name as its own
+              // modal: it then reports `tt-checkout-ready` and asks to be
+              // closed via `tt-checkout-close` rather than reaching for a
+              // parent document it cannot touch. Safe on the checkout URL -
+              // its auto-close path only fires on an `/events/...` page.
+              name="tt-widget-modal"
               className="wizard-checkout-frame"
               src={frameSrc ?? checkoutEmbedUrl ?? undefined}
               title={t("purchase-heading")}

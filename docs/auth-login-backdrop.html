@@ -1,0 +1,190 @@
+<!--
+  Source for public/assets/auth/login-backdrop.webp — the background image set
+  on Auth0's Universal Login page.
+
+  Auth0 only lets a free tenant set a background image, not page HTML (a real
+  card beside the widget needs Page Templates, which require a custom domain).
+  So the card is painted into the background instead, on the right, with the
+  widget left-aligned in Auth0's own settings.
+
+  To regenerate after editing this file:
+
+    chrome --headless=new --window-size=1920,1080 --hide-scrollbars       --screenshot=backdrop.png file:///absolute/path/to/this/file
+    node -e "require('sharp')('backdrop.png').webp({quality:82})
+      .toFile('public/assets/auth/login-backdrop.webp')"
+
+  The @font-face below points at the pixel face inside node_modules, so run it
+  from a checkout with dependencies installed.
+-->
+<!doctype html>
+<meta charset="utf-8">
+<style>
+@font-face {
+  font-family: "GeistPixelSquare";
+  src: url("file:///C:/Users/angel/cusec/CUSEC%202027/cusec-2027/node_modules/geist/dist/fonts/geist-pixel/GeistPixel-Square.woff2") format("woff2");
+  font-weight: 700;
+}
+
+* { box-sizing: border-box; }
+
+html, body { margin: 0; }
+
+body {
+  width: 1920px;
+  height: 1080px;
+  overflow: hidden;
+  background-image: url("https://2027.cusec.net/assets/v2/background-unified.webp");
+  background-size: cover;
+  background-position: center 66%;
+  font-family: "Segoe UI", system-ui, sans-serif;
+}
+
+.panel {
+  position: absolute;
+  top: 50%;
+  right: 132px;
+  transform: translateY(-50%);
+  width: 520px;
+  padding: 52px 48px 46px;
+  border: 1.5px solid rgba(255, 255, 255, 0.82);
+  border-radius: 34px;
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.86) 0%,
+    rgba(242, 255, 250, 0.7) 50%,
+    rgba(199, 242, 219, 0.66) 100%
+  );
+  box-shadow: 0 24px 54px -10px rgba(10, 36, 23, 0.34),
+    inset 0 1.5px 1px rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(11px);
+  text-align: center;
+  color: #1A382B;
+}
+
+.logo {
+  width: 108px;
+  height: 108px;
+  margin: 0 auto 22px;
+  display: block;
+}
+
+.eyebrow {
+  margin: 0 0 12px;
+  font-family: "GeistPixelSquare", monospace;
+  font-size: 12px;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: #0E664D;
+}
+
+.wordmark {
+  margin: 0 0 18px;
+  font-family: "GeistPixelSquare", monospace;
+  font-size: 62px;
+  line-height: 1;
+  letter-spacing: 0.01em;
+  color: #09251A;
+}
+
+.body {
+  margin: 0 0 26px;
+  font-size: 17px;
+  line-height: 1.6;
+  color: #1A382B;
+}
+
+.facts {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.facts li {
+  padding: 9px 16px;
+  border: 1px solid rgba(9, 37, 26, 0.14);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.6);
+  font-family: "GeistPixelSquare", monospace;
+  font-size: 13px;
+  letter-spacing: 0.06em;
+  color: #0E664D;
+}
+/* A phone crops this image to its centre ~400px (cover scales by height, so
+   the full 1080 is visible but only ~26% of the width). The panel on the
+   right is gone at that size, and the widget covers the middle — so the
+   identity is repeated here, narrow enough and high enough to survive both
+   the crop and the widget. Keep it under ~330px wide: a 320px-wide phone
+   only shows the middle ~410px of this image. */
+.lockup {
+  position: absolute;
+  top: 40px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 326px;
+  padding: 11px 18px;
+  border: 1px solid rgba(255, 255, 255, 0.34);
+  border-radius: 999px;
+  background: linear-gradient(
+    to bottom,
+    rgba(9, 28, 45, 0.42),
+    rgba(9, 28, 45, 0.3)
+  );
+  box-shadow: 0 8px 20px rgba(9, 28, 45, 0.34);
+  backdrop-filter: blur(10px);
+  text-align: left;
+}
+
+.lockup img {
+  width: 34px;
+  height: 34px;
+  flex: none;
+}
+
+.lockup b {
+  display: block;
+  font-family: "GeistPixelSquare", monospace;
+  font-size: 19px;
+  line-height: 1.1;
+  color: #F4FFFC;
+  text-shadow: 0 1px 2px rgba(9, 28, 45, 0.8);
+}
+
+.lockup span {
+  display: block;
+  margin-top: 3px;
+  font-family: "GeistPixelSquare", monospace;
+  font-size: 9.5px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #C3E956;
+  text-shadow: 0 1px 3px rgba(9, 28, 45, 0.85);
+}
+</style>
+
+<div class="lockup">
+  <img src="https://2027.cusec.net/assets/v2/logo-icosahedron.webp" alt="">
+  <div>
+    <b>CUSEC 2027</b>
+    <span>Montréal · January 2027</span>
+  </div>
+</div>
+
+<div class="panel">
+  <img class="logo" src="https://2027.cusec.net/assets/v2/logo-icosahedron.webp" alt="">
+  <p class="eyebrow">The 26th annual conference</p>
+  <h1 class="wordmark">CUSEC 2027</h1>
+  <p class="body">
+    The Canadian University Software Engineering Conference.<br>
+    Three days of talks, workshops and the people who build things.
+  </p>
+  <ul class="facts">
+    <li>Montréal, QC</li>
+    <li>January 2027</li>
+  </ul>
+</div>

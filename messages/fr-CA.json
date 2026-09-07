@@ -27,6 +27,12 @@
     "TicketsPage": {
         "heading": "Obtenez votre billet",
         "subheading": "Joignez-vous à nous à Montréal, QC — janvier 2027.",
+        "fact-when-label": "Quand",
+        "fact-when": "Janvier 2027",
+        "fact-where-label": "Où",
+        "fact-where": "Montréal, QC",
+        "fact-edition-label": "Édition",
+        "fact-edition": "La 26e",
         "mock-banner": "Données de test affichées — connectez Ticket Tailor pour la mise en ligne.",
         "error-banner": "Impossible de charger les données des billets. Veuillez réessayer sous peu.",
         "vip-badge": "Populaire",

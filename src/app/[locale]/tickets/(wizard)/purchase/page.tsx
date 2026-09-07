@@ -42,7 +42,7 @@ export default async function PurchasePage() {
   // domain, which is now configured. Names are a convenience only.
   const profile = session?.user as { given_name?: string; family_name?: string } | undefined;
   const [fallbackFirst, ...fallbackRest] = (session?.user?.name ?? "").trim().split(/\s+/);
-  const widgetConfig = getTicketWidgetConfig({
+  const widgetConfig = await getTicketWidgetConfig({
     email,
     firstName: profile?.given_name || fallbackFirst || null,
     lastName: profile?.family_name || fallbackRest.join(" ") || null,

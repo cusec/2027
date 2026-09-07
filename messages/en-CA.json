@@ -27,6 +27,12 @@
     "TicketsPage": {
         "heading": "Get Your Ticket",
         "subheading": "Join us in Montréal, QC — January 2027.",
+        "fact-when-label": "When",
+        "fact-when": "January 2027",
+        "fact-where-label": "Where",
+        "fact-where": "Montréal, QC",
+        "fact-edition-label": "Edition",
+        "fact-edition": "The 26th",
         "mock-banner": "Showing test data — connect Ticket Tailor to go live.",
         "error-banner": "Couldn't load ticket data. Please try again shortly.",
         "vip-badge": "Popular",

@@ -201,9 +201,50 @@ function buildEmbedUrl(
   return url;
 }
 
-export function getTicketWidgetConfig(
+// The public `/events/{slug}/{id}` page is NOT the widget: its body carries
+// `event_listing`, so Ticket Tailor's scripts treat it as an event page, never
+// announce themselves to the parent, and expect the parent to walk them to
+// checkout. The frame we actually want is the one behind its buy button -
+// `/checkout/view-event/id/{id}/chk/{hash}/`, whose body carries `widget` and
+// which runs select-tickets through to payment in place.
+//
+// The API hands that out as `checkout_url` on the event, already pointed at
+// the custom domain, so there is nothing to derive or scrape. It is cached for
+// an hour; TICKET_TAILOR_WIDGET_URL short-circuits it entirely.
+async function fetchCheckoutUrl(eventId: string): Promise<string | null> {
+  const apiKey = process.env.TICKET_TAILOR_API_KEY;
+  if (!apiKey) return null;
+
+  try {
+    const auth = Buffer.from(`${apiKey}:`).toString("base64");
+    const res = await fetch("https://api.tickettailor.com/v1/events?limit=100", {
+      headers: { Authorization: `Basic ${auth}` },
+      next: { revalidate: 3600 },
+    });
+    if (!res.ok) return null;
+
+    const body = await res.json();
+    const events = (Array.isArray(body?.data) ? body.data : []) as Record<
+      string,
+      unknown
+    >[];
+
+    // TICKET_TAILOR_EVENT_ID is the public series id, which is what the event
+    // carries as `event_series_id` (prefixed `es_`).
+    const match = events.find(event =>
+      String(event.event_series_id ?? "").endsWith(eventId)
+    );
+
+    const url = match?.checkout_url;
+    return typeof url === "string" && url ? url : null;
+  } catch {
+    return null;
+  }
+}
+
+export async function getTicketWidgetConfig(
   prefill?: CheckoutPrefill
-): TicketWidgetConfig {
+): Promise<TicketWidgetConfig> {
   // `||` (not `??`) so an empty-string env var (unset-but-present, as
   // TICKET_TAILOR_CUSTOM_DOMAIN commonly is until a custom domain is
   // connected) falls back to null instead of being passed to the widget as
@@ -239,15 +280,30 @@ export function getTicketWidgetConfig(
       ? `https://${host}/events/${boxOfficeName}/${eventId}`
       : null);
 
-  const checkoutEmbedUrl = eventUrl ? buildEmbedUrl(eventUrl, prefill) : null;
+  // Falls back to the event page if the lookup fails: worse (the delegate has
+  // one more click to reach checkout) but never broken.
+  const checkoutUrl = widgetUrl ?? (eventId ? await fetchCheckoutUrl(eventId) : null);
+  const embedBase = checkoutUrl ?? eventUrl;
+
+  const checkoutEmbedUrl = embedBase
+    ? buildEmbedUrl(
+        embedBase,
+        prefill,
+        // modal_widget is what keeps checkout in widget mode instead of
+        // reaching for a parent document it cannot touch.
+        checkoutUrl
+          ? "modal_widget=true&widget=true&minimal=true&show_logo=false&bg_fill=false"
+          : undefined
+      )
+    : null;
 
   return {
     boxOfficeName,
     eventId,
     customDomain,
-    eventUrl,
+    eventUrl: checkoutUrl ?? eventUrl,
     checkoutEmbedUrl,
-    checkoutPageUrl: eventUrl ? buildEmbedUrl(eventUrl, prefill, "") : null,
+    checkoutPageUrl: embedBase ? buildEmbedUrl(embedBase, prefill, "") : null,
     checkoutOrigin: originOf(checkoutEmbedUrl),
     inlineCapable: Boolean(customDomain),
   };
