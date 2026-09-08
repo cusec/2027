@@ -12,6 +12,14 @@ export type Speaker = {
 	announced?: {
 		name: string;
 		role: string;
+		/**
+		 * Talk title and description. Both optional because names are usually
+		 * confirmed before the talk is, so a speaker can go live with just a
+		 * name and role and gain their talk later.
+		 */
+		talk?: string;
+		/** one or two sentences on what the talk covers */
+		abstract?: string;
 		photo: string;
 		/** object-position for the photo, when the face isn't dead centre */
 		focus?: string;
@@ -21,8 +29,10 @@ export type Speaker = {
 export type AnnouncedKeynote = {
 	name: string;
 	role: string;
-	/** talk title — a proper noun, so it lives here rather than in messages */
+	/** talk title. A proper noun, so it lives here rather than in messages */
 	talk: string;
+	/** a short paragraph on what the talk covers */
+	abstract?: string;
 	photo: string;
 	/** object-position for the photo, when the face isn't dead centre */
 	focus?: string;

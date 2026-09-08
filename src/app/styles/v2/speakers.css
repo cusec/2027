@@ -120,6 +120,10 @@
     color: var(--v2-ink-glass);
 }
 
+.v2-keynote__abstract {
+    margin-top: 10px;
+}
+
 .v2-keynote__chips {
     display: flex;
     flex-wrap: wrap;
@@ -196,6 +200,29 @@
     margin: -6px 0 0;
     font-size: 12px;
     line-height: 1.4;
+    text-align: center;
+    color: var(--v2-slate);
+}
+
+/*
+ * Talk title and description. Neither is clamped, so a long abstract simply
+ * makes its card taller and the grid row stretches to match. Keep abstracts to
+ * roughly two sentences (see the speakers checklist) rather than truncating
+ * copy the speaker approved.
+ */
+.v2-spk-card__talk {
+    margin: 2px 0 0;
+    font-size: 12.5px;
+    font-weight: 700;
+    line-height: 1.4;
+    text-align: center;
+    color: var(--v2-teal-deep);
+}
+
+.v2-spk-card__abstract {
+    margin: -4px 0 0;
+    font-size: 12px;
+    line-height: 1.55;
     text-align: center;
     color: var(--v2-slate);
 }

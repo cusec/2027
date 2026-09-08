@@ -11,7 +11,9 @@ const LINKS = [
 	{ key: "sponsors", href: "/sponsors" },
 	{ key: "conference", href: "/#conference" },
 	{ key: "hunt", href: "/#hunt" },
-	{ key: "team", href: "/#team" },
+	// Hidden for the first v2 release: landing, speakers, sponsors and
+	// policy & terms only. Restore once the team section exists.
+	// { key: "team", href: "/#team" },
 ] as const;
 
 /** ignore sub-pixel/momentum jitter so the bar doesn't flicker */

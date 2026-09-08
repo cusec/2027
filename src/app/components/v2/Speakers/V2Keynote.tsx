@@ -60,6 +60,11 @@ export default function V2Keynote() {
 								<h2 className="v2-keynote__title v2-pixel">{keynote.talk}</h2>
 								<p className="v2-keynote__speaker v2-pixel">{keynote.name}</p>
 								<p className="v2-keynote__text">{keynote.role}</p>
+								{keynote.abstract ? (
+									<p className="v2-keynote__text v2-keynote__abstract">
+										{keynote.abstract}
+									</p>
+								) : null}
 
 								<ul className="v2-keynote__chips">
 									<li className="v2-spk-chip v2-spk-chip--dark v2-pixel">

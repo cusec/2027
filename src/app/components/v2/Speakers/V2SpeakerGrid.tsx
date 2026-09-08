@@ -28,6 +28,16 @@ export default function V2SpeakerGrid() {
 										{speaker.announced.name}
 									</p>
 									<p className="v2-spk-card__role">{speaker.announced.role}</p>
+									{speaker.announced.talk ? (
+										<p className="v2-spk-card__talk">
+											{speaker.announced.talk}
+										</p>
+									) : null}
+									{speaker.announced.abstract ? (
+										<p className="v2-spk-card__abstract">
+											{speaker.announced.abstract}
+										</p>
+									) : null}
 								</>
 							) : (
 								<p className="v2-spk-card__name v2-pixel">{t("announcing")}</p>

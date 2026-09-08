@@ -8,9 +8,12 @@ import { Link } from "@/i18n/navigation";
 const LINKS: { key: string; route?: string }[] = [
 	{ key: "about" },
 	{ key: "speakers", route: "/speakers" },
-	{ key: "schedule" },
+	// Hidden for the first v2 release: landing, speakers, sponsors and
+	// policy & terms only. `#schedule` has no section yet and `#team` only
+	// lands on this footer. Restore both once those sections ship.
+	// { key: "schedule" },
 	{ key: "sponsors", route: "/sponsors" },
-	{ key: "team" },
+	// { key: "team" },
 	{ key: "hunt" },
 	{ key: "conduct", route: "/code-of-conduct" },
 	{ key: "privacy", route: "/privacy-policy" },
