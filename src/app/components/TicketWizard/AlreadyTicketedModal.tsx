@@ -36,6 +36,16 @@ export default function AlreadyTicketedModal({
       aria-labelledby="already-ticketed-heading"
     >
       <div className="wizard-modal">
+        {/* The modal is the whole page here, so closing it means leaving for
+            the home page rather than revealing anything underneath. */}
+        <Link
+          className="wizard-modal-close"
+          href="/"
+          aria-label={t("already-ticketed-close")}
+        >
+          <span aria-hidden="true">×</span>
+        </Link>
+
         <h2 id="already-ticketed-heading" className="wizard-modal-heading">
           {t("already-ticketed-heading")}
         </h2>

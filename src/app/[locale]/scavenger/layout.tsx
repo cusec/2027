@@ -2,6 +2,7 @@ import { auth0 } from "@/lib/auth0";
 import { findOrCreateUser } from "@/lib/userService";
 import AeroDock from "@/components/scavenger/AeroDock";
 import type { Auth0User, DbUser } from "@/lib/interface";
+import { getBaseUrl } from "@/lib/siteUrl";
 
 export default async function ScavengerLayout({
   children,
@@ -52,7 +53,7 @@ export default async function ScavengerLayout({
             user={user as Auth0User}
             dbUser={dbUser}
             linkedEmail={dbUser.linked_email}
-            baseURL={process.env.APP_BASE_URL || ""}
+            baseURL={await getBaseUrl()}
           />
         )}
 

@@ -148,6 +148,7 @@
         "substep-background": "Parcours",
         "substep-conference": "Conférence",
         "already-ticketed-heading": "Vous avez déjà un billet",
+        "already-ticketed-close": "Fermer",
         "already-ticketed-body": "Ce compte ({email}) possède déjà un billet CUSEC 2027; il n'y a donc rien à remplir ici.",
         "already-ticketed-body-named": "Ce compte ({email}) possède déjà un billet CUSEC 2027 ({ticket}); il n'y a donc rien à remplir ici.",
         "already-ticketed-instruction": "Les billets sont limités à un par compte. Pour en acheter un autre, déconnectez-vous et recommencez avec un autre compte.",

@@ -6,6 +6,7 @@ import { DemographicInfo } from "@/lib/models";
 import DemographicsForm from "@/app/components/TicketWizard/DemographicsForm";
 import AlreadyTicketedModal from "@/app/components/TicketWizard/AlreadyTicketedModal";
 import { getWizardStatus } from "@/lib/ticketWizard";
+import { getBaseUrl } from "@/lib/siteUrl";
 
 export default async function DemographicsPage() {
   const t = await getTranslations("TicketWizard");
@@ -44,7 +45,7 @@ export default async function DemographicsPage() {
       <AlreadyTicketedModal
         email={email}
         ticketName={status.purchasedTicketName}
-        baseURL={process.env.APP_BASE_URL || ""}
+        baseURL={await getBaseUrl()}
       />
     );
   }

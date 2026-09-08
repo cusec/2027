@@ -5,6 +5,7 @@ import { RegisteredUser } from "@/lib/models";
 import Dashboard from "@/components/scavenger/Dashboard";
 import type { Auth0User } from "@/lib/interface";
 import { Trophy } from "lucide-react";
+import { getBaseUrl } from "@/lib/siteUrl";
 
 export default async function ScavengerPage() {
   const session = await auth0.getSession();
@@ -80,7 +81,7 @@ export default async function ScavengerPage() {
     <Dashboard
       user={user as Auth0User}
       dbUser={dbUser}
-      baseURL={process.env.APP_BASE_URL || ""}
+      baseURL={await getBaseUrl()}
       emailVerified={emailVerified}
     />
   );

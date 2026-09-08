@@ -148,6 +148,7 @@
         "substep-background": "Background",
         "substep-conference": "Conference",
         "already-ticketed-heading": "You already have a ticket",
+        "already-ticketed-close": "Close",
         "already-ticketed-body": "This account ({email}) already has a CUSEC 2027 ticket, so there's nothing left to fill in here.",
         "already-ticketed-body-named": "This account ({email}) already has a CUSEC 2027 ticket ({ticket}), so there's nothing left to fill in here.",
         "already-ticketed-instruction": "Tickets are one per account. To buy another, log out and start again with a different account.",
