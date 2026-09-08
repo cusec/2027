@@ -53,6 +53,9 @@ export default async function PurchasePage() {
       <div className="tickets-header">
         <h1 className="tickets-heading">{t("purchase-heading")}</h1>
         <p className="tickets-subheading">{t("purchase-subheading")}</p>
+        <p className="wizard-purchase-note">
+          {t("purchase-one-per-person", { email: email })}
+        </p>
         {source === "mock" && <p className="tickets-mock-banner">{t("mock-banner")}</p>}
         {source === "error" && <p className="tickets-error-banner">{t("error-banner")}</p>}
       </div>

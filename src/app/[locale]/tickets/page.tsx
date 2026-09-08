@@ -4,6 +4,13 @@ import { findOrCreateUser } from "@/lib/userService";
 import { getWizardStatus } from "@/lib/ticketWizard";
 import { redirect, Link } from "@/i18n/navigation";
 
+/**
+ * One card per step, in order. Each carries a title plus a single line on what
+ * the step actually asks for, so the page answers "what am I in for" without
+ * the reader opening anything.
+ */
+const INTRO_STEPS = ["register", "demographics", "avatar", "purchase"] as const;
+
 export default async function TicketsPage() {
   const t = await getTranslations("TicketWizard");
   const tp = await getTranslations("TicketsPage");
@@ -18,20 +25,30 @@ export default async function TicketsPage() {
           <h1 className="tickets-heading">{t("intro-heading")}</h1>
           <p className="tickets-subheading">{t("intro-subheading")}</p>
         </div>
-        <div className="wizard-intro-card">
-          <ol className="wizard-intro-steps">
-            <li>{t("intro-step-register")}</li>
-            <li>{t("intro-step-demographics")}</li>
-            <li>{t("intro-step-avatar")}</li>
-            <li>{t("intro-step-purchase")}</li>
-          </ol>
-          <a
-            href="/auth/login?screen_hint=signup&returnTo=/tickets/demographics"
-            className="cta-btn wizard-intro-cta"
-          >
-            {t("intro-cta-signup")}
-          </a>
-        </div>
+        <ol className="wizard-steps">
+          {INTRO_STEPS.map((step, i) => (
+            <li key={step} className="wizard-step-card">
+              <div className="wizard-step-card__head">
+                <span className="wizard-step-card__num" aria-hidden="true">
+                  {i + 1}
+                </span>
+                <h2 className="wizard-step-card__title">
+                  {t(`intro-step-${step}`)}
+                </h2>
+              </div>
+              <p className="wizard-step-card__note">
+                {t(`intro-step-${step}-note`)}
+              </p>
+            </li>
+          ))}
+        </ol>
+
+        <a
+          href="/auth/login?screen_hint=signup&returnTo=/tickets/demographics"
+          className="cta-btn wizard-steps__cta"
+        >
+          {t("intro-cta-signup")}
+        </a>
 
         <ul className="wizard-facts">
           <li>
