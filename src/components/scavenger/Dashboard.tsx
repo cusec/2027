@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link } from "@/i18n/navigation";
 import { Auth0User, DbUser } from "@/lib/interface";
 import OnboardingFlow, { OnboardingMode } from "./onboarding/OnboardingFlow";
@@ -9,6 +9,7 @@ import Leaderboard from "./Leaderboard";
 import Shop from "./Shop";
 import DashboardFAQ from "./faqs/DashboardFAQ";
 import { Dust } from "./profile/Signature";
+import { prefetchInventory } from "./user/inventoryCache";
 
 interface DashboardProps {
   user: Auth0User;
@@ -31,6 +32,13 @@ const Dashboard = ({ user, dbUser, emailVerified = false }: DashboardProps) => {
   const [onboardingMode, setOnboardingMode] = useState<OnboardingMode | null>(
     dbUser && !alreadyOnboarded ? "first-login" : null
   );
+
+  // Warm the bag as soon as the dashboard is up. Delegates open it standing in
+  // front of a QR code, and a cold fetch at that moment is the wait they feel.
+  // It runs on idle, so it never competes with the first paint.
+  useEffect(() => {
+    if (dbUser?._id) prefetchInventory(dbUser._id);
+  }, [dbUser?._id]);
 
   const handleOnboardingComplete = (newLinkedEmail?: string) => {
     if (newLinkedEmail) setLinkedEmail(newLinkedEmail);

@@ -91,7 +91,13 @@ const huntItemSchema = new Schema(
   {
     name: String,
     description: String,
-    identifier: String,
+    // Indexed and unique: every QR scan looks an item up by this field, so at
+    // the conference it is the single hottest query in the app. Without an
+    // index each scan is a full collection scan, and they all arrive at once.
+    // Deliberately not unique. Uniqueness is already enforced when an item is
+    // created, and a unique index that fails to build over legacy duplicates
+    // would leave us with no index at all, which is the thing we are fixing.
+    identifier: { type: String, index: true },
     points: { type: Number, default: 0 },
     maxClaims: { type: Number, default: null },
     claimCount: { type: Number, default: 0 },

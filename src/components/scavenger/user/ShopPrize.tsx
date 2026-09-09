@@ -5,6 +5,7 @@ import { ShopItem } from "@/lib/interface";
 import { resolveImageSrc } from "@/lib/imageSrc";
 import Modal from "@/components/ui/modal";
 import { Search, User, X, Loader2 } from "lucide-react";
+import { invalidateInventory } from "./inventoryCache";
 
 interface ShopPrizeProps {
   item: ShopItem;
@@ -83,6 +84,7 @@ const ShopPrize = ({
       const data = await response.json();
 
       if (data.success) {
+        invalidateInventory();
         setSearchResults(data.users);
       } else {
         setSearchResults([]);
@@ -136,6 +138,7 @@ const ShopPrize = ({
       const data = await response.json();
 
       if (data.success) {
+        invalidateInventory();
         setRedeemSuccess(data.message);
         setTimeout(() => {
           closeRedeemModal();

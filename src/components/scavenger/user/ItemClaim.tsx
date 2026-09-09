@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { QrCode, Keyboard } from "lucide-react";
 import Modal from "@/components/ui/modal";
 import ScannerPage from "./ScannerPage";
+import { invalidateInventory } from "./inventoryCache";
 
 // Helper to sanitize hunt item code input
 function sanitizeCodeInput(input: string): string {
@@ -108,6 +109,10 @@ const ItemClaim = ({
       const data = await response.json();
 
       if (data.success) {
+        // The bag just changed, so the warmed copy is wrong. Dropping it means
+        // the next open refetches rather than showing a stale inventory.
+        invalidateInventory();
+
         setClaimResult({
           success: true,
           message: data.message,

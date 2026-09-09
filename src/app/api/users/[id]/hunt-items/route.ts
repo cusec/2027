@@ -5,9 +5,19 @@ import connectMongoDB from "@/lib/mongodb";
 import isAdmin from "@/lib/isAdmin";
 import isVolunteer from "@/lib/isVolunteer";
 
-// Rate limiting configuration
+// Rate limiting configuration.
+//
+// This limit counts FAILED attempts only, per user. It is anti-brute-force, not
+// throughput control: a room full of delegates scanning valid codes at the same
+// moment never touches it, which is the point.
 const RATE_LIMIT_MAX_ATTEMPTS = 10;
 const RATE_LIMIT_WINDOW_MINUTES = 15;
+
+// Attempts live inside the user document, and that document is read on nearly
+// every request the hunt makes. Left unbounded, one delegate hammering a bad
+// code would inflate their record and slow down every later read of it. The cap
+// is well above what a real delegate produces over a whole conference.
+const ATTEMPT_HISTORY_LIMIT = 200;
 
 interface ClaimAttempt {
   identifier: string;
@@ -55,6 +65,28 @@ function checkRateLimit(claimAttempts: ClaimAttempt[]) {
   };
 }
 
+/**
+ * Appends one attempt without rewriting the whole user document.
+ *
+ * `user.save()` here would write back every array on the record, including
+ * claimedItems and collectibles, and could clobber a concurrent claim. `$push`
+ * with `$slice` touches only this field and trims the history in the same
+ * operation.
+ */
+async function recordAttempt(userId: unknown, attempt: ClaimAttempt) {
+  await User.updateOne(
+    { _id: userId },
+    {
+      $push: {
+        claim_attempts: {
+          $each: [attempt],
+          $slice: -ATTEMPT_HISTORY_LIMIT,
+        },
+      },
+    },
+  );
+}
+
 // POST - Claim a hunt item by identifier
 export async function POST(
   request: Request,
@@ -81,9 +113,12 @@ export async function POST(
     await connectMongoDB();
 
     // Find the user first - ensure the ID matches the authenticated user
+    // Only the fields this route actually reads. Skipping collectibles and
+    // shopPrizes keeps the hot-path read small; both are written below with
+    // targeted updates rather than by saving this document.
     const user = await User.findOne({
       $and: [{ email: session.user.email }, { _id: userId }],
-    });
+    }).select("email active linked_email points claimedItems claim_attempts");
 
     if (!user) {
       return NextResponse.json(
@@ -103,10 +138,15 @@ export async function POST(
 
     // The page is flag-gated; so is the endpoint behind it, or the hunt can be
     // played through the API before it opens.
+    const [callerIsAdmin, callerIsVolunteer] =
+      process.env.SCAVENGER_HUNT_ENABLED === "true"
+        ? [false, false]
+        : await Promise.all([isAdmin(), isVolunteer()]);
+
     if (
       process.env.SCAVENGER_HUNT_ENABLED !== "true" &&
-      !(await isAdmin()) &&
-      !(await isVolunteer())
+      !callerIsAdmin &&
+      !callerIsVolunteer
     ) {
       return NextResponse.json(
         { error: "The hunt is not open yet." },
@@ -164,7 +204,7 @@ export async function POST(
     if (!huntItem) {
       // Log failed attempt
       user.claim_attempts.push(claimAttempt);
-      await user.save();
+      await recordAttempt(user._id, claimAttempt);
 
       // Check how many attempts remaining after this failed attempt
       const updatedRateLimitCheck = checkRateLimit(user.claim_attempts);
@@ -202,7 +242,7 @@ export async function POST(
     if (!isItemActive || !isWithinActivationWindow) {
       // Log failed attempt (item not active)
       user.claim_attempts.push(claimAttempt);
-      await user.save();
+      await recordAttempt(user._id, claimAttempt);
 
       // Check how many attempts remaining after this failed attempt
       const updatedRateLimitCheck = checkRateLimit(user.claim_attempts);
@@ -244,7 +284,7 @@ export async function POST(
     if (user.claimedItems.includes(huntItem._id)) {
       // Log failed attempt (duplicate claim)
       user.claim_attempts.push(claimAttempt);
-      await user.save();
+      await recordAttempt(user._id, claimAttempt);
 
       // Check how many attempts remaining after this failed attempt
       const updatedRateLimitCheck = checkRateLimit(user.claim_attempts);
@@ -276,7 +316,7 @@ export async function POST(
     ) {
       // Log failed attempt (max claims reached)
       user.claim_attempts.push(claimAttempt);
-      await user.save();
+      await recordAttempt(user._id, claimAttempt);
 
       // Check how many attempts remaining after this failed attempt
       const updatedRateLimitCheck = checkRateLimit(user.claim_attempts);
@@ -319,7 +359,15 @@ export async function POST(
     }
 
     claimAttempt.success = true;
-    claimed.claim_attempts.push(claimAttempt);
+
+    // Collected here and written in one update at the end, rather than pushed
+    // onto the document and saved: a full save would rewrite every array on the
+    // record and could undo a claim landing at the same moment.
+    const earnedCollectibles: {
+      collectibleId: unknown;
+      used: boolean;
+      addedAt: Date;
+    }[] = [];
 
     // Award collectibles linked to this hunt item
     const awardedCollectibles: { _id: string; name: string }[] = [];
@@ -391,10 +439,7 @@ export async function POST(
           continue;
         }
 
-        if (!claimed.collectibles) {
-          claimed.collectibles = [];
-        }
-        claimed.collectibles.push({
+        earnedCollectibles.push({
           collectibleId: collectible._id,
           used: false,
           addedAt: new Date(),
@@ -406,12 +451,25 @@ export async function POST(
       }
     }
 
-    await claimed.save();
-
-    await HuntItem.updateOne(
-      { _id: huntItem._id },
-      { $inc: { claimCount: 1 } },
-    );
+    // One write for the attempt and any collectibles, and it is independent of
+    // the item's counter, so the two go out together.
+    await Promise.all([
+      User.updateOne(
+        { _id: claimed._id },
+        {
+          $push: {
+            claim_attempts: {
+              $each: [claimAttempt],
+              $slice: -ATTEMPT_HISTORY_LIMIT,
+            },
+            ...(earnedCollectibles.length
+              ? { collectibles: { $each: earnedCollectibles } }
+              : {}),
+          },
+        },
+      ),
+      HuntItem.updateOne({ _id: huntItem._id }, { $inc: { claimCount: 1 } }),
+    ]);
 
     return NextResponse.json({
       success: true,

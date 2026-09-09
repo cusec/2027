@@ -5,6 +5,7 @@ import { Collectible } from "@/lib/interface";
 import { resolveImageSrc } from "@/lib/imageSrc";
 import Modal from "@/components/ui/modal";
 import { Loader2 } from "lucide-react";
+import { invalidateInventory } from "./inventoryCache";
 
 interface ShopCollectibleProps {
   collectible: Collectible;
@@ -65,6 +66,7 @@ const ShopCollectible = ({
       const data = await response.json();
 
       if (data.success) {
+        invalidateInventory();
         setRedeemSuccess(data.message);
         // Update points after successful redemption
         onRedeemSuccess?.(data.redemption.user.newPoints);

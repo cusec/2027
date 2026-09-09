@@ -3,35 +3,20 @@
 import { useState, useEffect } from "react";
 import { Package, Gem, Gift, Send, ExternalLink } from "lucide-react";
 import Modal from "@/components/ui/modal";
-import { HuntItem, ShopItem, Submission, Challenge } from "@/lib/interface";
+import { ShopItem, Submission, Challenge } from "@/lib/interface";
 import { resolveImageSrc } from "@/lib/imageSrc";
-
-// Extended collectible interface for inventory (includes instance-specific fields)
-interface InventoryCollectible {
-  _id: string;
-  collectibleId: string;
-  used: boolean;
-  addedAt: string;
-  name: string;
-  description: string;
-  cost: number;
-  imageData?: string;
-  imageContentType?: string;
-}
+import {
+  loadInventory,
+  peekInventory,
+  isInventoryStale,
+  type InventoryCollectible,
+  type InventorySnapshot,
+} from "./inventoryCache";
 
 interface InventoryModalProps {
   userId: string;
   isOpen: boolean;
   onClose: () => void;
-}
-
-interface InventoryResponse {
-  success: boolean;
-  inventory: {
-    claimedItems: HuntItem[];
-    shopPrizes: ShopItem[];
-    collectibles: InventoryCollectible[];
-  };
 }
 
 /** Approved entries carry the challenge they answered, populated by the API. */
@@ -87,55 +72,54 @@ const groupCollectiblesByName = (
 };
 
 const InventoryModal = ({ userId, isOpen, onClose }: InventoryModalProps) => {
-  const [claimedItems, setClaimedItems] = useState<HuntItem[]>([]);
-  const [shopPrizes, setShopPrizes] = useState<ShopItem[]>([]);
-  const [collectibles, setCollectibles] = useState<InventoryCollectible[]>([]);
-  const [approved, setApproved] = useState<Submission[]>([]);
-  const [loading, setLoading] = useState(false);
+  // Seeded from the cache the dashboard warmed, so the modal opens with content
+  // rather than a spinner. Held as one object: the four lists always arrive
+  // together, and setting them separately inside an effect is a cascade of
+  // renders for no gain.
+  const [data, setData] = useState<InventorySnapshot | null>(() =>
+    peekInventory(userId),
+  );
   const [error, setError] = useState<string | null>(null);
 
-  const fetchInventory = async () => {
-    try {
-      setLoading(true);
-      setError(null);
+  const claimedItems = data?.claimedItems ?? [];
+  const shopPrizes = data?.shopPrizes ?? [];
+  const collectibles = data?.collectibles ?? [];
+  const approved = data?.approved ?? [];
 
-      const [response, submissionRes] = await Promise.all([
-        fetch(`/api/users/${userId}/inventory`),
-        // Outside the inventory document; a failure here must not empty the bag.
-        fetch("/api/submissions").catch(() => null),
-      ]);
-      const data: InventoryResponse = await response.json();
-
-      if (data.success) {
-        setClaimedItems(data.inventory.claimedItems || []);
-        setShopPrizes(data.inventory.shopPrizes || []);
-        setCollectibles(data.inventory.collectibles || []);
-      } else {
-        throw new Error("Failed to load inventory");
-      }
-
-      const submissionData = submissionRes ? await submissionRes.json() : null;
-      setApproved(
-        submissionData?.success
-          ? (submissionData.submissions as Submission[]).filter(
-              (submission) => submission.status === "approved"
-            )
-          : []
-      );
-    } catch (err) {
-      console.error("Error fetching inventory:", err);
-      setError("Failed to load inventory");
-    } finally {
-      setLoading(false);
-    }
-  };
+  // Nothing to show and nothing gone wrong means we are still waiting. A stale
+  // refresh happens behind whatever is already on screen.
+  const loading = !data && !error;
 
   useEffect(() => {
-    if (isOpen) {
-      fetchInventory();
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    if (!isOpen) return;
+
+    let cancelled = false;
+
+    loadInventory(userId, { force: isInventoryStale(userId) })
+      .then((fresh) => {
+        if (cancelled) return;
+        setData(fresh);
+        setError(null);
+      })
+      .catch(() => {
+        // Only surfaced when there is nothing cached to show; a failed refresh
+        // behind good content is not worth interrupting anyone over.
+        if (!cancelled && !peekInventory(userId)) {
+          setError("Failed to load inventory");
+        }
+      });
+
+    return () => {
+      cancelled = true;
+    };
   }, [isOpen, userId]);
+
+  const retry = () => {
+    setError(null);
+    loadInventory(userId, { force: true })
+      .then(setData)
+      .catch(() => setError("Failed to load inventory"));
+  };
 
   return (
     <Modal
@@ -154,7 +138,7 @@ const InventoryModal = ({ userId, isOpen, onClose }: InventoryModalProps) => {
           <div className="text-center py-8">
             <p className="text-red-400 mb-4">{error}</p>
             <button
-              onClick={fetchInventory}
+              onClick={retry}
               className="px-4 py-2 bg-light-mode/10 hover:bg-light-mode/20 rounded-lg transition"
             >
               Try Again
