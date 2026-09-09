@@ -11,6 +11,7 @@ import {
   Gem,
   Gift,
   Send,
+  ClipboardList,
   // Trash2,
   RefreshCw,
 } from "lucide-react";
@@ -19,6 +20,7 @@ import UserHistoryDetailsModal from "./UserHistoryDetailsModal";
 import UserCollectiblesModal from "./UserCollectiblesModal";
 import UserShopPrizesModal from "./UserShopPrizesModal";
 import UserSubmissionsModal from "./UserSubmissionsModal";
+import UserDemographicsModal from "./UserDemographicsModal";
 
 interface User {
   _id: string;
@@ -72,6 +74,9 @@ const UsersManagementModal = ({
 
   // Challenge submissions modal state
   const [submissionsModalOpen, setSubmissionsModalOpen] = useState(false);
+
+  // Demographic survey modal state (Admin only - confidential answers)
+  const [demographicsModalOpen, setDemographicsModalOpen] = useState(false);
 
   const fetchUsers = async () => {
     try {
@@ -203,6 +208,11 @@ const UsersManagementModal = ({
   const showUserSubmissions = (user: User) => {
     setSelectedUser(user);
     setSubmissionsModalOpen(true);
+  };
+
+  const showUserDemographics = (user: User) => {
+    setSelectedUser(user);
+    setDemographicsModalOpen(true);
   };
 
   const handleClose = () => {
@@ -426,6 +436,16 @@ const UsersManagementModal = ({
                           </button>
                           {isAdmin && (
                             <button
+                              onClick={() => showUserDemographics(user)}
+                              className="flex items-center gap-1 px-3 py-1 bg-slate-600 text-white rounded hover:bg-slate-700 text-sm"
+                              title="View Demographic Survey (confidential, read-only)"
+                            >
+                              <ClipboardList className="w-3 h-3" />
+                              Demographics
+                            </button>
+                          )}
+                          {isAdmin && (
+                            <button
                               onClick={() => {
                                 setSelectedUser(user);
                                 setShopPrizesModalOpen(true);
@@ -557,6 +577,15 @@ const UsersManagementModal = ({
         isOpen={submissionsModalOpen}
         onClose={() => setSubmissionsModalOpen(false)}
         isAdmin={isAdmin}
+        userId={selectedUser?._id || null}
+        userName={selectedUser?.name || ""}
+        userEmail={selectedUser?.email || ""}
+      />
+
+      {/* User Demographics Modal */}
+      <UserDemographicsModal
+        isOpen={demographicsModalOpen}
+        onClose={() => setDemographicsModalOpen(false)}
         userId={selectedUser?._id || null}
         userName={selectedUser?.name || ""}
         userEmail={selectedUser?.email || ""}

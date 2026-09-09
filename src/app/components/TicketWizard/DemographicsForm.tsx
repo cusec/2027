@@ -5,6 +5,7 @@ import { useTranslations } from "next-intl";
 import { useRouter } from "@/i18n/navigation";
 import type { DemographicInfo } from "@/lib/interface";
 import {
+  PRONOUN_OPTIONS,
   TSHIRT_SIZE_OPTIONS,
   ATTENDEE_TYPE_OPTIONS,
   HEAD_DELEGATE_OPTIONS,
@@ -243,13 +244,20 @@ export default function DemographicsForm({ initialData, userId }: DemographicsFo
 
         <label className="wizard-field">
           {t("field-pronoun")}
-          <input
-            type="text"
+          <select
             required
-            placeholder={t("field-pronoun-placeholder")}
             value={form.pronoun}
             onChange={(e) => set("pronoun", e.target.value)}
-          />
+          >
+            <option value="" disabled>
+              {t("select-placeholder")}
+            </option>
+            {PRONOUN_OPTIONS.map(({ value, label }) => (
+              <option key={value} value={value}>
+                {label}
+              </option>
+            ))}
+          </select>
         </label>
 
         <label className="wizard-field">

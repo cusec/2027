@@ -158,6 +158,7 @@ const adminAuditLogSchema = new Schema(
         "challenge",
         "submission",
         "team",
+        "demographics",
       ],
       index: true,
     },
@@ -312,7 +313,20 @@ const demographicInfoSchema = new Schema(
     },
 
     // Personal
-    pronoun: { type: String, required: true },
+    pronoun: {
+      type: String,
+      required: true,
+      // Kept in sync by hand with PRONOUN_OPTIONS in ticketWizardOptions.ts.
+      enum: [
+        "she/her",
+        "he/him",
+        "they/them",
+        "she/they",
+        "he/they",
+        "prefer-not-to-say",
+        "other",
+      ],
+    },
     tshirtSize: {
       type: String,
       required: true,

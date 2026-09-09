@@ -43,16 +43,38 @@ const TeamsModal = ({ isOpen, onClose, isAdmin }: TeamsModalProps) => {
   } = useAdminTeams(isOpen);
 
   const [query, setQuery] = useState("");
+  const [challengeFilter, setChallengeFilter] = useState("all");
   const [openTeam, setOpenTeam] = useState<string | null>(null);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [draftName, setDraftName] = useState("");
 
   const { submissions, loading: subsLoading } = useTeamSubmissions(openTeam);
 
+  // Teams are scoped to a challenge, so this is how you see the groups for
+  // one of them without reading the whole list. Built from the teams
+  // themselves rather than fetched: a challenge with no teams has nothing to
+  // show anyway.
+  const challenges = useMemo(() => {
+    const byId = new Map<string, string>();
+    teams.forEach((t) => {
+      if (t.challenge) byId.set(t.challenge._id, t.challenge.title);
+    });
+    return [...byId.entries()]
+      .map(([_id, title]) => ({ _id, title }))
+      .sort((a, b) => a.title.localeCompare(b.title));
+  }, [teams]);
+
   const filtered = useMemo(() => {
-    if (!query.trim()) return teams;
+    const byChallenge =
+      challengeFilter === "all"
+        ? teams
+        : challengeFilter === "none"
+          ? teams.filter((t) => !t.challenge)
+          : teams.filter((t) => t.challenge?._id === challengeFilter);
+
+    if (!query.trim()) return byChallenge;
     const q = query.toLowerCase();
-    return teams.filter(
+    return byChallenge.filter(
       (t) =>
         t.name.toLowerCase().includes(q) ||
         t.joinCode.toLowerCase().includes(q) ||
@@ -63,7 +85,7 @@ const TeamsModal = ({ isOpen, onClose, isAdmin }: TeamsModalProps) => {
             (m.email || "").toLowerCase().includes(q),
         ),
     );
-  }, [teams, query]);
+  }, [teams, query, challengeFilter]);
 
   const startRename = (team: AdminTeam) => {
     setEditingId(team._id);
@@ -119,18 +141,35 @@ const TeamsModal = ({ isOpen, onClose, isAdmin }: TeamsModalProps) => {
           </h3>
         </div>
 
-        <div className="relative">
-          <Search
-            className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
-            size={20}
-          />
-          <input
-            type="text"
-            placeholder="Search by team, join code or member…"
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-            className="w-full rounded-lg border border-gray-300 bg-white py-2 pl-10 pr-4 text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
-          />
+        <div className="flex flex-wrap items-center gap-3">
+          <div className="relative min-w-[16rem] flex-1">
+            <Search
+              className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
+              size={20}
+            />
+            <input
+              type="text"
+              placeholder="Search by team, join code or member…"
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              className="w-full rounded-lg border border-gray-300 bg-white py-2 pl-10 pr-4 text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+          </div>
+
+          <select
+            value={challengeFilter}
+            onChange={(e) => setChallengeFilter(e.target.value)}
+            aria-label="Filter teams by challenge"
+            className="rounded-lg border border-gray-300 bg-white px-3 py-2 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          >
+            <option value="all">All challenges</option>
+            {challenges.map((c) => (
+              <option key={c._id} value={c._id}>
+                {c.title}
+              </option>
+            ))}
+            <option value="none">No challenge</option>
+          </select>
         </div>
 
         {loading ? (

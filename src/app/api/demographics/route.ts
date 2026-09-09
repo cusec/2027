@@ -22,6 +22,15 @@ const HEAD_DELEGATE_VALUES = ["yes", "no", "unsure"];
 const ATTENDEE_TYPES = ["student", "professional"];
 const YES_NO = ["yes", "no"];
 const TRAVEL_METHODS = ["plane", "train", "bus", "car", "local", "undecided"];
+const PRONOUNS = [
+  "she/her",
+  "he/him",
+  "they/them",
+  "she/they",
+  "he/they",
+  "prefer-not-to-say",
+  "other",
+];
 // CUSEC has run every year since 2003; 2026 is the latest past edition.
 const ATTENDED_YEARS = Array.from({ length: 2026 - 2003 + 1 }, (_, i) =>
   String(2003 + i)
@@ -123,6 +132,9 @@ export async function PUT(request: Request) {
 
   if (!ATTENDEE_TYPES.includes(data.attendeeType)) {
     return NextResponse.json({ error: "Invalid attendee type" }, { status: 400 });
+  }
+  if (!PRONOUNS.includes(data.pronoun)) {
+    return NextResponse.json({ error: "Invalid pronouns" }, { status: 400 });
   }
   if (!TSHIRT_SIZES.includes(data.tshirtSize)) {
     return NextResponse.json({ error: "Invalid t-shirt size" }, { status: 400 });

@@ -7,6 +7,19 @@
 // email, student email, university, expected graduation and degree, so this
 // survey must not ask for any of them again.
 
+// Was a free-text box. A fixed list keeps the answers countable for badge
+// printing and avoids collecting a sentence where a label was wanted;
+// "other" is the catch-all so nobody is forced into a box that isn't theirs.
+export const PRONOUN_OPTIONS: { value: string; label: string }[] = [
+  { value: "she/her", label: "she/her" },
+  { value: "he/him", label: "he/him" },
+  { value: "they/them", label: "they/them" },
+  { value: "she/they", label: "she/they" },
+  { value: "he/they", label: "he/they" },
+  { value: "prefer-not-to-say", label: "Prefer not to say" },
+  { value: "other", label: "Other" },
+];
+
 export const TSHIRT_SIZE_OPTIONS = ["XS", "S", "M", "L", "XL", "XXL", "XXXL"];
 
 // Splits the survey: a professional has no school, so the education and
