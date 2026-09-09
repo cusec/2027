@@ -634,7 +634,7 @@
     letter-spacing: 0.1em;
     text-decoration: underline;
     text-transform: uppercase;
-    cursor: pointer;
+    cursor: var(--cursor-hand);
 }
 
 .wizard-claim-form {
@@ -723,7 +723,7 @@
     color: var(--v2-ink-glass-deep);
     font-size: 16px;
     line-height: 1;
-    cursor: pointer;
+    cursor: var(--cursor-hand);
     transition: background 160ms ease, transform 160ms ease;
 }
 
@@ -865,7 +865,7 @@
     letter-spacing: 0.05em;
     text-decoration: none;
     text-shadow: 0 1px 0 rgba(255, 255, 255, 0.4);
-    cursor: pointer;
+    cursor: var(--cursor-hand);
     transition: transform 160ms ease, box-shadow 160ms ease, filter 160ms ease;
 }
 

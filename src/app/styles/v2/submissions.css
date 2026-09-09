@@ -305,7 +305,7 @@ body:has(.v2) .Navbar {
     background: none;
     color: color-mix(in srgb, var(--v2-mint) 70%, transparent);
     font: inherit;
-    cursor: pointer;
+    cursor: var(--cursor-hand);
     transition: color 160ms ease;
 }
 
@@ -403,7 +403,7 @@ body:has(.v2) .Navbar {
     font-weight: var(--v2-font-pixel-weight);
     font-size: 14px;
     letter-spacing: 0.05em;
-    cursor: pointer;
+    cursor: var(--cursor-hand);
     transition: color 160ms ease;
 }
 

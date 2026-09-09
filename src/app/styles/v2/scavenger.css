@@ -75,7 +75,7 @@
     text-decoration: none;
     text-transform: uppercase;
     text-shadow: 0 1px 3px rgba(9, 28, 45, 0.8);
-    cursor: pointer;
+    cursor: var(--cursor-hand);
     opacity: 0.86;
     transition: opacity 160ms ease, transform 160ms ease;
 }
@@ -275,10 +275,10 @@
 /* Rank alone carries the standing; rows are only ruled apart. */
 .aero-board__rows li {
     display: grid;
-    grid-template-columns: 30px 1fr auto;
+    grid-template-columns: 36px 1fr auto;
     align-items: center;
     gap: 12px;
-    padding: 14px 2px;
+    padding: 16px 2px;
     border-top: 1px solid var(--aero-well-edge);
 }
 
@@ -287,22 +287,29 @@
     border-top: 0;
 }
 
+/* Dropping the top padding on the first row without dropping the bottom on the
+   last left the card bottom-heavy — very visible with a single entry, where
+   one row is both. */
+.aero-board__rows li:last-child {
+    padding-bottom: 0;
+}
+
 .aero-board__rows li.is-ghost {
-    height: 46px;
+    height: 56px;
     opacity: 0.45;
 }
 
 .aero-board__rank {
     font-family: var(--v2-font-pixel);
     font-weight: var(--v2-font-pixel-weight);
-    font-size: 13px;
+    font-size: 16px;
     opacity: 0.6;
 }
 
 .aero-board__name {
     min-width: 0;
     overflow: hidden;
-    font-size: 15px;
+    font-size: 18px;
     text-overflow: ellipsis;
     white-space: nowrap;
 }
@@ -310,7 +317,7 @@
 .aero-board__score {
     font-family: var(--v2-font-pixel);
     font-weight: var(--v2-font-pixel-weight);
-    font-size: 13px;
+    font-size: 17px;
 }
 
 /* --- shop --- */
@@ -360,7 +367,7 @@
     font-size: 11px;
     letter-spacing: 0.06em;
     text-shadow: 0 1px 2px rgba(9, 28, 45, 0.6);
-    cursor: pointer;
+    cursor: var(--cursor-hand);
     transition: background-color 160ms ease, box-shadow 160ms ease,
         transform 160ms ease;
 }
@@ -569,7 +576,7 @@
     font-size: 15px;
     line-height: 1.4;
     color: var(--v2-ink-deep);
-    cursor: pointer;
+    cursor: var(--cursor-hand);
 }
 
 .v2-pad__toggle {
@@ -836,10 +843,44 @@
     outline: none;
 }
 
+/*
+ * The well is themed, but a native select still draws the OS chevron and opens
+ * an OS-coloured popup, which is what makes the field read as system UI next
+ * to the rest of the modal. Drop the native control and draw our own chevron;
+ * `color-scheme: dark` asks the browser to open the list on a dark ground
+ * instead of the platform default.
+ */
+.v2-aero .v2-modal select {
+    appearance: none;
+    padding-right: 36px;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1.5 6 6.5l5-5' fill='none' stroke='%23F4FFFC' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 13px center;
+    background-size: 12px 8px;
+    color-scheme: dark;
+    text-overflow: ellipsis;
+}
+
+/* Chevron picks up the focus colour along with the border. */
+.v2-aero .v2-modal select:focus {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1.5 6 6.5l5-5' fill='none' stroke='%23C3E956' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+}
+
 /* Native option lists are drawn by the OS, so they need a solid ground. */
 .v2-aero .v2-modal select option {
     background-color: #12303f;
     color: var(--aero-white);
+}
+
+/*
+ * The open list is still the platform's own widget, so how far this lands
+ * varies: Chrome and Firefox honour it, Safari draws its own highlight.
+ * Worth setting anyway so the selected row is the brand lime rather than the
+ * OS accent blue wherever it is respected.
+ */
+.v2-aero .v2-modal select option:checked {
+    background-color: var(--aero-lime);
+    color: var(--aero-ink);
 }
 
 .v2-aero .v2-modal button {
@@ -1004,7 +1045,7 @@
 /* The OS draws this indicator in black, invisible on a dark field. */
 .v2-aero .v2-modal ::-webkit-calendar-picker-indicator {
     filter: invert(1) opacity(0.7);
-    cursor: pointer;
+    cursor: var(--cursor-hand);
 }
 
 /* ==========================================================================
@@ -1078,7 +1119,7 @@
 /* --- shop tiles ---------------------------------------------------------- */
 .aero-tile {
     padding: 14px;
-    cursor: pointer;
+    cursor: var(--cursor-hand);
     transition: transform 200ms ease, box-shadow 200ms ease;
 }
 
@@ -1207,7 +1248,7 @@
     background: rgba(255, 255, 255, 0.14);
     backdrop-filter: blur(10px);
     color: var(--aero-white);
-    cursor: pointer;
+    cursor: var(--cursor-hand);
     transition: background-color 160ms ease;
 }
 

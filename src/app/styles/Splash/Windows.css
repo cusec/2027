@@ -165,7 +165,7 @@
     border-right: 2px solid #2b2b2b;
     border-bottom: 2px solid #2b2b2b;
     box-shadow: inset 1px 1px 0 #dbdbdb;
-    cursor: pointer;
+    cursor: var(--cursor-hand);
 }
 
 .win95-btn:focus-visible {

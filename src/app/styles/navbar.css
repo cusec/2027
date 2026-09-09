@@ -44,7 +44,7 @@
     border-right: 1px solid #2b2b2b;
     border-bottom: 1px solid #2b2b2b;
     box-shadow: inset 1px 1px 0 #dbdbdb, 0 8px 24px rgba(0, 0, 0, 0.55), 0 2px 6px rgba(0, 0, 0, 0.4);
-    cursor: pointer;
+    cursor: var(--cursor-hand);
 }
 
 /* Pressed-in Win95 look while active, and a solid blue "on" state when motion
@@ -104,7 +104,7 @@
     text-align-last: center;
     color: #000000;
     -webkit-text-fill-color: #000000;
-    cursor: pointer;
+    cursor: var(--cursor-hand);
     appearance: none;
     -webkit-appearance: none;
 }

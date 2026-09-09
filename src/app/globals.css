@@ -62,6 +62,18 @@ textarea {
 }
 
 /*
+ * Tailwind's `cursor-pointer` utility hands back the plain OS pointer, which
+ * silently beat the rule above wherever a component used it (class specificity,
+ * and the element list here is only 0-0-1). That is what made the custom cursor
+ * flip back to the system one over the dock and other utility-styled controls
+ * while it stayed custom in the middle of the page. Unlayered, so it wins over
+ * Tailwind's own layered utility.
+ */
+.cursor-pointer {
+  cursor: var(--cursor-hand);
+}
+
+/*
  * Minimal, neutral versions of the two interactive helper classes the
  * scavenger components rely on (originally defined in the 2026 globals).
  */

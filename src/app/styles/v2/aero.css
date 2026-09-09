@@ -49,7 +49,7 @@
         0 4px 10px rgba(9, 28, 45, 0.45),
         inset 0 -6px 12px rgba(255, 255, 255, 0.28);
     color: #ffffff;
-    cursor: pointer;
+    cursor: var(--cursor-hand);
     transition: transform 160ms ease, box-shadow 160ms ease, filter 160ms ease;
 }
 
@@ -118,7 +118,7 @@
     letter-spacing: 0.05em;
     text-decoration: none;
     text-shadow: 0 1px 0 rgba(255, 255, 255, 0.4);
-    cursor: pointer;
+    cursor: var(--cursor-hand);
     transition: transform 160ms ease, box-shadow 160ms ease, filter 160ms ease;
 }
 
@@ -188,4 +188,70 @@
 .v2-aero :is(a, button, input, select, textarea):focus-visible {
     outline: 3px solid var(--aero-aqua);
     outline-offset: 3px;
+}
+
+
+/* ==========================================================================
+   Page scrollbar
+   Scoped with :has() because the bar belongs to the viewport rather than to
+   anything inside the page, so there is nothing on the scavenger side of the
+   tree to hang it off. The colours are restated rather than pulled from
+   --aero-lime: that token lives on .v2-aero, which is a descendant of <html>,
+   and custom properties do not inherit upwards.
+   ========================================================================== */
+/*
+ * The scrollbar gutter sits outside the viewport's content box, so nothing in
+ * the page — .v2-scene__backdrop included — can paint there, and a transparent
+ * track just reveals the canvas, which globals.css paints white.
+ *
+ * The canvas takes its background from the root element, but only the
+ * background *colour* fills it: Chrome clips a root background-image to the
+ * root's border box, which stops at the gutter. Measured, not assumed — an
+ * image sized to overflow the box by 20px still left a 16px gutter reading a
+ * flat #3A94D4 top to bottom. So the strip can only ever be a colour, and the
+ * one to use is .v2-scene's own base, the same colour the painting sits on.
+ */
+html:has(.v2-aero) {
+    background-color: #3A94D4;
+}
+
+html:has(.v2-aero)::-webkit-scrollbar {
+    width: 14px;
+}
+
+html:has(.v2-aero)::-webkit-scrollbar-track,
+html:has(.v2-aero)::-webkit-scrollbar-corner {
+    background: transparent;
+}
+
+/* the stepper arrows at each end */
+html:has(.v2-aero)::-webkit-scrollbar-button {
+    display: none;
+}
+
+/* Transparent border + content-box clip insets the thumb, so the lime reads as
+   a floating pill instead of a full-width bar. */
+html:has(.v2-aero)::-webkit-scrollbar-thumb {
+    border: 3px solid transparent;
+    border-radius: 999px;
+    background: #C3E956;
+    background-clip: content-box;
+}
+
+html:has(.v2-aero)::-webkit-scrollbar-thumb:hover {
+    background: #7FA829;
+    background-clip: content-box;
+}
+
+/*
+ * Firefox has no ::-webkit-scrollbar, and the standard properties cannot go on
+ * the same element: once Chrome sees scrollbar-width/scrollbar-color it drops
+ * the pseudo-element styling above entirely. Gate them so each engine gets
+ * exactly one of the two treatments.
+ */
+@supports not selector(::-webkit-scrollbar) {
+    html:has(.v2-aero) {
+        scrollbar-width: thin;
+        scrollbar-color: #C3E956 transparent;
+    }
 }
