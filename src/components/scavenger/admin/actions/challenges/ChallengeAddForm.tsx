@@ -1,6 +1,7 @@
 "use client";
 
 import { ChallengeFormData } from "@/lib/interface";
+import ChallengeEventField from "./ChallengeEventField";
 
 interface ChallengeAddFormProps {
   formData: ChallengeFormData;
@@ -56,20 +57,11 @@ const ChallengeAddForm = ({
           />
         </div>
 
-        <div>
-          <label className="mb-1 block text-sm font-medium text-dark-mode">
-            Event
-          </label>
-          <input
-            type="text"
-            value={formData.eventName}
-            onChange={(e) =>
-              setFormData({ ...formData, eventName: e.target.value })
-            }
-            className={inputClass}
-            placeholder="Dev's Den"
-          />
-        </div>
+        <ChallengeEventField
+          value={formData.eventName}
+          onChange={(eventName) => setFormData({ ...formData, eventName })}
+          className={inputClass}
+        />
       </div>
 
       <div>

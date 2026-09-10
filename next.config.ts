@@ -3,10 +3,13 @@ import createNextIntlPlugin from "next-intl/plugin";
 
 const nextConfig: NextConfig = {
 	// Dev-only: Next serves /_next assets to `localhost` alone unless told
-	// otherwise. Ticket Tailor will only let its checkout be framed by a
-	// cusec.net origin, so local testing runs on https://local.cusec.net
-	// (a DNS/hosts entry pointing at 127.0.0.1) - which needs listing here or
-	// the page loads with no CSS.
+	// otherwise, so a cusec.net dev host would load with no CSS without this.
+	// Kept as a standing allowance -- nothing in the repo actually sets such a
+	// host up, and there is no `local.cusec.net` DNS or hosts entry. In-page
+	// checkout is tested on a deploy (docs/ticket-tailor/REQUIRED.md 2): Ticket
+	// Tailor sends `frame-ancestors 'self' https://cusec.net https://*.cusec.net`,
+	// and a port-less CSP source only matches :443, so a local dev server on
+	// :3000 is frame-refused however it is named.
 	allowedDevOrigins: ["local.cusec.net", "*.cusec.net"],
 	async headers() {
 		return [

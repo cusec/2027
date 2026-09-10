@@ -2,6 +2,7 @@
 
 import { Challenge } from "@/lib/interface";
 import { toLocalInput } from "./ChallengeAddForm";
+import ChallengeEventField from "./ChallengeEventField";
 
 interface ChallengeEditFormProps {
   challenge: Challenge;
@@ -41,19 +42,11 @@ const ChallengeEditForm = ({
           />
         </div>
 
-        <div>
-          <label className="mb-1 block text-sm font-medium text-dark-mode">
-            Event
-          </label>
-          <input
-            type="text"
-            value={challenge.eventName}
-            onChange={(e) =>
-              onChange({ ...challenge, eventName: e.target.value })
-            }
-            className={inputClass}
-          />
-        </div>
+        <ChallengeEventField
+          value={challenge.eventName}
+          onChange={(eventName) => onChange({ ...challenge, eventName })}
+          className={inputClass}
+        />
       </div>
 
       <div>

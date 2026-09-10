@@ -8,6 +8,17 @@
 /** Dev's Den teams cap at four (TECHxEVENTS.txt, Kelly). */
 export const MAX_TEAM_SIZE = 4;
 
+/**
+ * The confirmed event tracks, offered as a picker in the admin forms.
+ *
+ * `eventName` is also what groups the delegate-facing submissions page
+ * (`SubmissionsPage`), so free text splits a track in two the moment someone
+ * types "Devs Den". The picker keeps the common cases exact; anything not on
+ * this list can still be entered through the form's "Other" option, so adding
+ * a track here is a convenience, not a gate.
+ */
+export const CHALLENGE_EVENTS = ["Dev's Den", "Mini Challenges"] as const;
+
 export type ChallengeMode = "individual" | "group";
 
 /** Join codes are short, unambiguous and easy to read out loud. */

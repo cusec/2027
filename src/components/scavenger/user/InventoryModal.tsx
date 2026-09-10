@@ -272,6 +272,17 @@ const InventoryModal = ({ userId, isOpen, onClose }: InventoryModalProps) => {
                   Collectibles ({collectibles.length})
                 </h3>
               </div>
+              {/*
+                The hand-off is physical and delegates kept missing it, so say
+                so where they are already looking at what they hold. Only shown
+                once they have something to collect — the empty state below
+                carries its own call to action.
+              */}
+              {collectibles.length > 0 && (
+                <p className="-mt-2 mb-4 text-sm text-light-mode/60">
+                  Redeem these at the prize booth!
+                </p>
+              )}
               {collectibles.length === 0 ? (
                 <div className="text-center py-6 rounded-lg">
                   <Gem className="w-12 h-12 mx-auto mb-2 text-light-mode/30" />

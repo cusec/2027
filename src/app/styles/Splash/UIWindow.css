@@ -154,7 +154,7 @@
 	border: none;
 	padding: 0;
 	font: inherit;
-	cursor: pointer;
+	cursor: var(--cursor-hand);
 	text-decoration: none;
 }
 
@@ -242,7 +242,7 @@
 	padding: 0;
 	background: none;
 	border: none;
-	cursor: pointer;
+	cursor: var(--cursor-hand);
 	overflow: hidden;
 }
 
@@ -297,7 +297,7 @@
 	font-size: 12px;
 	line-height: 1.1;
 	color: #0f0f0f;
-	cursor: pointer;
+	cursor: var(--cursor-hand);
 }
 
 .UI-cta-email-submit:hover:not(:disabled) {
