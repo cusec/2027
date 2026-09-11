@@ -1,0 +1,110 @@
+/* ==========================================================================
+   v2 — Ticket passes
+   ========================================================================== */
+.v2-passes {
+    padding-block: var(--v2-section-pad);
+}
+
+.v2-passes__head {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 40px;
+}
+
+.v2-passes__heading {
+    font-size: clamp(1.4rem, 3vw, 2.1rem);
+    padding: 18px 44px;
+}
+
+.v2-passes__grid {
+    display: grid;
+    grid-template-columns: minmax(0, 760px);
+    justify-content: center;
+    margin-inline: auto;
+}
+
+.v2-pass {
+    position: relative;
+    padding: 30px 32px 28px;
+    border-radius: 24px;
+    box-shadow: var(--v2-shadow-card);
+}
+
+.v2-pass--basic {
+    background: var(--v2-white-pure);
+    color: var(--v2-ink-deep);
+    transform: rotate(-1.5deg);
+}
+
+/* Retained ticket-launch styling; pricing remains disabled until figures are announced.
+.v2-pass--vip { background: var(--v2-ink-deep); color: var(--v2-mint); transform: rotate(1deg); }
+.v2-pass--vip .v2-pass__name { color: var(--v2-white); }
+.v2-pass__badge { position: absolute; top: 28px; right: 30px; padding: 6px 12px; border-radius: 999px; background: var(--v2-lime); color: var(--v2-ink); font-size: 9.5px; letter-spacing: 0.14em; text-transform: uppercase; }
+.v2-pass__price { display: flex; align-items: center; gap: 12px; margin: 18px 0 22px; }
+.v2-pass__price > span:first-child { font-size: 44px; line-height: 1; }
+.v2-pass--basic .v2-pass__price > span:first-child { color: var(--v2-blue); }
+.v2-pass--vip .v2-pass__price > span:first-child { color: var(--v2-lime); }
+.v2-pass__price > span:last-child { font-size: 12px; line-height: 1.45; color: var(--v2-slate); }
+.v2-pass--vip .v2-pass__price > span:last-child { color: rgba(223, 246, 238, 0.6); }
+.v2-pass--vip .v2-pass__perks i { background: var(--v2-lime); }
+*/
+
+.v2-pass__name {
+    margin: 0;
+    font-size: 20px;
+}
+
+.v2-pass .v2-card__body {
+    margin-block: 18px 24px;
+    color: var(--v2-ink-deep);
+}
+
+.v2-pass__perks {
+    display: grid;
+    gap: 11px;
+    margin: 0 0 26px;
+    padding: 0;
+    list-style: none;
+}
+
+.v2-pass__perks li {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 14.5px;
+}
+
+.v2-pass__perks i {
+    flex: 0 0 auto;
+    width: 9px;
+    height: 9px;
+    border-radius: 2px;
+    background: var(--v2-teal);
+}
+
+.v2-pass__cta {
+    display: flex;
+    width: 100%;
+    border-radius: 12px;
+}
+
+.v2-passes__note {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    width: max-content;
+    max-width: 100%;
+    margin: 70px auto 0;
+    padding: 10px 22px;
+    border-radius: 999px;
+    background: rgba(14, 35, 24, 0.86);
+    color: var(--v2-mint);
+    font-size: 12.5px;
+}
+
+@media (max-width: 900px) {
+    .v2-pass--basic {
+        transform: none;
+    }
+}

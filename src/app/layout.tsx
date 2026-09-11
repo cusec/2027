@@ -1,14 +1,16 @@
 import type { Metadata, Viewport } from "next";
-import Script from "next/script";
+import { GeistPixelSquare } from "geist/font/pixel";
+import { Nunito } from "next/font/google";
 import "./globals.css";
-import "./styles/index.css";
-import "./styles/navbar.css";
+import "./styles/v2/index.css";
 
-// if the splash was already seen this session, mark <html> static so the entrance animation doesn't replay on refresh (no flash)
-const SPLASH_ANIM_SCRIPT = `try{if(sessionStorage.getItem('cusecSplashSeen')){document.documentElement.classList.add('splash-static')}else{sessionStorage.setItem('cusecSplashSeen','1')}}catch(e){}`;
-
-// apply the reduce-motion class pre-paint from the saved toggle preference
-const MOTION_PREF_SCRIPT = `try{if(localStorage.getItem('cusecReduceMotion')==='1'){document.documentElement.classList.add('reduce-motion')}}catch(e){}`;
+// Body copy face for the main site. Exposed as a CSS variable so swapping it
+// for the real Figma font later is a one-line change.
+const bodyFont = Nunito({
+  subsets: ["latin"],
+  variable: "--font-v2-body",
+  display: "swap",
+});
 
 export const metadata: Metadata = {
   metadataBase: new URL(
@@ -16,7 +18,7 @@ export const metadata: Metadata = {
   ),
 
   title: {
-    default: "CUSEC 2027 — Canadian University Software Engineering Conference",
+    default: "CUSEC 2027 - Canadian University Software Engineering Conference",
     template: "%s | CUSEC 2027",
   },
   description:
@@ -57,9 +59,9 @@ export const metadata: Metadata = {
   },
 
   openGraph: {
-    title: "CUSEC 2027 — Canadian University Software Engineering Conference",
+    title: "CUSEC 2027 - Canadian University Software Engineering Conference",
     description:
-      "Join CUSEC 2027, the 26th annual student-led software engineering conference in Montréal, QC. Canada's premier student tech conference — January 2027.",
+      "Three days of talks, workshops, career conversations, and late-night ideas at Canada's longest-running student-led software engineering conference.",
     url: "/",
     siteName: "CUSEC 2027",
     type: "website",
@@ -70,7 +72,7 @@ export const metadata: Metadata = {
         url: "/cusec-logo.png",
         width: 1200,
         height: 630,
-        alt: "CUSEC 2027 — Canadian University Software Engineering Conference, Montréal · January 2027",
+        alt: "CUSEC 2027 - Canadian University Software Engineering Conference, Montréal · January 2027",
         type: "image/png",
       },
     ],
@@ -78,7 +80,7 @@ export const metadata: Metadata = {
 
   twitter: {
     card: "summary_large_image",
-    title: "CUSEC 2027 — Canadian University Software Engineering Conference",
+    title: "CUSEC 2027 - Canadian University Software Engineering Conference",
     description:
       "Canada's longest-running student-led software engineering conference. 26th edition — Montréal, QC · January 2027.",
     images: ["/cusec-logo.png"],
@@ -129,16 +131,13 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en-CA" dir="ltr" suppressHydrationWarning>
-      <body>
-        <Script id="splash-anim" strategy="beforeInteractive">
-          {SPLASH_ANIM_SCRIPT}
-        </Script>
-        <Script id="motion-pref" strategy="beforeInteractive">
-          {MOTION_PREF_SCRIPT}
-        </Script>
-        {children}
-      </body>
+    <html
+      lang="en-CA"
+      dir="ltr"
+      className={`${bodyFont.variable} ${GeistPixelSquare.variable}`}
+      suppressHydrationWarning
+    >
+      <body>{children}</body>
     </html>
   );
 }

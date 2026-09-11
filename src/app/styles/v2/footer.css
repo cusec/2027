@@ -1,0 +1,60 @@
+/* ==========================================================================
+   v2 — Footer
+   ========================================================================== */
+.v2-footer {
+    position: relative;
+    z-index: 1;
+    padding-block: 46px 40px;
+    background: #173B3D;
+    color: var(--v2-white);
+    text-align: center;
+}
+
+.v2-footer__inner {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 18px;
+}
+
+.v2-footer__brand {
+    display: inline-flex;
+    align-items: center;
+    gap: 9px;
+    color: var(--v2-white);
+    text-decoration: none;
+    font-size: 16px;
+}
+
+.v2-footer__links,
+.v2-footer__socials {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 10px 22px;
+}
+
+.v2-footer__links a {
+    color: rgba(255, 255, 255, 0.9);
+    text-decoration: none;
+    font-size: 14px;
+}
+
+.v2-footer__socials a {
+    color: var(--v2-lime);
+    text-decoration: none;
+    font-size: 13.5px;
+}
+
+.v2-footer__links a:hover,
+.v2-footer__socials a:hover {
+    text-decoration: underline;
+}
+
+.v2-footer__legal {
+    margin: 6px 0 0;
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    color: var(--v2-lime);
+}
+
