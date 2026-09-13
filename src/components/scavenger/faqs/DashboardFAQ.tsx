@@ -1,8 +1,21 @@
 "use client";
 
-import { useState } from "react";
+import { useState, type ReactNode } from "react";
 
 import faqData from "./DashboardFAQData";
+
+interface PadItem {
+  question: string;
+  answer: ReactNode;
+}
+
+interface DashboardFAQProps {
+  heading?: string;
+  /** Defaults to the in-hunt FAQ. The /scavenger preview passes its own. */
+  items?: PadItem[];
+  /** Section id, for in-page links. */
+  id?: string;
+}
 
 /**
  * Lily-pad FAQ, matching the pattern the main site uses on 2027.cusec.net
@@ -13,18 +26,22 @@ import faqData from "./DashboardFAQData";
  * both height and width together, which the accordion's height-only
  * transition can't express.
  */
-const DashboardFAQ = () => {
+const DashboardFAQ = ({
+  heading = "Additional Information",
+  items = faqData,
+  id = "Faq",
+}: DashboardFAQProps) => {
   // exactly one pad open at a time; clicking the open one closes it
   const [openPad, setOpenPad] = useState<number | null>(null);
 
   return (
-    <section className="v2-faq" id="Faq">
+    <section className="v2-faq" id={id}>
       <div className="v2-faq__head">
-        <h2 className="v2-heading-pill">Additional Information</h2>
+        <h2 className="v2-heading-pill">{heading}</h2>
       </div>
 
       <div className="v2-faq__pond">
-        {faqData.map((item, index) => {
+        {items.map((item, index) => {
           const n = index + 1;
           const isOpen = openPad === n;
 
@@ -37,7 +54,7 @@ const DashboardFAQ = () => {
                 type="button"
                 className="v2-pad__q"
                 aria-expanded={isOpen}
-                aria-controls={`dash-faq-a-${n}`}
+                aria-controls={`${id}-a-${n}`}
                 onClick={() => setOpenPad(isOpen ? null : n)}
               >
                 {item.question}
@@ -46,7 +63,7 @@ const DashboardFAQ = () => {
 
               {/* 0fr -> 1fr on the wrapper reveals the answer without
                   reflowing its text mid-animation */}
-              <div className="v2-pad__a" id={`dash-faq-a-${n}`} role="region">
+              <div className="v2-pad__a" id={`${id}-a-${n}`} role="region">
                 <div className="v2-pad__body">{item.answer}</div>
               </div>
             </div>

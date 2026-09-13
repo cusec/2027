@@ -10,12 +10,12 @@
             "conference": "Conférence",
             "hunt": "Chasse au trésor",
             "team": "Équipe",
-            "cta": "Info billets"
+            "cta": "Billets"
         },
         "hero": {
             "edition": "26e édition · 8–10 janvier 2027 · Montréal",
             "tagline": "La plus ancienne conférence étudiante canadienne en génie logiciel.",
-            "cta-primary": "M’avertir de la mise en vente",
+            "cta-primary": "Obtenir mon billet",
             "cta-secondary": "Découvrir CUSEC"
         },
         "sky": {
@@ -102,14 +102,25 @@
             "board-footer": "en direct dans le lieu en janvier"
         },
         "passes": {
-            "heading": "Billets bientôt en vente",
-            "title": "Soyez parmi les premiers informés",
-            "body": "Les dates de mise en vente pour 2027 seront annoncées à l’approche de la conférence. D’ici là, trois choses sont à retenir :",
-            "perk-1": "Consultez la liste de l’équipe pour voir si votre école a un chef de délégation",
-            "perk-2": "L’admission générale ouvre ensuite et reste disponible tant qu’il reste des billets",
-            "perk-3": "Le contenu de chaque billet sera confirmé lors de la mise en vente",
-            "cta": "M’avertir de la mise en vente",
-            "note": "Les nouvelles sur les billets seront publiées ici et dans les canaux de CUSEC"
+            "heading": "Les billets lève-tôt sont en vente",
+            "early-name": "Lève-tôt : admission étudiante",
+            "early-price": "65 $",
+            "early-unit": "par étudiant",
+            "early-perk-1": "Accès complet aux 3 jours de conférence, y compris la foire de l’emploi, les conférences et panels, et les activités sur place",
+            "early-perk-2": "Occasions de recrutement exclusives",
+            "early-perk-3": "Prix exclusifs à gagner",
+            "early-perk-4": "Plus de 100 $ en crédits d’applications et d’API",
+            "vip-name": "Lève-tôt : admission étudiante + option VIP",
+            "vip-badge": "VIP",
+            "vip-price": "80 $",
+            "vip-unit": "par étudiant",
+            "vip-perk-1": "Tous les avantages de l’admission étudiante",
+            "vip-perk-2": "Accès au cocktail VIP des commanditaires",
+            "vip-perk-3": "Accès à la rencontre VIP quotidienne avec les conférenciers",
+            "vip-perk-4": "Photo professionnelle",
+            "vip-perk-5": "Porte-clés VIP personnalisé",
+            "cta": "Obtenir mon billet",
+            "note": "Un billet par délégué, acheté avec votre propre compte CUSEC"
         },
         "sponsors": {
             "heading": "Bâti avec nos commanditaires",
@@ -119,9 +130,9 @@
             "tier-silver": "logo argent",
             "tier-partner": "partenaire",
             "meta-title": "Commanditaires",
-            "badge": "Commandite · CUSEC 2027",
-            "page-heading": "Bâti avec nos commanditaires.",
-            "subline": "CUSEC est bâti par des étudiants bénévoles et soutenu par les entreprises qui le rendent possible. La commandite pour 2027 est ouverte.",
+            "badge": "Commanditaires · CUSEC 2027",
+            "page-heading": "Commanditaires à venir.",
+            "subline": "Nous annoncerons les entreprises qui soutiennent CUSEC 2027 au fil des confirmations. Vous souhaitez commanditer? Écrivez-nous.",
             "cta-primary": "Devenir commanditaire",
             "cta-secondary": "Voir les niveaux",
             "photo-caption": "tiré des archives CUSEC",
@@ -141,7 +152,7 @@
         "faq": {
             "heading": "Vos questions, nos réponses",
             "q1": "Quand et où se déroule CUSEC 2027 ?",
-            "a1": "<p>À déterminer.</p>",
+            "a1": "<p>Du 7 au 9 janvier 2027, à Montréal. Le lieu exact sera annoncé sous peu.</p>",
             "q2": "Où puis-je trouver l’horaire, les conférenciers et les commanditaires ?",
             "a2": "<p>Nous publierons l’horaire 2027 et annoncerons les conférenciers et les commanditaires à mesure qu’ils seront confirmés. Suivez nos réseaux sociaux pour chaque annonce.</p>",
             "q3": "Comment obtenir un billet ?",
@@ -153,7 +164,7 @@
         },
         "closing": {
             "heading": "À bientôt à Montréal.",
-            "cta": "Recevoir les nouvelles sur les billets"
+            "cta": "Obtenir mon billet"
         },
         "footer": {
             "about": "À propos",
@@ -290,6 +301,8 @@
         "purchase-already-complete": "Votre billet est confirmé — vous êtes prêt(e)!",
         "purchase-already-complete-named": "Votre {ticket} est confirmé — vous êtes prêt(e)!",
         "purchase-go-to-dashboard": "Accéder au tableau de bord",
+        "purchase-redirecting-signout": "Votre billet est lié. Déconnexion et redirection vers la page de la chasse au trésor…",
+        "purchase-go-to-hunt-info": "Voir ce qui vous attend au congrès",
         "purchase-waiting-confirmation": "En attente de la confirmation de votre billet…",
         "purchase-close-checkout": "Fermer la caisse",
         "purchase-fallback-manual-link": "Toujours en traitement? Vérifiez votre courriel, ou liez votre courriel de billet manuellement depuis votre tableau de bord de la chasse au trésor une fois qu'il arrive.",

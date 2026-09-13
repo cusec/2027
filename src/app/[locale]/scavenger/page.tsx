@@ -3,6 +3,7 @@ import { findOrCreateUser } from "@/lib/userService";
 import { reconcileTicketPurchase } from "@/lib/ticketLinking";
 import { RegisteredUser } from "@/lib/models";
 import Dashboard from "@/components/scavenger/Dashboard";
+import ScavengerPreview from "@/components/scavenger/ScavengerPreview";
 import type { Auth0User } from "@/lib/interface";
 import { Trophy } from "lucide-react";
 import { getBaseUrl } from "@/lib/siteUrl";
@@ -49,6 +50,12 @@ export default async function ScavengerPage() {
         emailVerified = !!registeredUser;
       }
     }
+  }
+
+  // Only reachable while submissions are open and the hunt is not: the
+  // layout turns everyone away while both are closed.
+  if (!scavengerEnabled && !isUserAdmin && !isUserVolunteer) {
+    return <ScavengerPreview signedIn={Boolean(user)} />;
   }
 
   const showDashboard =

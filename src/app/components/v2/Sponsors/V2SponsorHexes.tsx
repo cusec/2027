@@ -48,7 +48,9 @@ export default function V2SponsorHexes() {
 			>
 				<a
 					className="v2-hex__inner"
-					href="mailto:info@cusec.net?subject=CUSEC%202027%20sponsorship"
+					href="https://forms.gle/TzbNoCKmALEYryLw7"
+					target="_blank"
+					rel="noopener noreferrer"
 				>
 					<Plus size={22} aria-hidden="true" />
 					<span className="v2-hex__tier">{t("become")}</span>

@@ -2,6 +2,7 @@ import { getTranslations, getLocale } from "next-intl/server";
 import { auth0 } from "@/lib/auth0";
 import { redirect } from "@/i18n/navigation";
 import { getWizardStatus } from "@/lib/ticketWizard";
+import { getBaseUrl } from "@/lib/siteUrl";
 import { getTicketTypes, getTicketWidgetConfig } from "@/lib/ticketTailor";
 import PurchaseStepClient from "@/app/components/TicketWizard/PurchaseStepClient";
 
@@ -48,6 +49,10 @@ export default async function PurchasePage() {
     lastName: profile?.family_name || fallbackRest.join(" ") || null,
   });
 
+  // The raw flag, not the staff bypass: an organizer rehearsing a purchase
+  // while the hunt is closed should land exactly where a delegate would.
+  const huntOpen = process.env.SCAVENGER_HUNT_ENABLED === "true";
+
   return (
     <div className="tickets-wrapper">
       <div className="tickets-header">
@@ -65,6 +70,8 @@ export default async function PurchasePage() {
         alreadyComplete={status.purchaseComplete}
         purchasedTicketName={status.purchasedTicketName}
         accountEmail={email}
+        huntOpen={huntOpen}
+        baseURL={await getBaseUrl()}
       />
     </div>
   );

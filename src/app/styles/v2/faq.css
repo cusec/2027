@@ -15,20 +15,19 @@
     font-size: clamp(1.2rem, 2.6vw, 1.85rem);
 }
 
+/* Two columns of pads. They used to be scattered across loose lanes, which
+   read as a broken three-column grid on wide screens. Each pad fills its
+   column, so opening one only grows it downward and its row-mate stays put. */
 .v2-faq__pond {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 14px;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    align-items: start;
+    gap: 14px 18px;
 }
 
 .v2-pad {
-    --pad-answer-w: 320px;
-    --pad-x: 0%;
     position: relative;
-    margin-left: var(--pad-x);
-    width: max-content;
-    max-width: min(420px, 100%);
+    min-width: 0;
     padding: 14px 22px;
     border-radius: 22px;
     background: var(--v2-white-pure);
@@ -46,6 +45,7 @@
     scroll-margin-top: var(--v2-nav-h);
     display: flex;
     align-items: center;
+    justify-content: space-between;
     gap: 10px;
     width: 100%;
     padding: 0;
@@ -54,7 +54,9 @@
     text-align: left;
     font-family: inherit;
     font-size: 15px;
+    line-height: 1.4;
     color: var(--v2-ink-deep);
+    cursor: pointer;
 }
 
 .v2-pad__toggle {
@@ -82,23 +84,21 @@
     transform: rotate(0deg);
 }
 
+/* 0fr -> 1fr reveals the answer at the column's width, so the text never
+   reflows while it animates. */
 .v2-pad__a {
     display: grid;
     grid-template-rows: 0fr;
-    width: 0;
     overflow: hidden;
-    transition: grid-template-rows 480ms cubic-bezier(0.22, 1, 0.36, 1),
-        width 480ms cubic-bezier(0.22, 1, 0.36, 1);
+    transition: grid-template-rows 480ms cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 .v2-pad.is-open .v2-pad__a {
     grid-template-rows: 1fr;
-    width: var(--pad-answer-w);
 }
 
 .v2-pad__body {
-    width: var(--pad-answer-w);
-    min-width: var(--pad-answer-w);
+    min-height: 0;
     overflow: hidden;
     font-size: 14px;
     line-height: 1.6;
@@ -143,42 +143,15 @@
 
 @media (prefers-reduced-motion: reduce) {
     .v2-pad__a,
-    .v2-pad__a > p,
+    .v2-pad__body,
     .v2-pad__toggle::after {
         transition: none;
     }
 }
 
-.v2-pad--1 { --pad-x: 2%; }
-.v2-pad--2 { --pad-x: 30%; }
-.v2-pad--3 { --pad-x: 56%; }
-.v2-pad--4 { --pad-x: 6%; margin-top: 10px; }
-.v2-pad--5 { --pad-x: 42%; }
-.v2-pad--6 { --pad-x: 0%; margin-top: 10px; }
-.v2-pad--7 { --pad-x: 47%; }
-.v2-pad--8 { --pad-x: 4%; }
-
 @media (max-width: 900px) {
     .v2-faq__pond {
-        align-items: stretch;
+        grid-template-columns: 1fr;
         gap: 12px;
-    }
-
-    .v2-pad {
-        --pad-x: 0%;
-        width: auto;
-        max-width: 100%;
-        margin-left: 0;
-        margin-top: 0;
-    }
-
-    .v2-pad__a,
-    .v2-pad.is-open .v2-pad__a {
-        width: auto;
-    }
-
-    .v2-pad__body {
-        width: auto;
-        min-width: 0;
     }
 }

@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useTranslations } from "next-intl";
 import { Link, useRouter } from "@/i18n/navigation";
+import { TICKET_LINKED_FLAG } from "@/lib/ticketLinkedFlag";
 import TicketsSection from "@/app/components/Tickets/TicketsSection";
 import type { TicketType, TicketWidgetConfig } from "@/lib/ticketTailor";
 
@@ -12,6 +13,9 @@ interface PurchaseStepClientProps {
   alreadyComplete: boolean;
   purchasedTicketName: string | null;
   accountEmail: string;
+  /** SCAVENGER_HUNT_ENABLED without the staff bypass: where a finished purchase lands. */
+  huntOpen: boolean;
+  baseURL: string;
 }
 
 // Idle pages barely poll; an open checkout polls often; the window right
@@ -68,9 +72,12 @@ export default function PurchaseStepClient({
   alreadyComplete,
   purchasedTicketName,
   accountEmail,
+  huntOpen,
+  baseURL,
 }: PurchaseStepClientProps) {
   const t = useTranslations("TicketWizard");
   const router = useRouter();
+  const logoutToScavenger = `/auth/logout?returnTo=${encodeURIComponent(`${baseURL}/scavenger`)}`;
 
   const [complete, setComplete] = useState(alreadyComplete);
   const [ticketName, setTicketName] = useState(purchasedTicketName);
@@ -119,6 +126,21 @@ export default function PurchaseStepClient({
       setVerifyFailed(false);
       setRedirecting(true);
 
+      if (!huntOpen) {
+        // No dashboard to land on until the conference. Signing out loses
+        // nothing: this only runs once the status route reports
+        // purchaseComplete, which is true only after RegisteredUser.isLinked
+        // is set, so the ticket is already on the account server-side. The
+        // flag lets the /scavenger preview confirm that to the delegate.
+        try {
+          sessionStorage.setItem(TICKET_LINKED_FLAG, "1");
+        } catch {
+          // private mode: the preview just skips the confirmation
+        }
+        setTimeout(() => window.location.assign(logoutToScavenger), REDIRECT_MS);
+        return;
+      }
+
       // The session already exists - the wizard signed them in at step one -
       // so "log into the dashboard" is really "let the server re-read the now
       // linked account, then go". refresh() first so /scavenger renders with
@@ -126,7 +148,7 @@ export default function PurchaseStepClient({
       router.refresh();
       setTimeout(() => router.push("/scavenger"), REDIRECT_MS);
     },
-    [router]
+    [router, huntOpen, logoutToScavenger]
   );
 
   // One shared status read. `reconcile` asks the server to also check Ticket
@@ -449,11 +471,30 @@ export default function PurchaseStepClient({
             : t("purchase-already-complete")}
         </p>
         {redirecting && (
-          <p className="wizard-purchase-status">{t("purchase-redirecting")}</p>
+          <p className="wizard-purchase-status">
+            {t(huntOpen ? "purchase-redirecting" : "purchase-redirecting-signout")}
+          </p>
         )}
-        <Link href="/scavenger" className="cta-btn wizard-intro-cta">
-          {t("purchase-go-to-dashboard")}
-        </Link>
+        {huntOpen ? (
+          <Link href="/scavenger" className="cta-btn wizard-intro-cta">
+            {t("purchase-go-to-dashboard")}
+          </Link>
+        ) : (
+          // eslint-disable-next-line @next/next/no-html-link-for-pages
+          <a
+            href={logoutToScavenger}
+            className="cta-btn wizard-intro-cta"
+            onClick={() => {
+              try {
+                sessionStorage.setItem(TICKET_LINKED_FLAG, "1");
+              } catch {
+                // private mode: the preview just skips the confirmation
+              }
+            }}
+          >
+            {t("purchase-go-to-hunt-info")}
+          </a>
+        )}
       </div>
     );
   }

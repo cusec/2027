@@ -9,7 +9,9 @@ export default function V2SponsorCta() {
 				<h2 className="v2-spon-cta__title v2-pixel">{t("closing-title")}</h2>
 				<a
 					className="v2-btn v2-btn--primary"
-					href="mailto:info@cusec.net?subject=CUSEC%202027%20sponsorship"
+					href="https://forms.gle/TzbNoCKmALEYryLw7"
+					target="_blank"
+					rel="noopener noreferrer"
 				>
 					{t("closing-cta")}
 				</a>

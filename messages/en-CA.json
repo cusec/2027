@@ -10,12 +10,12 @@
             "conference": "Conference",
             "hunt": "Scavenger Hunt",
             "team": "Team",
-            "cta": "Ticket updates"
+            "cta": "Tickets"
         },
         "hero": {
             "edition": "26th edition · January 8–10, 2027 · Montréal",
             "tagline": "Canada's longest-running student software engineering conference.",
-            "cta-primary": "Tell me when tickets open",
+            "cta-primary": "Get your ticket",
             "cta-secondary": "Explore CUSEC"
         },
         "sky": {
@@ -102,14 +102,25 @@
             "board-footer": "live inside the venue in january"
         },
         "passes": {
-            "heading": "Tickets open soon",
-            "title": "Be first to hear",
-            "body": "We will share 2027 on-sale dates closer to the conference. Until then, three things are worth knowing:",
-            "perk-1": "Check the team roster to see whether your school has a Head Delegate",
-            "perk-2": "General admission opens afterward and remains available while tickets last",
-            "perk-3": "Ticket inclusions will be confirmed when tickets are released",
-            "cta": "Email me when tickets open",
-            "note": "Ticket updates will be shared here and through CUSEC channels"
+            "heading": "Early bird tickets are on sale",
+            "early-name": "Early Bird: Student Admission",
+            "early-price": "$65",
+            "early-unit": "per student",
+            "early-perk-1": "Full access to all 3 conference days, including the career fair, speaker talks and panels, and on-site events",
+            "early-perk-2": "Exclusive recruitment opportunities",
+            "early-perk-3": "Earn exclusive prizes",
+            "early-perk-4": "Over $100 in app and API credits",
+            "vip-name": "Early Bird: Student Admission + VIP Add-On",
+            "vip-badge": "VIP",
+            "vip-price": "$80",
+            "vip-unit": "per student",
+            "vip-perk-1": "All student admission perks",
+            "vip-perk-2": "Access to the VIP Sponsor Mixer",
+            "vip-perk-3": "Access to the daily VIP Speaker Meet & Greet",
+            "vip-perk-4": "Professional headshot",
+            "vip-perk-5": "VIP custom keychain",
+            "cta": "Get your ticket",
+            "note": "One ticket per delegate, bought with your own CUSEC account"
         },
         "sponsors": {
             "heading": "Built with our sponsors",
@@ -119,9 +130,9 @@
             "tier-silver": "silver logo",
             "tier-partner": "partner",
             "meta-title": "Sponsors",
-            "badge": "Sponsorship · CUSEC 2027",
-            "page-heading": "Built with our sponsors.",
-            "subline": "CUSEC is built by student volunteers and backed by the companies who make it possible. Sponsorship for 2027 is open.",
+            "badge": "Sponsors · CUSEC 2027",
+            "page-heading": "Sponsors coming soon.",
+            "subline": "We will announce the companies backing CUSEC 2027 as they are confirmed. Interested in sponsoring? We would love to hear from you.",
             "cta-primary": "Become a sponsor",
             "cta-secondary": "See the tiers",
             "photo-caption": "from the CUSEC archive",
@@ -141,7 +152,7 @@
         "faq": {
             "heading": "Questions, answered",
             "q1": "When and where is CUSEC 2027 happening?",
-            "a1": "<p>TBD</p>",
+            "a1": "<p>January 7 to 9, 2027, in Montréal. The exact venue will be announced soon.</p>",
             "q2": "Where can I find the conference schedule, speakers, and sponsors?",
             "a2": "<p>We will publish the 2027 schedule and announce speakers and sponsors as they are confirmed. Follow our social channels for each release.</p>",
             "q3": "How can I get a ticket?",
@@ -153,7 +164,7 @@
         },
         "closing": {
             "heading": "See you in Montréal.",
-            "cta": "Get ticket updates"
+            "cta": "Get your ticket"
         },
         "footer": {
             "about": "About",
@@ -290,6 +301,8 @@
         "purchase-already-complete": "Your ticket is confirmed — you're all set!",
         "purchase-already-complete-named": "Your {ticket} is confirmed — you're all set!",
         "purchase-go-to-dashboard": "Go to Dashboard",
+        "purchase-redirecting-signout": "Your ticket is linked. Signing you out and taking you to the scavenger hunt page…",
+        "purchase-go-to-hunt-info": "See what’s coming at the conference",
         "purchase-waiting-confirmation": "Waiting for your ticket confirmation…",
         "purchase-close-checkout": "Close checkout",
         "purchase-fallback-manual-link": "Still processing? Check your email, or link your ticket email manually from your scavenger hunt dashboard once it arrives.",

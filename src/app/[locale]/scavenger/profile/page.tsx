@@ -2,6 +2,8 @@ import { auth0 } from "@/lib/auth0";
 import { findOrCreateUser } from "@/lib/userService";
 import { RegisteredUser } from "@/lib/models";
 import ProfileCard from "@/components/scavenger/profile/ProfileCard";
+import ScavengerPreview from "@/components/scavenger/ScavengerPreview";
+import { getScavengerAccess } from "@/lib/scavengerAccess";
 import type { Auth0User } from "@/lib/interface";
 import { UserRound } from "lucide-react";
 
@@ -10,6 +12,12 @@ export const metadata = { title: "Profile" };
 export default async function ProfilePage() {
   const session = await auth0.getSession();
   const user = session?.user;
+
+  // The profile is part of the hunt, so it opens with the hunt.
+  const { huntOpen } = await getScavengerAccess();
+  if (!huntOpen) {
+    return <ScavengerPreview signedIn={Boolean(user)} />;
+  }
 
   if (!user?.email) {
     return (

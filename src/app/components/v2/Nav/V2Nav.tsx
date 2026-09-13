@@ -10,7 +10,7 @@ const LINKS = [
 	{ key: "speakers", href: "/speakers" },
 	{ key: "sponsors", href: "/sponsors" },
 	{ key: "conference", href: "/#conference" },
-	{ key: "hunt", href: "/#hunt" },
+	{ key: "hunt", href: "/scavenger" },
 	// Hidden for the first v2 release: landing, speakers, sponsors and
 	// policy & terms only. Restore once the team section exists.
 	// { key: "team", href: "/#team" },

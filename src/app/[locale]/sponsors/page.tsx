@@ -4,10 +4,13 @@ import V2Nav from "@/app/components/v2/Nav/V2Nav";
 import V2Scene from "@/app/components/v2/Scene/V2Scene";
 import V2Scrollbar from "@/app/components/v2/Scrollbar/V2Scrollbar";
 import V2SponsorsHero from "@/app/components/v2/Sponsors/V2SponsorsHero";
-import V2SponsorHexes from "@/app/components/v2/Sponsors/V2SponsorHexes";
-import V2SponsorWhy from "@/app/components/v2/Sponsors/V2SponsorWhy";
-import V2SponsorTiers from "@/app/components/v2/Sponsors/V2SponsorTiers";
-import V2SponsorCta from "@/app/components/v2/Sponsors/V2SponsorCta";
+// Placeholder until sponsors are announced: the hero alone says so. The
+// honeycomb, why-sponsor and tiers sections carry invented logos and tiers,
+// so they stay out until there is real content. Restore with the JSX below.
+// import V2SponsorHexes from "@/app/components/v2/Sponsors/V2SponsorHexes";
+// import V2SponsorWhy from "@/app/components/v2/Sponsors/V2SponsorWhy";
+// import V2SponsorTiers from "@/app/components/v2/Sponsors/V2SponsorTiers";
+// import V2SponsorCta from "@/app/components/v2/Sponsors/V2SponsorCta";
 import V2Footer from "@/app/components/v2/Footer/V2Footer";
 
 export async function generateMetadata({
@@ -30,14 +33,14 @@ export default function SponsorsPage() {
 			<V2Scrollbar />
 			<V2Scene>
 				<V2SponsorsHero />
-				<section className="v2-section v2-spon-grid">
+				{/* <section className="v2-section v2-spon-grid">
 					<div className="v2-container">
 						<V2SponsorHexes />
 					</div>
 				</section>
 				<V2SponsorWhy />
 				<V2SponsorTiers />
-				<V2SponsorCta />
+				<V2SponsorCta /> */}
 			</V2Scene>
 			<V2Footer />
 		</div>

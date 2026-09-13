@@ -1,6 +1,18 @@
 import { useTranslations } from "next-intl";
+import { Link } from "@/i18n/navigation";
 
-const PERKS = [1, 2, 3] as const;
+/**
+ * The tickets on sale on the website: early bird student admission, alone or
+ * with the VIP add-on. Professional, general and the internal tickets are
+ * deliberately left off (see CUSEC 2027 Ticket Strategy); Ticket Tailor still
+ * lists every type, but the site only promotes these two.
+ *
+ * Copy mirrors the Ticket Tailor listing so the card and the checkout agree.
+ */
+const TICKETS = [
+	{ id: "early", perks: 4, badge: false },
+	{ id: "vip", perks: 5, badge: true },
+] as const;
 
 export default function V2Passes() {
 	const t = useTranslations("V2.passes");
@@ -13,42 +25,31 @@ export default function V2Passes() {
 				</div>
 
 				<div className="v2-passes__grid">
-					<article className="v2-pass v2-pass--basic">
-						<h3 className="v2-pass__name v2-pixel">{t("title")}</h3>
-						<p className="v2-card__body">{t("body")}</p>
+					{TICKETS.map(({ id, perks, badge }) => (
+						<article key={id} className={`v2-pass v2-pass--${id === "vip" ? "vip" : "basic"}`}>
+							<h3 className="v2-pass__name v2-pixel">{t(`${id}-name`)}</h3>
+							{badge && <span className="v2-pass__badge v2-pixel">{t("vip-badge")}</span>}
 
-						<ul className="v2-pass__perks">
-							{PERKS.map((n) => (
-								<li key={n}>
-									<i aria-hidden="true" />
-									{t(`perk-${n}`)}
-								</li>
-							))}
-						</ul>
+							<p className="v2-pass__price">
+								<span className="v2-pixel">{t(`${id}-price`)}</span>
+								<span>{t(`${id}-unit`)}</span>
+							</p>
 
-						<a
-							className="v2-btn v2-btn--primary v2-pass__cta"
-							href="mailto:info@cusec.net?subject=CUSEC%202027%20ticket%20updates"
-						>
-							{t("cta")}
-						</a>
-					</article>
+							<ul className="v2-pass__perks">
+								{Array.from({ length: perks }, (_, i) => (
+									<li key={i}>
+										<i aria-hidden="true" />
+										{t(`${id}-perk-${i + 1}`)}
+									</li>
+								))}
+							</ul>
+
+							<Link className="v2-btn v2-btn--primary v2-pass__cta" href="/tickets">
+								{t("cta")}
+							</Link>
+						</article>
+					))}
 				</div>
-
-				{/* Retained for the announced ticket launch: restore the two-pass pricing UI here when prices are public.
-				<article className="v2-pass v2-pass--basic">
-					<h3 className="v2-pass__name v2-pixel">{t("basic-name")}</h3>
-					<p className="v2-pass__price"><span className="v2-pixel">{t("basic-price")}</span><span>{t("basic-unit")}<br />{t("basic-alt")}</span></p>
-					<ul className="v2-pass__perks">{PERKS.map((n) => <li key={n}><i aria-hidden="true" />{t(`basic-perk-${n}`)}</li>)}</ul>
-					<a className="v2-btn v2-btn--primary v2-pass__cta" href="#passes">{t("basic-cta")}</a>
-				</article>
-				<article className="v2-pass v2-pass--vip">
-					<h3 className="v2-pass__name v2-pixel">{t("vip-name")}</h3>
-					<span className="v2-pass__badge v2-pixel">{t("vip-badge")}</span>
-					<p className="v2-pass__price"><span className="v2-pixel">{t("vip-price")}</span><span>{t("vip-unit")}<br />{t("vip-alt")}</span></p>
-					<ul className="v2-pass__perks">{PERKS.map((n) => <li key={n}><i aria-hidden="true" />{t(`vip-perk-${n}`)}</li>)}</ul>
-					<a className="v2-btn v2-btn--primary v2-pass__cta" href="#passes">{t("vip-cta")}</a>
-				</article> */}
 
 				<p className="v2-passes__note">{t("note")}</p>
 			</div>

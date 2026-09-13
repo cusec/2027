@@ -13,13 +13,16 @@ export default function V2SponsorsHero() {
 				<div className="v2-page-hero__actions">
 					<a
 						className="v2-btn v2-btn--primary"
-						href="mailto:info@cusec.net?subject=CUSEC%202027%20sponsorship"
+						href="https://forms.gle/TzbNoCKmALEYryLw7"
+						target="_blank"
+						rel="noopener noreferrer"
 					>
 						{t("cta-primary")} <span aria-hidden="true">→</span>
 					</a>
+					{/* Restore with the tiers section on /sponsors.
 					<a className="v2-btn v2-btn--ghost" href="#tiers">
 						{t("cta-secondary")}
-					</a>
+					</a> */}
 				</div>
 			</div>
 		</section>
