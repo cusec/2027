@@ -1,0 +1,272 @@
+/* ==========================================================================
+   v2 — Sponsor honeycomb
+   ========================================================================== */
+
+.v2-sponsors {
+    padding-block: var(--v2-section-pad);
+}
+
+.v2-sponsors__head {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 44px;
+}
+
+.v2-sponsors__head .v2-heading-pill {
+    font-size: clamp(1.15rem, 2.4vw, 1.7rem);
+}
+
+/* --------------------------------------------------------------------------
+   Hex grid
+   Hexagons are clip-path shapes; the tier colour is the parent's background
+   showing through a 3px inset, which gives the coloured edge from the exports.
+   -------------------------------------------------------------------------- */
+.v2-hexes {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: flex-start;
+    gap: 18px 22px;
+    margin: 0;
+    padding: 0 0 60px;
+    list-style: none;
+}
+
+.v2-hex {
+    --hex-w: 158px;
+    --hex-drop: 0px;
+    width: var(--hex-w);
+    aspect-ratio: 158 / 193;
+    margin-top: var(--hex-drop);
+    padding: 3px;
+    clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+    filter: drop-shadow(0 10px 20px rgba(11, 26, 58, 0.28));
+    transition: transform 200ms ease;
+}
+
+.v2-hex:hover {
+    transform: translateY(-6px);
+}
+
+.v2-hex__inner {
+    position: relative;
+    display: grid;
+    place-items: center;
+    width: 100%;
+    height: 100%;
+    clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+    background: var(--v2-white-pure);
+    text-decoration: none;
+}
+
+.v2-hex__slot {
+    width: 72%;
+    aspect-ratio: 3.4 / 1;
+    border-radius: 4px;
+    background: #E3E8EE;
+}
+
+.v2-hex__tier {
+    position: absolute;
+    bottom: 15%;
+    font-size: 11px;
+    color: var(--v2-slate);
+}
+
+/* tiers ------------------------------------------------------------------- */
+.v2-hex--platinum {
+    --hex-w: 252px;
+    background: linear-gradient(160deg, #F4FFFC 0%, #C3E956 100%);
+}
+
+.v2-hex--gold {
+    --hex-w: 216px;
+    background: linear-gradient(160deg, #F9E98C 0%, #D6A845 100%);
+}
+
+.v2-hex--silver {
+    --hex-w: 196px;
+    background: linear-gradient(160deg, #E8EEF4 0%, #8A94A8 100%);
+}
+
+.v2-hex--partner {
+    --hex-w: 186px;
+    background: linear-gradient(160deg, #B2FEE7 0%, #4EC9A8 100%);
+}
+
+.v2-hex--become {
+    --hex-w: 196px;
+    background: linear-gradient(160deg, #C3E956 0%, #8CC653 100%);
+}
+
+.v2-hex--become .v2-hex__inner {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(160deg, #C3E956 0%, #8CC653 100%);
+    color: var(--v2-ink);
+}
+
+.v2-hex--become .v2-hex__tier {
+    position: static;
+    max-width: 9ch;
+    margin-top: 8px;
+    text-align: center;
+    line-height: 1.3;
+    color: var(--v2-ink);
+}
+
+@media (max-width: 900px) {
+    .v2-hexes {
+        gap: 14px;
+    }
+
+    .v2-hex {
+        --hex-w: 150px;
+        margin-top: 0;
+    }
+
+    .v2-hex--platinum { --hex-w: 172px; }
+    .v2-hex--gold { --hex-w: 160px; }
+}
+
+/* ==========================================================================
+   /sponsors page
+   The landing page keeps the teaser above; these are the sections that only
+   exist on the dedicated page.
+   ========================================================================== */
+.v2-spon-grid {
+    padding-bottom: 150px;
+}
+
+/* Why sponsor ------------------------------------------------------------- */
+.v2-spon-why {
+    padding-bottom: 150px;
+}
+
+.v2-spon-why__inner {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 0.52fr);
+    align-items: center;
+    gap: 44px;
+}
+
+.v2-spon-why__photo {
+    width: min(340px, 100%);
+    justify-self: end;
+}
+
+.v2-spon-why__stats {
+    display: grid;
+    grid-template-columns: repeat(4, auto);
+    justify-content: start;
+    gap: 22px;
+    margin: 24px 0 0;
+    padding: 18px 0 0;
+    border-top: 1px solid rgba(14, 102, 77, 0.22);
+    list-style: none;
+}
+
+.v2-spon-why__stats li {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    padding-right: 22px;
+    border-right: 1px solid rgba(14, 102, 77, 0.22);
+}
+
+.v2-spon-why__stats li:last-child {
+    padding-right: 0;
+    border-right: 0;
+}
+
+.v2-spon-why__stats li span:first-child {
+    font-size: 19px;
+    color: var(--v2-ink-glass-deep);
+}
+
+.v2-spon-why__stats li span:last-child {
+    font-size: 12px;
+    color: rgba(26, 56, 43, 0.72);
+}
+
+/* Tiers ------------------------------------------------------------------- */
+.v2-spon-tiers {
+    padding-bottom: 150px;
+}
+
+.v2-spon-tiers__card {
+    max-width: 900px;
+    margin-inline: auto;
+}
+
+.v2-spon-tiers__list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin: 20px 0 22px;
+    padding: 0;
+    list-style: none;
+}
+
+/* the four tier chips carry the same colours as the hexes above them */
+.v2-spon-tier {
+    display: inline-flex;
+    align-items: center;
+    padding: 6px 16px;
+    border-radius: 6px;
+    color: var(--v2-ink);
+    font-size: 12px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+}
+
+.v2-spon-tier--platinum { background: #C3E956; }
+.v2-spon-tier--gold { background: #F9E98C; }
+.v2-spon-tier--silver { background: #E8EEF4; }
+.v2-spon-tier--partner { background: #B2FEE7; }
+
+/* Closing CTA ------------------------------------------------------------- */
+.v2-spon-cta {
+    padding-bottom: 170px;
+    text-align: center;
+}
+
+.v2-spon-cta__title {
+    max-width: 20ch;
+    margin: 0 auto 30px;
+    font-size: clamp(1.6rem, 3.4vw, 2.4rem);
+    line-height: 1.25;
+    color: var(--v2-white-pure);
+    text-shadow:
+        4px 4px 0 rgba(91, 107, 126, 0.7),
+        0 0 44px rgba(232, 255, 214, 0.45);
+}
+
+@media (max-width: 900px) {
+    .v2-spon-why__inner {
+        grid-template-columns: 1fr;
+        gap: 30px;
+    }
+
+    .v2-spon-why__photo {
+        justify-self: center;
+    }
+
+    .v2-spon-why__stats {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 16px;
+    }
+
+    .v2-spon-why__stats li:nth-child(2n) {
+        padding-right: 0;
+        border-right: 0;
+    }
+
+    .v2-spon-grid,
+    .v2-spon-why,
+    .v2-spon-tiers {
+        padding-bottom: 100px;
+    }
+}

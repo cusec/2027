@@ -11,19 +11,6 @@ const nextConfig: NextConfig = {
 	// and a port-less CSP source only matches :443, so a local dev server on
 	// :3000 is frame-refused however it is named.
 	allowedDevOrigins: ["local.cusec.net", "*.cusec.net"],
-	async headers() {
-		return [
-			{
-				source: "/splash_waveform.webm",
-				headers: [
-					{
-						key: "Cache-Control",
-						value: "public, max-age=31536000, immutable"
-					}
-				]
-			}
-		];
-	}
 };
 
 const withNextIntl = createNextIntlPlugin('./src/i18n/request.ts');

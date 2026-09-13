@@ -1,0 +1,149 @@
+/* ==========================================================================
+   v2 — Hero
+   ========================================================================== */
+.v2-hero {
+    /* The section is a full viewport (base.css) and centres its stack, so these
+       are the clearances used when the stack is taller than the screen — the
+       top one has to keep the floating nav off the logo. The bottom is the
+       larger of the two on purpose: it lifts the block so the wordmark, which
+       sits below the stack's own midpoint, lands on the viewport's centre. */
+    padding-top: calc(var(--v2-nav-h) + 20px);
+    padding-bottom: 150px;
+    text-align: center;
+}
+
+.v2-hero__inner {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.v2-hero__logo {
+    width: 146px;
+    height: 146px;
+    margin-bottom: 26px;
+    filter: drop-shadow(0 8px 20px rgba(11, 26, 58, 0.24));
+    transition: scale 250ms ease, translate 250ms ease, filter 250ms ease;
+}
+
+.v2-hero__logo:hover {
+    scale: 1.06;
+    animation: v2-hover-float 1.5s ease-in-out infinite;
+    filter: drop-shadow(0 12px 26px rgba(11, 26, 58, 0.3)) brightness(1.04);
+}
+
+@keyframes v2-hover-float {
+    0%,
+    100% {
+        translate: 0 0;
+    }
+
+    50% {
+        translate: 0 -6px;
+    }
+}
+
+.v2-hero__pill {
+    margin: 0 0 34px;
+    padding: 9px 26px;
+    border-radius: 999px;
+    background: rgba(31, 59, 44, 0.42);
+    backdrop-filter: blur(6px);
+    color: var(--v2-mint-bright);
+    font-size: 12px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+}
+
+.v2-hero__wordmark {
+    margin: 0;
+    font-size: clamp(3.2rem, 12vw, 9.4rem);
+    line-height: 0.95;
+    color: var(--v2-white-pure);
+    letter-spacing: 0.02em;
+    text-shadow:
+        7px 7px 0 rgba(91, 107, 126, 0.85),
+        0 0 60px rgba(232, 255, 214, 0.55);
+    user-select: none;
+    touch-action: none;
+}
+
+.v2-hero__char {
+    display: inline-block;
+    white-space: pre;
+    animation: v2-wordmark-wave 2.6s ease-in-out infinite;
+    will-change: transform;
+}
+
+.v2-hero__char-repel {
+    display: inline-block;
+    /* JS writes --rx/--ry; it never touches `transform` itself. */
+    transform: translate(var(--rx, 0px), var(--ry, 0px));
+    transition: transform 200ms ease-out;
+    will-change: transform;
+}
+
+@keyframes v2-wordmark-wave {
+    0%,
+    100% {
+        transform: translateY(0);
+    }
+
+    50% {
+        transform: translateY(-0.045em);
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .v2-hero__char,
+    .v2-hero__char-repel {
+        transform: none !important;
+    }
+
+    .v2-hero__logo,
+    .v2-hero__logo:hover {
+        scale: 1 !important;
+        translate: 0 0 !important;
+    }
+}
+
+.v2-hero__tagline {
+    margin: 34px 0 0;
+    font-size: clamp(1rem, 1.5vw, 1.2rem);
+    color: var(--v2-white);
+    text-shadow: 0 2px 12px rgba(11, 26, 58, 0.35);
+}
+
+.v2-hero__actions {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 14px;
+    margin-top: 30px;
+}
+
+@media (max-width: 760px) {
+    .v2-hero {
+        padding-top: calc(var(--v2-nav-h) + 16px);
+        padding-bottom: 110px;
+    }
+
+    .v2-hero__logo {
+        width: 104px;
+        height: 104px;
+        margin-bottom: 20px;
+    }
+
+    .v2-hero__pill {
+        margin-bottom: 24px;
+        font-size: 10px;
+        letter-spacing: 0.16em;
+        padding: 8px 18px;
+    }
+
+    .v2-hero__wordmark {
+        text-shadow:
+            4px 4px 0 rgba(91, 107, 126, 0.85),
+            0 0 40px rgba(232, 255, 214, 0.55);
+    }
+}

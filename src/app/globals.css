@@ -28,49 +28,66 @@
 
 :root {
   color-scheme: light;
-  /* hotspot coords are x y in source-image pixels (top-left origin) */
-  --cursor-arrow: url("/assets/cursor-win95.webp") 1 1, auto;
-  --cursor-hand: url("/assets/pointer-win95.webp") 7 1, pointer;
 }
 
 html {
   -webkit-text-size-adjust: 100%;
   text-size-adjust: 100%;
-  cursor: var(--cursor-arrow);
 }
 
 body {
   background-color: #ffffff;
-  letter-spacing: 0.06em;
 }
 
-a,
-button,
-select,
-summary,
-[role="button"],
-.desktop-icon,
-.cta-btn,
-.win95-close,
-.win95-minimize {
-  cursor: var(--cursor-hand);
+@media (hover: hover) {
+  html {
+    scrollbar-width: none;
+  }
+
+  html::-webkit-scrollbar {
+    display: none;
+  }
 }
 
-input,
-textarea {
-  cursor: text;
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+  background: transparent;
 }
 
-/*
- * Tailwind's `cursor-pointer` utility hands back the plain OS pointer, which
- * silently beat the rule above wherever a component used it (class specificity,
- * and the element list here is only 0-0-1). That is what made the custom cursor
- * flip back to the system one over the dock and other utility-styled controls
- * while it stayed custom in the middle of the page. Unlayered, so it wins over
- * Tailwind's own layered utility.
- */
-.cursor-pointer {
-  cursor: var(--cursor-hand);
+::-webkit-scrollbar-track,
+::-webkit-scrollbar-corner {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  border: 2px solid transparent;
+  border-radius: 999px;
+  background-color: rgba(127, 168, 41, 0.65);
+  background-clip: content-box;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(127, 168, 41, 0.9);
+}
+
+::-webkit-scrollbar-button {
+  display: none;
+  width: 0;
+  height: 0;
+}
+
+@supports not selector(::-webkit-scrollbar) {
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(127, 168, 41, 0.75) transparent;
+  }
+
+  @media (hover: hover) {
+    html {
+      scrollbar-width: none;
+    }
+  }
 }
 
 /*

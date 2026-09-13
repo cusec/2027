@@ -1,7 +1,9 @@
 /* ==========================================================================
-   Policy pages and the 404 — the same Frutiger Aero language as /scavenger
-   and the ticket wizard: content on one level of light glass, headings in the
-   pixel face, actions as lime pills.
+   Policy pages and the 404
+
+   Content on one level of the site's light glass, headings in the pixel face,
+   the primary action as a .v2-btn. Shared with the scavenger hunt on the
+   staging branch, where the same file sits under the aero token layer.
    ========================================================================== */
 
 .v2-policy {
@@ -28,7 +30,7 @@
     font-weight: var(--v2-font-pixel-weight);
     font-size: clamp(1.7rem, 5vw, 2.7rem);
     line-height: 1.1;
-    color: var(--aero-white);
+    color: var(--v2-white);
     text-shadow: 0 1px 2px rgba(9, 28, 45, 0.9), 0 3px 20px rgba(9, 28, 45, 0.7);
 }
 

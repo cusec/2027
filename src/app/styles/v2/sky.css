@@ -1,0 +1,58 @@
+/* ==========================================================================
+   v2 — Sky intro (statement heading + three frosted info cards)
+   ========================================================================== */
+
+.v2-sky {
+    padding-block: var(--v2-section-pad);
+    text-align: center;
+}
+
+.v2-sky__heading {
+    max-width: 900px;
+    margin: 0 auto;
+    font-size: clamp(1.55rem, 3vw, 2.3rem);
+    line-height: 1.42;
+    color: var(--v2-ink);
+}
+
+.v2-sky__cards {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 26px;
+    margin: 150px 0 0;
+    padding: 0;
+    list-style: none;
+    text-align: left;
+}
+
+/* The blue glass tile — 390x131 in the Figma frame, which is what the
+   three-up grid above already resolves to at container width. */
+.v2-sky__card {
+    min-height: 131px;
+    padding: 20px 24px;
+}
+
+.v2-sky__card-title {
+    margin: 0 0 10px;
+    font-size: 17px;
+    color: var(--v2-ink-glass);
+}
+
+.v2-sky__card-body {
+    margin: 0;
+    font-size: 14.5px;
+    line-height: 1.55;
+    color: var(--v2-teal-deep);
+}
+
+@media (max-width: 900px) {
+    .v2-sky {
+        padding-block: 90px 80px;
+    }
+
+    .v2-sky__cards {
+        grid-template-columns: 1fr;
+        gap: 16px;
+        margin-top: 80px;
+    }
+}
