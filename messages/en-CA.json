@@ -39,7 +39,7 @@
             "stat-4-value": "3",
             "stat-4-label": "days together",
             "player-title": "CUSEC.FM",
-            "player-now-playing": "now playing · lofi_for_lakes.mp3",
+            "player-now-playing": "now playing · {track}",
             "player-prev": "Previous track",
             "player-play": "Play",
             "player-pause": "Pause",
@@ -68,10 +68,11 @@
             "who-link": "Become a Head Delegate",
             "stats-cta": "Get your ticket",
             "know-eyebrow": "Good to know",
-            "know-1": "January 8-10, 2027 in Montréal.",
+            "know-1": "January 7-9, 2027 in Montréal.",
             "know-2": "The venue, schedule, and speakers are announced as they are confirmed.",
             "know-3": "Ask your school’s Head Delegate about tickets first; general admission opens afterward.",
-            "know-4": "Refunds are available for 30 days after purchase, until December 27, 2026."
+            "know-4": "Refunds are available for 30 days after purchase, until December 27, 2026.",
+            "player-volume": "Volume"
         },
         "archive": {
             "heading": "The Archive – pick a card, any year",

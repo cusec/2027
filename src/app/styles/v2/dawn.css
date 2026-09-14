@@ -448,3 +448,24 @@
         gap: 6px;
     }
 }
+
+/* Volume: starts at 5% in the component, so nobody gets blasted on play. */
+.v2-cd__volume {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 10px;
+    opacity: 0.85;
+}
+
+.v2-cd__volume input {
+    flex: 1;
+    min-width: 0;
+    height: 4px;
+    accent-color: var(--v2-lime);
+    cursor: pointer;
+}
+
+.v2-cd__progress span {
+    transition: width 250ms linear;
+}
