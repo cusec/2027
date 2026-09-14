@@ -16,10 +16,15 @@ import { getBaseUrl } from "@/lib/siteUrl";
 import TicketLinkedNotice from "./TicketLinkedNotice";
 import DashboardFAQ from "./faqs/DashboardFAQ";
 
-const FAQ = [
+const faqFor = (huntOpen: boolean) => [
   {
     question: "When does the scavenger hunt open?",
-    answer: (
+    answer: huntOpen ? (
+      <p>
+        It is open now. Sign in with the CUSEC account you bought your ticket
+        with and start scanning.
+      </p>
+    ) : (
       <p>
         During CUSEC 2027 itself, in Montréal this January. Until then this
         page is a preview: the hunt, challenge submissions and hunt profiles
@@ -142,17 +147,21 @@ const NEW_THIS_YEAR = [
 ];
 
 /**
- * What /scavenger, and every page under it, shows while the hunt is closed.
+ * The public /scavenger page: how the hunt works, what is new in 2027, and
+ * the FAQ, carried over from the 2026 page.
  *
- * Deliberately the same for signed-in and signed-out visitors: there is
- * nothing to do until the conference, and a finished ticket purchase signs
- * the delegate out and lands them here. Content carries over the 2026 page
- * (how it works, the FAQ), updated for what is new in 2027.
+ * While the hunt is closed, every visitor (and every page under /scavenger)
+ * gets it, with the opening date and a "nothing to do yet" note. Once it is
+ * open, signed-out visitors get the same page with those removed and a
+ * sign-in in place of the ticket link; signed-in players get the dashboard.
  */
 export default async function ScavengerPreview({
   signedIn,
+  huntOpen = false,
 }: {
   signedIn: boolean;
+  /** The hunt is running: invite a sign-in instead of saying it opens later. */
+  huntOpen?: boolean;
 }) {
   const signOutHref = signedIn
     ? `/auth/logout?returnTo=${encodeURIComponent(`${await getBaseUrl()}/scavenger`)}`
@@ -166,18 +175,29 @@ export default async function ScavengerPreview({
           Scan codes hidden around the venue, take on challenges with your
           team, and climb the live leaderboard for prizes.
         </p>
-        <p className="aero-preview__when">
-          <Clock aria-hidden="true" />
-          Opens at the conference, in Montréal this January
-        </p>
+        {!huntOpen && (
+          <p className="aero-preview__when">
+            <Clock aria-hidden="true" />
+            Opens at the conference, in Montréal this January
+          </p>
+        )}
 
         <TicketLinkedNotice />
 
         <div className="aero-preview__actions">
-          <Link href="/tickets" className="aero-btn">
-            <Ticket aria-hidden="true" />
-            Get your ticket
-          </Link>
+          {huntOpen ? (
+            // Auth0 owns /auth/*, so this has to be a full document request.
+            // eslint-disable-next-line @next/next/no-html-link-for-pages
+            <a href="/auth/login?returnTo=/scavenger" className="aero-btn">
+              <Trophy aria-hidden="true" />
+              Start hunting
+            </a>
+          ) : (
+            <Link href="/tickets" className="aero-btn">
+              <Ticket aria-hidden="true" />
+              Get your ticket
+            </Link>
+          )}
           <a href="#faq" className="aero-btn aero-btn--glass">
             <CircleHelp aria-hidden="true" />
             FAQ
@@ -185,22 +205,24 @@ export default async function ScavengerPreview({
         </div>
       </header>
 
-      <div className="v2-card v2-glass aero-preview__notice">
-        <h2>Nothing to do until the conference</h2>
-        <p>
-          The hunt, challenge submissions and your hunt profile all unlock
-          during CUSEC 2027 itself. If you have a ticket, it is already linked
-          to your CUSEC account. At the conference, sign in with that same
-          account and start scanning.
-        </p>
-        {signOutHref && (
-          <p className="aero-preview__account">
-            You are signed in.{" "}
-            {/* eslint-disable-next-line @next/next/no-html-link-for-pages */}
-            <a href={signOutHref}>Sign out</a>
+      {!huntOpen && (
+        <div className="v2-card v2-glass aero-preview__notice">
+          <h2>Nothing to do until the conference</h2>
+          <p>
+            The hunt, challenge submissions and your hunt profile all unlock
+            during CUSEC 2027 itself. If you have a ticket, it is already linked
+            to your CUSEC account. At the conference, sign in with that same
+            account and start scanning.
           </p>
-        )}
-      </div>
+          {signOutHref && (
+            <p className="aero-preview__account">
+              You are signed in.{" "}
+              {/* eslint-disable-next-line @next/next/no-html-link-for-pages */}
+              <a href={signOutHref}>Sign out</a>
+            </p>
+          )}
+        </div>
+      )}
 
       <section className="aero-sec">
         <h2 className="aero-sec__title">
@@ -238,7 +260,7 @@ export default async function ScavengerPreview({
         </div>
       </section>
 
-      <DashboardFAQ id="faq" heading="Questions, answered" items={FAQ} />
+      <DashboardFAQ id="faq" heading="Questions, answered" items={faqFor(huntOpen)} />
     </section>
   );
 }

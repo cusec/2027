@@ -15,6 +15,11 @@ export default async function ScavengerLayout({
 }) {
   const { user, anyOpen } = await getScavengerAccess();
 
+  // Anyone signed out, and everyone while the hunt is closed, is on a page of
+  // the public site: it carries the site nav and footer. Signed-in players
+  // have the dock instead.
+  const publicShell = !anyOpen || !user;
+
   let dbUser: DbUser | null = null;
   if (anyOpen && user?.email) {
     const mongoUser = await findOrCreateUser({
@@ -42,7 +47,7 @@ export default async function ScavengerLayout({
       {/* While the hunt is closed, /scavenger is a page of the public site,
           reached from its navbar, so it carries the site nav and footer the
           way /speakers does. Once open, the dock is the navigation instead. */}
-      {!anyOpen && (
+      {publicShell && (
         <>
           <V2Nav />
           <V2Scrollbar />
@@ -81,7 +86,7 @@ export default async function ScavengerLayout({
         )}
       </div>
 
-      {!anyOpen && <V2Footer />}
+      {publicShell && <V2Footer />}
     </div>
   );
 }

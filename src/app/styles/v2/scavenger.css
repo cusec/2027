@@ -533,6 +533,605 @@
     text-shadow: none;
 }
 
+/* ==========================================================================
+   Restored: modals, light glass cards, shop tiles and the scanner. These sat
+   after the old lily-pad block and were cut with it by mistake; they come back
+   verbatim from 766d314, ahead of the preview so its overrides still win.
+   ========================================================================== */
+/* ==========================================================================
+   Modals
+   The same glass the leaderboard and profile card are made of, rather than a
+   white sheet with a border. The hunt's modals were ported from 2026 and are
+   built from light-theme Tailwind utilities, so those neutrals are remapped
+   here instead of rewriting the class list on ~15 admin components.
+
+   Semantic colours (amber warnings, red errors, green/blue badges and
+   buttons) are deliberately left alone - they are light chips that read
+   clearly on glass and are supposed to stand out.
+   ========================================================================== */
+.v2-aero .v2-modal {
+    border: 1px solid rgba(255, 255, 255, 0.34);
+    border-radius: 20px;
+    background:
+        linear-gradient(
+            to bottom,
+            rgba(255, 255, 255, 0.28),
+            rgba(255, 255, 255, 0.08) 42%,
+            rgba(9, 28, 45, 0.16)
+        ),
+        var(--aero-shade-deep);
+    box-shadow:
+        0 26px 64px rgba(9, 28, 45, 0.5),
+        inset 0 1px 0 rgba(255, 255, 255, 0.6);
+    backdrop-filter: blur(18px) saturate(1.35);
+    color: var(--aero-white);
+}
+
+.v2-aero .v2-modal__scrim {
+    background: rgba(9, 28, 45, 0.46);
+    backdrop-filter: blur(4px) saturate(1.2);
+}
+
+.v2-aero .v2-modal__head {
+    border-top-left-radius: 19px;
+    border-top-right-radius: 19px;
+    background: linear-gradient(
+        to bottom,
+        rgba(255, 255, 255, 0.16),
+        rgba(255, 255, 255, 0.02)
+    );
+    border-bottom-color: rgba(255, 255, 255, 0.18);
+}
+
+.v2-aero .v2-modal__title {
+    font-family: var(--v2-font-pixel);
+    font-weight: var(--v2-font-pixel-weight);
+    letter-spacing: 0.02em;
+}
+
+/* On the body, not the panel: a gutter on the rounded, bordered panel cuts a
+   seam across its top-right corner. */
+.v2-aero .v2-modal :is(.v2-modal__body, [class*="overflow-y-"]) {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(255, 255, 255, 0.32) transparent;
+}
+
+.v2-aero .v2-modal ::-webkit-scrollbar {
+    width: 8px;
+}
+
+.v2-aero .v2-modal ::-webkit-scrollbar-track,
+.v2-aero .v2-modal ::-webkit-scrollbar-corner {
+    background: transparent;
+}
+
+.v2-aero .v2-modal ::-webkit-scrollbar-button {
+    display: none;
+}
+
+.v2-aero .v2-modal ::-webkit-scrollbar-thumb {
+    border: 2px solid transparent;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.3);
+    background-clip: content-box;
+}
+
+.v2-aero .v2-modal ::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.48);
+    background-clip: content-box;
+}
+
+/* One row of a list inside a modal; the same well the remaps below produce. */
+.v2-aero .v2-modal__row {
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 14px;
+    background: rgba(255, 255, 255, 0.09);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.16);
+    transition: background-color 160ms ease, border-color 160ms ease;
+}
+
+.v2-aero button.v2-modal__row:hover {
+    border-color: rgba(255, 255, 255, 0.34);
+    background: rgba(255, 255, 255, 0.16);
+}
+
+/* --- neutral surfaces become glass ---------------------------------------- */
+.v2-aero .v2-modal .bg-white {
+    background-color: rgba(255, 255, 255, 0.09);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.16);
+}
+
+.v2-aero .v2-modal .bg-gray-50,
+.v2-aero .v2-modal .bg-gray-100 {
+    background-color: rgba(255, 255, 255, 0.12);
+}
+
+.v2-aero .v2-modal .bg-gray-200,
+.v2-aero .v2-modal .bg-gray-300 {
+    background-color: rgba(255, 255, 255, 0.18);
+}
+
+.v2-aero .v2-modal .border-gray-200,
+.v2-aero .v2-modal .border-gray-300 {
+    border-color: rgba(255, 255, 255, 0.2);
+}
+
+/* --- neutral text lifts onto the glass ------------------------------------ */
+.v2-aero .v2-modal .text-gray-900,
+.v2-aero .v2-modal .text-gray-800,
+.v2-aero .v2-modal .text-gray-700,
+.v2-aero .v2-modal .text-dark-mode {
+    color: var(--aero-white);
+}
+
+.v2-aero .v2-modal .text-gray-600,
+.v2-aero .v2-modal .text-gray-500 {
+    color: rgba(244, 255, 252, 0.76);
+}
+
+.v2-aero .v2-modal .text-gray-400,
+.v2-aero .v2-modal .text-gray-300 {
+    color: rgba(244, 255, 252, 0.58);
+}
+
+/* --- fields get the era's inset well -------------------------------------- */
+.v2-aero .v2-modal :is(input, select, textarea) {
+    border-color: rgba(255, 255, 255, 0.24);
+    border-radius: 10px;
+    background-color: rgba(255, 255, 255, 0.12);
+    box-shadow: inset 0 1px 3px rgba(9, 28, 45, 0.28);
+    color: var(--aero-white);
+}
+
+.v2-aero .v2-modal :is(input, textarea)::placeholder {
+    color: rgba(244, 255, 252, 0.5);
+}
+
+.v2-aero .v2-modal :is(input, select, textarea):focus {
+    border-color: var(--aero-lime);
+    background-color: rgba(255, 255, 255, 0.18);
+    outline: none;
+}
+
+/*
+ * The well is themed, but a native select still draws the OS chevron and opens
+ * an OS-coloured popup, which is what makes the field read as system UI next
+ * to the rest of the modal. Drop the native control and draw our own chevron;
+ * `color-scheme: dark` asks the browser to open the list on a dark ground
+ * instead of the platform default.
+ */
+.v2-aero .v2-modal select {
+    appearance: none;
+    padding-right: 36px;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1.5 6 6.5l5-5' fill='none' stroke='%23F4FFFC' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 13px center;
+    background-size: 12px 8px;
+    color-scheme: dark;
+    text-overflow: ellipsis;
+}
+
+/* Chevron picks up the focus colour along with the border. */
+.v2-aero .v2-modal select:focus {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1.5 6 6.5l5-5' fill='none' stroke='%23C3E956' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+}
+
+/* Native option lists are drawn by the OS, so they need a solid ground. */
+.v2-aero .v2-modal select option {
+    background-color: #12303f;
+    color: var(--aero-white);
+}
+
+/*
+ * The open list is still the platform's own widget, so how far this lands
+ * varies: Chrome and Firefox honour it, Safari draws its own highlight.
+ * Worth setting anyway so the selected row is the brand lime rather than the
+ * OS accent blue wherever it is respected.
+ */
+.v2-aero .v2-modal select option:checked {
+    background-color: var(--aero-lime);
+    color: var(--aero-ink);
+}
+
+.v2-aero .v2-modal button {
+    border-radius: 10px;
+}
+
+.v2-aero .v2-modal :is(button, .rounded-full).rounded-full,
+.v2-aero .v2-modal button.aero-btn {
+    border-radius: 999px;
+}
+
+.v2-aero .v2-modal :is(button, a, input, select, textarea):focus-visible {
+    outline: 2px solid var(--aero-lime);
+    outline-offset: 2px;
+}
+
+.v2-aero .v2-modal :is(h1, h2, h3, h4) {
+    color: var(--aero-white);
+    text-shadow: none;
+}
+
+/* --------------------------------------------------------------------------
+   Tinted status panels inside modals
+   Tailwind's -50/-100 tints are near-white and the block above lifts the text
+   on them to white, so each hue becomes a translucent wash with light ink.
+   -------------------------------------------------------------------------- */
+
+/* --- surfaces --- */
+.v2-aero .v2-modal :is(.bg-red-50, .bg-red-100, .bg-red-200) {
+    background-color: rgba(248, 113, 113, 0.18);
+}
+
+.v2-aero .v2-modal :is(.bg-amber-50, .bg-amber-100, .bg-yellow-50, .bg-yellow-100) {
+    background-color: rgba(251, 191, 36, 0.18);
+}
+
+.v2-aero .v2-modal :is(.bg-orange-50, .bg-orange-100) {
+    background-color: rgba(251, 146, 60, 0.18);
+}
+
+.v2-aero .v2-modal :is(.bg-blue-50, .bg-blue-100) {
+    background-color: rgba(96, 165, 250, 0.18);
+}
+
+.v2-aero .v2-modal :is(.bg-green-50, .bg-green-100, .bg-green-200) {
+    background-color: rgba(74, 222, 128, 0.18);
+}
+
+.v2-aero .v2-modal :is(.bg-purple-50, .bg-purple-100) {
+    background-color: rgba(192, 132, 252, 0.18);
+}
+
+.v2-aero .v2-modal :is(.bg-teal-50, .bg-teal-100) {
+    background-color: rgba(45, 212, 191, 0.18);
+}
+
+/* --- edges --- */
+.v2-aero .v2-modal :is(.border-red-200, .border-red-300, .border-red-400, .border-red-500) {
+    border-color: rgba(248, 113, 113, 0.5);
+}
+
+.v2-aero .v2-modal :is(.border-amber-200, .border-amber-300, .border-amber-400, .border-yellow-200) {
+    border-color: rgba(251, 191, 36, 0.5);
+}
+
+.v2-aero .v2-modal :is(.border-blue-200, .border-blue-300) {
+    border-color: rgba(96, 165, 250, 0.5);
+}
+
+.v2-aero .v2-modal :is(.border-green-200, .border-green-300) {
+    border-color: rgba(74, 222, 128, 0.5);
+}
+
+.v2-aero .v2-modal .border-purple-200 {
+    border-color: rgba(192, 132, 252, 0.5);
+}
+
+.v2-aero .v2-modal :is(.border-teal-500, .border-teal-200) {
+    border-color: rgba(45, 212, 191, 0.55);
+}
+
+/* --- ink --- */
+.v2-aero .v2-modal :is(.text-red-500, .text-red-600, .text-red-700, .text-red-800),
+.v2-aero .v2-modal .hover\:text-red-600:hover,
+.v2-aero .v2-modal .hover\:text-red-800:hover {
+    color: #FECACA;
+}
+
+.v2-aero .v2-modal :is(.text-amber-600, .text-amber-700, .text-amber-800, .text-amber-900,
+    .text-yellow-600, .text-yellow-700, .text-yellow-800) {
+    color: #FDE68A;
+}
+
+.v2-aero .v2-modal :is(.text-orange-600, .text-orange-700, .text-orange-800) {
+    color: #FED7AA;
+}
+
+.v2-aero .v2-modal :is(.text-blue-500, .text-blue-600, .text-blue-700, .text-blue-800, .text-blue-900),
+.v2-aero .v2-modal .hover\:text-blue-600:hover {
+    color: #BFDBFE;
+}
+
+.v2-aero .v2-modal :is(.text-green-600, .text-green-700, .text-green-800) {
+    color: #BBF7D0;
+}
+
+.v2-aero .v2-modal :is(.text-purple-600, .text-purple-700, .text-purple-800) {
+    color: #E9D5FF;
+}
+
+.v2-aero .v2-modal .text-teal-700 {
+    color: #99F6E4;
+}
+
+/* --------------------------------------------------------------------------
+   Hover states - a near-white ground under white text makes the row vanish.
+   -------------------------------------------------------------------------- */
+.v2-aero .v2-modal :is(
+    .hover\:bg-gray-50, .hover\:bg-gray-100, .hover\:bg-gray-200, .hover\:bg-gray-300
+):hover {
+    background-color: rgba(255, 255, 255, 0.18);
+}
+
+.v2-aero .v2-modal .hover\:bg-red-50:hover,
+.v2-aero .v2-modal .hover\:bg-red-100:hover,
+.v2-aero .v2-modal .hover\:bg-red-200:hover {
+    background-color: rgba(248, 113, 113, 0.26);
+}
+
+.v2-aero .v2-modal .hover\:bg-blue-50:hover,
+.v2-aero .v2-modal .hover\:bg-blue-100:hover {
+    background-color: rgba(96, 165, 250, 0.26);
+}
+
+.v2-aero .v2-modal .hover\:bg-green-50:hover,
+.v2-aero .v2-modal .hover\:bg-green-200:hover {
+    background-color: rgba(74, 222, 128, 0.26);
+}
+
+.v2-aero .v2-modal .hover\:bg-purple-50:hover {
+    background-color: rgba(192, 132, 252, 0.26);
+}
+
+.v2-aero .v2-modal .hover\:border-blue-400:hover {
+    border-color: rgba(96, 165, 250, 0.7);
+}
+
+.v2-aero .v2-modal .hover\:border-green-300:hover {
+    border-color: rgba(74, 222, 128, 0.7);
+}
+
+.v2-aero .v2-modal .hover\:border-purple-300:hover {
+    border-color: rgba(192, 132, 252, 0.7);
+}
+
+.v2-aero .v2-modal .hover\:text-gray-600:hover,
+.v2-aero .v2-modal .hover\:text-gray-700:hover,
+.v2-aero .v2-modal .hover\:text-gray-800:hover {
+    color: var(--aero-white);
+}
+
+/* The OS draws this indicator in black, invisible on a dark field. */
+.v2-aero .v2-modal ::-webkit-calendar-picker-indicator {
+    filter: invert(1) opacity(0.7);
+    cursor: var(--cursor-hand);
+}
+
+/* ==========================================================================
+   Cards
+   Cards are .v2-card.v2-glass from base.css. Below only re-points the pieces
+   that were drawn against the old dark panel.
+   ========================================================================== */
+/* Drawn thicker than on the main site: the hunt scrolls past the busy half of
+   the same painting. */
+.v2-aero {
+    --v2-glass-top: rgba(255, 255, 255, 0.86);
+    --v2-glass-mid: rgba(242, 255, 250, 0.7);
+    --v2-glass-end: rgba(199, 242, 219, 0.66);
+}
+
+.v2-aero .v2-glass {
+    /* One swap turns a whole card from white-on-dark to ink-on-light. */
+    --aero-white: var(--v2-ink-glass-deep);
+    --aero-accent-ink: var(--v2-teal-deep);
+    --aero-well: rgba(9, 37, 26, 0.07);
+    --aero-well-edge: rgba(9, 37, 26, 0.13);
+    --v2-white: var(--v2-ink-glass-deep);
+    --v2-mint: var(--v2-ink-glass);
+    --v2-mint-bright: var(--v2-teal-deep);
+    text-shadow: none;
+}
+
+/* The glass carries the depth, so the shadow only muddies the ink. */
+.v2-aero .v2-glass :is(h1, h2, h3, h4, p, dt, dd, span, b, i, a, li) {
+    text-shadow: none;
+}
+
+/* --- pieces that were tuned for navy ------------------------------------- */
+
+.v2-aero .v2-glass .aero-eyebrow {
+    color: var(--v2-teal-deep);
+}
+
+/* A white fill is invisible against a white card. */
+.v2-aero .v2-glass .aero-btn--glass {
+    --btn: rgba(9, 37, 26, 0.1);
+    --btn-deep: rgba(9, 37, 26, 0.03);
+    border-color: rgba(9, 37, 26, 0.16);
+    box-shadow: 0 3px 8px rgba(10, 36, 23, 0.16);
+    color: var(--v2-ink-glass-deep);
+    text-shadow: none;
+}
+
+.v2-aero .v2-glass .v2-chal__status--pending {
+    background: rgba(184, 134, 11, 0.14);
+    color: #7A5A05;
+    box-shadow: inset 0 0 0 1px rgba(184, 134, 11, 0.45);
+}
+
+.v2-aero .v2-glass .v2-chal__status--rejected {
+    background: rgba(190, 46, 36, 0.12);
+    color: #9C2B22;
+    box-shadow: inset 0 0 0 1px rgba(190, 46, 36, 0.4);
+}
+
+.v2-aero .v2-glass .v2-chal__link:hover,
+.v2-aero .v2-glass .v2-chal__cancel:hover {
+    color: var(--v2-ink-glass-deep);
+}
+
+.v2-aero .v2-glass .v2-sub__error svg,
+.v2-aero .v2-glass .v2-chal__withdraw:hover {
+    color: #9C2B22;
+}
+
+/* --- shop tiles ---------------------------------------------------------- */
+.aero-tile {
+    padding: 14px;
+    cursor: var(--cursor-hand);
+    transition: transform 200ms ease, box-shadow 200ms ease;
+}
+
+.aero-tile:hover {
+    transform: translateY(-2px);
+    box-shadow:
+        0 20px 40px -10px rgba(10, 36, 23, 0.34),
+        inset 0 1.5px 1px rgba(255, 255, 255, 0.9);
+}
+
+.aero-tile p {
+    margin: 0;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--v2-ink-glass-deep);
+}
+
+.aero-tile__cost,
+.aero-tile__left {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 4px 10px;
+    border-radius: 999px;
+    font-family: var(--v2-font-pixel);
+    font-weight: var(--v2-font-pixel-weight);
+    font-size: 11px;
+    letter-spacing: 0.04em;
+}
+
+.aero-tile__cost {
+    background: rgba(9, 37, 26, 0.09);
+    box-shadow: inset 0 0 0 1px rgba(9, 37, 26, 0.14);
+    color: var(--v2-ink-glass-deep);
+}
+
+.aero-tile__left {
+    background: var(--v2-lime);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.6);
+    color: var(--v2-ink-deep);
+}
+
+/* --------------------------------------------------------------------------
+   Scanner takeover
+   -------------------------------------------------------------------------- */
+.aero-scan {
+    position: fixed;
+    z-index: 60;
+    inset: 0;
+    display: grid;
+    place-items: center;
+    background: #060f0b;
+    animation: aero-scan-in 220ms ease-out both;
+}
+
+.aero-scan__feed {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+/* The viewfinder darkens everything outside itself, so no separate veil. */
+.aero-scan__frame {
+    --tick: var(--aero-lime);
+    --tick-weight: 3px;
+    --tick-length: 34px;
+
+    position: relative;
+    width: min(74vw, 300px);
+    aspect-ratio: 1;
+    border-radius: 20px;
+    box-shadow: 0 0 0 100vmax rgba(6, 15, 11, 0.66);
+    background:
+        linear-gradient(var(--tick) 0 0) 0 0 / var(--tick-length)
+            var(--tick-weight) no-repeat,
+        linear-gradient(var(--tick) 0 0) 0 0 / var(--tick-weight)
+            var(--tick-length) no-repeat,
+        linear-gradient(var(--tick) 0 0) 100% 0 / var(--tick-length)
+            var(--tick-weight) no-repeat,
+        linear-gradient(var(--tick) 0 0) 100% 0 / var(--tick-weight)
+            var(--tick-length) no-repeat,
+        linear-gradient(var(--tick) 0 0) 0 100% / var(--tick-length)
+            var(--tick-weight) no-repeat,
+        linear-gradient(var(--tick) 0 0) 0 100% / var(--tick-weight)
+            var(--tick-length) no-repeat,
+        linear-gradient(var(--tick) 0 0) 100% 100% / var(--tick-length)
+            var(--tick-weight) no-repeat,
+        linear-gradient(var(--tick) 0 0) 100% 100% / var(--tick-weight)
+            var(--tick-length) no-repeat;
+}
+
+.aero-scan__bar {
+    position: absolute;
+    z-index: 2;
+    top: 0;
+    left: 0;
+    right: 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding: calc(16px + env(safe-area-inset-top)) 18px 16px;
+}
+
+.aero-scan__title {
+    margin: 0;
+    font-family: var(--v2-font-pixel);
+    font-weight: var(--v2-font-pixel-weight);
+    font-size: 12px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--aero-white);
+    text-shadow: 0 1px 4px rgba(6, 15, 11, 0.9);
+}
+
+.aero-scan__close {
+    display: grid;
+    place-items: center;
+    width: 40px;
+    height: 40px;
+    flex: none;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.14);
+    backdrop-filter: blur(10px);
+    color: var(--aero-white);
+    cursor: var(--cursor-hand);
+    transition: background-color 160ms ease;
+}
+
+.aero-scan__close:hover {
+    background: rgba(255, 255, 255, 0.24);
+}
+
+.aero-scan__hint {
+    position: absolute;
+    z-index: 2;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    max-width: 460px;
+    margin: 0 auto;
+    padding: 16px 24px calc(24px + env(safe-area-inset-bottom));
+    font-size: 13px;
+    line-height: 1.6;
+    text-align: center;
+    color: rgba(244, 255, 252, 0.78);
+    text-shadow: 0 1px 4px rgba(6, 15, 11, 0.9);
+}
+
+@keyframes aero-scan-in {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
 /* --------------------------------------------------------------------------
    Preview: what /scavenger and its pages show while the hunt is closed
    -------------------------------------------------------------------------- */
@@ -721,4 +1320,10 @@
 .aero-preview__actions .aero-btn--glass {
     color: var(--v2-ink-glass-deep);
     text-shadow: none;
+}
+
+/* Signed-out pages under /scavenger carry the fixed site nav, so the gate
+   cards clear it the way the preview does. */
+.v2-nav ~ .aero-scene .aero-page {
+    padding-top: calc(var(--v2-nav-h) + clamp(28px, 5vh, 56px));
 }

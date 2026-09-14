@@ -5,7 +5,6 @@ import { RegisteredUser } from "@/lib/models";
 import Dashboard from "@/components/scavenger/Dashboard";
 import ScavengerPreview from "@/components/scavenger/ScavengerPreview";
 import type { Auth0User } from "@/lib/interface";
-import { Trophy } from "lucide-react";
 import { getBaseUrl } from "@/lib/siteUrl";
 
 export default async function ScavengerPage() {
@@ -61,27 +60,10 @@ export default async function ScavengerPage() {
   const showDashboard =
     user && (scavengerEnabled || isUserAdmin || isUserVolunteer);
 
+  // Signed out with the hunt open: the same public page as while it is
+  // closed, with a sign-in in place of the ticket link.
   if (!showDashboard) {
-    return (
-      <section className="aero-page">
-        <div className="v2-card v2-glass aero-gate">
-          <h1 className="aero-title">Scavenger Hunt</h1>
-          <p>
-            Scan codes, solve puzzles, and climb the leaderboard at CUSEC 2027.
-          </p>
-          {/* eslint-disable-next-line @next/next/no-html-link-for-pages */}
-          <a href="/auth/login?returnTo=/scavenger" className="aero-btn">
-            <Trophy className="h-4 w-4" />
-            {scavengerEnabled ? "Start hunting" : "Beta access login"}
-          </a>
-          {!scavengerEnabled && (
-            <p className="aero-gate__foot">
-              The hunt opens closer to the conference.
-            </p>
-          )}
-        </div>
-      </section>
-    );
+    return <ScavengerPreview signedIn={false} huntOpen />;
   }
 
   return (
