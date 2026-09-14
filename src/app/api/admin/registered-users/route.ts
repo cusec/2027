@@ -127,32 +127,64 @@ export async function PUT(request: Request) {
       isLinked: registeredUser.isLinked,
     });
 
-    registeredUser.isLinked = isLinked;
-    await registeredUser.save();
+    // Which addresses count as this ticket's: its own, plus its personal and
+    // student addresses when no other ticket row claims them, so another
+    // delegate's link is never touched in either direction.
+    const addresses = [registeredUser.linkedEmail];
+    for (const address of [registeredUser.personalEmail, registeredUser.studentEmail]) {
+      if (!address || addresses.includes(address)) continue;
+      const ownedElsewhere = await RegisteredUser.exists({
+        _id: { $ne: registeredUser._id },
+        linkedEmail: address,
+      });
+      if (!ownedElsewhere) addresses.push(address);
+    }
 
-    // Unlinking has to detach the account too. Flipping only this flag left
-    // the account holding linked_email and the ticket name: the purchase page
-    // then offered Buy again, while relinking refused because the account
-    // still looked linked, so a new purchase could never attach.
-    //
-    // The account may have linked through this row's own address, or through
-    // its personal or student address (the manual link-email flow matches
-    // those). A secondary address is only followed when no other ticket row
-    // owns it, so another delegate's link is never touched.
     let unlinkedAccount: string | null = null;
-    if (!isLinked) {
-      const candidates = [registeredUser.linkedEmail];
-      for (const address of [registeredUser.personalEmail, registeredUser.studentEmail]) {
-        if (!address || candidates.includes(address)) continue;
-        const ownedElsewhere = await RegisteredUser.exists({
-          _id: { $ne: registeredUser._id },
-          linkedEmail: address,
-        });
-        if (!ownedElsewhere) candidates.push(address);
-      }
+    let attachedAccount: string | null = null;
 
+    if (isLinked) {
+      // Linking is only real with an account attached. Marking the row alone
+      // would also block the automatic linking later, which never moves a
+      // row that is already marked linked.
+      const holder = await User.findOne({ linked_email: { $in: addresses } }).select("email");
+      if (holder) {
+        attachedAccount = holder.email;
+      } else {
+        const account = await User.findOne({ email: { $in: addresses } }).select(
+          "email linked_email ticketWizard"
+        );
+        if (!account) {
+          return NextResponse.json(
+            {
+              error:
+                "No CUSEC account uses this email yet. The ticket will link on its own once they sign up with it.",
+            },
+            { status: 409 }
+          );
+        }
+        if (account.linked_email) {
+          return NextResponse.json(
+            {
+              error: `That account (${account.email}) already holds another ticket (${account.linked_email}). Unlink that one first.`,
+            },
+            { status: 409 }
+          );
+        }
+        // Linked under the row's own address, which is what the wizard and
+        // the hunt look the ticket up by.
+        account.linked_email = registeredUser.linkedEmail;
+        account.ticketWizard.currentStep = "completed";
+        await account.save();
+        attachedAccount = account.email;
+      }
+    } else {
+      // Unlinking detaches the account too. Flipping only the flag left the
+      // account holding linked_email and the ticket name: the purchase page
+      // offered Buy again, while relinking refused because the account still
+      // looked linked, so a new purchase could never attach.
       const account = await User.findOneAndUpdate(
-        { linked_email: { $in: candidates } },
+        { linked_email: { $in: addresses } },
         {
           $unset: { linked_email: "" },
           $set: {
@@ -164,6 +196,9 @@ export async function PUT(request: Request) {
       ).select("email");
       unlinkedAccount = account?.email ?? null;
     }
+
+    registeredUser.isLinked = isLinked;
+    await registeredUser.save();
 
     // Store new data for audit logging
     const newData = sanitizeDataForLogging({
@@ -181,7 +216,7 @@ export async function PUT(request: Request) {
         resourceType: "user",
         targetUserEmail: registeredUser.linkedEmail,
         resourceId: userId,
-        details: { isLinked, unlinkedAccount },
+        details: { isLinked, unlinkedAccount, attachedAccount },
         previousData,
         newData,
         request,
