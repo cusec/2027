@@ -150,11 +150,22 @@ export async function getTicketTypes(): Promise<TicketTypesResult> {
 
     const body = await res.json();
     const rawTickets = Array.isArray(body?.[ticketTypesKey]) ? body[ticketTypesKey] : [];
-    // Hidden in Ticket Tailor means hidden here too.
+    // Hidden, code-locked or scheduled-hidden in Ticket Tailor means hidden here too.
+    const now = Date.now() / 1000;
+    const unix = (value: unknown) => {
+      const n = (value as { unix?: unknown } | null)?.unix;
+      return typeof n === "number" ? n : null;
+    };
     const visible = (rawTickets as Record<string, unknown>[]).filter((raw) => {
       const attrs = (raw?.attributes as Record<string, unknown>) ?? raw ?? {};
       const status = String(attrs.status ?? "").toLowerCase();
-      return status !== "hidden" && !status.includes("admin");
+      if (status === "hidden" || status === "locked" || status.includes("admin")) return false;
+      if (attrs.access_code) return false;
+      const hideUntil = unix(attrs.hide_until);
+      const hideAfter = unix(attrs.hide_after);
+      if (hideUntil !== null && now < hideUntil) return false;
+      if (hideAfter !== null && now >= hideAfter) return false;
+      return true;
     });
     return { tickets: visible.map(parseTicketType), source: "live" };
   } catch {
