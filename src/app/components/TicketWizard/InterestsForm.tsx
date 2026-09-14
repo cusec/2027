@@ -224,6 +224,95 @@ export default function InterestsForm({ initial, startIndex, initialResume }: In
         </>
       )}
 
+      {section === "travel" && (
+        <>
+          <StepHeader
+            title={t("travel-heading")}
+            current={index + 1}
+            total={INTEREST_STEPS.length}
+          />
+
+          <WizardCard
+            title={t("card-travel")}
+            subtitle={t("card-travel-note")}
+            icon={<TrainFront />}
+          >
+            <Question label={t("q-transport")} htmlFor="transport" wide>
+              <SelectField
+                id="transport"
+                options={TRANSPORT_OPTIONS}
+                value={answers.transport}
+                onChange={(v) => set("transport", v)}
+              />
+              <OtherInput
+                show={answers.transport === OTHER}
+                label={t("q-transport")}
+                value={answers.transportOther}
+                onChange={(v) => set("transportOther", v)}
+              />
+            </Question>
+
+            <Question label={t("q-delegation")} labelId="delegation-label" wide>
+              <ChoiceChips
+                name="delegation"
+                labelId="delegation-label"
+                options={YES_NO_UNSURE_OPTIONS}
+                value={answers.delegation}
+                onChange={(v) => set("delegation", v)}
+              />
+            </Question>
+
+            {answers.delegation === "yes" && (
+              <Question label={t("q-delegation-school")} htmlFor="delegationSchool" wide>
+                <Combobox
+                  id="delegationSchool"
+                  options={delegationOptions}
+                  value={answers.delegationSchool}
+                  otherLabel={t("q-school-other")}
+                  onChange={(v) => set("delegationSchool", v)}
+                />
+                <OtherInput
+                  show={answers.delegationSchool === OTHER}
+                  label={t("q-delegation-school")}
+                  value={answers.delegationOther}
+                  onChange={(v) => set("delegationOther", v)}
+                />
+              </Question>
+            )}
+
+            <Question label={t("q-connect-school")} labelId="connect-label" wide>
+              <ChoiceChips
+                name="connectWithSchool"
+                labelId="connect-label"
+                options={CONNECT_SCHOOL_OPTIONS}
+                value={answers.connectWithSchool}
+                onChange={(v) => set("connectWithSchool", v)}
+              />
+            </Question>
+
+            <Question label={t("q-travel-funding")} labelId="funding-label" wide>
+              <ChoiceChips
+                name="travelFunding"
+                labelId="funding-label"
+                options={YES_NO_UNSURE_OPTIONS}
+                value={answers.travelFunding}
+                onChange={(v) => set("travelFunding", v)}
+              />
+            </Question>
+
+            <Question label={t("q-accommodation")} labelId="accommodation-label" wide>
+              <ChoiceChips
+                name="accommodation"
+                labelId="accommodation-label"
+                options={YES_NO_UNSURE_OPTIONS}
+                value={answers.accommodation}
+                onChange={(v) => set("accommodation", v)}
+              />
+            </Question>
+          </WizardCard>
+        </>
+      )}
+
       {section === "experience" && (
         <>
           <StepHeader
@@ -232,175 +321,94 @@ export default function InterestsForm({ initial, startIndex, initialResume }: In
             total={INTEREST_STEPS.length}
           />
 
-          <div className="wizard-card-pair">
-            <WizardCard
-              title={t("card-travel")}
-              subtitle={t("card-travel-note")}
-              icon={<TrainFront />}
-            >
-              <Question label={t("q-transport")} htmlFor="transport" wide>
-                <SelectField
-                  id="transport"
-                  options={TRANSPORT_OPTIONS}
-                  value={answers.transport}
-                  onChange={(v) => set("transport", v)}
-                />
-                <OtherInput
-                  show={answers.transport === OTHER}
-                  label={t("q-transport")}
-                  value={answers.transportOther}
-                  onChange={(v) => set("transportOther", v)}
-                />
-              </Question>
+          <WizardCard
+            title={t("card-about")}
+            subtitle={t("card-about-note")}
+            icon={<Sparkles />}
+          >
+            <Question label={t("q-heard-from")} htmlFor="heardFrom" wide>
+              <SelectField
+                id="heardFrom"
+                options={HEARD_FROM_OPTIONS}
+                value={answers.heardFrom}
+                onChange={(v) => set("heardFrom", v)}
+              />
+              <OtherInput
+                show={answers.heardFrom === OTHER}
+                label={t("q-heard-from")}
+                value={answers.heardFromOther}
+                onChange={(v) => set("heardFromOther", v)}
+              />
+            </Question>
 
-              <Question label={t("q-delegation")} labelId="delegation-label" wide>
-                <ChoiceChips
-                  name="delegation"
-                  labelId="delegation-label"
-                  options={YES_NO_UNSURE_OPTIONS}
-                  value={answers.delegation}
-                  onChange={(v) => set("delegation", v)}
-                />
-              </Question>
+            <Question label={t("q-convinced-by")} htmlFor="convincedBy" wide>
+              <SelectField
+                id="convincedBy"
+                options={CONVINCED_BY_OPTIONS}
+                value={answers.convincedBy}
+                onChange={(v) => set("convincedBy", v)}
+              />
+              <OtherInput
+                show={answers.convincedBy === OTHER}
+                label={t("q-convinced-by")}
+                value={answers.convincedByOther}
+                onChange={(v) => set("convincedByOther", v)}
+              />
+            </Question>
 
-              {answers.delegation === "yes" && (
-                <Question label={t("q-delegation-school")} htmlFor="delegationSchool" wide>
-                  <Combobox
-                    id="delegationSchool"
-                    options={delegationOptions}
-                    value={answers.delegationSchool}
-                    otherLabel={t("q-school-other")}
-                    onChange={(v) => set("delegationSchool", v)}
-                  />
-                  <OtherInput
-                    show={answers.delegationSchool === OTHER}
-                    label={t("q-delegation-school")}
-                    value={answers.delegationOther}
-                    onChange={(v) => set("delegationOther", v)}
-                  />
-                </Question>
-              )}
+            <Question label={t("q-attended")} labelId="attended-label" wide>
+              <MultiChips
+                labelId="attended-label"
+                options={ATTENDED_OPTIONS}
+                values={answers.attended}
+                exclusive={[FIRST_TIME]}
+                onChange={(v) => set("attended", v)}
+              />
+            </Question>
 
-              <Question label={t("q-connect-school")} labelId="connect-label" wide>
-                <ChoiceChips
-                  name="connectWithSchool"
-                  labelId="connect-label"
-                  options={CONNECT_SCHOOL_OPTIONS}
-                  value={answers.connectWithSchool}
-                  onChange={(v) => set("connectWithSchool", v)}
-                />
-              </Question>
+            <Question label={t("q-session-formats")} labelId="formats-label" wide>
+              <MultiChips
+                labelId="formats-label"
+                options={SESSION_FORMAT_OPTIONS}
+                values={answers.sessionFormats}
+                max={LIMITS.sessionFormats}
+                onChange={(v) => set("sessionFormats", v)}
+              />
+              <OtherInput
+                show={answers.sessionFormats.includes(OTHER)}
+                label={t("q-session-formats")}
+                value={answers.sessionFormatsOther}
+                onChange={(v) => set("sessionFormatsOther", v)}
+              />
+            </Question>
 
-              <Question label={t("q-travel-funding")} labelId="funding-label" wide>
-                <ChoiceChips
-                  name="travelFunding"
-                  labelId="funding-label"
-                  options={YES_NO_UNSURE_OPTIONS}
-                  value={answers.travelFunding}
-                  onChange={(v) => set("travelFunding", v)}
-                />
-              </Question>
+            <Question label={t("q-community")} labelId="community-label" wide>
+              <MultiChips
+                labelId="community-label"
+                options={COMMUNITY_OPTIONS}
+                values={answers.communityInvolvement}
+                exclusive={["not-involved"]}
+                onChange={(v) => set("communityInvolvement", v)}
+              />
+              <OtherInput
+                show={answers.communityInvolvement.includes(OTHER)}
+                label={t("q-community")}
+                value={answers.communityInvolvementOther}
+                onChange={(v) => set("communityInvolvementOther", v)}
+              />
+            </Question>
 
-              <Question label={t("q-accommodation")} labelId="accommodation-label" wide>
-                <ChoiceChips
-                  name="accommodation"
-                  labelId="accommodation-label"
-                  options={YES_NO_UNSURE_OPTIONS}
-                  value={answers.accommodation}
-                  onChange={(v) => set("accommodation", v)}
-                />
-              </Question>
-            </WizardCard>
-
-            <WizardCard
-              title={t("card-about")}
-              subtitle={t("card-about-note")}
-              icon={<Sparkles />}
-            >
-              <Question label={t("q-heard-from")} htmlFor="heardFrom" wide>
-                <SelectField
-                  id="heardFrom"
-                  options={HEARD_FROM_OPTIONS}
-                  value={answers.heardFrom}
-                  onChange={(v) => set("heardFrom", v)}
-                />
-                <OtherInput
-                  show={answers.heardFrom === OTHER}
-                  label={t("q-heard-from")}
-                  value={answers.heardFromOther}
-                  onChange={(v) => set("heardFromOther", v)}
-                />
-              </Question>
-
-              <Question label={t("q-convinced-by")} htmlFor="convincedBy" wide>
-                <SelectField
-                  id="convincedBy"
-                  options={CONVINCED_BY_OPTIONS}
-                  value={answers.convincedBy}
-                  onChange={(v) => set("convincedBy", v)}
-                />
-                <OtherInput
-                  show={answers.convincedBy === OTHER}
-                  label={t("q-convinced-by")}
-                  value={answers.convincedByOther}
-                  onChange={(v) => set("convincedByOther", v)}
-                />
-              </Question>
-
-              <Question label={t("q-attended")} labelId="attended-label" wide>
-                <MultiChips
-                  labelId="attended-label"
-                  options={ATTENDED_OPTIONS}
-                  values={answers.attended}
-                  exclusive={[FIRST_TIME]}
-                  onChange={(v) => set("attended", v)}
-                />
-              </Question>
-
-              <Question label={t("q-session-formats")} labelId="formats-label" wide>
-                <MultiChips
-                  labelId="formats-label"
-                  options={SESSION_FORMAT_OPTIONS}
-                  values={answers.sessionFormats}
-                  max={LIMITS.sessionFormats}
-                  onChange={(v) => set("sessionFormats", v)}
-                />
-                <OtherInput
-                  show={answers.sessionFormats.includes(OTHER)}
-                  label={t("q-session-formats")}
-                  value={answers.sessionFormatsOther}
-                  onChange={(v) => set("sessionFormatsOther", v)}
-                />
-              </Question>
-
-              <Question label={t("q-community")} labelId="community-label" wide>
-                <MultiChips
-                  labelId="community-label"
-                  options={COMMUNITY_OPTIONS}
-                  values={answers.communityInvolvement}
-                  exclusive={["not-involved"]}
-                  onChange={(v) => set("communityInvolvement", v)}
-                />
-                <OtherInput
-                  show={answers.communityInvolvement.includes(OTHER)}
-                  label={t("q-community")}
-                  value={answers.communityInvolvementOther}
-                  onChange={(v) => set("communityInvolvementOther", v)}
-                />
-              </Question>
-
-              <Question label={t("q-community-project")} htmlFor="communityProject" wide>
-                <input
-                  id="communityProject"
-                  className="wizard-input"
-                  type="text"
-                  maxLength={200}
-                  value={answers.communityProject}
-                  onChange={(e) => set("communityProject", e.target.value)}
-                />
-              </Question>
-            </WizardCard>
-          </div>
+            <Question label={t("q-community-project")} htmlFor="communityProject" wide>
+              <input
+                id="communityProject"
+                className="wizard-input"
+                type="text"
+                maxLength={200}
+                value={answers.communityProject}
+                onChange={(e) => set("communityProject", e.target.value)}
+              />
+            </Question>
+          </WizardCard>
         </>
       )}
 

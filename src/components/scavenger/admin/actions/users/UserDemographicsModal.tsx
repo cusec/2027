@@ -271,7 +271,7 @@ const UserDemographicsModal = ({
               <Row label="Work arrangement" value={one(WORK_ARRANGEMENT_OPTIONS, data.workArrangement)} />
             </Section>
 
-            <Section title="Getting there and community" saved={s?.experience}>
+            <Section title="Getting there" saved={s?.travel}>
               <Row label="Transport" value={one(TRANSPORT_OPTIONS, data.transport, data.transportOther)} />
               <Row label="With a delegation" value={one(YES_NO_UNSURE_OPTIONS, data.delegation)} />
               <Row label="Delegation" value={school(data.delegationSchool, data.delegationOther)} />
@@ -284,6 +284,9 @@ const UserDemographicsModal = ({
                 value={one(YES_NO_UNSURE_OPTIONS, data.travelFunding)}
               />
               <Row label="Needs accommodation" value={one(YES_NO_UNSURE_OPTIONS, data.accommodation)} />
+            </Section>
+
+            <Section title="Discovery and community" saved={s?.experience}>
               <Row
                 label="First heard from"
                 value={one(HEARD_FROM_OPTIONS, data.heardFrom, data.heardFromOther)}

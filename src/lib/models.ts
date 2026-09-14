@@ -314,6 +314,7 @@ const demographicInfoSchema = new Schema(
       basics: { type: Date, default: null },
       background: { type: Date, default: null },
       goals: { type: Date, default: null },
+      travel: { type: Date, default: null },
       experience: { type: Date, default: null },
       links: { type: Date, default: null },
     },

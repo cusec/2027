@@ -604,10 +604,10 @@ setup checklist (DNS, webhook, env, Auth0 URLs) lives in
                          Logged in -> first incomplete step, or the confirmation.
 /tickets/profile         Required: Basics, then Education or Professional background
                          with travel origin. Two sections, one save each.
-/tickets/interests       Optional answers, but all three sections are saved (blank is
+/tickets/interests       Optional answers, but all four sections are saved (blank is
                          fine) before the ticket step: goals and career interests,
-                         getting to CUSEC and discovery, then résumé, links and
-                         sponsor consent.
+                         getting to CUSEC, discovery and community, then résumé,
+                         links and sponsor consent. One card per step.
 /tickets/purchase        Ticket cards + checkout in an on-page modal.
 /tickets/demographics    Redirects to /tickets/profile (old links, Auth0 returnTo).
 /tickets/avatar          Redirects to /tickets. The avatar step is hidden until the

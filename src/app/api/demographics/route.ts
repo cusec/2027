@@ -201,7 +201,7 @@ function goals(answers: Answers): Update {
   };
 }
 
-function experience(answers: Answers): Update {
+function travel(answers: Answers): Update {
   const delegation = one(answers, "delegation", YES_NO_UNSURE_OPTIONS);
 
   let delegationSchool = "";
@@ -217,9 +217,6 @@ function experience(answers: Answers): Update {
     if (delegationSchool === OTHER) delegationOther = text(answers, "delegationOther");
   }
 
-  const attended = many(answers, "attended", ATTENDED_OPTIONS);
-  if (attended.includes(FIRST_TIME) && attended.length > 1) throw new InvalidAnswer("attended");
-
   return {
     ...oneWithOther(answers, "transport", TRANSPORT_OPTIONS),
     delegation,
@@ -228,6 +225,14 @@ function experience(answers: Answers): Update {
     connectWithSchool: one(answers, "connectWithSchool", CONNECT_SCHOOL_OPTIONS),
     travelFunding: one(answers, "travelFunding", YES_NO_UNSURE_OPTIONS),
     accommodation: one(answers, "accommodation", YES_NO_UNSURE_OPTIONS),
+  };
+}
+
+function experience(answers: Answers): Update {
+  const attended = many(answers, "attended", ATTENDED_OPTIONS);
+  if (attended.includes(FIRST_TIME) && attended.length > 1) throw new InvalidAnswer("attended");
+
+  return {
     ...oneWithOther(answers, "heardFrom", HEARD_FROM_OPTIONS),
     ...oneWithOther(answers, "convincedBy", CONVINCED_BY_OPTIONS),
     attended,
@@ -318,6 +323,9 @@ export async function PUT(request: Request) {
         break;
       case "goals":
         update = goals(answers);
+        break;
+      case "travel":
+        update = travel(answers);
         break;
       case "experience":
         update = experience(answers);

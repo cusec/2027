@@ -264,6 +264,7 @@ export interface DemographicInfo {
     basics: string | null;
     background: string | null;
     goals: string | null;
+    travel: string | null;
     experience: string | null;
     links: string | null;
   };

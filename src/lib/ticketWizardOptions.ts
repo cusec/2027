@@ -360,9 +360,9 @@ export function isValidLink(field: LinkField, value: string): boolean {
   return LINK_PATTERNS[field].test(url);
 }
 
-export const SECTIONS = ["basics", "background", "goals", "experience", "links"] as const;
+export const SECTIONS = ["basics", "background", "goals", "travel", "experience", "links"] as const;
 export type SectionId = (typeof SECTIONS)[number];
 
 export const REQUIRED_SECTIONS: SectionId[] = ["basics", "background"];
 export const PROFILE_SECTIONS: SectionId[] = ["basics", "background"];
-export const INTEREST_SECTIONS: SectionId[] = ["goals", "experience", "links"];
+export const INTEREST_SECTIONS: SectionId[] = ["goals", "travel", "experience", "links"];
