@@ -150,7 +150,13 @@ export async function getTicketTypes(): Promise<TicketTypesResult> {
 
     const body = await res.json();
     const rawTickets = Array.isArray(body?.[ticketTypesKey]) ? body[ticketTypesKey] : [];
-    return { tickets: rawTickets.map(parseTicketType), source: "live" };
+    // Hidden in Ticket Tailor means hidden here too.
+    const visible = (rawTickets as Record<string, unknown>[]).filter((raw) => {
+      const attrs = (raw?.attributes as Record<string, unknown>) ?? raw ?? {};
+      const status = String(attrs.status ?? "").toLowerCase();
+      return status !== "hidden" && !status.includes("admin");
+    });
+    return { tickets: visible.map(parseTicketType), source: "live" };
   } catch {
     return { tickets: [], source: "error" };
   }
