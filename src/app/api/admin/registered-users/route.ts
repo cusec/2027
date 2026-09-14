@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { auth0 } from "@/lib/auth0";
-import { RegisteredUser } from "@/lib/models";
+import { RegisteredUser, User } from "@/lib/models";
 import connectMongoDB from "@/lib/mongodb";
 import isAdmin from "@/lib/isAdmin";
 import { logAdminAction, sanitizeDataForLogging } from "@/lib/adminAuditLogger";
@@ -127,10 +127,43 @@ export async function PUT(request: Request) {
       isLinked: registeredUser.isLinked,
     });
 
-    // Update only isLinked field
     registeredUser.isLinked = isLinked;
-
     await registeredUser.save();
+
+    // Unlinking has to detach the account too. Flipping only this flag left
+    // the account holding linked_email and the ticket name: the purchase page
+    // then offered Buy again, while relinking refused because the account
+    // still looked linked, so a new purchase could never attach.
+    //
+    // The account may have linked through this row's own address, or through
+    // its personal or student address (the manual link-email flow matches
+    // those). A secondary address is only followed when no other ticket row
+    // owns it, so another delegate's link is never touched.
+    let unlinkedAccount: string | null = null;
+    if (!isLinked) {
+      const candidates = [registeredUser.linkedEmail];
+      for (const address of [registeredUser.personalEmail, registeredUser.studentEmail]) {
+        if (!address || candidates.includes(address)) continue;
+        const ownedElsewhere = await RegisteredUser.exists({
+          _id: { $ne: registeredUser._id },
+          linkedEmail: address,
+        });
+        if (!ownedElsewhere) candidates.push(address);
+      }
+
+      const account = await User.findOneAndUpdate(
+        { linked_email: { $in: candidates } },
+        {
+          $unset: { linked_email: "" },
+          $set: {
+            "ticketWizard.purchasedTicketName": null,
+            "ticketWizard.purchasedTicketTypeId": null,
+            "ticketWizard.currentStep": "purchase",
+          },
+        }
+      ).select("email");
+      unlinkedAccount = account?.email ?? null;
+    }
 
     // Store new data for audit logging
     const newData = sanitizeDataForLogging({
@@ -148,7 +181,7 @@ export async function PUT(request: Request) {
         resourceType: "user",
         targetUserEmail: registeredUser.linkedEmail,
         resourceId: userId,
-        details: { isLinked },
+        details: { isLinked, unlinkedAccount },
         previousData,
         newData,
         request,

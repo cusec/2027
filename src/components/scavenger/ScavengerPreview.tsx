@@ -239,12 +239,6 @@ export default async function ScavengerPreview({
       </section>
 
       <DashboardFAQ id="faq" heading="Questions, answered" items={FAQ} />
-
-      <p className="aero-preview__staff">
-        Organizer or volunteer?{" "}
-        {/* eslint-disable-next-line @next/next/no-html-link-for-pages */}
-        <a href="/auth/login?returnTo=/scavenger">Sign in to preview</a>
-      </p>
     </section>
   );
 }
