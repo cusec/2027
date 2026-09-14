@@ -79,13 +79,19 @@ const one = (answers: Answers, field: string, options: Option[], required = fals
   return value;
 };
 
-const many = (answers: Answers, field: string, options: Option[], max?: number): string[] => {
-  const raw = answers[field];
-  if (raw === undefined || raw === null) return [];
+const many = (
+  answers: Answers,
+  field: string,
+  options: Option[],
+  max?: number,
+  required = false
+): string[] => {
+  const raw = answers[field] ?? [];
   if (!Array.isArray(raw)) throw new InvalidAnswer(field);
   const values = [...new Set(raw.filter((v): v is string => typeof v === "string"))];
   if (values.some((v) => !options.some((o) => o.value === v))) throw new InvalidAnswer(field);
   if (max !== undefined && values.length > max) throw new InvalidAnswer(field);
+  if (required && values.length === 0) throw new InvalidAnswer(field);
   return values;
 };
 
@@ -104,10 +110,11 @@ const manyWithOther = (
   answers: Answers,
   field: string,
   options: Option[],
-  max?: number
+  max?: number,
+  required = false
 ): Update => {
-  const values = many(answers, field, options, max);
-  const other = values.includes(OTHER) ? text(answers, `${field}Other`) : "";
+  const values = many(answers, field, options, max, required);
+  const other = values.includes(OTHER) ? text(answers, `${field}Other`, required) : "";
   return { [field]: values, [`${field}Other`]: other };
 };
 
@@ -186,58 +193,60 @@ function background(answers: Answers, attendeeType: string): Update {
 }
 
 function goals(answers: Answers): Update {
-  const opportunities = manyWithOther(answers, "opportunities", OPPORTUNITY_OPTIONS);
+  const opportunities = manyWithOther(answers, "opportunities", OPPORTUNITY_OPTIONS, undefined, true);
   const picked = opportunities.opportunities as string[];
   const looking = !picked.includes(NOT_LOOKING);
   if (!looking && picked.length > 1) throw new InvalidAnswer("opportunities");
 
   return {
-    ...manyWithOther(answers, "attendReasons", ATTEND_REASON_OPTIONS, LIMITS.attendReasons),
-    ...manyWithOther(answers, "successMeasures", SUCCESS_OPTIONS, LIMITS.successMeasures),
+    ...manyWithOther(answers, "attendReasons", ATTEND_REASON_OPTIONS, LIMITS.attendReasons, true),
+    ...manyWithOther(answers, "successMeasures", SUCCESS_OPTIONS, LIMITS.successMeasures, true),
     ...opportunities,
-    ...manyWithOther(answers, "techAreas", TECH_AREA_OPTIONS, LIMITS.techAreas),
-    workLocations: looking ? many(answers, "workLocations", WORK_LOCATION_OPTIONS) : [],
-    workArrangement: looking ? one(answers, "workArrangement", WORK_ARRANGEMENT_OPTIONS) : "",
+    ...manyWithOther(answers, "techAreas", TECH_AREA_OPTIONS, LIMITS.techAreas, true),
+    workLocations: looking
+      ? many(answers, "workLocations", WORK_LOCATION_OPTIONS, LIMITS.workLocations, true)
+      : [],
+    workArrangement: looking ? one(answers, "workArrangement", WORK_ARRANGEMENT_OPTIONS, true) : "",
   };
 }
 
 function travel(answers: Answers): Update {
-  const delegation = one(answers, "delegation", YES_NO_UNSURE_OPTIONS);
+  const delegation = one(answers, "delegation", YES_NO_UNSURE_OPTIONS, true);
 
   let delegationSchool = "";
   let delegationOther = "";
   if (delegation === "yes") {
-    delegationSchool = text(answers, "delegationSchool");
+    delegationSchool = text(answers, "delegationSchool", true);
     const known =
       !delegationSchool ||
       delegationSchool === OTHER ||
       delegationSchool === INDEPENDENT_DELEGATION ||
       INSTITUTIONS.some((i) => i.value === delegationSchool);
     if (!known) throw new InvalidAnswer("delegationSchool");
-    if (delegationSchool === OTHER) delegationOther = text(answers, "delegationOther");
+    if (delegationSchool === OTHER) delegationOther = text(answers, "delegationOther", true);
   }
 
   return {
-    ...oneWithOther(answers, "transport", TRANSPORT_OPTIONS),
+    ...oneWithOther(answers, "transport", TRANSPORT_OPTIONS, true),
     delegation,
     delegationSchool,
     delegationOther,
-    connectWithSchool: one(answers, "connectWithSchool", CONNECT_SCHOOL_OPTIONS),
-    travelFunding: one(answers, "travelFunding", YES_NO_UNSURE_OPTIONS),
-    accommodation: one(answers, "accommodation", YES_NO_UNSURE_OPTIONS),
+    connectWithSchool: one(answers, "connectWithSchool", CONNECT_SCHOOL_OPTIONS, true),
+    travelFunding: one(answers, "travelFunding", YES_NO_UNSURE_OPTIONS, true),
+    accommodation: one(answers, "accommodation", YES_NO_UNSURE_OPTIONS, true),
   };
 }
 
 function experience(answers: Answers): Update {
-  const attended = many(answers, "attended", ATTENDED_OPTIONS);
+  const attended = many(answers, "attended", ATTENDED_OPTIONS, undefined, true);
   if (attended.includes(FIRST_TIME) && attended.length > 1) throw new InvalidAnswer("attended");
 
   return {
-    ...oneWithOther(answers, "heardFrom", HEARD_FROM_OPTIONS),
-    ...oneWithOther(answers, "convincedBy", CONVINCED_BY_OPTIONS),
+    ...oneWithOther(answers, "heardFrom", HEARD_FROM_OPTIONS, true),
+    ...oneWithOther(answers, "convincedBy", CONVINCED_BY_OPTIONS, true),
     attended,
-    ...manyWithOther(answers, "sessionFormats", SESSION_FORMAT_OPTIONS, LIMITS.sessionFormats),
-    ...manyWithOther(answers, "communityInvolvement", COMMUNITY_OPTIONS),
+    ...manyWithOther(answers, "sessionFormats", SESSION_FORMAT_OPTIONS, LIMITS.sessionFormats, true),
+    ...manyWithOther(answers, "communityInvolvement", COMMUNITY_OPTIONS, undefined, true),
     communityProject: text(answers, "communityProject"),
   };
 }

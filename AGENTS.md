@@ -90,7 +90,7 @@ One folder per page section, each named after the section and holding that
 section's component plus anything only it uses. Sections are composed in order
 by `[locale]/page.tsx`. All components are prefixed `V2`; only `V2Nav`,
 `V2LocaleSwitcher`, `V2CdPlayer`, `V2Archive`, `V2Wordmark`, `V2ScrollReveal`
-and `V2Faq` are client components, everything else is a server component.
+`V2Faq` and `V2Passes` are client components, everything else is a server component.
 
 ```
 components/v2/
@@ -132,7 +132,7 @@ since its sections are not reused anywhere else.
 | `V2SdCard` | One CUSEC-SD card, rebuilt in CSS so its inserted/idle state can follow the loaded year. |
 | `archiveData.ts` | Per-edition photos, counts and card gradients. |
 | `V2Hunt` | Scavenger hunt card + 2026 leaderboard + map pins. |
-| `V2Passes` | Basic / VIP tickets. |
+| `V2Passes` | Student / Professional toggle over one ticket card, with a `+$15 VIP` chip (`Tickets/VipChip`) whose perks show on hover, focus or tap. The perks are the ticket strategy doc's exact wording and are shared with the `/tickets` purchase cards. |
 | `V2Scene` | `.v2-scene` + the painted backdrop `<img>`. Every page renders one; `screens` opts into the full-viewport rhythm. |
 | `V2Sponsors` | Landing-page teaser: heading pill + `V2SponsorHexes`. |
 | `V2SponsorHexes` | The honeycomb itself, shared by the teaser and `/sponsors`. |
@@ -416,8 +416,8 @@ are confirmed.
 `src/assets_for_reference/` and the exports carry invented numbers — 25
 editions, 500+ attendees, $115 / $160 tickets. **`messages/` is the source of
 truth for every string and figure.** Use the frames for geometry and colour
-only. In particular there are no ticket prices anywhere on this site: passes
-are pre-sale ("Tickets open soon"), so never introduce a price from a mockup.
+only. Ticket prices and perks come from the ticket strategy doc (student $65,
+professional $180, VIP add-on +$15), never from a mockup.
 
 The Good to know card is built from facts the site already states elsewhere
 (the hero pill's dates, the FAQ's ticket and refund answers). It was previously

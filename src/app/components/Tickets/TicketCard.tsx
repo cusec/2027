@@ -1,7 +1,10 @@
 "use client";
 
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import type { TicketType } from "@/lib/ticketTailor";
+import VipChip from "./VipChip";
+
+const PERKS = 4;
 
 function formatPrice(cents: number): string {
   return `$${(cents / 100).toFixed(2)} CAD`;
@@ -9,7 +12,7 @@ function formatPrice(cents: number): string {
 
 interface TicketCardProps {
   ticket: TicketType;
-  isVip: boolean;
+  vip: TicketType | null;
   checkoutConfigured: boolean;
   purchased?: boolean;
   onBuy?: () => void;
@@ -17,16 +20,26 @@ interface TicketCardProps {
 
 export default function TicketCard({
   ticket,
-  isVip,
+  vip,
   checkoutConfigured,
   purchased = false,
   onBuy,
 }: TicketCardProps) {
   const t = useTranslations("TicketsPage");
+  const passes = useTranslations("V2.passes");
+  const locale = useLocale();
 
-  const features = isVip
-    ? [t("vip-feature-1"), t("vip-feature-2"), t("vip-feature-3")]
-    : [t("general-feature-1"), t("general-feature-2"), t("general-feature-3")];
+  const list = (prefix: string) =>
+    Array.from({ length: PERKS }, (_, i) => passes(`${prefix}-${i + 1}`));
+
+  const vipExtra = vip ? vip.priceCents - ticket.priceCents : 0;
+  const vipPrice = new Intl.NumberFormat(locale, {
+    style: "currency",
+    currency: "CAD",
+    currencyDisplay: "narrowSymbol",
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0,
+  }).format(vipExtra / 100);
 
   let buttonLabel = t("buy-button");
   let disabled = false;
@@ -46,17 +59,21 @@ export default function TicketCard({
   }
 
   return (
-    <div
-      className={`ticket-card${isVip ? " ticket-card--vip" : ""}${
-        purchased ? " ticket-card--purchased" : ""
-      }`}
-    >
-      {isVip && <span className="ticket-card-badge">{t("vip-badge")}</span>}
+    <div className={`ticket-card${purchased ? " ticket-card--purchased" : ""}`}>
       <h2 className="ticket-card-name">{ticket.name}</h2>
-      <p className="ticket-card-price">{formatPrice(ticket.priceCents)}</p>
+      <div className="ticket-card-price-row">
+        <p className="ticket-card-price">{formatPrice(ticket.priceCents)}</p>
+        {vip && vipExtra > 0 && (
+          <VipChip
+            label={t("vip-chip", { price: vipPrice })}
+            heading={passes("vip-heading")}
+            perks={list("vip-perk")}
+          />
+        )}
+      </div>
       <ul className="ticket-card-features">
-        {features.map(feature => (
-          <li key={feature}>{feature}</li>
+        {list("perk").map((perk) => (
+          <li key={perk}>{perk}</li>
         ))}
       </ul>
       <button

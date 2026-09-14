@@ -1,18 +1,28 @@
 "use client";
 
-import { useEffect, useId, useMemo, useRef, useState, type ReactNode } from "react";
+import {
+  useEffect,
+  useId,
+  useMemo,
+  useRef,
+  useState,
+  type KeyboardEvent,
+  type ReactNode,
+  type RefObject,
+} from "react";
 import { useLocale, useTranslations } from "next-intl";
-import { Check, X } from "lucide-react";
+import { Check, ChevronDown, X } from "lucide-react";
 import { OTHER, optionLabel, type Option } from "@/lib/ticketWizardOptions";
+
+const fold = (s: string) =>
+  s.normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase();
 
 export function WizardCard({
   title,
-  subtitle,
   icon,
   children,
 }: {
   title: string;
-  subtitle?: string;
   icon?: ReactNode;
   children: ReactNode;
 }) {
@@ -24,10 +34,7 @@ export function WizardCard({
             {icon}
           </span>
         )}
-        <div>
-          <h2 className="wizard-card__title">{title}</h2>
-          {subtitle && <p className="wizard-card__subtitle">{subtitle}</p>}
-        </div>
+        <h2 className="wizard-card__title">{title}</h2>
       </header>
       <div className="wizard-card__body">{children}</div>
     </section>
@@ -39,6 +46,8 @@ export function Question({
   hint,
   htmlFor,
   labelId,
+  anchor,
+  required = false,
   wide = false,
   children,
 }: {
@@ -46,18 +55,30 @@ export function Question({
   hint?: string;
   htmlFor?: string;
   labelId?: string;
+  anchor?: string;
+  required?: boolean;
   wide?: boolean;
   children: ReactNode;
 }) {
+  const text = (
+    <>
+      {label}
+      {required && (
+        <span className="wizard-q__req" aria-hidden="true">
+          {" *"}
+        </span>
+      )}
+    </>
+  );
   return (
-    <div className={`wizard-q${wide ? " wizard-q--wide" : ""}`}>
+    <div id={anchor} className={`wizard-q${wide ? " wizard-q--wide" : ""}`}>
       {htmlFor ? (
         <label className="wizard-q__label" htmlFor={htmlFor}>
-          {label}
+          {text}
         </label>
       ) : (
         <span className="wizard-q__label" id={labelId}>
-          {label}
+          {text}
         </span>
       )}
       {children}
@@ -161,102 +182,358 @@ export function MultiChips({
   );
 }
 
-export function TagPicker({
+export interface SelectOption {
+  value: string;
+  label: string;
+}
+
+function useDismiss(ref: RefObject<HTMLElement | null>, open: boolean, close: () => void) {
+  useEffect(() => {
+    if (!open) return;
+    const onPointerDown = (e: PointerEvent) => {
+      if (!ref.current?.contains(e.target as Node)) close();
+    };
+    document.addEventListener("pointerdown", onPointerDown);
+    return () => document.removeEventListener("pointerdown", onPointerDown);
+  }, [ref, open, close]);
+}
+
+function useActiveIntoView(listRef: RefObject<HTMLUListElement | null>, open: boolean, active: number) {
+  useEffect(() => {
+    if (open) listRef.current?.children[active]?.scrollIntoView({ block: "nearest" });
+  }, [listRef, open, active]);
+}
+
+function typeahead(options: SelectOption[], from: number, key: string) {
+  const needle = fold(key);
+  for (let step = 1; step <= options.length; step++) {
+    const i = (from + step) % options.length;
+    if (fold(options[i].label).startsWith(needle)) return i;
+  }
+  return from;
+}
+
+type ListKeyResult = "open" | "close" | "choose" | number | null;
+
+function listKey(
+  e: KeyboardEvent<HTMLElement>,
+  open: boolean,
+  active: number,
+  options: SelectOption[]
+): ListKeyResult {
+  if (!open) {
+    if (["ArrowDown", "ArrowUp", "Enter", " "].includes(e.key)) {
+      e.preventDefault();
+      return "open";
+    }
+    return null;
+  }
+  switch (e.key) {
+    case "ArrowDown":
+      e.preventDefault();
+      return Math.min(active + 1, options.length - 1);
+    case "ArrowUp":
+      e.preventDefault();
+      return Math.max(active - 1, 0);
+    case "Home":
+      e.preventDefault();
+      return 0;
+    case "End":
+      e.preventDefault();
+      return options.length - 1;
+    case "Enter":
+    case " ":
+      e.preventDefault();
+      return "choose";
+    case "Escape":
+      e.preventDefault();
+      return "close";
+    case "Tab":
+      return "close";
+    default:
+      return e.key.length === 1 ? typeahead(options, active, e.key) : null;
+  }
+}
+
+export function BrandSelect({
   id,
+  labelId,
+  ariaLabel,
   options,
-  values,
+  value,
   onChange,
-  max,
+  required = false,
+  disabled = false,
+  placeholder,
 }: {
   id: string;
-  options: Option[];
-  values: string[];
-  onChange: (values: string[]) => void;
-  max?: number;
+  labelId?: string;
+  ariaLabel?: string;
+  options: SelectOption[];
+  value: string;
+  onChange: (value: string) => void;
+  required?: boolean;
+  disabled?: boolean;
+  placeholder?: string;
 }) {
   const t = useTranslations("TicketWizard");
-  const locale = useLocale();
-  const remaining = options.filter((o) => !values.includes(o.value));
-  const full = max !== undefined && values.length >= max;
+  const listId = useId();
+  const rootRef = useRef<HTMLDivElement>(null);
+  const triggerRef = useRef<HTMLDivElement>(null);
+  const listRef = useRef<HTMLUListElement>(null);
+  const [open, setOpen] = useState(false);
+  const [active, setActive] = useState(0);
+
+  const selected = options.find((o) => o.value === value);
+
+  useDismiss(rootRef, open, () => setOpen(false));
+  useActiveIntoView(listRef, open, active);
+
+  const show = () => {
+    if (disabled) return;
+    setActive(Math.max(0, options.findIndex((o) => o.value === value)));
+    setOpen(true);
+  };
+
+  const pick = (option: SelectOption) => {
+    onChange(option.value);
+    setOpen(false);
+    triggerRef.current?.focus();
+  };
+
+  const onKeyDown = (e: KeyboardEvent<HTMLDivElement>) => {
+    const result = listKey(e, open, active, options);
+    if (result === "open") show();
+    else if (result === "close") setOpen(false);
+    else if (result === "choose") {
+      if (options[active]) pick(options[active]);
+    } else if (typeof result === "number") setActive(result);
+  };
 
   return (
-    <div className="wizard-tags">
-      {values.map((value) => {
-        const option = options.find((o) => o.value === value);
-        if (!option) return null;
-        const label = optionLabel(option, locale);
-        return (
-          <span key={value} className="wizard-tag">
-            {label}
-            <button
-              type="button"
-              className="wizard-tag__remove"
-              aria-label={t("tag-remove", { label })}
-              onClick={() => onChange(values.filter((v) => v !== value))}
-            >
-              <X aria-hidden="true" />
-            </button>
-          </span>
-        );
-      })}
-      <select
+    <div className={`wizard-select${open ? " is-open" : ""}`} ref={rootRef}>
+      <div
+        ref={triggerRef}
         id={id}
-        className="wizard-tags__add"
-        value=""
-        disabled={full || remaining.length === 0}
-        onChange={(e) => e.target.value && onChange([...values, e.target.value])}
+        role="combobox"
+        tabIndex={disabled ? -1 : 0}
+        className={`wizard-input wizard-select__trigger${disabled ? " is-disabled" : ""}`}
+        aria-haspopup="listbox"
+        aria-expanded={open}
+        aria-controls={listId}
+        aria-labelledby={labelId}
+        aria-label={labelId ? undefined : ariaLabel}
+        aria-required={required || undefined}
+        aria-disabled={disabled || undefined}
+        aria-activedescendant={open ? `${listId}-${active}` : undefined}
+        onClick={() => (open ? setOpen(false) : show())}
+        onKeyDown={onKeyDown}
       >
-        <option value="">{full ? t("tag-full", { max: max ?? 0 }) : t("tag-add")}</option>
-        {remaining.map((option) => (
-          <option key={option.value} value={option.value}>
-            {optionLabel(option, locale)}
-          </option>
-        ))}
-      </select>
+        <span className={selected ? undefined : "wizard-select__placeholder"}>
+          {selected?.label ?? placeholder ?? t("select-placeholder")}
+        </span>
+        <ChevronDown className="wizard-select__chev" aria-hidden="true" />
+      </div>
+      <input
+        className="wizard-select__native"
+        tabIndex={-1}
+        aria-hidden="true"
+        required={required}
+        disabled={disabled}
+        value={value}
+        onChange={() => {}}
+      />
+      {open && (
+        <ul
+          ref={listRef}
+          className="wizard-combo__list"
+          id={listId}
+          role="listbox"
+          aria-labelledby={labelId}
+          aria-label={labelId ? undefined : ariaLabel}
+        >
+          {options.map((option, index) => {
+            const on = option.value === value;
+            return (
+              <li
+                key={option.value}
+                id={`${listId}-${index}`}
+                role="option"
+                aria-selected={on}
+                className={`wizard-combo__option${index === active ? " is-active" : ""}`}
+                onMouseDown={(e) => e.preventDefault()}
+                onMouseEnter={() => setActive(index)}
+                onClick={() => pick(option)}
+              >
+                <span>{option.label}</span>
+                {on && <Check className="wizard-combo__tick" aria-hidden="true" />}
+              </li>
+            );
+          })}
+        </ul>
+      )}
     </div>
   );
 }
 
 export function SelectField({
   id,
+  labelId,
   options,
   value,
   onChange,
   required = false,
 }: {
   id: string;
+  labelId: string;
   options: Option[];
   value: string;
   onChange: (value: string) => void;
   required?: boolean;
 }) {
-  const t = useTranslations("TicketWizard");
   const locale = useLocale();
   return (
-    <select
+    <BrandSelect
       id={id}
-      className="wizard-input"
+      labelId={labelId}
+      options={options.map((o) => ({ value: o.value, label: optionLabel(o, locale) }))}
       value={value}
       required={required}
-      onChange={(e) => onChange(e.target.value)}
-    >
-      <option value="">{t("select-placeholder")}</option>
-      {options.map((option) => (
-        <option key={option.value} value={option.value}>
-          {optionLabel(option, locale)}
-        </option>
-      ))}
-    </select>
+      onChange={onChange}
+    />
+  );
+}
+
+export function MultiSelect({
+  id,
+  labelId,
+  options,
+  values,
+  onChange,
+  max,
+  placeholder,
+}: {
+  id: string;
+  labelId: string;
+  options: Option[];
+  values: string[];
+  onChange: (values: string[]) => void;
+  max?: number;
+  placeholder: string;
+}) {
+  const t = useTranslations("TicketWizard");
+  const locale = useLocale();
+  const listId = useId();
+  const rootRef = useRef<HTMLDivElement>(null);
+  const listRef = useRef<HTMLUListElement>(null);
+  const [open, setOpen] = useState(false);
+  const [active, setActive] = useState(0);
+
+  const items = options.map((o) => ({ value: o.value, label: optionLabel(o, locale) }));
+  const full = max !== undefined && values.length >= max;
+
+  useDismiss(rootRef, open, () => setOpen(false));
+  useActiveIntoView(listRef, open, active);
+
+  const toggle = (value: string) => {
+    if (values.includes(value)) onChange(values.filter((v) => v !== value));
+    else if (!full) onChange([...values, value]);
+  };
+
+  const onKeyDown = (e: KeyboardEvent<HTMLDivElement>) => {
+    const result = listKey(e, open, active, items);
+    if (result === "open") setOpen(true);
+    else if (result === "close") setOpen(false);
+    else if (result === "choose") {
+      if (items[active]) toggle(items[active].value);
+    } else if (typeof result === "number") setActive(result);
+  };
+
+  return (
+    <div className={`wizard-multi${open ? " is-open" : ""}`} ref={rootRef}>
+      <div className="wizard-tags">
+        {values.map((value) => {
+          const item = items.find((i) => i.value === value);
+          if (!item) return null;
+          return (
+            <span key={value} className="wizard-tag">
+              {item.label}
+              <button
+                type="button"
+                className="wizard-tag__remove"
+                aria-label={t("tag-remove", { label: item.label })}
+                onClick={() => onChange(values.filter((v) => v !== value))}
+              >
+                <X aria-hidden="true" />
+              </button>
+            </span>
+          );
+        })}
+        <div
+          id={id}
+          role="combobox"
+          tabIndex={0}
+          className="wizard-tags__add"
+          aria-haspopup="listbox"
+          aria-expanded={open}
+          aria-controls={listId}
+          aria-labelledby={labelId}
+          aria-activedescendant={open ? `${listId}-${active}` : undefined}
+          onClick={() => setOpen((o) => !o)}
+          onKeyDown={onKeyDown}
+        >
+          <span>{placeholder}</span>
+          <ChevronDown className="wizard-select__chev" aria-hidden="true" />
+        </div>
+      </div>
+      {open && (
+        <ul
+          ref={listRef}
+          className="wizard-combo__list"
+          id={listId}
+          role="listbox"
+          aria-multiselectable="true"
+          aria-labelledby={labelId}
+        >
+          {items.map((item, index) => {
+            const on = values.includes(item.value);
+            const blocked = !on && full;
+            return (
+              <li
+                key={item.value}
+                id={`${listId}-${index}`}
+                role="option"
+                aria-selected={on}
+                aria-disabled={blocked || undefined}
+                className={`wizard-combo__option wizard-combo__option--multi${
+                  index === active ? " is-active" : ""
+                }${blocked ? " is-disabled" : ""}`}
+                onMouseDown={(e) => e.preventDefault()}
+                onMouseEnter={() => setActive(index)}
+                onClick={() => toggle(item.value)}
+              >
+                <span className={`wizard-chip__mark${on ? " is-on" : ""}`} aria-hidden="true">
+                  {on && <Check strokeWidth={3} />}
+                </span>
+                <span>{item.label}</span>
+              </li>
+            );
+          })}
+        </ul>
+      )}
+    </div>
   );
 }
 
 export function OtherInput({
+  id,
   show,
   value,
   onChange,
   required = false,
   label,
 }: {
+  id?: string;
   show: boolean;
   value: string;
   onChange: (value: string) => void;
@@ -267,6 +544,7 @@ export function OtherInput({
   if (!show) return null;
   return (
     <input
+      id={id}
       type="text"
       className="wizard-input wizard-input--other"
       value={value}
@@ -283,9 +561,6 @@ export interface ComboOption {
   value: string;
   label: string;
 }
-
-const fold = (s: string) =>
-  s.normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase();
 
 const MAX_MATCHES = 60;
 
@@ -509,25 +784,20 @@ export function OriginFields({
       />
 
       {country && hasRegions && (
-        <select
-          className="wizard-input"
-          aria-label={t("origin-region")}
+        <BrandSelect
+          id="travel-region"
+          ariaLabel={t("origin-region")}
+          placeholder={t("origin-region")}
+          options={(regions ?? []).map((r) => ({ value: r.code, label: r.name }))}
           value={region}
           required
           disabled={regions === null}
-          onChange={(e) => {
+          onChange={(next) => {
             setCities(null);
             setOtherChosen(false);
-            onChange({ travelRegion: e.target.value, travelCity: "" });
+            onChange({ travelRegion: next, travelCity: "" });
           }}
-        >
-          <option value="">{t("origin-region")}</option>
-          {(regions ?? []).map((r) => (
-            <option key={r.code} value={r.code}>
-              {r.name}
-            </option>
-          ))}
-        </select>
+        />
       )}
 
       {country && (!hasRegions || region) && (

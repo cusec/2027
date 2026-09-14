@@ -996,6 +996,12 @@
     color: var(--v2-ink-glass-deep);
 }
 
+.wizard-card:focus-within,
+.wizard-card:has(.is-open) {
+    position: relative;
+    z-index: 5;
+}
+
 .wizard-card__head {
     display: flex;
     align-items: center;
@@ -1026,13 +1032,6 @@
     font-size: clamp(1.2rem, 2.4vw, 1.55rem);
     line-height: 1.2;
     color: var(--v2-ink-glass-deep);
-}
-
-.wizard-card__subtitle {
-    margin: 0.2rem 0 0;
-    font-size: 0.9rem;
-    line-height: 1.5;
-    color: #3C5A4D;
 }
 
 .wizard-card__body {
@@ -1081,6 +1080,10 @@
     color: var(--v2-teal-deep);
 }
 
+.wizard-q__req {
+    color: #C2412D;
+}
+
 .wizard-q__hint {
     margin: 0;
     font-size: 0.8rem;
@@ -1125,9 +1128,100 @@ select.wizard-input {
     margin-top: 0.1rem;
 }
 
+.wizard-textarea {
+    min-height: 96px;
+    line-height: 1.5;
+    resize: vertical;
+}
+
+.wizard-select,
+.wizard-multi {
+    position: relative;
+}
+
+.wizard-select__trigger {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.6rem;
+    text-align: left;
+    cursor: var(--cursor-hand);
+    user-select: none;
+}
+
+.wizard-select__trigger:focus-visible,
+.wizard-select.is-open .wizard-select__trigger {
+    border-color: var(--v2-teal);
+    box-shadow: 0 0 0 3px rgba(78, 201, 168, 0.3);
+    outline: none;
+}
+
+.wizard-select__trigger.is-disabled {
+    opacity: 0.6;
+    cursor: var(--cursor-arrow);
+}
+
+.wizard-select__placeholder {
+    color: #4A675A;
+}
+
+.wizard-select__chev {
+    flex: none;
+    width: 18px;
+    height: 18px;
+    color: var(--v2-teal-deep);
+    transition: transform 160ms ease;
+}
+
+.wizard-select.is-open .wizard-select__chev,
+.wizard-multi.is-open .wizard-select__chev {
+    transform: rotate(180deg);
+}
+
+.wizard-select__native {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 1px;
+    padding: 0;
+    border: 0;
+    opacity: 0;
+    pointer-events: none;
+}
+
+.wizard-prefix {
+    display: flex;
+    align-items: center;
+    padding: 0 0 0 0.95rem;
+}
+
+.wizard-prefix:focus-within {
+    border-color: var(--v2-teal);
+    box-shadow: 0 0 0 3px rgba(78, 201, 168, 0.3);
+}
+
+.wizard-prefix__text {
+    flex: none;
+    color: #4A675A;
+    user-select: none;
+}
+
+.wizard-prefix input {
+    flex: 1;
+    min-width: 0;
+    min-height: 46px;
+    padding: 0.7rem 0.95rem 0.7rem 0.1rem;
+    border: 0;
+    background: transparent;
+    color: inherit;
+    font: inherit;
+    outline: none;
+}
+
 .wizard-chips {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(min(100%, 170px), 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 190px), 1fr));
     gap: 0.7rem;
 }
 
@@ -1193,7 +1287,8 @@ select.wizard-input {
     height: 14px;
 }
 
-.wizard-chip.is-on .wizard-chip__mark {
+.wizard-chip.is-on .wizard-chip__mark,
+.wizard-chip__mark.is-on {
     border-color: var(--v2-ink-glass-deep);
     background: var(--v2-ink-glass-deep);
 }
@@ -1252,29 +1347,27 @@ select.wizard-input {
 }
 
 .wizard-tags__add {
+    display: flex;
     flex: 1;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
     min-width: 160px;
     min-height: 38px;
-    padding: 0.4rem 2rem 0.4rem 0.5rem;
-    border: 0;
-    background: transparent;
-    appearance: none;
+    padding: 0.4rem 0.5rem;
     color: #3C5A4D;
     font-family: var(--v2-font-body);
     font-size: 0.92rem;
-    background-image: linear-gradient(45deg, transparent 50%, var(--v2-ink-glass-deep) 50%),
-        linear-gradient(135deg, var(--v2-ink-glass-deep) 50%, transparent 50%);
-    background-position: calc(100% - 16px) calc(50% + 2px), calc(100% - 10px) calc(50% + 2px);
-    background-size: 6px 6px, 6px 6px;
-    background-repeat: no-repeat;
     cursor: var(--cursor-hand);
+    user-select: none;
 }
 
 .wizard-tags__add:focus {
     outline: none;
 }
 
-.wizard-tags:focus-within {
+.wizard-tags:focus-within,
+.wizard-multi.is-open .wizard-tags {
     border-color: var(--v2-teal);
     box-shadow: 0 0 0 3px rgba(78, 201, 168, 0.3);
 }
@@ -1293,11 +1386,38 @@ select.wizard-input {
     margin: 0;
     padding: 6px;
     overflow-y: auto;
-    border: 1px solid rgba(9, 37, 26, 0.14);
-    border-radius: 14px;
-    background: #FFFFFF;
-    box-shadow: 0 16px 36px rgba(9, 28, 45, 0.28);
+    border: 1.5px solid rgba(78, 201, 168, 0.55);
+    border-radius: 16px;
+    background: linear-gradient(180deg, #FFFFFF 0%, #F3FBF8 100%);
+    box-shadow: 0 18px 40px rgba(9, 28, 45, 0.3), inset 0 1px 0 #FFFFFF;
     list-style: none;
+}
+
+/* Inset, rounded scrollbar so it never squares off the list's corners. */
+.wizard-combo__list::-webkit-scrollbar {
+    width: 12px;
+}
+
+.wizard-combo__list::-webkit-scrollbar-track {
+    margin-block: 14px;
+    background: transparent;
+}
+
+.wizard-combo__list::-webkit-scrollbar-thumb {
+    border: 4px solid transparent;
+    border-radius: 999px;
+    background: rgba(9, 37, 26, 0.28) padding-box;
+}
+
+.wizard-combo__list::-webkit-scrollbar-button {
+    display: none;
+}
+
+@supports not selector(::-webkit-scrollbar) {
+    .wizard-combo__list {
+        scrollbar-width: thin;
+        scrollbar-color: rgba(9, 37, 26, 0.28) transparent;
+    }
 }
 
 .wizard-combo__option,
@@ -1309,15 +1429,31 @@ select.wizard-input {
 }
 
 .wizard-combo__option {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
     cursor: var(--cursor-hand);
 }
 
 .wizard-combo__option.is-active {
-    background: #E8F7B3;
+    background: linear-gradient(to bottom, #E8F7B3, #D5EE86);
 }
 
 .wizard-combo__option[aria-selected="true"] {
     font-weight: 700;
+}
+
+.wizard-combo__option.is-disabled {
+    opacity: 0.45;
+    cursor: var(--cursor-arrow);
+}
+
+.wizard-combo__tick {
+    flex: none;
+    width: 16px;
+    height: 16px;
+    margin-left: auto;
+    color: var(--v2-lime-dark);
 }
 
 .wizard-combo__option--other {
@@ -1431,11 +1567,7 @@ select.wizard-input {
 }
 
 .wizard-consent {
-    align-items: flex-start;
-}
-
-.wizard-consent .wizard-chip__mark {
-    margin-top: 1px;
+    align-items: center;
 }
 
 .wizard-saved {

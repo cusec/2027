@@ -69,9 +69,16 @@ export async function linkTicketPurchase(
     };
   }
 
-  if (matchedUser.linked_email) return { linked: false, purchasedTicketName: ticket.name };
+  // An account already pointing at this same address (half-linked, e.g. its
+  // ticket record was unlinked or recreated) is finished here, not refused.
+  if (matchedUser.linked_email && matchedUser.linked_email !== email) {
+    return { linked: false, purchasedTicketName: ticket.name };
+  }
 
-  const alreadyLinkedElsewhere = await User.findOne({ linked_email: email });
+  const alreadyLinkedElsewhere = await User.findOne({
+    linked_email: email,
+    _id: { $ne: matchedUser._id },
+  });
   if (alreadyLinkedElsewhere) return { linked: false, purchasedTicketName: ticket.name };
 
   // A RegisteredUser already marked linked belongs to some account (possibly

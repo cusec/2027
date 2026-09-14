@@ -118,16 +118,6 @@
         inset 0 1.5px 1px rgba(255, 255, 255, 0.9);
 }
 
-/* VIP warms the same glass rather than becoming a different material. */
-.ticket-card--vip {
-    background: linear-gradient(
-        180deg,
-        rgba(255, 255, 255, 0.88) 0%,
-        rgba(252, 250, 226, 0.74) 50%,
-        rgba(236, 231, 168, 0.7) 100%
-    );
-}
-
 .ticket-card--purchased {
     outline: none;
     box-shadow: var(--v2-glass-shadow),
@@ -135,21 +125,12 @@
         inset 0 0 0 2px var(--v2-lime-deep);
 }
 
-.ticket-card-badge {
-    position: absolute;
-    top: -0.7rem;
-    right: 1.4rem;
-    padding: 0.3rem 0.75rem;
-    border: 1px solid rgba(255, 255, 255, 0.55);
-    border-radius: 999px;
-    background: linear-gradient(to bottom, var(--v2-lime-deep), var(--v2-lime));
-    box-shadow: 0 4px 10px rgba(9, 28, 45, 0.32);
-    color: var(--aero-ink);
-    font-family: var(--v2-font-pixel);
-    font-weight: var(--v2-font-pixel-weight);
-    font-size: 10px;
-    letter-spacing: 0.14em;
-    text-transform: uppercase;
+.ticket-card-price-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
 }
 
 .ticket-card-name {
@@ -203,6 +184,171 @@
 
 .ticket-card-buy {
     align-self: stretch;
+}
+
+.tickets-section {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 22px;
+}
+
+.tickets-grid--single {
+    grid-template-columns: minmax(0, 480px);
+    justify-content: center;
+    width: 100%;
+}
+
+/* Student / Professional switch, shared by the landing page and /tickets. */
+.ticket-toggle {
+    display: inline-flex;
+    gap: 4px;
+    padding: 5px;
+    border: 1.5px solid rgba(255, 255, 255, 0.9);
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.72);
+    box-shadow: 0 8px 22px rgba(9, 28, 45, 0.18);
+    backdrop-filter: blur(10px);
+}
+
+.ticket-toggle__option {
+    min-width: 128px;
+    padding: 10px 20px;
+    border: 0;
+    border-radius: 999px;
+    background: transparent;
+    color: var(--v2-ink-deep);
+    font-family: var(--v2-font-pixel);
+    font-weight: var(--v2-font-pixel-weight);
+    font-size: 13px;
+    letter-spacing: 0.06em;
+    cursor: var(--cursor-hand);
+    transition: background 160ms ease, box-shadow 160ms ease;
+}
+
+.ticket-toggle__option:hover {
+    background: rgba(9, 37, 26, 0.06);
+}
+
+.ticket-toggle__option.is-on {
+    background: linear-gradient(to bottom, var(--v2-lime), var(--v2-lime-deep));
+    box-shadow: 0 4px 10px rgba(96, 130, 20, 0.3);
+}
+
+.ticket-toggle__option:focus-visible {
+    outline: 2px solid var(--v2-teal-deep);
+    outline-offset: 2px;
+}
+
+/* +$15 VIP chip whose perks show on hover, keyboard focus or tap. */
+.vip-chip {
+    position: relative;
+    display: inline-flex;
+}
+
+.vip-chip__button {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    border: 1px solid rgba(122, 160, 30, 0.55);
+    border-radius: 999px;
+    background: linear-gradient(to bottom, #E8F7B3, #D5EE86);
+    box-shadow: 0 4px 10px rgba(96, 130, 20, 0.22);
+    color: var(--v2-ink-deep);
+    font-family: var(--v2-font-pixel);
+    font-weight: var(--v2-font-pixel-weight);
+    font-size: 12px;
+    letter-spacing: 0.06em;
+    cursor: var(--cursor-hand);
+}
+
+.vip-chip__button svg {
+    width: 14px;
+    height: 14px;
+}
+
+.vip-chip__button:focus-visible {
+    outline: 2px solid var(--v2-teal-deep);
+    outline-offset: 2px;
+}
+
+.vip-chip__panel {
+    position: absolute;
+    z-index: 20;
+    top: calc(100% + 10px);
+    right: 0;
+    width: min(300px, 80vw);
+    padding: 14px 16px;
+    border: 1px solid rgba(178, 254, 231, 0.34);
+    border-radius: 16px;
+    background: rgba(14, 35, 24, 0.96);
+    box-shadow: 0 18px 40px rgba(9, 28, 45, 0.35);
+    color: var(--v2-mint);
+    text-align: left;
+    opacity: 0;
+    visibility: hidden;
+    translate: 0 -4px;
+    transition: opacity 160ms ease, translate 160ms ease, visibility 160ms;
+}
+
+.vip-chip__panel::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: -12px;
+    height: 12px;
+}
+
+.vip-chip:hover .vip-chip__panel,
+.vip-chip:has(.vip-chip__button:focus-visible) .vip-chip__panel,
+.vip-chip.is-open .vip-chip__panel {
+    opacity: 1;
+    visibility: visible;
+    translate: 0 0;
+}
+
+.vip-chip__heading {
+    margin: 0 0 8px;
+    font-family: var(--v2-font-pixel);
+    font-weight: var(--v2-font-pixel-weight);
+    font-size: 12px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--v2-lime);
+}
+
+.vip-chip__panel ul {
+    display: grid;
+    gap: 6px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.vip-chip__panel li {
+    position: relative;
+    padding-left: 16px;
+    font-size: 13px;
+    line-height: 1.45;
+}
+
+.vip-chip__panel li::before {
+    content: "";
+    position: absolute;
+    top: 0.5em;
+    left: 2px;
+    width: 6px;
+    height: 6px;
+    border-radius: 2px;
+    background: var(--v2-lime);
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .vip-chip__panel {
+        transition: none;
+    }
 }
 
 @media (max-width: 640px) {

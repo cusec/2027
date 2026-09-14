@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, type FormEvent } from "react";
-import { useLocale, useTranslations } from "next-intl";
+import { useTranslations } from "next-intl";
 import { useRouter } from "@/i18n/navigation";
 import type { ProfileAnswers } from "@/lib/interface";
 import { INSTITUTIONS, findInstitution } from "@/lib/institutions";
@@ -19,10 +19,10 @@ import {
   STUDIES_TYPES,
   STUDY_LEVEL_OPTIONS,
   WORK_TYPES,
-  optionLabel,
   type SectionId,
 } from "@/lib/ticketWizardOptions";
 import {
+  BrandSelect,
   ChoiceChips,
   Combobox,
   OtherInput,
@@ -43,15 +43,26 @@ interface ProfileFormProps {
 
 export default function ProfileForm({ initial, startIndex }: ProfileFormProps) {
   const t = useTranslations("TicketWizard");
-  const locale = useLocale();
   const router = useRouter();
   const [answers, setAnswers] = useState<ProfileAnswers>(initial);
   const [index, setIndex] = useState(startIndex);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [errorField, setErrorField] = useState<string | null>(null);
+
+  const update = (patch: Partial<ProfileAnswers>) => {
+    setAnswers((prev) => ({ ...prev, ...patch }));
+    if (errorField && errorField in patch) {
+      const value = patch[errorField as keyof ProfileAnswers];
+      if (typeof value !== "string" || value.trim()) {
+        setError(null);
+        setErrorField(null);
+      }
+    }
+  };
 
   const set = <K extends keyof ProfileAnswers>(key: K, value: ProfileAnswers[K]) =>
-    setAnswers((prev) => ({ ...prev, [key]: value }));
+    update({ [key]: value } as Partial<ProfileAnswers>);
 
   const type = answers.attendeeType;
   const asksSchool = SCHOOL_TYPES.includes(type);
@@ -59,10 +70,10 @@ export default function ProfileForm({ initial, startIndex }: ProfileFormProps) {
   const asksWork = WORK_TYPES.includes(type);
   const institution = findInstitution(answers.school);
   const section = STEPS[index];
-  const typeOption = ATTENDEE_TYPE_OPTIONS.find((o) => o.value === type);
 
   const go = (next: number) => {
     setError(null);
+    setErrorField(null);
     setIndex(next);
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
@@ -71,11 +82,13 @@ export default function ProfileForm({ initial, startIndex }: ProfileFormProps) {
     e.preventDefault();
     setBusy(true);
     setError(null);
+    setErrorField(null);
     const result = await saveSection(section, answers);
     setBusy(false);
 
     if (!result.ok) {
       setError(result.field ? t("error-field") : t("error-generic"));
+      setErrorField(result.field ?? null);
       focusField(result.field);
       return;
     }
@@ -95,7 +108,7 @@ export default function ProfileForm({ initial, startIndex }: ProfileFormProps) {
       {section === "basics" && (
         <WizardCard title={t("card-basics")}>
           <div className="wizard-grid">
-            <Question label={t("q-first-name")} htmlFor="firstName">
+            <Question label={t("q-first-name")} htmlFor="firstName" required>
               <input
                 id="firstName"
                 className="wizard-input"
@@ -107,7 +120,7 @@ export default function ProfileForm({ initial, startIndex }: ProfileFormProps) {
                 onChange={(e) => set("firstName", e.target.value)}
               />
             </Question>
-            <Question label={t("q-last-name")} htmlFor="lastName">
+            <Question label={t("q-last-name")} htmlFor="lastName" required>
               <input
                 id="lastName"
                 className="wizard-input"
@@ -119,11 +132,7 @@ export default function ProfileForm({ initial, startIndex }: ProfileFormProps) {
                 onChange={(e) => set("lastName", e.target.value)}
               />
             </Question>
-            <Question
-              label={t("q-primary-email")}
-              htmlFor="primaryEmail"
-              hint={t("q-primary-email-hint")}
-            >
+            <Question label={t("q-primary-email")} htmlFor="primaryEmail" required>
               <input
                 id="primaryEmail"
                 className="wizard-input"
@@ -134,11 +143,7 @@ export default function ProfileForm({ initial, startIndex }: ProfileFormProps) {
                 onChange={(e) => set("primaryEmail", e.target.value)}
               />
             </Question>
-            <Question
-              label={t("q-secondary-email")}
-              htmlFor="secondaryEmail"
-              hint={t("q-secondary-email-hint")}
-            >
+            <Question label={t("q-secondary-email")} htmlFor="secondaryEmail">
               <input
                 id="secondaryEmail"
                 className="wizard-input"
@@ -149,7 +154,7 @@ export default function ProfileForm({ initial, startIndex }: ProfileFormProps) {
             </Question>
           </div>
 
-          <Question label={t("q-pronoun")} labelId="pronoun-label" wide>
+          <Question label={t("q-pronoun")} labelId="pronoun-label" anchor="pronoun" required wide>
             <ChoiceChips
               name="pronoun"
               labelId="pronoun-label"
@@ -159,6 +164,7 @@ export default function ProfileForm({ initial, startIndex }: ProfileFormProps) {
               onChange={(v) => set("pronoun", v)}
             />
             <OtherInput
+              id="pronounOther"
               show={answers.pronoun === OTHER}
               required
               label={t("q-pronoun")}
@@ -167,7 +173,13 @@ export default function ProfileForm({ initial, startIndex }: ProfileFormProps) {
             />
           </Question>
 
-          <Question label={t("q-attendee-type")} labelId="attendee-type-label" wide>
+          <Question
+            label={t("q-attendee-type")}
+            labelId="attendee-type-label"
+            anchor="attendeeType"
+            required
+            wide
+          >
             <ChoiceChips
               name="attendeeType"
               labelId="attendee-type-label"
@@ -177,6 +189,7 @@ export default function ProfileForm({ initial, startIndex }: ProfileFormProps) {
               onChange={(v) => set("attendeeType", v)}
             />
             <OtherInput
+              id="attendeeTypeOther"
               show={answers.attendeeType === OTHER}
               required
               label={t("q-attendee-type")}
@@ -188,24 +201,20 @@ export default function ProfileForm({ initial, startIndex }: ProfileFormProps) {
       )}
 
       {section === "background" && (
-        <WizardCard
-          title={asksStudies ? t("card-education") : t("card-professional")}
-          subtitle={
-            typeOption ? t("attending-as", { type: optionLabel(typeOption, locale) }) : undefined
-          }
-        >
+        <WizardCard title={asksStudies ? t("card-education") : t("card-professional")}>
           <div className="wizard-grid">
             {asksSchool && (
-              <Question label={t("q-school")} htmlFor="school">
+              <Question label={t("q-school")} htmlFor="school" required>
                 <Combobox
                   id="school"
                   options={schoolOptions}
                   value={answers.school}
                   otherLabel={t("q-school-other")}
                   required
-                  onChange={(v) => setAnswers((prev) => ({ ...prev, school: v, campus: "" }))}
+                  onChange={(v) => update({ school: v, campus: "" })}
                 />
                 <OtherInput
+                  id="schoolOther"
                   show={answers.school === OTHER}
                   required
                   label={t("q-school")}
@@ -216,34 +225,30 @@ export default function ProfileForm({ initial, startIndex }: ProfileFormProps) {
             )}
 
             {asksSchool && institution?.campuses && (
-              <Question label={t("q-campus")} htmlFor="campus" hint={t("optional")}>
-                <select
+              <Question label={t("q-campus")} labelId="campus-label">
+                <BrandSelect
                   id="campus"
-                  className="wizard-input"
+                  labelId="campus-label"
+                  options={institution.campuses.map((campus) => ({ value: campus, label: campus }))}
                   value={answers.campus}
-                  onChange={(e) => set("campus", e.target.value)}
-                >
-                  <option value="">{t("select-placeholder")}</option>
-                  {institution.campuses.map((campus) => (
-                    <option key={campus} value={campus}>
-                      {campus}
-                    </option>
-                  ))}
-                </select>
+                  onChange={(v) => set("campus", v)}
+                />
               </Question>
             )}
 
             {asksStudies && (
               <>
-                <Question label={t("q-field-of-study")} htmlFor="fieldOfStudy">
+                <Question label={t("q-field-of-study")} labelId="field-of-study-label" required>
                   <SelectField
                     id="fieldOfStudy"
+                    labelId="field-of-study-label"
                     options={FIELD_OF_STUDY_OPTIONS}
                     value={answers.fieldOfStudy}
                     required
                     onChange={(v) => set("fieldOfStudy", v)}
                   />
                   <OtherInput
+                    id="fieldOfStudyOther"
                     show={answers.fieldOfStudy === OTHER}
                     required
                     label={t("q-field-of-study")}
@@ -252,15 +257,17 @@ export default function ProfileForm({ initial, startIndex }: ProfileFormProps) {
                   />
                 </Question>
 
-                <Question label={t("q-credential")} htmlFor="credential">
+                <Question label={t("q-credential")} labelId="credential-label" required>
                   <SelectField
                     id="credential"
+                    labelId="credential-label"
                     options={CREDENTIAL_OPTIONS}
                     value={answers.credential}
                     required
                     onChange={(v) => set("credential", v)}
                   />
                   <OtherInput
+                    id="credentialOther"
                     show={answers.credential === OTHER}
                     required
                     label={t("q-credential")}
@@ -269,15 +276,17 @@ export default function ProfileForm({ initial, startIndex }: ProfileFormProps) {
                   />
                 </Question>
 
-                <Question label={t("q-study-level")} htmlFor="studyLevel">
+                <Question label={t("q-study-level")} labelId="study-level-label" required>
                   <SelectField
                     id="studyLevel"
+                    labelId="study-level-label"
                     options={STUDY_LEVEL_OPTIONS}
                     value={answers.studyLevel}
                     required
                     onChange={(v) => set("studyLevel", v)}
                   />
                   <OtherInput
+                    id="studyLevelOther"
                     show={answers.studyLevel === OTHER}
                     required
                     label={t("q-study-level")}
@@ -286,9 +295,10 @@ export default function ProfileForm({ initial, startIndex }: ProfileFormProps) {
                   />
                 </Question>
 
-                <Question label={t("q-graduation")} htmlFor="expectedGraduation">
+                <Question label={t("q-graduation")} labelId="graduation-label" required>
                   <SelectField
                     id="expectedGraduation"
+                    labelId="graduation-label"
                     options={GRADUATION_OPTIONS}
                     value={answers.expectedGraduation}
                     required
@@ -296,9 +306,10 @@ export default function ProfileForm({ initial, startIndex }: ProfileFormProps) {
                   />
                 </Question>
 
-                <Question label={t("q-internships")} htmlFor="internships">
+                <Question label={t("q-internships")} labelId="internships-label" required>
                   <SelectField
                     id="internships"
+                    labelId="internships-label"
                     options={INTERNSHIP_COUNT_OPTIONS}
                     value={answers.internships}
                     required
@@ -310,15 +321,17 @@ export default function ProfileForm({ initial, startIndex }: ProfileFormProps) {
 
             {asksWork && (
               <>
-                <Question label={t("q-current-role")} htmlFor="currentRole">
+                <Question label={t("q-current-role")} labelId="current-role-label" required>
                   <SelectField
                     id="currentRole"
+                    labelId="current-role-label"
                     options={CURRENT_ROLE_OPTIONS}
                     value={answers.currentRole}
                     required
                     onChange={(v) => set("currentRole", v)}
                   />
                   <OtherInput
+                    id="currentRoleOther"
                     show={answers.currentRole === OTHER}
                     required
                     label={t("q-current-role")}
@@ -327,9 +340,10 @@ export default function ProfileForm({ initial, startIndex }: ProfileFormProps) {
                   />
                 </Question>
 
-                <Question label={t("q-experience")} htmlFor="experience">
+                <Question label={t("q-experience")} labelId="experience-label" required>
                   <SelectField
                     id="experience"
+                    labelId="experience-label"
                     options={EXPERIENCE_OPTIONS}
                     value={answers.experience}
                     required
@@ -340,12 +354,8 @@ export default function ProfileForm({ initial, startIndex }: ProfileFormProps) {
             )}
           </div>
 
-          <Question label={t("q-travel-from")} htmlFor="travel-city" wide>
-            <CityPicker
-              id="travel-city"
-              value={answers}
-              onChange={(next) => setAnswers((prev) => ({ ...prev, ...next }))}
-            />
+          <Question label={t("q-travel-from")} htmlFor="travel-city" required wide>
+            <CityPicker id="travel-city" value={answers} onChange={(next) => update(next)} />
           </Question>
         </WizardCard>
       )}

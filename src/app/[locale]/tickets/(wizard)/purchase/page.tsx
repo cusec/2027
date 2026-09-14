@@ -5,6 +5,7 @@ import { findOrCreateUser } from "@/lib/userService";
 import connectMongoDB from "@/lib/mongodb";
 import { DemographicInfo } from "@/lib/models";
 import { getWizardStatus } from "@/lib/ticketWizard";
+import { reconcileTicketPurchase } from "@/lib/ticketLinking";
 import { getBaseUrl } from "@/lib/siteUrl";
 import { getTicketTypes, getTicketWidgetConfig } from "@/lib/ticketTailor";
 import type { DemographicInfo as SavedProfile } from "@/lib/interface";
@@ -24,7 +25,11 @@ export default async function PurchasePage() {
     name: session?.user?.name || "Attendee",
   });
 
-  const status = await getWizardStatus(email);
+  let status = await getWizardStatus(email);
+  if (!status.purchaseComplete) {
+    const reconciled = await reconcileTicketPurchase(email, session?.user?.name || "Attendee");
+    if (reconciled.linked) status = await getWizardStatus(email);
+  }
   if (!status.purchaseComplete) {
     if (!status.profileComplete) {
       redirect({ href: "/tickets/profile", locale });
@@ -60,7 +65,6 @@ export default async function PurchasePage() {
       {!status.purchaseComplete && (
         <div className="tickets-header">
           <h1 className="tickets-heading">{t("purchase-heading")}</h1>
-          <p className="tickets-subheading">{t("purchase-subheading")}</p>
           {source === "mock" && <p className="tickets-mock-banner">{t("mock-banner")}</p>}
           {source === "error" && <p className="tickets-error-banner">{t("error-banner")}</p>}
         </div>

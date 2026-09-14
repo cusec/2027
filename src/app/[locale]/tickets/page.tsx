@@ -4,6 +4,7 @@ import { findOrCreateUser } from "@/lib/userService";
 import connectMongoDB from "@/lib/mongodb";
 import { DemographicInfo } from "@/lib/models";
 import { getWizardStatus } from "@/lib/ticketWizard";
+import { reconcileTicketPurchase } from "@/lib/ticketLinking";
 import { getBaseUrl } from "@/lib/siteUrl";
 import { redirect } from "@/i18n/navigation";
 import type { DemographicInfo as SavedProfile } from "@/lib/interface";
@@ -80,7 +81,11 @@ export default async function TicketsPage() {
     name: session?.user?.name || "Attendee",
   });
 
-  const status = await getWizardStatus(email);
+  let status = await getWizardStatus(email);
+  if (!status.purchaseComplete) {
+    const reconciled = await reconcileTicketPurchase(email, session?.user?.name || "Attendee");
+    if (reconciled.linked) status = await getWizardStatus(email);
+  }
   if (!status.profileComplete) {
     redirect({ href: "/tickets/profile", locale });
   }

@@ -31,7 +31,7 @@ export const PRONOUN_OPTIONS: Option[] = [
 
 export const ATTENDEE_TYPE_OPTIONS: Option[] = [
   { value: "student", en: "Student", fr: "Étudiant·e" },
-  { value: "recent-graduate", en: "Recent graduate", fr: "Récemment diplômé·e" },
+  { value: "recent-graduate", en: "New grad", fr: "Jeune diplômé·e" },
   { value: "professional", en: "Professional", fr: "Professionnel·le" },
   { value: OTHER, en: "Other", fr: "Autre" },
 ];
@@ -64,7 +64,7 @@ export const CREDENTIAL_OPTIONS: Option[] = [
   { value: "masters", en: "Master’s degree", fr: "Maîtrise" },
   { value: "doctorate", en: "Doctorate", fr: "Doctorat" },
   { value: "bootcamp", en: "Bootcamp or professional program", fr: "Bootcamp ou programme professionnel" },
-  { value: "none", en: "Not currently pursuing a credential", fr: "Aucun diplôme en cours" },
+  { value: "none", en: "N/A", fr: "S.O." },
   { value: OTHER, en: "Other", fr: "Autre" },
 ];
 
@@ -75,7 +75,7 @@ export const STUDY_LEVEL_OPTIONS: Option[] = [
   { value: "year-4", en: "Fourth year", fr: "Quatrième année" },
   { value: "year-5-plus", en: "Fifth year or later", fr: "Cinquième année ou plus" },
   { value: "graduate", en: "Graduate student", fr: "Études supérieures" },
-  { value: "recently-graduated", en: "Recently graduated", fr: "Récemment diplômé·e" },
+  { value: "recently-graduated", en: "New grad", fr: "Jeune diplômé·e" },
   { value: OTHER, en: "Other", fr: "Autre" },
 ];
 
@@ -140,14 +140,13 @@ export const NOT_LOOKING = "not-looking";
 export const OPPORTUNITY_OPTIONS: Option[] = [
   { value: "internship", en: "Internship", fr: "Stage" },
   { value: "coop", en: "Co-op", fr: "Stage coop" },
-  { value: "new-grad", en: "New-graduate position", fr: "Poste de nouveau diplômé" },
-  { value: "full-time", en: "Experienced full-time position", fr: "Poste à temps plein expérimenté" },
+  { value: "new-grad", en: "New grad role", fr: "Poste junior" },
   { value: "research", en: "Research", fr: "Recherche" },
-  { value: "grad-school", en: "Graduate school", fr: "Études supérieures" },
+  { value: "grad-school", en: "Grad school", fr: "Études supérieures" },
   { value: "entrepreneurship", en: "Entrepreneurship", fr: "Entrepreneuriat" },
   { value: "mentorship", en: "Mentorship", fr: "Mentorat" },
   { value: "volunteering", en: "Volunteering", fr: "Bénévolat" },
-  { value: "not-looking", en: "Not currently looking", fr: "Je ne cherche pas en ce moment" },
+  { value: "not-looking", en: "N/A", fr: "S.O." },
   { value: OTHER, en: "Other", fr: "Autre" },
 ];
 
@@ -171,11 +170,21 @@ export const TECH_AREA_OPTIONS: Option[] = [
 ];
 
 export const WORK_LOCATION_OPTIONS: Option[] = [
-  { value: "quebec", en: "Québec", fr: "Québec" },
-  { value: "canada", en: "Elsewhere in Canada", fr: "Ailleurs au Canada" },
-  { value: "usa", en: "United States", fr: "États-Unis" },
-  { value: "international", en: "Internationally", fr: "À l’international" },
+  { value: "toronto", en: "Toronto", fr: "Toronto" },
+  { value: "montreal", en: "Montréal", fr: "Montréal" },
+  { value: "vancouver", en: "Vancouver", fr: "Vancouver" },
+  { value: "waterloo", en: "Waterloo Region", fr: "Région de Waterloo" },
+  { value: "ottawa", en: "Ottawa", fr: "Ottawa" },
+  { value: "quebec-city", en: "Québec City", fr: "Québec" },
+  { value: "calgary", en: "Calgary", fr: "Calgary" },
+  { value: "edmonton", en: "Edmonton", fr: "Edmonton" },
+  { value: "winnipeg", en: "Winnipeg", fr: "Winnipeg" },
+  { value: "halifax", en: "Halifax", fr: "Halifax" },
+  { value: "bay-area", en: "San Francisco Bay Area", fr: "Baie de San Francisco" },
+  { value: "seattle", en: "Seattle", fr: "Seattle" },
+  { value: "new-york", en: "New York", fr: "New York" },
   { value: "remote", en: "Remote", fr: "À distance" },
+  { value: "international", en: "Outside North America", fr: "Hors Amérique du Nord" },
 ];
 
 export const WORK_ARRANGEMENT_OPTIONS: Option[] = [
@@ -186,46 +195,46 @@ export const WORK_ARRANGEMENT_OPTIONS: Option[] = [
 ];
 
 export const ATTEND_REASON_OPTIONS: Option[] = [
-  { value: "emerging-tech", en: "Learn about emerging technologies", fr: "Découvrir les technologies émergentes" },
-  { value: "technical-skills", en: "Develop technical skills", fr: "Développer mes compétences techniques" },
-  { value: "career-paths", en: "Explore career paths", fr: "Explorer des parcours de carrière" },
-  { value: "find-job", en: "Find an internship or job", fr: "Trouver un stage ou un emploi" },
-  { value: "meet-employers", en: "Meet employers", fr: "Rencontrer des employeurs" },
-  { value: "other-schools", en: "Meet students from other schools", fr: "Rencontrer des étudiants d’autres écoles" },
-  { value: "my-school", en: "Meet people from my school", fr: "Rencontrer des gens de mon école" },
-  { value: "collaborators", en: "Find collaborators", fr: "Trouver des collaborateurs" },
+  { value: "emerging-tech", en: "Emerging tech", fr: "Technos émergentes" },
+  { value: "technical-skills", en: "Technical skills", fr: "Compétences techniques" },
+  { value: "career-paths", en: "Career paths", fr: "Parcours de carrière" },
+  { value: "find-job", en: "Internship or job", fr: "Stage ou emploi" },
+  { value: "meet-employers", en: "Meet employers", fr: "Employeurs" },
+  { value: "other-schools", en: "Meet other schools", fr: "Autres écoles" },
+  { value: "my-school", en: "Meet my school", fr: "Mon école" },
+  { value: "collaborators", en: "Find collaborators", fr: "Collaborateurs" },
   { value: "showcase", en: "Showcase a project", fr: "Présenter un projet" },
-  { value: "feedback", en: "Get feedback", fr: "Obtenir de la rétroaction" },
-  { value: "inspired", en: "Get inspired", fr: "Trouver l’inspiration" },
-  { value: "delegation", en: "Attend with my delegation", fr: "Venir avec ma délégation" },
+  { value: "feedback", en: "Get feedback", fr: "Rétroaction" },
+  { value: "inspired", en: "Get inspired", fr: "Inspiration" },
+  { value: "delegation", en: "My delegation", fr: "Ma délégation" },
   { value: OTHER, en: "Other", fr: "Autre" },
 ];
 
 export const SUCCESS_OPTIONS: Option[] = [
-  { value: "apply-learning", en: "Learn something I can apply", fr: "Apprendre quelque chose d’applicable" },
-  { value: "friends", en: "Make new friends", fr: "Me faire de nouveaux amis" },
-  { value: "employer", en: "Meet a potential employer", fr: "Rencontrer un employeur potentiel" },
-  { value: "mentor", en: "Find a mentor", fr: "Trouver un mentor" },
-  { value: "career-direction", en: "Discover a career direction", fr: "Trouver une orientation de carrière" },
-  { value: "feedback", en: "Receive feedback on my work", fr: "Recevoir de la rétroaction sur mon travail" },
-  { value: "collaborators", en: "Find future collaborators", fr: "Trouver de futurs collaborateurs" },
-  { value: "involved", en: "Become more involved in tech", fr: "M’impliquer davantage en techno" },
+  { value: "apply-learning", en: "Applicable skills", fr: "Acquis applicables" },
+  { value: "friends", en: "New friends", fr: "Nouveaux amis" },
+  { value: "employer", en: "Meet an employer", fr: "Un employeur" },
+  { value: "mentor", en: "Find a mentor", fr: "Un mentor" },
+  { value: "career-direction", en: "Career direction", fr: "Orientation" },
+  { value: "feedback", en: "Work feedback", fr: "Rétroaction" },
+  { value: "collaborators", en: "Collaborators", fr: "Collaborateurs" },
+  { value: "involved", en: "Get involved in tech", fr: "M’impliquer en techno" },
   { value: OTHER, en: "Other", fr: "Autre" },
 ];
 
 export const SESSION_FORMAT_OPTIONS: Option[] = [
-  { value: "keynotes", en: "Keynotes", fr: "Conférences d’ouverture" },
-  { value: "technical-talks", en: "Technical talks", fr: "Conférences techniques" },
-  { value: "speaker-hosted", en: "Speaker-hosted talks", fr: "Conférences animées par les conférenciers" },
-  { value: "career-talks", en: "Career talks", fr: "Conférences carrière" },
-  { value: "workshops", en: "Hands-on workshops", fr: "Ateliers pratiques" },
+  { value: "keynotes", en: "Keynotes", fr: "Plénières" },
+  { value: "technical-talks", en: "Tech talks", fr: "Conf. techniques" },
+  { value: "speaker-hosted", en: "Speaker talks", fr: "Conférences invitées" },
+  { value: "career-talks", en: "Career talks", fr: "Conf. carrière" },
+  { value: "workshops", en: "Workshops", fr: "Ateliers" },
   { value: "panels", en: "Panels", fr: "Panels" },
   { value: "showcases", en: "Project showcases", fr: "Vitrines de projets" },
-  { value: "devs-den", en: "Dev’s Den pitch competition", fr: "Compétition de pitch Dev’s Den" },
+  { value: "devs-den", en: "Dev’s Den pitch", fr: "Pitch Dev’s Den" },
   { value: "career-fair", en: "Career fair", fr: "Foire de l’emploi" },
   { value: "scavenger-hunt", en: "Scavenger hunt", fr: "Chasse au trésor" },
-  { value: "social", en: "Social activities", fr: "Activités sociales" },
-  { value: "networking", en: "Structured networking", fr: "Réseautage structuré" },
+  { value: "social", en: "Social events", fr: "Activités sociales" },
+  { value: "networking", en: "Networking", fr: "Réseautage" },
   { value: OTHER, en: "Other", fr: "Autre" },
 ];
 
@@ -244,15 +253,15 @@ export const CONNECT_SCHOOL_OPTIONS: Option[] = [
 export const INDEPENDENT_DELEGATION = "independent";
 
 export const COMMUNITY_OPTIONS: Option[] = [
-  { value: "club-member", en: "Student club member", fr: "Membre d’un club étudiant" },
-  { value: "club-exec", en: "Student club executive", fr: "Exécutif d’un club étudiant" },
-  { value: "organizer", en: "Conference or hackathon organizer", fr: "Organisateur de conférence ou de hackathon" },
-  { value: "ta-tutor", en: "Teaching assistant or tutor", fr: "Auxiliaire d’enseignement ou tuteur" },
+  { value: "club-member", en: "Club member", fr: "Membre de club" },
+  { value: "club-exec", en: "Club exec", fr: "Exécutif de club" },
+  { value: "organizer", en: "Event organizer", fr: "Organisateur" },
+  { value: "ta-tutor", en: "TA or tutor", fr: "Auxiliaire ou tuteur" },
   { value: "research", en: "Research", fr: "Recherche" },
-  { value: "open-source", en: "Open-source contributor", fr: "Contributeur au logiciel libre" },
+  { value: "open-source", en: "Open source", fr: "Logiciel libre" },
   { value: "volunteer", en: "Volunteer", fr: "Bénévole" },
-  { value: "projects", en: "Personal-project builder", fr: "Créateur de projets personnels" },
-  { value: "not-involved", en: "Not currently involved", fr: "Pas impliqué pour l’instant" },
+  { value: "projects", en: "Side projects", fr: "Projets perso" },
+  { value: "not-involved", en: "N/A", fr: "S.O." },
   { value: OTHER, en: "Other", fr: "Autre" },
 ];
 
@@ -294,7 +303,6 @@ export const CONVINCED_BY_OPTIONS: Option[] = [
   { value: "delegation", en: "School delegation", fr: "Délégation de l’école" },
   { value: "friend", en: "Friend attending", fr: "Un ami y participe" },
   { value: "social", en: "Social activities", fr: "Activités sociales" },
-  { value: "price", en: "Ticket price", fr: "Prix du billet" },
   { value: "travel-support", en: "Travel or accommodation support", fr: "Aide au voyage ou à l’hébergement" },
   { value: "reputation", en: "CUSEC’s reputation", fr: "La réputation de CUSEC" },
   { value: OTHER, en: "Other", fr: "Autre" },
@@ -315,6 +323,7 @@ export const LIMITS = {
   attendReasons: 3,
   successMeasures: 3,
   techAreas: 5,
+  workLocations: 5,
   sessionFormats: 5,
 } as const;
 
