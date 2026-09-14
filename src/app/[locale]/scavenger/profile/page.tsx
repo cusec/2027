@@ -1,8 +1,8 @@
+import { notFound } from "next/navigation";
 import { auth0 } from "@/lib/auth0";
 import { findOrCreateUser } from "@/lib/userService";
 import { RegisteredUser } from "@/lib/models";
 import ProfileCard from "@/components/scavenger/profile/ProfileCard";
-import ScavengerPreview from "@/components/scavenger/ScavengerPreview";
 import { getScavengerAccess } from "@/lib/scavengerAccess";
 import type { Auth0User } from "@/lib/interface";
 import { UserRound } from "lucide-react";
@@ -14,9 +14,7 @@ export default async function ProfilePage() {
   const user = session?.user;
 
   const { huntOpen } = await getScavengerAccess();
-  if (!huntOpen) {
-    return <ScavengerPreview signedIn={Boolean(user)} />;
-  }
+  if (!huntOpen) notFound();
 
   if (!user?.email) {
     return (

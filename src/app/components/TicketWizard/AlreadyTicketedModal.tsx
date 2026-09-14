@@ -10,6 +10,8 @@ interface AlreadyTicketedModalProps {
   ticketName?: string | null;
   /** Absolute site URL - Auth0 requires a fully-qualified returnTo. */
   baseURL: string;
+  /** The hunt dashboard link only shows while /scavenger is open. */
+  huntOpen?: boolean;
 }
 
 /**
@@ -25,6 +27,7 @@ export default function AlreadyTicketedModal({
   email,
   ticketName,
   baseURL,
+  huntOpen = false,
 }: AlreadyTicketedModalProps) {
   const t = useTranslations("TicketWizard");
 
@@ -70,9 +73,11 @@ export default function AlreadyTicketedModal({
             {t("already-ticketed-logout")}
           </a>
 
-          <Link className="cta-btn wizard-form-back" href="/scavenger">
-            {t("already-ticketed-dashboard")}
-          </Link>
+          {huntOpen && (
+            <Link className="cta-btn wizard-form-back" href="/scavenger">
+              {t("already-ticketed-dashboard")}
+            </Link>
+          )}
         </div>
       </div>
     </div>

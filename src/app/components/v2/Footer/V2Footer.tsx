@@ -14,7 +14,9 @@ const LINKS: { key: string; route?: string }[] = [
 	// { key: "schedule" },
 	{ key: "sponsors", route: "/sponsors" },
 	// { key: "team" },
-	{ key: "hunt", route: "/scavenger" },
+	...(process.env.SCAVENGER_HUNT_ENABLED === "true"
+		? [{ key: "hunt", route: "/scavenger" }]
+		: []),
 	{ key: "conduct", route: "/code-of-conduct" },
 	{ key: "privacy", route: "/privacy-policy" },
 	{ key: "terms", route: "/ticket-terms" },

@@ -34,6 +34,7 @@ export default async function InterestsPage() {
         email={email}
         ticketName={status.purchasedTicketName}
         baseURL={await getBaseUrl()}
+        huntOpen={process.env.SCAVENGER_HUNT_ENABLED === "true"}
       />
     );
   }

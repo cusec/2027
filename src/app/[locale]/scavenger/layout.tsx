@@ -1,5 +1,5 @@
+import { notFound } from "next/navigation";
 import { getScavengerAccess } from "@/lib/scavengerAccess";
-import ScavengerPreview from "@/components/scavenger/ScavengerPreview";
 import { findOrCreateUser } from "@/lib/userService";
 import AeroDock from "@/components/scavenger/AeroDock";
 import V2Nav from "@/app/components/v2/Nav/V2Nav";
@@ -14,11 +14,12 @@ export default async function ScavengerLayout({
   children: React.ReactNode;
 }) {
   const { user, anyOpen } = await getScavengerAccess();
+  if (!anyOpen) notFound();
 
-  const publicShell = !anyOpen || !user;
+  const publicShell = !user;
 
   let dbUser: DbUser | null = null;
-  if (anyOpen && user?.email) {
+  if (user?.email) {
     const mongoUser = await findOrCreateUser({
       email: user.email,
       name: user.name || "Hunter",
@@ -69,11 +70,7 @@ export default async function ScavengerLayout({
           />
         )}
 
-        {anyOpen ? (
-          <div className={dbUser ? "aero-stage" : undefined}>{children}</div>
-        ) : (
-          <ScavengerPreview signedIn={Boolean(user)} />
-        )}
+        <div className={dbUser ? "aero-stage" : undefined}>{children}</div>
       </div>
 
       {publicShell && <V2Footer />}

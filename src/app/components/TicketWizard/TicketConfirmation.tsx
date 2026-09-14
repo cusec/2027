@@ -3,7 +3,6 @@
 import { useTranslations } from "next-intl";
 import { CircleCheck } from "lucide-react";
 import { Link } from "@/i18n/navigation";
-import { TICKET_LINKED_FLAG } from "@/lib/ticketLinkedFlag";
 
 interface TicketConfirmationProps {
   ticketName: string | null;
@@ -21,7 +20,7 @@ export default function TicketConfirmation({
   baseURL,
 }: TicketConfirmationProps) {
   const t = useTranslations("TicketWizard");
-  const signOutToHunt = `/auth/logout?returnTo=${encodeURIComponent(`${baseURL}/scavenger`)}`;
+  const signOutHome = `/auth/logout?returnTo=${encodeURIComponent(`${baseURL}/`)}`;
 
   return (
     <div className="wizard-confirm">
@@ -59,16 +58,7 @@ export default function TicketConfirmation({
           </Link>
         ) : (
           // eslint-disable-next-line @next/next/no-html-link-for-pages
-          <a
-            href={signOutToHunt}
-            className="cta-btn wizard-intro-cta"
-            onClick={() => {
-              try {
-                sessionStorage.setItem(TICKET_LINKED_FLAG, "1");
-              } catch {
-              }
-            }}
-          >
+          <a href={signOutHome} className="cta-btn wizard-intro-cta">
             {t("purchase-go-to-hunt-info")}
           </a>
         )}

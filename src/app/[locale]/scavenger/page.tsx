@@ -1,3 +1,4 @@
+import { notFound } from "next/navigation";
 import { auth0 } from "@/lib/auth0";
 import { findOrCreateUser } from "@/lib/userService";
 import { reconcileTicketPurchase } from "@/lib/ticketLinking";
@@ -13,6 +14,8 @@ export default async function ScavengerPage() {
   const scavengerEnabled = process.env.SCAVENGER_HUNT_ENABLED === "true";
   const isUserAdmin = user?.["cusec/roles"]?.includes("Admin") || false;
   const isUserVolunteer = user?.["cusec/roles"]?.includes("Volunteer") || false;
+
+  if (!scavengerEnabled && !isUserAdmin && !isUserVolunteer) notFound();
 
   let dbUser = null;
   let emailVerified = false;
@@ -49,10 +52,6 @@ export default async function ScavengerPage() {
         emailVerified = !!registeredUser;
       }
     }
-  }
-
-  if (!scavengerEnabled && !isUserAdmin && !isUserVolunteer) {
-    return <ScavengerPreview signedIn={Boolean(user)} />;
   }
 
   const showDashboard =

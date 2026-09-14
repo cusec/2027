@@ -541,12 +541,14 @@ All are cookie-authenticated; admin routes additionally call `isAdmin`. Grouped:
 
 - **The gate lives in `scavenger/layout.tsx`**, so it covers `/scavenger` and every
   page under it. While `SCAVENGER_HUNT_ENABLED` and `SUBMISSIONS_ENABLED` are both off,
-  everyone who is not Admin/Volunteer gets `ScavengerPreview` (the public info page)
-  and no dock, signed in or not. `getScavengerAccess()` in `src/lib/scavengerAccess.ts`
-  is the one place pages read those flags and the staff bypass.
-- **A purchase finished while the hunt is closed signs the delegate out** to that
-  preview (`PurchaseStepClient`). Safe because `purchaseComplete` is only true once
-  the ticket is linked, so the link is already stored server-side.
+  everyone who is not Admin/Volunteer gets a 404, signed in or not. `/scavenger` and
+  `/scavenger/profile` also 404 whenever `SCAVENGER_HUNT_ENABLED` alone is off.
+  `getScavengerAccess()` in `src/lib/scavengerAccess.ts` is the one place pages read
+  those flags and the staff bypass. Nothing links to `/scavenger` while it is closed:
+  the nav and footer links and the already-ticketed dashboard button hide with the flag.
+- **A purchase finished while the hunt is closed signs the delegate out** to the home
+  page (`TicketConfirmation`). Safe because `purchaseComplete` is only true once the
+  ticket is linked, so the link is already stored server-side.
 - Server component. URL is `/scavenger` (locale never in the URL).
 - Reads session → `findOrCreateUser` (serialized to a plain object for the client) →
   renders `<Dashboard>` **only if** `SCAVENGER_HUNT_ENABLED === "true"` **OR** the
