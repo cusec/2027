@@ -9,7 +9,7 @@
  *
  * Returns `null` when there is no usable image, so callers can guard rendering.
  *
- * Pure and dependency-free — safe to import from client components.
+ * Pure and dependency-free - safe to import from client components.
  */
 export function resolveImageSrc(
   imageData?: string | null,

@@ -3,31 +3,41 @@
 import { useState, useEffect } from "react";
 import { ShieldAlert, ExternalLink } from "lucide-react";
 import Modal from "@/components/ui/modal";
+import type { DemographicInfo } from "@/lib/interface";
+import { findInstitution } from "@/lib/institutions";
+import {
+  ATTEND_REASON_OPTIONS,
+  ATTENDED_OPTIONS,
+  ATTENDEE_TYPE_OPTIONS,
+  COMMUNITY_OPTIONS,
+  CONNECT_SCHOOL_OPTIONS,
+  CONVINCED_BY_OPTIONS,
+  CREDENTIAL_OPTIONS,
+  CURRENT_ROLE_OPTIONS,
+  EXPERIENCE_OPTIONS,
+  FIELD_OF_STUDY_OPTIONS,
+  GRADUATION_OPTIONS,
+  HEARD_FROM_OPTIONS,
+  INDEPENDENT_DELEGATION,
+  INTERNSHIP_COUNT_OPTIONS,
+  OPPORTUNITY_OPTIONS,
+  OTHER,
+  PRONOUN_OPTIONS,
+  SESSION_FORMAT_OPTIONS,
+  STUDY_LEVEL_OPTIONS,
+  SUCCESS_OPTIONS,
+  TECH_AREA_OPTIONS,
+  TRANSPORT_OPTIONS,
+  WORK_ARRANGEMENT_OPTIONS,
+  WORK_LOCATION_OPTIONS,
+  YES_NO_UNSURE_OPTIONS,
+  type Option,
+} from "@/lib/ticketWizardOptions";
 
-interface Demographics {
-  attendeeType: string;
-  pronoun: string;
-  tshirtSize: string;
-  dietaryRestrictions: string;
-  fieldOfStudy: string;
-  schoolHasHeadDelegate: string;
-  company: string;
-  jobTitle: string;
-  resumeUrl: string;
-  githubUrl: string;
-  linkedinUrl: string;
-  travelFrom: string;
-  travelMethod: string;
-  howDidYouHear: string;
-  previouslyAttended: string;
-  previouslyAttendedYear: string;
-  excitedEvents: string[];
-  whyAttendCUSEC: string;
-  schoolCommunityInvolvement: string;
-  cusecAssociation: string;
-  submittedAt: string | null;
-  updatedAt: string | null;
-}
+type Profile = Partial<DemographicInfo> & {
+  travelCountryName?: string;
+  travelRegionName?: string;
+};
 
 interface UserDemographicsModalProps {
   isOpen: boolean;
@@ -37,48 +47,43 @@ interface UserDemographicsModalProps {
   userEmail: string;
 }
 
-const ATTENDEE_LABELS: Record<string, string> = {
-  student: "Student",
-  professional: "Professional",
+// Labels in English: the admin panel is English-only.
+const one = (options: Option[], value?: string, other?: string) => {
+  if (!value) return "";
+  if (value === OTHER) return other ? `Other: ${other}` : "Other";
+  return options.find((o) => o.value === value)?.en ?? value;
 };
 
-const TRAVEL_LABELS: Record<string, string> = {
-  plane: "Flying",
-  train: "Train",
-  bus: "Bus",
-  car: "Driving",
-  local: "Already in Montréal",
-  undecided: "Not sure yet",
+const many = (options: Option[], values?: string[], other?: string) =>
+  (values ?? []).map((v) => one(options, v, other)).join(", ");
+
+const school = (value?: string, other?: string) => {
+  if (!value) return "";
+  if (value === OTHER) return other ? `Other: ${other}` : "Other";
+  if (value === INDEPENDENT_DELEGATION) return "Registering independently";
+  return findInstitution(value)?.name ?? value;
 };
 
-const HEAD_DELEGATE_LABELS: Record<string, string> = {
-  yes: "Yes",
-  no: "No",
-  unsure: "Not sure",
-};
+const when = (value?: string | null) => (value ? new Date(value).toLocaleString() : "");
 
-/** Read-only: the survey is the delegate's to change, not an admin's. */
-const Row = ({ label, value }: { label: string; value: string }) => (
+/** Read-only: the profile is the delegate's to change, not an admin's. */
+const Row = ({ label, value }: { label: string; value?: string }) => (
   <div className="flex flex-col gap-0.5 border-b border-gray-100 py-2 last:border-b-0">
     <span className="text-xs font-medium uppercase tracking-wide text-gray-500">
       {label}
     </span>
     <span className="text-sm text-dark-mode">
-      {value.trim() ? (
-        value
-      ) : (
-        <span className="text-gray-400">Not answered</span>
-      )}
+      {value?.trim() ? value : <span className="text-gray-400">Not answered</span>}
     </span>
   </div>
 );
 
-const LinkRow = ({ label, url }: { label: string; url: string }) => (
+const LinkRow = ({ label, url }: { label: string; url?: string }) => (
   <div className="flex flex-col gap-0.5 border-b border-gray-100 py-2 last:border-b-0">
     <span className="text-xs font-medium uppercase tracking-wide text-gray-500">
       {label}
     </span>
-    {url.trim() ? (
+    {url?.trim() ? (
       <a
         href={url}
         target="_blank"
@@ -96,13 +101,20 @@ const LinkRow = ({ label, url }: { label: string; url: string }) => (
 
 const Section = ({
   title,
+  saved,
   children,
 }: {
   title: string;
+  saved?: string | null;
   children: React.ReactNode;
 }) => (
   <div className="rounded-lg border border-gray-200 bg-white p-4">
-    <h4 className="mb-1 font-semibold text-dark-mode">{title}</h4>
+    <div className="mb-1 flex items-baseline justify-between gap-2">
+      <h4 className="font-semibold text-dark-mode">{title}</h4>
+      <span className="text-xs text-gray-500">
+        {saved ? `Saved ${when(saved)}` : "Not saved yet"}
+      </span>
+    </div>
     {children}
   </div>
 );
@@ -114,7 +126,7 @@ const UserDemographicsModal = ({
   userName,
   userEmail,
 }: UserDemographicsModalProps) => {
-  const [data, setData] = useState<Demographics | null>(null);
+  const [data, setData] = useState<Profile | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [notFound, setNotFound] = useState(false);
@@ -143,7 +155,7 @@ const UserDemographicsModal = ({
         }
       } catch {
         // Deliberately nothing logged here: a failed response can carry the
-        // survey answers themselves, and those must not reach the console.
+        // profile answers themselves, and those must not reach the console.
         if (!cancelled) setError("Failed to fetch demographics");
       } finally {
         if (!cancelled) setLoading(false);
@@ -165,24 +177,28 @@ const UserDemographicsModal = ({
     onClose();
   };
 
-  const isStudent = data?.attendeeType === "student";
+  const s = data?.sections;
+  const origin = data
+    ? [data.travelCity, data.travelRegionName, data.travelCountryName].filter(Boolean).join(", ")
+    : "";
 
   return (
     <Modal
       isOpen={isOpen}
       onClose={handleClose}
       simple={true}
-      title={`Demographics: ${userName || userEmail}`}
+      title={`Profile: ${userName || userEmail}`}
       className="max-w-3xl max-h-[75vh] text-dark-mode"
     >
       <div className="space-y-4">
         <div className="flex items-start gap-2 rounded-lg border border-amber-200 bg-amber-50 p-3">
           <ShieldAlert className="mt-0.5 h-5 w-5 shrink-0 text-amber-600" />
           <p className="text-sm text-amber-800">
-            <strong>Confidential.</strong> The survey promises these answers
+            <strong>Confidential.</strong> The profile promises these answers
             stay private. They are read-only here, opening this view is recorded
             in the audit log, and the answers must not be exported or shared
-            outside the organizing team.
+            outside the organizing team. Sponsors may only see a profile whose
+            owner gave consent below.
           </p>
         </div>
 
@@ -196,86 +212,133 @@ const UserDemographicsModal = ({
           <p className="py-8 text-center text-gray-500">Loading…</p>
         ) : notFound ? (
           <p className="py-8 text-center text-gray-500">
-            This user has not filled in the survey yet.
+            This user has not started their profile yet.
           </p>
         ) : data ? (
           <div className="space-y-4 overflow-y-auto">
-            <Section title="About them">
+            <Section title="Basics" saved={s?.basics}>
+              <Row label="Name" value={`${data.firstName ?? ""} ${data.lastName ?? ""}`} />
+              <Row label="Primary email" value={data.primaryEmail} />
+              <Row label="Student or work email" value={data.secondaryEmail} />
+              <Row label="Pronouns" value={one(PRONOUN_OPTIONS, data.pronoun, data.pronounOther)} />
               <Row
                 label="Attending as"
-                value={ATTENDEE_LABELS[data.attendeeType] || data.attendeeType}
-              />
-              <Row label="Pronouns" value={data.pronoun} />
-              <Row label="T-shirt size" value={data.tshirtSize} />
-              <Row
-                label="Dietary restrictions"
-                value={data.dietaryRestrictions}
+                value={one(ATTENDEE_TYPE_OPTIONS, data.attendeeType, data.attendeeTypeOther)}
               />
             </Section>
 
-            {isStudent ? (
-              <Section title="Education">
-                <Row label="Field of study" value={data.fieldOfStudy} />
-                <Row
-                  label="School has a head delegate"
-                  value={
-                    HEAD_DELEGATE_LABELS[data.schoolHasHeadDelegate] ||
-                    data.schoolHasHeadDelegate
-                  }
-                />
-              </Section>
-            ) : (
-              <Section title="Work">
-                <Row label="Company" value={data.company} />
-                <Row label="Job title" value={data.jobTitle} />
-              </Section>
-            )}
-
-            <Section title="Getting to CUSEC">
-              <Row label="Travelling from" value={data.travelFrom} />
+            <Section title="Background" saved={s?.background}>
+              <Row label="School" value={school(data.school, data.schoolOther)} />
+              <Row label="Campus" value={data.campus} />
               <Row
-                label="How"
-                value={TRAVEL_LABELS[data.travelMethod] || data.travelMethod}
+                label="Field of study"
+                value={one(FIELD_OF_STUDY_OPTIONS, data.fieldOfStudy, data.fieldOfStudyOther)}
               />
+              <Row
+                label="Credential"
+                value={one(CREDENTIAL_OPTIONS, data.credential, data.credentialOther)}
+              />
+              <Row
+                label="Level of study"
+                value={one(STUDY_LEVEL_OPTIONS, data.studyLevel, data.studyLevelOther)}
+              />
+              <Row label="Expected graduation" value={one(GRADUATION_OPTIONS, data.expectedGraduation)} />
+              <Row label="Internships or co-ops" value={one(INTERNSHIP_COUNT_OPTIONS, data.internships)} />
+              <Row
+                label="Current role"
+                value={one(CURRENT_ROLE_OPTIONS, data.currentRole, data.currentRoleOther)}
+              />
+              <Row label="Career experience" value={one(EXPERIENCE_OPTIONS, data.experience)} />
+              <Row label="Travelling from" value={origin} />
             </Section>
 
-            <Section title="Conference">
-              <Row label="How they heard about us" value={data.howDidYouHear} />
+            <Section title="Goals and career" saved={s?.goals}>
               <Row
-                label="Attended before"
+                label="Why attending"
+                value={many(ATTEND_REASON_OPTIONS, data.attendReasons, data.attendReasonsOther)}
+              />
+              <Row
+                label="What success looks like"
+                value={many(SUCCESS_OPTIONS, data.successMeasures, data.successMeasuresOther)}
+              />
+              <Row
+                label="Opportunities"
+                value={many(OPPORTUNITY_OPTIONS, data.opportunities, data.opportunitiesOther)}
+              />
+              <Row
+                label="Technical areas"
+                value={many(TECH_AREA_OPTIONS, data.techAreas, data.techAreasOther)}
+              />
+              <Row label="Open to working in" value={many(WORK_LOCATION_OPTIONS, data.workLocations)} />
+              <Row label="Work arrangement" value={one(WORK_ARRANGEMENT_OPTIONS, data.workArrangement)} />
+            </Section>
+
+            <Section title="Getting there and community" saved={s?.experience}>
+              <Row label="Transport" value={one(TRANSPORT_OPTIONS, data.transport, data.transportOther)} />
+              <Row label="With a delegation" value={one(YES_NO_UNSURE_OPTIONS, data.delegation)} />
+              <Row label="Delegation" value={school(data.delegationSchool, data.delegationOther)} />
+              <Row
+                label="Connect with their school"
+                value={one(CONNECT_SCHOOL_OPTIONS, data.connectWithSchool)}
+              />
+              <Row
+                label="Travel funding affects attendance"
+                value={one(YES_NO_UNSURE_OPTIONS, data.travelFunding)}
+              />
+              <Row label="Needs accommodation" value={one(YES_NO_UNSURE_OPTIONS, data.accommodation)} />
+              <Row
+                label="First heard from"
+                value={one(HEARD_FROM_OPTIONS, data.heardFrom, data.heardFromOther)}
+              />
+              <Row
+                label="Convinced by"
+                value={one(CONVINCED_BY_OPTIONS, data.convincedBy, data.convincedByOther)}
+              />
+              <Row label="Attended before" value={many(ATTENDED_OPTIONS, data.attended)} />
+              <Row
+                label="Session formats"
+                value={many(SESSION_FORMAT_OPTIONS, data.sessionFormats, data.sessionFormatsOther)}
+              />
+              <Row
+                label="Community involvement"
+                value={many(
+                  COMMUNITY_OPTIONS,
+                  data.communityInvolvement,
+                  data.communityInvolvementOther
+                )}
+              />
+              <Row label="Community or project" value={data.communityProject} />
+            </Section>
+
+            <Section title="Links and consent" saved={s?.links}>
+              <LinkRow label="LinkedIn" url={data.linkedinUrl} />
+              <LinkRow label="GitHub" url={data.githubUrl} />
+              <LinkRow label="Portfolio" url={data.portfolioUrl} />
+              {/* The route checks admin again, logs the download and redirects
+                  to a link that expires after a minute. */}
+              <LinkRow
+                label={
+                  data.resumeFileName
+                    ? `Résumé (${data.resumeFileName})`
+                    : "Résumé"
+                }
+                url={data.resumeFileName && userId ? `/api/admin/users/${userId}/resume` : ""}
+              />
+              <Row
+                label="Consents to sharing with sponsors"
                 value={
-                  data.previouslyAttended === "yes"
-                    ? `Yes${
-                        data.previouslyAttendedYear
-                          ? ` (${data.previouslyAttendedYear})`
-                          : ""
-                      }`
+                  data.sponsorConsent
+                    ? `Yes${data.sponsorConsentAt ? ` (${when(data.sponsorConsentAt)})` : ""}`
                     : "No"
                 }
               />
-              <Row
-                label="Most excited for"
-                value={data.excitedEvents.join(", ")}
-              />
-              <Row label="Why CUSEC" value={data.whyAttendCUSEC} />
-              <Row
-                label="Community involvement"
-                value={data.schoolCommunityInvolvement}
-              />
-              <Row label="Association with CUSEC" value={data.cusecAssociation} />
             </Section>
 
-            <Section title="Links">
-              <LinkRow label="Resume" url={data.resumeUrl} />
-              <LinkRow label="GitHub" url={data.githubUrl} />
-              <LinkRow label="LinkedIn" url={data.linkedinUrl} />
-            </Section>
-
-            {data.submittedAt && (
+            {data.createdAt && (
               <p className="text-xs text-gray-500">
-                Submitted {new Date(data.submittedAt).toLocaleString()}
-                {data.updatedAt && data.updatedAt !== data.submittedAt
-                  ? ` · updated ${new Date(data.updatedAt).toLocaleString()}`
+                Started {when(data.createdAt)}
+                {data.updatedAt && data.updatedAt !== data.createdAt
+                  ? ` · updated ${when(data.updatedAt)}`
                   : ""}
               </p>
             )}

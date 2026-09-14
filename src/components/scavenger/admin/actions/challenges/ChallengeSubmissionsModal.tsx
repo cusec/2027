@@ -36,7 +36,7 @@ const ChallengeSubmissionsModal = ({
       <div className="space-y-4">
         {/*
           Reverting an approval never deducts points automatically (see the
-          PUT handler) — the admin is told the amount and does it by hand.
+          PUT handler) - the admin is told the amount and does it by hand.
         */}
         {warning && (
           <div className="rounded-lg border-2 border-amber-400 bg-amber-50 p-4">
@@ -63,7 +63,7 @@ const ChallengeSubmissionsModal = ({
             <strong>Approving</strong> grants {challenge.points} point
             {challenge.points === 1 ? "" : "s"} to the delegate immediately.{" "}
             <strong>Rejecting or resetting an approved submission does not
-            remove those points</strong> &mdash; you will be told how many to
+            remove those points</strong> - you will be told how many to
             deduct in Manage Users.
           </p>
         )}

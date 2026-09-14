@@ -78,7 +78,7 @@ const TeamModal = ({
           </p>
 
           <p className="aero-team__hint">
-            One entry per team — any member can submit it, and it counts for
+            One entry per team - any member can submit it, and it counts for
             everyone.
           </p>
 
@@ -100,7 +100,7 @@ const TeamModal = ({
         <>
           <p className="aero-team__hint">
             Teams are capped at {maxTeamSize} and are separate for each
-            challenge. One entry per team — any member can submit it.
+            challenge. One entry per team - any member can submit it.
           </p>
 
           {error && <p className="aero-team__error">{error}</p>}

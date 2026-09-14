@@ -63,8 +63,8 @@ const ChallengeEditForm = ({
           }
           className={inputClass}
         >
-          <option value="individual">Individual — one entry per delegate</option>
-          <option value="group">Group — one entry per team (Dev&apos;s Den)</option>
+          <option value="individual">Individual - one entry per delegate</option>
+          <option value="group">Group - one entry per team (Dev&apos;s Den)</option>
         </select>
         <p className="mt-1 text-xs text-gray-500">
           Group challenges need delegates to create or join a team (max 4)

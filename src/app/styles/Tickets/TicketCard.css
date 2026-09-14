@@ -1,5 +1,5 @@
 /* ==========================================================================
-   /tickets — the ticket list, in the same Frutiger Aero language as /scavenger
+   /tickets - the ticket list, in the same Frutiger Aero language as /scavenger
 
    The rules of that language, kept here so this file doesn't drift from it:
    headings float directly on the painting in the pixel face, white with a
@@ -40,7 +40,7 @@
 }
 
 /* The top of the painting is bright sky, so this needs a heavier shadow than
-   the hunt's equivalent — which starts further down the same image. */
+   the hunt's equivalent - which starts further down the same image. */
 .tickets-subheading {
     max-width: 52ch;
     margin: 0 auto;
@@ -90,7 +90,7 @@
 }
 
 /* Same glass recipe as .v2-glass in base.css. Written out rather than shared
-   through the class so TicketCard's markup stays untouched — never author the
+   through the class so TicketCard's markup stays untouched - never author the
    -webkit- backdrop-filter pair, Lightning CSS then drops the standard one. */
 .ticket-card {
     position: relative;

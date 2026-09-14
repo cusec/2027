@@ -89,10 +89,16 @@ export async function linkTicketPurchase(
 
   const demographics = await DemographicInfo.findOne({
     user: matchedUser._id,
-  }).lean<{ studentEmail?: string; personalEmail?: string }>();
+  }).lean<{ primaryEmail?: string; secondaryEmail?: string }>();
+  // Primary is the address the delegate says will outlast school; the
+  // secondary one is their student or work address.
   if (demographics) {
-    if (!registeredUser.studentEmail) registeredUser.studentEmail = demographics.studentEmail;
-    if (!registeredUser.personalEmail) registeredUser.personalEmail = demographics.personalEmail;
+    if (!registeredUser.personalEmail && demographics.primaryEmail) {
+      registeredUser.personalEmail = demographics.primaryEmail;
+    }
+    if (!registeredUser.studentEmail && demographics.secondaryEmail) {
+      registeredUser.studentEmail = demographics.secondaryEmail;
+    }
   }
   await registeredUser.save();
 

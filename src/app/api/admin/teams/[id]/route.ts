@@ -158,7 +158,7 @@ export async function DELETE(
       return NextResponse.json({ error: "Team not found" }, { status: 404 });
     }
 
-    // Points already granted for this team's entries are NOT reversed — same
+    // Points already granted for this team's entries are NOT reversed - same
     // policy as everywhere else in the platform.
     const granted = await Submission.aggregate([
       { $match: { teamId: team._id } },
@@ -195,7 +195,7 @@ export async function DELETE(
         totalGranted > 0
           ? `This team's entries had granted ${totalGranted} point${
               totalGranted === 1 ? "" : "s"
-            } in total. Those points have NOT been removed — adjust the members individually in Manage Users.`
+            } in total. Those points have NOT been removed - adjust the members individually in Manage Users.`
           : null,
     });
   } catch (error) {

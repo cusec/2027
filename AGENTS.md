@@ -590,27 +590,42 @@ hunt, edit that one `@theme` block** — do not hunt through components.
 
 # Ticket Purchase Wizard
 
-The ticket-buying flow on `/tickets`. Full detail lives in
-**`docs/ticket-tailor/`** — `TICKET_INTEGRATION.md` (architecture),
-`REQUIRED.md` (human setup checklist: DNS, webhook, env), `KNOWN_ISSUES.md`
-(unverified assumptions + weak spots). Read those before changing this
-subsystem; this section is the contract.
+The ticket-buying flow on `/tickets`. This section is the contract. The human
+setup checklist (DNS, webhook, env, Auth0 URLs) lives in
+**`docs/ticket-tailor/REQUIRED.md`**.
 
 ## The flow
 
 ```
-/tickets                 Public entry. Logged out -> Auth0 signup.
-                         Logged in -> redirects to first incomplete step.
-/tickets/demographics    ~25-field confidential survey, 5 sub-steps
-/tickets/avatar          Reuses the scavenger AvatarCustomize placeholder
-/tickets/purchase        Ticket cards + checkout in an on-page modal
+/tickets                 Public entry. Logged out -> Auth0 signup (the Account step).
+                         Logged in -> first incomplete step, or the confirmation.
+/tickets/profile         Required: Basics, then Education or Professional background
+                         with travel origin. Two sections, one save each.
+/tickets/interests       Optional answers, but both sections are saved (blank is fine)
+                         before the ticket step: goals and career interests, then
+                         getting to CUSEC, community and discovery.
+/tickets/purchase        Ticket cards + checkout in an on-page modal.
+/tickets/demographics    Redirects to /tickets/profile (old links, Auth0 returnTo).
+/tickets/avatar          Redirects to /tickets. The avatar step is hidden until the
+                         builder is ready; AvatarStepClient is kept for its return.
 ```
 
 Steps are **real sub-routes with server-derived progress**, so an abandoned
-flow resumes exactly where it left off. Progress is always re-derived from
-real data — does a `DemographicInfo` doc exist, is `ticketWizard.avatarCompletedAt`
-set, is `linked_email` verified against `RegisteredUser` — never from a
-client flag. `ticketWizard.currentStep` is a cache for UI only; don't gate on it.
+flow resumes exactly where it left off. **Every section saves on its own
+Continue** (`PUT /api/demographics { section, answers }`), and progress is
+re-derived from the `sections.<id>` timestamps on `DemographicInfo` plus
+`linked_email` verified against `RegisteredUser`, never from a client flag.
+`ticketWizard.currentStep` is a cache for UI only; don't gate on it.
+
+**The API validates per section and re-reads each answer by name.** Which
+background questions apply depends on the attendee type saved with Basics,
+read from the database, and questions that don't apply are stored blank.
+
+After purchase the confirmation (`TicketConfirmation`) shows the account that
+holds the ticket and offers optional profile completion: LinkedIn, GitHub and
+portfolio links, and explicit consent to share the profile with sponsors.
+Nothing navigates away on its own. Résumé upload is not built yet: storage is
+undecided.
 
 **Account creation is just Auth0 signup** (`/auth/login?screen_hint=signup`).
 There is no second auth system. `findOrCreateUser` creates the `User`, same as
@@ -618,7 +633,7 @@ the hunt.
 
 ## How it connects to the scavenger hunt
 
-Submitting demographics sets `User.hasSeenIntro = true` **immediately**, which
+Saving the first profile section sets `User.hasSeenIntro = true` **immediately**, which
 is what stops the legacy hunt onboarding (email-link screen + personality quiz)
 from ever appearing for a wizard user, at any abandonment point. Don't defer
 that write to a later step.
@@ -642,10 +657,12 @@ Two independent paths do that linking, both via `linkTicketPurchase()` in
 | `src/lib/ticketTailor.ts` | All Ticket Tailor API/config. `getTicketTypes()`, `getTicketWidgetConfig()`, webhook verification, `extractPurchaser()`, `extractPurchasedTicket()`, `findCompletedOrderByEmail()`. |
 | `src/lib/ticketLinking.ts` | `linkTicketPurchase()` + `reconcileTicketPurchase()`. |
 | `src/lib/ticketWizard.ts` | `getWizardStatus()` — server-only (imports Mongoose). |
-| `src/lib/ticketWizardOptions.ts` | Client-safe form option lists. **Kept separate on purpose** — client components can't import `ticketWizard.ts`. |
+| `src/lib/ticketWizardOptions.ts` | Client-safe option lists with English and French labels side by side, limits, link patterns and section ids. Imported by the forms and by `/api/demographics`, so both agree on valid answers. **Kept separate on purpose**: client components can't import `ticketWizard.ts`. |
+| `src/lib/institutions.ts` | Schools and campuses for the school and delegation pickers. Missing schools go under Other. |
+| `src/app/api/locations/route.ts` | Countries, provinces/states and cities from `country-state-city`, served per level so the dataset never ships to the browser. |
 | `src/lib/models.ts` | `DemographicInfo` model + `ticketWizard` subdoc on `userSchema`. |
 | `src/app/api/{demographics,ticket-wizard/*,ticket-tailor/webhook}/route.ts` | Wizard APIs. |
-| `src/app/components/TicketWizard/*` | `WizardStepNav`, `DemographicsForm`, `AvatarStepClient`, `PurchaseStepClient`. |
+| `src/app/components/TicketWizard/*` | `WizardStepNav`, `ProfileForm`, `InterestsForm`, `WizardFields` (chips, searchable dropdown, origin pickers), `TicketConfirmation`, `ProfileLinksForm`, `PurchaseStepClient`. |
 
 ## Checkout rendering (hard-won — don't undo)
 
@@ -657,8 +674,7 @@ appends the same query params their script would.
 
 Their API has **no payment endpoint at all** — orders are read/update only.
 A fully custom checkout would mean integrating Stripe and becoming merchant of
-record. Investigated and rejected; don't re-litigate without reading
-`TICKET_INTEGRATION.md`.
+record. Investigated and rejected; don't re-litigate it.
 
 **The "Checkout has opened in a new tab" message is not a bug** — it's
 third-party cookies being blocked. Only fixable by connecting a custom domain
@@ -693,3 +709,5 @@ localhost.** Test in-page checkout on a deployed environment only.
    makes Ticket Tailor silently ignore the `email=` filter and return unrelated
    orders, which reads as a false "has a ticket".
 5. Don't log demographic data — it's confidential PII, and the UI promises so.
+6. **One ticket per order is a Ticket Tailor setting**, not something the checkout
+   URL can enforce: set the maximum per order to 1 on each ticket type.

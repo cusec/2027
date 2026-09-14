@@ -49,7 +49,7 @@ const PersonalityQuiz = ({ onComplete, onSkip }: PersonalityQuizProps) => {
       {/* Card */}
       <div className="v2-glass relative z-10 w-full max-w-md mx-4 p-8 max-h-[90vh] overflow-y-auto">
         <h1 className="text-2xl font-bold text-gray-800 mb-1">
-          Quick — who are you?
+          Quick - who are you?
         </h1>
         <p className="text-gray-500 text-sm mb-6">
           Two questions. No wrong answers.

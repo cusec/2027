@@ -1,52 +1,64 @@
 import { getTranslations, getLocale } from "next-intl/server";
 import { auth0 } from "@/lib/auth0";
 import { redirect } from "@/i18n/navigation";
+import { findOrCreateUser } from "@/lib/userService";
+import connectMongoDB from "@/lib/mongodb";
+import { DemographicInfo } from "@/lib/models";
 import { getWizardStatus } from "@/lib/ticketWizard";
 import { getBaseUrl } from "@/lib/siteUrl";
 import { getTicketTypes, getTicketWidgetConfig } from "@/lib/ticketTailor";
+import type { DemographicInfo as SavedProfile } from "@/lib/interface";
 import PurchaseStepClient from "@/app/components/TicketWizard/PurchaseStepClient";
+import SignInCard from "@/app/components/TicketWizard/SignInCard";
+import { answersFrom } from "@/app/components/TicketWizard/profileAnswers";
 
 export default async function PurchasePage() {
   const t = await getTranslations("TicketWizard");
   const locale = await getLocale();
   const session = await auth0.getSession();
   const email = session?.user?.email;
+  if (!email) return <SignInCard returnTo="/tickets/purchase" />;
 
-  if (!email) {
-    return (
-      <div className="tickets-wrapper">
-        <div className="tickets-header">
-          <h1 className="tickets-heading">{t("signin-heading")}</h1>
-        </div>
-        <div className="wizard-intro-card">
-          <a href="/auth/login?returnTo=/tickets/purchase" className="cta-btn wizard-intro-cta">
-            {t("signin-cta")}
-          </a>
-        </div>
-      </div>
-    );
-  }
+  const user = await findOrCreateUser({
+    email,
+    name: session?.user?.name || "Attendee",
+  });
 
   const status = await getWizardStatus(email);
-  if (!status.demographicsComplete) {
-    redirect({ href: "/tickets/demographics", locale });
+  if (!status.purchaseComplete) {
+    if (!status.profileComplete) {
+      redirect({ href: "/tickets/profile", locale });
+    }
+    if (!status.interestsComplete) {
+      redirect({ href: "/tickets/interests", locale });
+    }
   }
-  if (!status.avatarComplete) {
-    redirect({ href: "/tickets/avatar", locale });
-  }
+
+  await connectMongoDB();
+  const doc = await DemographicInfo.findOne({ user: user._id }).lean();
+  const saved = doc ? (JSON.parse(JSON.stringify(doc)) as SavedProfile) : null;
+  const profile = answersFrom(saved);
+
+  const resume = saved?.resumeFileName
+    ? {
+        fileName: saved.resumeFileName,
+        size: saved.resumeSize ?? 0,
+        uploadedAt: saved.resumeUploadedAt ?? null,
+      }
+    : null;
+  const accountName =
+    `${profile.firstName} ${profile.lastName}`.trim() || session?.user?.name || email;
 
   const { tickets, source } = await getTicketTypes();
 
   // Pre-filling checkout with the account's own email is what keeps the
   // purchase auto-linkable: every automatic path matches an order to an
-  // account by that address. Ticket Tailor only honours pre-fill on a custom
-  // domain, which is now configured. Names are a convenience only.
-  const profile = session?.user as { given_name?: string; family_name?: string } | undefined;
-  const [fallbackFirst, ...fallbackRest] = (session?.user?.name ?? "").trim().split(/\s+/);
+  // account by that address. Names come from the profile the delegate just
+  // filled in, falling back to the account.
   const widgetConfig = await getTicketWidgetConfig({
     email,
-    firstName: profile?.given_name || fallbackFirst || null,
-    lastName: profile?.family_name || fallbackRest.join(" ") || null,
+    firstName: profile.firstName || null,
+    lastName: profile.lastName || null,
   });
 
   // The raw flag, not the staff bypass: an organizer rehearsing a purchase
@@ -55,21 +67,26 @@ export default async function PurchasePage() {
 
   return (
     <div className="tickets-wrapper">
-      <div className="tickets-header">
-        <h1 className="tickets-heading">{t("purchase-heading")}</h1>
-        <p className="tickets-subheading">{t("purchase-subheading")}</p>
-        <p className="wizard-purchase-note">
-          {t("purchase-one-per-person", { email: email })}
-        </p>
-        {source === "mock" && <p className="tickets-mock-banner">{t("mock-banner")}</p>}
-        {source === "error" && <p className="tickets-error-banner">{t("error-banner")}</p>}
-      </div>
+      {!status.purchaseComplete && (
+        <div className="tickets-header">
+          <h1 className="tickets-heading">{t("purchase-heading")}</h1>
+          <p className="tickets-subheading">{t("purchase-subheading")}</p>
+          <p className="wizard-purchase-note">
+            {t("purchase-one-per-person", { email })}
+          </p>
+          {source === "mock" && <p className="tickets-mock-banner">{t("mock-banner")}</p>}
+          {source === "error" && <p className="tickets-error-banner">{t("error-banner")}</p>}
+        </div>
+      )}
       <PurchaseStepClient
         tickets={tickets}
         widgetConfig={widgetConfig}
         alreadyComplete={status.purchaseComplete}
         purchasedTicketName={status.purchasedTicketName}
         accountEmail={email}
+        accountName={accountName}
+        profile={saved ? profile : null}
+        resume={resume}
         huntOpen={huntOpen}
         baseURL={await getBaseUrl()}
       />

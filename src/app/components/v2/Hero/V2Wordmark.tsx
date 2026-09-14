@@ -8,15 +8,15 @@ import { useEffect, useRef } from "react";
  *
  * Each character is two nested spans on purpose. The outer one runs the wave
  * keyframes; the inner one carries only the repel offset. A single element
- * cannot do both — writing `transform` from JS would replace the animation's
- * transform and kill the wave — so the two are split and composed. For the same
+ * cannot do both - writing `transform` from JS would replace the animation's
+ * transform and kill the wave - so the two are split and composed. For the same
  * reason the pointer handler sets `--rx`/`--ry` custom properties rather than
  * touching `transform` directly.
  */
 
-const REPEL_RADIUS = 140; // px — how close the cursor must be to nudge a letter
-const REPEL_STRENGTH = 20; // px — max displacement, right at the cursor
-const STAGGER = 0.12; // s — per-letter delay, so the wave travels
+const REPEL_RADIUS = 140; // px - how close the cursor must be to nudge a letter
+const REPEL_STRENGTH = 20; // px - max displacement, right at the cursor
+const STAGGER = 0.12; // s - per-letter delay, so the wave travels
 
 export default function V2Wordmark({ text }: { text: string }) {
 	const rootRef = useRef<HTMLHeadingElement>(null);
@@ -89,7 +89,7 @@ export default function V2Wordmark({ text }: { text: string }) {
 			reset();
 		};
 
-		// Unlike the splash, this sits on a very long page — stop tracking once the
+		// Unlike the splash, this sits on a very long page - stop tracking once the
 		// hero is scrolled away rather than measuring letters on every pointer move
 		// for the whole document.
 		const observer = new IntersectionObserver(

@@ -464,7 +464,7 @@
    around the 128x158 card, so a 12px/13px inset). The button is the case and
    the card is a child of it, which keeps the existing absolute positioning of
    the notch/pins/label working against the card rather than the sleeve.
-   Standard backdrop-filter only — see AGENTS.md on the -webkit- pair. */
+   Standard backdrop-filter only - see AGENTS.md on the -webkit- pair. */
 .v2-sd {
     position: relative;
     display: grid;

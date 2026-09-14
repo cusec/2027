@@ -5,8 +5,8 @@ works. The code is done and waiting on these.
 
 Ordered by priority. Item 1 is the only thing blocking in-page checkout.
 
-> Hitting something unexpected? `KNOWN_ISSUES.md` lists the unverified
-> assumptions and known weak spots in this integration.
+> The architecture and the things not to undo are in the Ticket Purchase
+> Wizard section of `AGENTS.md`.
 
 ---
 
@@ -135,7 +135,7 @@ just isn't *in-page* until you test from a `cusec.net` host. Set up the
 redirect in 2b so buyers land back on the wizard automatically.
 
 So: test this specific behavior on a Vercel Preview or Production deploy.
-Everything else (ticket data, the wizard, the demographics form, the modal
+Everything else (ticket data, the wizard, the attendee profile, the modal
 itself) works fine locally.
 
 Whichever deployed URL you use, add it to **Auth0** - Application Settings →

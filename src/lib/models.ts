@@ -67,8 +67,10 @@ const userSchema = new Schema(
         {
           currentStep: {
             type: String,
-            enum: ["demographics", "avatar", "purchase", "completed"],
-            default: "demographics",
+            // "demographics" and "avatar" are the retired steps, still listed so
+            // records saved under them keep validating.
+            enum: ["profile", "interests", "purchase", "completed", "demographics", "avatar"],
+            default: "profile",
           },
           avatarCompletedAt: { type: Date, default: null },
           // Best-effort, set from the order.created webhook's line_items -
@@ -295,6 +297,11 @@ const registeredUserSchema = new Schema(
 // Confidential ticket-purchase-wizard survey answers. Kept in its own
 // collection (rather than embedded on User) so access can be scoped and
 // audited separately from hunt gameplay data.
+// Plain factories rather than one shared literal, so no two paths ever share
+// a default array.
+const text = () => ({ type: String, default: "" });
+const list = () => ({ type: [String], default: [] });
+
 const demographicInfoSchema = new Schema(
   {
     user: {
@@ -305,91 +312,100 @@ const demographicInfoSchema = new Schema(
       index: true,
     },
 
-    // NOTE: name, personal email, student email, university, expected
-    // graduation and degree are intentionally NOT stored here — Ticket
-    // Tailor's checkout already asks for all six, and this survey exists to
-    // collect only what TT does not. Read those from the TT order/export.
-
-    // Splits the rest of the survey. Replaces the old free-text
-    // "currentAffiliation", which duplicated the school/company answer.
-    attendeeType: {
-      type: String,
-      required: true,
-      enum: ["student", "professional"],
+    // The profile saves one section at a time, so a delegate who leaves
+    // halfway keeps everything up to their last Continue. Each timestamp is
+    // set by /api/demographics when that section saves, and wizard progress
+    // is derived from these, never from a client flag. Validation lives in
+    // that route, per section, because most fields only apply to some
+    // attendee types; nothing here is required beyond the user.
+    sections: {
+      basics: { type: Date, default: null },
+      background: { type: Date, default: null },
+      goals: { type: Date, default: null },
+      experience: { type: Date, default: null },
+      links: { type: Date, default: null },
     },
 
-    // Personal
-    pronoun: {
-      type: String,
-      required: true,
-      // Kept in sync by hand with PRONOUN_OPTIONS in ticketWizardOptions.ts.
-      enum: [
-        "she/her",
-        "he/him",
-        "they/them",
-        "she/they",
-        "he/they",
-        "prefer-not-to-say",
-        "other",
-      ],
-    },
-    tshirtSize: {
-      type: String,
-      required: true,
-      enum: ["XS", "S", "M", "L", "XL", "XXL", "XXXL"],
-    },
-    dietaryRestrictions: { type: String, default: "" },
+    // Basics
+    firstName: text(),
+    lastName: text(),
+    primaryEmail: text(),
+    secondaryEmail: text(),
+    pronoun: text(),
+    pronounOther: text(),
+    attendeeType: text(),
+    attendeeTypeOther: text(),
 
-    // Student-only (blank for professionals)
-    fieldOfStudy: { type: String, default: "" },
-    schoolHasHeadDelegate: {
-      type: String,
-      default: "unsure",
-      enum: ["yes", "no", "unsure"],
-    },
+    // Education (students, recent graduates; school also for educators)
+    school: text(),
+    schoolOther: text(),
+    campus: text(),
+    fieldOfStudy: text(),
+    fieldOfStudyOther: text(),
+    credential: text(),
+    credentialOther: text(),
+    studyLevel: text(),
+    studyLevelOther: text(),
+    expectedGraduation: text(),
+    internships: text(),
 
-    // Professional-only (blank for students)
-    company: { type: String, default: "" },
-    jobTitle: { type: String, default: "" },
+    // Professional background
+    currentRole: text(),
+    currentRoleOther: text(),
+    experience: text(),
 
-    // Links — optional for everyone
-    resumeUrl: { type: String, default: "" },
-    githubUrl: { type: String, default: "" },
-    linkedinUrl: { type: String, default: "" },
+    // Where they travel from, asked with the profile
+    travelCountry: text(),
+    travelRegion: text(),
+    travelCity: text(),
 
-    // Travel — drives which delegates get told about which airline/hotel
-    // discount, so it is asked rather than inferred from the university.
-    travelFrom: { type: String, required: true },
-    travelMethod: {
-      type: String,
-      required: true,
-      enum: ["plane", "train", "bus", "car", "local", "undecided"],
-      default: "undecided",
-    },
+    // Goals and career interests
+    attendReasons: list(),
+    attendReasonsOther: text(),
+    successMeasures: list(),
+    successMeasuresOther: text(),
+    opportunities: list(),
+    opportunitiesOther: text(),
+    techAreas: list(),
+    techAreasOther: text(),
+    workLocations: list(),
+    workArrangement: text(),
 
-    // Conference
-    howDidYouHear: { type: String, default: "" },
-    previouslyAttended: {
-      type: String,
-      required: true,
-      enum: ["yes", "no"],
-      default: "no",
-    },
-    // Only meaningful when previouslyAttended === "yes".
-    previouslyAttendedYear: { type: String, default: "" },
-    excitedEvents: {
-      type: [String],
-      default: [],
-      validate: {
-        validator: (v: string[]) => v.length === 3,
-        message: "Pick exactly 3 events",
-      },
-    },
+    // Getting there, community and discovery
+    transport: text(),
+    transportOther: text(),
+    delegation: text(),
+    delegationSchool: text(),
+    delegationOther: text(),
+    connectWithSchool: text(),
+    travelFunding: text(),
+    accommodation: text(),
+    heardFrom: text(),
+    heardFromOther: text(),
+    convincedBy: text(),
+    convincedByOther: text(),
+    attended: list(),
+    sessionFormats: list(),
+    sessionFormatsOther: text(),
+    communityInvolvement: list(),
+    communityInvolvementOther: text(),
+    communityProject: text(),
 
-    // Optional free text
-    whyAttendCUSEC: { type: String, default: "" },
-    schoolCommunityInvolvement: { type: String, default: "" },
-    cusecAssociation: { type: String, default: "" },
+    // Optional, after purchase
+    linkedinUrl: text(),
+    githubUrl: text(),
+    portfolioUrl: text(),
+    // Only an explicit yes counts. Recorded with a timestamp because it is
+    // what permits sharing this profile with sponsors.
+    sponsorConsent: { type: Boolean, default: false },
+    sponsorConsentAt: { type: Date, default: null },
+
+    // Résumé: the file itself is in Cloudinary as a private raw upload (see
+    // src/lib/resumeStorage.ts); only where it is and what to call it live here.
+    resumePublicId: text(),
+    resumeFileName: text(),
+    resumeSize: { type: Number, default: 0 },
+    resumeUploadedAt: { type: Date, default: null },
   },
   {
     timestamps: true,
@@ -398,7 +414,7 @@ const demographicInfoSchema = new Schema(
 
 // Challenge & Submission models
 //
-// Events host their own challenges (see TECHxEVENTS.txt) — tech's only job is
+// Events host their own challenges (see TECHxEVENTS.txt) - tech's only job is
 // to let delegates submit a link against one. The activation-window fields
 // mirror huntItemSchema so the admin form and active/inactive logic behave
 // identically to hunt items.
@@ -435,7 +451,7 @@ const challengeSchema = new Schema(
 );
 
 // A team is a real-world unit, not a per-challenge one: you form it once and
-// it can submit to any group challenge. Membership is the source of truth —
+// it can submit to any group challenge. Membership is the source of truth -
 // there is no separate "leader" role, since any member submitting produces the
 // single entry the team is allowed.
 const teamSchema = new Schema(
@@ -509,7 +525,7 @@ const submissionSchema = new Schema(
   },
 );
 
-// One submission per delegate per challenge — re-submitting replaces the
+// One submission per delegate per challenge - re-submitting replaces the
 // existing entry rather than creating a duplicate.
 submissionSchema.index({ challengeId: 1, userId: 1 }, { unique: true });
 // The group equivalent. Partial so individual submissions (teamId null) are

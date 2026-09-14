@@ -1,14 +1,14 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Privacy Policy — CUSEC 2027",
+  title: "Privacy Policy - CUSEC 2027",
   description:
     "What personal information CUSEC 2027 collects, why, and how long we keep it.",
 };
 
 /**
  * Carried over from https://2026.cusec.net/privacy-policy and extended to
- * describe what this year's site actually collects — the Auth0 account, the
+ * describe what this year's site actually collects - the Auth0 account, the
  * delegate survey, the Ticket Tailor order and the scavenger hunt. Keeping
  * the 2026 wording where it still applies means the two years don't
  * contradict each other.
@@ -43,8 +43,8 @@ export default function PrivacyPolicyPage() {
         <h3>Your account</h3>
         <p>
           Signing in creates an account through Auth0, our authentication
-          provider. We receive your email address and display name, and — if you
-          sign in with Google or GitHub — whatever that provider shares with us.
+          provider. We receive your email address and display name, and - if you
+          sign in with Google or GitHub - whatever that provider shares with us.
           We never see your password.
         </p>
 
@@ -52,7 +52,7 @@ export default function PrivacyPolicyPage() {
         <p>
           Tickets are sold through Ticket Tailor. Their checkout collects your
           name, email, student email, university, expected graduation and
-          degree, and payment is handled by Stripe — we never see or store your
+          degree, and payment is handled by Stripe - we never see or store your
           card details. We store the order&rsquo;s email address so we can link
           the ticket to your account, and the name of the ticket you bought.
         </p>
@@ -65,8 +65,8 @@ export default function PrivacyPolicyPage() {
           head delegate, how you heard about CUSEC, which events you are excited
           for, how you are travelling to the conference, and optional free-text
           answers and links (resume, GitHub, LinkedIn). This is used to run the
-          conference — catering, swag, scheduling, and telling you about travel
-          discounts — and is not published.
+          conference - catering, swag, scheduling, and telling you about travel
+          discounts - and is not published.
         </p>
 
         <h3>The scavenger hunt</h3>
@@ -82,7 +82,7 @@ export default function PrivacyPolicyPage() {
         <ul>
           <li>To sell you a ticket and get you into the conference.</li>
           <li>
-            To plan the event — food, sizes, accessibility, room capacity, and
+            To plan the event - food, sizes, accessibility, room capacity, and
             sharing travel discounts with the delegates they apply to.
           </li>
           <li>To run the scavenger hunt and its leaderboard.</li>
@@ -93,9 +93,9 @@ export default function PrivacyPolicyPage() {
         <p>
           We don&rsquo;t share any personally identifying information publicly
           or with third parties, except when required by law. We do rely on
-          service providers to operate the conference — Auth0 for sign-in,
+          service providers to operate the conference - Auth0 for sign-in,
           Ticket Tailor and Stripe for ticketing and payment, MongoDB Atlas and
-          Vercel for hosting — and your data passes through them for those
+          Vercel for hosting - and your data passes through them for those
           purposes only.
         </p>
         <p>

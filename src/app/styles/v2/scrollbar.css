@@ -1,5 +1,5 @@
 /* --------------------------------------------------------------------------
-   V2Scrollbar — the lime knob that replaces the native root scrollbar.
+   V2Scrollbar - the lime knob that replaces the native root scrollbar.
    The native one is hidden in globals.css; see the note in V2Scrollbar.tsx for
    why a transparent native track can't get rid of the pale rail on its own.
    -------------------------------------------------------------------------- */

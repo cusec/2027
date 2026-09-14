@@ -190,7 +190,7 @@ export async function DELETE(
       );
     }
 
-    // Submissions are meaningless without their challenge — clear them out so
+    // Submissions are meaningless without their challenge - clear them out so
     // they don't linger as orphans in the admin review list.
     const { deletedCount } = await Submission.deleteMany({ challengeId: id });
     await Challenge.findByIdAndDelete(id);

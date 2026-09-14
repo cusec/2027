@@ -70,7 +70,7 @@ function normalizeStatus(raw: unknown): TicketType["status"] {
 }
 
 // Ticket Tailor's v1 API nests fields under `attributes` on some endpoints
-// and returns them flat on others — read both so this survives either shape.
+// and returns them flat on others - read both so this survives either shape.
 function parseTicketType(raw: Record<string, unknown>, index: number): TicketType {
   const attrs = (raw?.attributes as Record<string, unknown>) ?? raw ?? {};
   const prices = attrs.prices as Array<{ price?: number }> | undefined;

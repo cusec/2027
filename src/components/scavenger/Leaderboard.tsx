@@ -70,7 +70,7 @@ const Leaderboard = () => {
         </div>
       ) : leaderboard.length === 0 ? (
         <div className="v2-card v2-glass aero-note">
-          <p>No scores yet — be the first to earn points.</p>
+          <p>No scores yet - be the first to earn points.</p>
         </div>
       ) : (
         <div className="v2-card v2-glass aero-board">

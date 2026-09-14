@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Code of Conduct — CUSEC 2027",
+  title: "Code of Conduct - CUSEC 2027",
   description:
     "The behaviour expected of everyone taking part in CUSEC 2027, and how to report a violation.",
 };

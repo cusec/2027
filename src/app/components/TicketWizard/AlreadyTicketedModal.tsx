@@ -8,7 +8,7 @@ interface AlreadyTicketedModalProps {
   email: string;
   /** Name of the ticket they already hold, when the webhook captured it. */
   ticketName?: string | null;
-  /** Absolute site URL — Auth0 requires a fully-qualified returnTo. */
+  /** Absolute site URL - Auth0 requires a fully-qualified returnTo. */
   baseURL: string;
 }
 
@@ -17,7 +17,7 @@ interface AlreadyTicketedModalProps {
  * holds a ticket.
  *
  * This replaces an earlier behaviour where the wizard let a ticketed user walk
- * back through the survey with an empty form — it looked like their answers
+ * back through the survey with an empty form - it looked like their answers
  * had been lost, and re-submitting would overwrite them. One ticket per
  * account is the rule, so buying another means signing in as someone else.
  */
@@ -60,7 +60,7 @@ export default function AlreadyTicketedModal({
 
         <div className="wizard-modal-actions">
           {/*
-            Auth0 owns /auth/*, so this must be a real document request —
+            Auth0 owns /auth/*, so this must be a real document request -
             a client-side Link would never reach the logout handler.
           */}
           <a

@@ -103,7 +103,7 @@ const TeamsModal = ({ isOpen, onClose, isAdmin }: TeamsModalProps) => {
       <div className="space-y-5">
         <p className="rounded-lg border border-amber-300 bg-amber-50 p-3 text-xs text-amber-900">
           Deleting a team also deletes its submissions. Points already granted
-          for those entries are <strong>not</strong> reversed — adjust members
+          for those entries are <strong>not</strong> reversed - adjust members
           individually in Manage Users.
         </p>
 

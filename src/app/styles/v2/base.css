@@ -1,5 +1,5 @@
 /* ==========================================================================
-   CUSEC 2027 — Main site (v2) design tokens + page shell
+   CUSEC 2027 - Main site (v2) design tokens + page shell
    Palette values are lifted verbatim from the Figma SVG exports in
    public/assets/v2, so they are exact rather than eyeballed.
    ========================================================================== */
@@ -57,7 +57,7 @@
     /* vertical breathing room inside every scene section; with the
        full-viewport rule below, two of these are the gap between sections */
     --v2-section-pad: clamp(72px, 7vh, 128px);
-    /* how far up the painting rides — see .v2-scene__backdrop. Retuned after
+    /* how far up the painting rides - see .v2-scene__backdrop. Retuned after
        the closing section stopped taking a full screen: that shortened the page
        by ~1000px, which grew the painting's overhang and so the lift this
        percentage buys. Judge it against the hero's two framing bubbles. */
@@ -91,12 +91,12 @@
     object-fit: cover;
     /* `cover` scales the painting to the wider of the two axes. The scene is
        taller than 1:4.83 nowhere near as often as it is wider, so in practice
-       the width wins and the painting ends up taller than the scene — roughly
+       the width wins and the painting ends up taller than the scene - roughly
        1000px of it hangs past the bottom on a 2560-wide desktop.
        --v2-scene-shift picks which slice of that overhang to show: 0% pins the
        painting's top (the old `top center`, all the crop taken off the bottom),
        100% pins its bottom. Because it is a percentage of whatever overhang
-       exists, it can never pull an edge into view — on a narrow viewport, where
+       exists, it can never pull an edge into view - on a narrow viewport, where
        the painting is cropped horizontally instead and there is no vertical
        overhang at all, it simply does nothing. */
     object-position: center var(--v2-scene-shift);
@@ -130,11 +130,11 @@
 
 /* Each section of the scene claims at least a full viewport and centres its
    content in it, so on a tall display the sections read as separate screens
-   rather than stacking tight under the nav. Taller sections just grow past it —
+   rather than stacking tight under the nav. Taller sections just grow past it -
    this is a floor, never a cap, so nothing can overflow its own box.
    Opt-in via the modifier: /speakers shares .v2-scene but is deliberately a
    short page, so it must not be stretched to four screens. The closing sign-off
-   is the one exception on the home page — a screen of its own would park it in
+   is the one exception on the home page - a screen of its own would park it in
    the middle of a screen of empty water, so it sizes to its content and lets
    the footer come up to meet it. */
 .v2-scene--screens > .v2-section:not(.v2-closing) {
@@ -230,18 +230,6 @@
     align-items: center;
 }
 
-.v2-page-hero__badge {
-    margin: 0 0 26px;
-    padding: 8px 22px;
-    border-radius: 999px;
-    background: rgba(31, 59, 44, 0.5);
-    backdrop-filter: blur(6px);
-    color: var(--v2-lime);
-    font-size: 11px;
-    letter-spacing: 0.2em;
-    text-transform: uppercase;
-}
-
 .v2-page-hero__title {
     max-width: 18ch;
     margin: 0;
@@ -335,7 +323,7 @@
 /* Light glass card -------------------------------------------------------- */
 /* The redesigned info surfaces. Deliberately a separate class rather than a
    change to .v2-card: the hunt card keeps the dark treatment and shares that
-   base. Only the standard backdrop-filter is written here — authoring the
+   base. Only the standard backdrop-filter is written here - authoring the
    -webkit- pair as well makes Lightning CSS drop the standard one and every
    glass surface on the site renders flat (see AGENTS.md). */
 .v2-glass {

@@ -1,5 +1,5 @@
 /* ==========================================================================
-   v2 — Sky intro (statement heading + three frosted info cards)
+   v2 - Sky intro (statement heading + three frosted info cards)
    ========================================================================== */
 
 .v2-sky {
@@ -25,7 +25,7 @@
     text-align: left;
 }
 
-/* The blue glass tile — 390x131 in the Figma frame, which is what the
+/* The blue glass tile - 390x131 in the Figma frame, which is what the
    three-up grid above already resolves to at container width. */
 .v2-sky__card {
     min-height: 131px;

@@ -10,10 +10,10 @@ const intlMiddleware = createIntlMiddleware(routing);
  *
  * Two concerns are composed here in a single file because Next.js only allows
  * one proxy/middleware:
- *   1. Auth0 (@auth0/nextjs-auth0) — owns the `/auth/*` routes (login, logout,
+ *   1. Auth0 (@auth0/nextjs-auth0) - owns the `/auth/*` routes (login, logout,
  *      callback, profile, access-token) and rolls/refreshes the session cookie
  *      on every request.
- *   2. next-intl — locale detection + `NEXT_LOCALE` cookie. Uses
+ *   2. next-intl - locale detection + `NEXT_LOCALE` cookie. Uses
  *      `localePrefix: 'never'`, so the locale never appears in the URL.
  *
  * Order: Auth0 runs first so it can rotate the session cookie; next-intl then
@@ -22,7 +22,7 @@ const intlMiddleware = createIntlMiddleware(routing);
 export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
-  // Auth0 fully owns its own routes — return its response directly.
+  // Auth0 fully owns its own routes - return its response directly.
   if (pathname.startsWith("/auth")) {
     return await auth0.middleware(request);
   }

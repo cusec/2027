@@ -42,7 +42,7 @@ export async function POST(request: Request) {
     );
   }
 
-  // A team's submissions belong to the team, not the leaver — blocking the
+  // A team's submissions belong to the team, not the leaver - blocking the
   // exit is clearer than silently orphaning work the others still need.
   const entries = await Submission.countDocuments({ teamId: team._id });
   if (entries > 0 && team.members.length > 1) {

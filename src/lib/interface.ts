@@ -260,33 +260,99 @@ export interface RegisteredUser {
 export interface DemographicInfo {
   _id?: string;
   user: string;
-  // Ticket Tailor's checkout owns name, emails, university, graduation and
-  // degree — they are deliberately absent here.
-  attendeeType: "student" | "professional";
+  sections: {
+    basics: string | null;
+    background: string | null;
+    goals: string | null;
+    experience: string | null;
+    links: string | null;
+  };
+
+  firstName: string;
+  lastName: string;
+  primaryEmail: string;
+  secondaryEmail: string;
   pronoun: string;
-  tshirtSize: string;
-  dietaryRestrictions?: string;
-  // Student-only
-  fieldOfStudy?: string;
-  schoolHasHeadDelegate?: "yes" | "no" | "unsure";
-  // Professional-only
-  company?: string;
-  jobTitle?: string;
-  resumeUrl?: string;
-  githubUrl?: string;
-  linkedinUrl?: string;
-  travelFrom: string;
-  travelMethod: "plane" | "train" | "bus" | "car" | "local" | "undecided";
-  howDidYouHear?: string;
-  previouslyAttended: "yes" | "no";
-  previouslyAttendedYear?: string;
-  excitedEvents: string[];
-  whyAttendCUSEC?: string;
-  schoolCommunityInvolvement?: string;
-  cusecAssociation?: string;
+  pronounOther: string;
+  attendeeType: string;
+  attendeeTypeOther: string;
+
+  school: string;
+  schoolOther: string;
+  campus: string;
+  fieldOfStudy: string;
+  fieldOfStudyOther: string;
+  credential: string;
+  credentialOther: string;
+  studyLevel: string;
+  studyLevelOther: string;
+  expectedGraduation: string;
+  internships: string;
+
+  currentRole: string;
+  currentRoleOther: string;
+  experience: string;
+
+  travelCountry: string;
+  travelRegion: string;
+  travelCity: string;
+
+  attendReasons: string[];
+  attendReasonsOther: string;
+  successMeasures: string[];
+  successMeasuresOther: string;
+  opportunities: string[];
+  opportunitiesOther: string;
+  techAreas: string[];
+  techAreasOther: string;
+  workLocations: string[];
+  workArrangement: string;
+
+  transport: string;
+  transportOther: string;
+  delegation: string;
+  delegationSchool: string;
+  delegationOther: string;
+  connectWithSchool: string;
+  travelFunding: string;
+  accommodation: string;
+  heardFrom: string;
+  heardFromOther: string;
+  convincedBy: string;
+  convincedByOther: string;
+  attended: string[];
+  sessionFormats: string[];
+  sessionFormatsOther: string;
+  communityInvolvement: string[];
+  communityInvolvementOther: string;
+  communityProject: string;
+
+  linkedinUrl: string;
+  githubUrl: string;
+  portfolioUrl: string;
+  sponsorConsent: boolean;
+  sponsorConsentAt?: string | null;
+  resumeFileName?: string;
+  resumeSize?: number;
+  resumeUploadedAt?: string | null;
+
   createdAt?: string;
   updatedAt?: string;
 }
+
+/** Everything a delegate can edit, without the bookkeeping fields. */
+export type ProfileAnswers = Omit<
+  DemographicInfo,
+  | "_id"
+  | "user"
+  | "sections"
+  | "sponsorConsentAt"
+  | "resumeFileName"
+  | "resumeSize"
+  | "resumeUploadedAt"
+  | "createdAt"
+  | "updatedAt"
+>;
 
 export interface Challenge {
   _id: string;
@@ -331,7 +397,7 @@ export interface TeamSummary {
   memberCount: number;
 }
 
-/** The caller's own team — the only one whose roster and code they receive. */
+/** The caller's own team - the only one whose roster and code they receive. */
 export interface SubmissionTeam extends TeamSummary {
   members: SubmissionTeamMember[];
   createdBy?: string;

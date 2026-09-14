@@ -51,7 +51,7 @@ export default function V2Faq() {
 								</button>
 
 								{/* 0fr -> 1fr on the wrapper reveals the answer without
-								    reflowing its text — see sponsors-faq.css */}
+								    reflowing its text - see sponsors-faq.css */}
 								<div className="v2-pad__a" id={`v2-faq-a-${n}`} role="region">
 									<div className="v2-pad__body">{t.rich(`a${n}`, tags)}</div>
 								</div>

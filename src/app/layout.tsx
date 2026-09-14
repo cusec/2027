@@ -26,7 +26,7 @@ export const metadata: Metadata = {
     template: "%s | CUSEC 2027",
   },
   description:
-    "CUSEC 2027 is the 26th annual Canadian University Software Engineering Conference — Canada's longest-running student-led software engineering conference, held in Montréal, QC in January 2027.",
+    "CUSEC 2027 is the 26th annual Canadian University Software Engineering Conference - Canada's longest-running student-led software engineering conference, held in Montréal, QC in January 2027.",
   keywords: [
     "CUSEC",
     "CUSEC 2027",
@@ -86,7 +86,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "CUSEC 2027 - Canadian University Software Engineering Conference",
     description:
-      "Canada's longest-running student-led software engineering conference. 26th edition — Montréal, QC · January 2027.",
+      "Canada's longest-running student-led software engineering conference. 26th edition - Montréal, QC · January 2027.",
     images: ["/cusec-logo.png"],
     site: "@cusec", 
     creator: "@cusec",
@@ -138,6 +138,9 @@ export default function RootLayout({
     <html
       lang="en-CA"
       dir="ltr"
+      // Next 16 leaves scroll-behavior alone during navigation unless told;
+      // with this, page changes jump while in-page anchors still glide.
+      data-scroll-behavior="smooth"
       className={`${bodyFont.variable} ${GeistPixelSquare.variable}`}
       suppressHydrationWarning
     >

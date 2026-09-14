@@ -1,5 +1,5 @@
 /* ==========================================================================
-   /scavenger — layout built on the aero primitives
+   /scavenger - layout built on the aero primitives
    ========================================================================== */
 
 .aero-scene {
@@ -139,7 +139,7 @@
 }
 
 /* --------------------------------------------------------------------------
-   Hero — name and score float, no container
+   Hero - name and score float, no container
    -------------------------------------------------------------------------- */
 .aero-hero {
     display: flex;
@@ -288,7 +288,7 @@
 }
 
 /* Dropping the top padding on the first row without dropping the bottom on the
-   last left the card bottom-heavy — very visible with a single entry, where
+   last left the card bottom-heavy - very visible with a single entry, where
    one row is both. */
 .aero-board__rows li:last-child {
     padding-bottom: 0;
@@ -449,7 +449,7 @@
 }
 
 /* --------------------------------------------------------------------------
-   Phones — the rail becomes a thumb-reach bar
+   Phones - the rail becomes a thumb-reach bar
    -------------------------------------------------------------------------- */
 @media (max-width: 900px) {
     /* Room for the padding the hover wash adds to every item. */
@@ -707,4 +707,22 @@
    brings from faq.css. */
 .aero-preview .v2-faq {
     padding-block: 0 clamp(34px, 6vh, 64px);
+}
+
+/* Dark ink on the note cards. They are light glass, and the white type the
+   hunt uses over the painting washed out on them. */
+.aero-preview .aero-note h3 {
+    color: var(--v2-ink-glass-deep);
+    text-shadow: none;
+}
+
+.aero-preview .aero-note p {
+    color: #1F3D31;
+    text-shadow: none;
+}
+
+.aero-preview .aero-preview__icon {
+    border-color: rgba(9, 37, 26, 0.12);
+    background: rgba(255, 255, 255, 0.7);
+    color: var(--v2-teal-deep);
 }

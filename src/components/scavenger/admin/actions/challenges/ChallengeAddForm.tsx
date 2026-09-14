@@ -78,8 +78,8 @@ const ChallengeAddForm = ({
           }
           className={inputClass}
         >
-          <option value="individual">Individual — one entry per delegate</option>
-          <option value="group">Group — one entry per team (Dev&apos;s Den)</option>
+          <option value="individual">Individual - one entry per delegate</option>
+          <option value="group">Group - one entry per team (Dev&apos;s Den)</option>
         </select>
         <p className="mt-1 text-xs text-gray-500">
           Group challenges need delegates to create or join a team (max 4)
@@ -193,7 +193,7 @@ const ChallengeAddForm = ({
       <p className="rounded-lg border border-amber-300 bg-amber-50 p-3 text-xs text-amber-900">
         <strong>Heads up:</strong> approving a submission credits these points
         to the delegate straight away. Reverting an approval does{" "}
-        <strong>not</strong> take them back automatically &mdash; you will be
+        <strong>not</strong> take them back automatically - you will be
         told how many to remove by hand in Manage Users.
       </p>
 

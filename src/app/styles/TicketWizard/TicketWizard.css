@@ -1,5 +1,5 @@
 /* ==========================================================================
-   Ticket purchase wizard — Frutiger Aero, matching /scavenger
+   Ticket purchase wizard - Frutiger Aero, matching /scavenger
 
    Same three rules as the hunt: headings float on the painting in the pixel
    face; content lives on one level of light glass with ink on it, never glass
@@ -130,7 +130,7 @@
 }
 
 /* --------------------------------------------------------------------------
-   Glass panels — intro, sign-in, confirmation, verification
+   Glass panels - intro, sign-in, confirmation, verification
    -------------------------------------------------------------------------- */
 
 /* The one glass recipe, written out rather than shared through .v2-glass so
@@ -292,7 +292,7 @@
 }
 
 /* --------------------------------------------------------------------------
-   Intro extras — the three facts under the card
+   Intro extras - the three facts under the card
    -------------------------------------------------------------------------- */
 
 /* Small enough to read as labels on the painting rather than as a third
@@ -397,7 +397,7 @@
 }
 
 /* Inputs are wells sunk into the glass: a light fill, a hairline, and the
-   card's own ink — the same treatment the hunt's modals use. */
+   card's own ink - the same treatment the hunt's modals use. */
 .wizard-field input[type="text"],
 .wizard-field input[type="email"],
 .wizard-field input[type="url"],
@@ -651,7 +651,7 @@
 }
 
 /* --------------------------------------------------------------------------
-   Checkout modal — the Ticket Tailor embed lives inside
+   Checkout modal - the Ticket Tailor embed lives inside
    -------------------------------------------------------------------------- */
 .wizard-checkout-backdrop {
     position: fixed;
@@ -680,7 +680,7 @@
     display: flex;
     flex-direction: column;
     width: 100%;
-    /* Sized to the checkout content itself — Ticket Tailor renders it as a
+    /* Sized to the checkout content itself - Ticket Tailor renders it as a
        narrow card, so a wide modal just adds dead space. */
     max-width: 560px;
     max-height: 92vh;
@@ -840,7 +840,7 @@
 }
 
 /* --------------------------------------------------------------------------
-   Actions — the wizard's buttons become the hunt's lime pill
+   Actions - the wizard's buttons become the hunt's lime pill
    -------------------------------------------------------------------------- */
 .v2-aero .cta-btn {
     position: relative;
@@ -940,4 +940,646 @@
 .wizard-intro-cta {
     text-align: center;
     text-decoration: none;
+}
+
+/* ==========================================================================
+   Attendee profile - cards, chips and pickers from the design mockups
+   ========================================================================== */
+
+/* The forms carry their own card titles now, so the wide gap that used to
+   make room for legends above each fieldset is no longer needed. */
+.wizard-form {
+    gap: 1.6rem;
+    margin: 0 0 3rem;
+}
+
+.wizard-form--compact {
+    margin: 0;
+}
+
+.wizard-step-header {
+    gap: 0.75rem;
+}
+
+/* The pill under each title: yellow when it is the confidentiality promise,
+   pale lime when it is just a line of context. Both are opaque enough for
+   dark ink wherever the painting behind them is light. */
+.wizard-note-pill {
+    max-width: fit-content;
+    margin: 0 auto;
+    padding: 0.6rem 1.3rem;
+    border: 1px solid rgba(255, 255, 255, 0.6);
+    border-radius: 999px;
+    box-shadow: 0 6px 16px rgba(9, 28, 45, 0.22);
+    backdrop-filter: blur(8px);
+    font-size: 0.9rem;
+    line-height: 1.45;
+    text-align: center;
+}
+
+.wizard-note-pill--note {
+    background: linear-gradient(to right, rgba(236, 246, 196, 0.94), rgba(255, 246, 204, 0.94));
+    color: #3B4A10;
+}
+
+.wizard-note-pill--confidential {
+    background: rgba(255, 244, 190, 0.92);
+    color: #6B5A05;
+}
+
+.wizard-section-count {
+    margin: 0.2rem 0 0;
+    font-family: var(--v2-font-pixel);
+    font-weight: var(--v2-font-pixel-weight);
+    font-size: 11px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--v2-white);
+    text-shadow: 0 1px 3px rgba(9, 28, 45, 0.8);
+}
+
+/* --- cards --- */
+.wizard-card {
+    display: flex;
+    flex-direction: column;
+    gap: 1.2rem;
+    padding: 26px clamp(20px, 3vw, 32px) 28px;
+    border: 1.5px solid var(--v2-glass-edge);
+    border-radius: 28px;
+    background: linear-gradient(
+        180deg,
+        var(--v2-glass-top) 0%,
+        var(--v2-glass-mid) 50%,
+        var(--v2-glass-end) 100%
+    );
+    box-shadow: var(--v2-glass-shadow), inset 0 1.5px 1px rgba(255, 255, 255, 0.9);
+    backdrop-filter: blur(11px);
+    color: var(--v2-ink-glass-deep);
+}
+
+.wizard-card__head {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+}
+
+.wizard-card__icon {
+    display: grid;
+    place-items: center;
+    flex: none;
+    width: 52px;
+    height: 52px;
+    border: 1px solid rgba(255, 255, 255, 0.8);
+    border-radius: 999px;
+    background: rgba(214, 244, 240, 0.9);
+    color: var(--v2-teal-deep);
+}
+
+.wizard-card__icon svg {
+    width: 24px;
+    height: 24px;
+}
+
+.wizard-card__title {
+    margin: 0;
+    font-family: var(--v2-font-pixel);
+    font-weight: var(--v2-font-pixel-weight);
+    font-size: clamp(1.2rem, 2.4vw, 1.55rem);
+    line-height: 1.2;
+    color: var(--v2-ink-glass-deep);
+}
+
+.wizard-card__subtitle {
+    margin: 0.2rem 0 0;
+    font-size: 0.9rem;
+    line-height: 1.5;
+    color: #3C5A4D;
+}
+
+.wizard-card__body {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+}
+
+.wizard-card__foot {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 0;
+    font-size: 0.85rem;
+    color: #3C5A4D;
+}
+
+.wizard-card__foot svg {
+    flex: none;
+    width: 18px;
+    height: 18px;
+}
+
+/* Two cards side by side on the travel and discovery section. */
+.wizard-card-pair {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    align-items: start;
+    gap: 1.4rem;
+}
+
+/* --- questions --- */
+.wizard-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1.2rem 1.6rem;
+}
+
+.wizard-q {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    min-width: 0;
+}
+
+.wizard-q--wide {
+    grid-column: 1 / -1;
+}
+
+.wizard-q__label {
+    font-size: 0.74rem;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--v2-teal-deep);
+}
+
+.wizard-q__hint {
+    margin: 0;
+    font-size: 0.8rem;
+    color: #4A675A;
+}
+
+/* --- text inputs and selects --- */
+.wizard-input {
+    width: 100%;
+    min-height: 48px;
+    padding: 0.7rem 0.95rem;
+    border: 1px solid rgba(9, 37, 26, 0.14);
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.9);
+    box-shadow: 0 2px 6px rgba(9, 37, 26, 0.06);
+    color: var(--v2-ink-glass-deep);
+    font-family: var(--v2-font-body);
+    font-size: 1rem;
+    transition: border-color 160ms ease, box-shadow 160ms ease;
+}
+
+.wizard-input:focus {
+    border-color: var(--v2-teal);
+    box-shadow: 0 0 0 3px rgba(78, 201, 168, 0.3);
+    outline: none;
+}
+
+.wizard-input:disabled {
+    opacity: 0.6;
+}
+
+select.wizard-input {
+    appearance: none;
+    padding-right: 2.4rem;
+    background-image: linear-gradient(45deg, transparent 50%, var(--v2-ink-glass-deep) 50%),
+        linear-gradient(135deg, var(--v2-ink-glass-deep) 50%, transparent 50%);
+    background-position: calc(100% - 20px) calc(50% + 2px), calc(100% - 14px) calc(50% + 2px);
+    background-size: 6px 6px, 6px 6px;
+    background-repeat: no-repeat;
+}
+
+.wizard-input--other {
+    margin-top: 0.1rem;
+}
+
+/* --- chips --- */
+.wizard-chips {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 170px), 1fr));
+    gap: 0.7rem;
+}
+
+.wizard-chip {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 0.7rem;
+    min-height: 48px;
+    padding: 0.6rem 1rem;
+    border: 1px solid rgba(9, 37, 26, 0.12);
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.72);
+    box-shadow: 0 2px 6px rgba(9, 37, 26, 0.05);
+    color: var(--v2-ink-glass-deep);
+    font-size: 0.95rem;
+    line-height: 1.3;
+    cursor: pointer;
+    transition: background 160ms ease, border-color 160ms ease, box-shadow 160ms ease;
+}
+
+.wizard-chip:hover {
+    border-color: rgba(9, 37, 26, 0.24);
+}
+
+.wizard-chip.is-on {
+    border-color: rgba(122, 160, 30, 0.55);
+    background: linear-gradient(to bottom, #E8F7B3, #D5EE86);
+    box-shadow: 0 4px 12px rgba(96, 130, 20, 0.2);
+    font-weight: 600;
+}
+
+.wizard-chip.is-disabled {
+    opacity: 0.5;
+    cursor: default;
+}
+
+/* The native input stays in the DOM for keyboard use and validation; the
+   mark beside it is what shows. */
+.wizard-chip__input {
+    position: absolute;
+    opacity: 0;
+    width: 1px;
+    height: 1px;
+}
+
+.wizard-chip:has(.wizard-chip__input:focus-visible) {
+    box-shadow: 0 0 0 3px rgba(78, 201, 168, 0.45);
+}
+
+.wizard-chip__mark {
+    display: grid;
+    place-items: center;
+    flex: none;
+    width: 22px;
+    height: 22px;
+    border: 2px solid rgba(9, 37, 26, 0.45);
+    border-radius: 6px;
+    background: rgba(255, 255, 255, 0.9);
+    color: #FFFFFF;
+}
+
+.wizard-chip__mark svg {
+    width: 14px;
+    height: 14px;
+}
+
+.wizard-chip.is-on .wizard-chip__mark {
+    border-color: var(--v2-ink-glass-deep);
+    background: var(--v2-ink-glass-deep);
+}
+
+.wizard-chip__mark--radio {
+    border-radius: 999px;
+}
+
+.wizard-chip.is-on .wizard-chip__mark--radio {
+    background: radial-gradient(circle, var(--v2-ink-glass-deep) 45%, #FFFFFF 50%);
+}
+
+/* --- tags --- */
+.wizard-tags {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5rem;
+    min-height: 56px;
+    padding: 0.5rem;
+    border: 1px solid rgba(9, 37, 26, 0.14);
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.9);
+}
+
+.wizard-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    padding: 0.45rem 0.55rem 0.45rem 0.85rem;
+    border: 1px solid rgba(122, 160, 30, 0.45);
+    border-radius: 10px;
+    background: linear-gradient(to bottom, #E8F7B3, #D5EE86);
+    color: var(--v2-ink-glass-deep);
+    font-size: 0.9rem;
+    font-weight: 600;
+}
+
+.wizard-tag__remove {
+    display: grid;
+    place-items: center;
+    padding: 2px;
+    border: 0;
+    border-radius: 999px;
+    background: none;
+    color: inherit;
+    cursor: pointer;
+}
+
+.wizard-tag__remove:hover {
+    background: rgba(9, 37, 26, 0.1);
+}
+
+.wizard-tag__remove svg {
+    width: 14px;
+    height: 14px;
+}
+
+.wizard-tags__add {
+    flex: 1;
+    min-width: 160px;
+    min-height: 38px;
+    padding: 0.4rem 2rem 0.4rem 0.5rem;
+    border: 0;
+    background: transparent;
+    appearance: none;
+    color: #3C5A4D;
+    font-family: var(--v2-font-body);
+    font-size: 0.92rem;
+    background-image: linear-gradient(45deg, transparent 50%, var(--v2-ink-glass-deep) 50%),
+        linear-gradient(135deg, var(--v2-ink-glass-deep) 50%, transparent 50%);
+    background-position: calc(100% - 16px) calc(50% + 2px), calc(100% - 10px) calc(50% + 2px);
+    background-size: 6px 6px, 6px 6px;
+    background-repeat: no-repeat;
+    cursor: pointer;
+}
+
+.wizard-tags__add:focus {
+    outline: none;
+}
+
+.wizard-tags:focus-within {
+    border-color: var(--v2-teal);
+    box-shadow: 0 0 0 3px rgba(78, 201, 168, 0.3);
+}
+
+/* --- searchable dropdown --- */
+.wizard-combo {
+    position: relative;
+}
+
+.wizard-combo__list {
+    position: absolute;
+    z-index: 30;
+    top: calc(100% + 6px);
+    left: 0;
+    right: 0;
+    max-height: 280px;
+    margin: 0;
+    padding: 6px;
+    overflow-y: auto;
+    border: 1px solid rgba(9, 37, 26, 0.14);
+    border-radius: 14px;
+    background: #FFFFFF;
+    box-shadow: 0 16px 36px rgba(9, 28, 45, 0.28);
+    list-style: none;
+}
+
+.wizard-combo__option,
+.wizard-combo__empty {
+    padding: 0.6rem 0.8rem;
+    border-radius: 10px;
+    color: var(--v2-ink-glass-deep);
+    font-size: 0.95rem;
+}
+
+.wizard-combo__option {
+    cursor: pointer;
+}
+
+.wizard-combo__option.is-active {
+    background: #E8F7B3;
+}
+
+.wizard-combo__option[aria-selected="true"] {
+    font-weight: 700;
+}
+
+.wizard-combo__option--other {
+    border-top: 1px solid rgba(9, 37, 26, 0.08);
+    font-style: italic;
+}
+
+.wizard-combo__empty {
+    color: #4A675A;
+}
+
+/* Country, province, city: two across, wrapping onto a second row. */
+.wizard-origin {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.8rem 1.6rem;
+}
+
+/* --- confirmation --- */
+.wizard-confirm {
+    display: flex;
+    flex-direction: column;
+    gap: 1.6rem;
+    width: 100%;
+    max-width: 760px;
+    margin: 0 auto;
+}
+
+/* Dark ink throughout: the card is light glass, and white type on it was
+   unreadable. */
+.wizard-confirm-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+    padding: 34px clamp(22px, 5vw, 44px);
+    border: 1.5px solid var(--v2-glass-edge);
+    border-radius: 28px;
+    background: linear-gradient(
+        180deg,
+        var(--v2-glass-top) 0%,
+        var(--v2-glass-mid) 50%,
+        var(--v2-glass-end) 100%
+    );
+    box-shadow: var(--v2-glass-shadow), inset 0 1.5px 1px rgba(255, 255, 255, 0.9);
+    backdrop-filter: blur(11px);
+    color: var(--v2-ink-glass-deep);
+    text-align: center;
+    text-shadow: none;
+}
+
+.wizard-confirm-card p {
+    margin: 0;
+    color: var(--v2-ink-glass-deep);
+    font-size: 0.98rem;
+    line-height: 1.6;
+}
+
+.wizard-confirm-card__icon {
+    width: 48px;
+    height: 48px;
+    color: var(--v2-teal-deep);
+}
+
+.wizard-confirm-card__title {
+    margin: 0;
+    font-family: var(--v2-font-pixel);
+    font-weight: var(--v2-font-pixel-weight);
+    font-size: clamp(1.3rem, 3vw, 1.8rem);
+    color: var(--v2-ink-glass-deep);
+}
+
+.wizard-confirm-card .wizard-confirm-card__note {
+    font-size: 0.88rem;
+    color: #3C5A4D;
+}
+
+.wizard-account {
+    display: grid;
+    gap: 0;
+    width: 100%;
+    max-width: 480px;
+    margin: 0.2rem 0;
+    border: 1px solid rgba(9, 37, 26, 0.12);
+    border-radius: 16px;
+    background: rgba(255, 255, 255, 0.72);
+    text-align: left;
+}
+
+.wizard-account > div {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 0.75rem 1rem;
+}
+
+.wizard-account > div + div {
+    border-top: 1px solid rgba(9, 37, 26, 0.08);
+}
+
+.wizard-account dt {
+    font-size: 0.74rem;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--v2-teal-deep);
+}
+
+.wizard-account dd {
+    margin: 0;
+    color: var(--v2-ink-glass-deep);
+    font-weight: 600;
+    text-align: right;
+    overflow-wrap: anywhere;
+}
+
+.wizard-consent {
+    align-items: flex-start;
+}
+
+.wizard-consent .wizard-chip__mark {
+    margin-top: 1px;
+}
+
+.wizard-saved {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin: 0;
+    color: var(--v2-teal-deep);
+    font-weight: 700;
+}
+
+.wizard-saved svg {
+    width: 18px;
+    height: 18px;
+}
+
+@media (max-width: 900px) {
+    .wizard-card-pair {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 640px) {
+    .wizard-grid,
+    .wizard-origin {
+        grid-template-columns: 1fr;
+    }
+
+    .wizard-chips {
+        grid-template-columns: repeat(auto-fill, minmax(min(100%, 130px), 1fr));
+    }
+}
+
+/* --- résumé file --- */
+.wizard-file__input {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    opacity: 0;
+    pointer-events: none;
+}
+
+.wizard-file__pick {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    cursor: pointer;
+    text-align: left;
+}
+
+.wizard-file {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.6rem;
+    min-height: 48px;
+    padding: 0.5rem 0.8rem;
+    border: 1px solid rgba(9, 37, 26, 0.14);
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.9);
+    color: var(--v2-ink-glass-deep);
+}
+
+.wizard-file svg,
+.wizard-file__pick svg {
+    flex: none;
+    width: 20px;
+    height: 20px;
+    color: var(--v2-teal-deep);
+}
+
+.wizard-file__name {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    min-width: 0;
+    font-weight: 600;
+    overflow-wrap: anywhere;
+}
+
+.wizard-file__name small {
+    font-weight: 400;
+    color: #4A675A;
+}
+
+.wizard-file__action {
+    padding: 0.35rem 0.7rem;
+    border: 1px solid rgba(9, 37, 26, 0.16);
+    border-radius: 999px;
+    background: rgba(9, 37, 26, 0.06);
+    color: var(--v2-ink-glass-deep);
+    font-size: 0.85rem;
+    cursor: pointer;
+}
+
+.wizard-file__action:hover:not(:disabled) {
+    background: rgba(9, 37, 26, 0.12);
+}
+
+/* Long single words ("Entrepreneurship", "Cybersécurité") wrap inside their
+   chip instead of spilling out of it. The text needs its own box for that: as
+   a bare text node in a flex label it could never shrink below its width. */
+.wizard-chip__text {
+    min-width: 0;
+    overflow-wrap: anywhere;
+    hyphens: auto;
 }

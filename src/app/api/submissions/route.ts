@@ -27,7 +27,7 @@ export async function GET() {
       return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
 
-    // A group entry is the whole team's, so every member must see it — not
+    // A group entry is the whole team's, so every member must see it - not
     // only whoever happened to post it.
     const team = await Team.findOne({ members: user._id });
     const submissions = await Submission.find({
@@ -111,7 +111,7 @@ export async function POST(request: Request) {
         return NextResponse.json(
           {
             error:
-              "This is a group challenge — create or join a team before submitting.",
+              "This is a group challenge - create or join a team before submitting.",
           },
           { status: 400 },
         );
@@ -124,7 +124,7 @@ export async function POST(request: Request) {
         : { challengeId, userId: user._id },
     );
 
-    // The submission cap only guards *new* entries — a delegate editing their
+    // The submission cap only guards *new* entries - a delegate editing their
     // own existing submission must not be blocked by a full challenge.
     if (!existing && !isChallengeOpen(challenge)) {
       return NextResponse.json(
@@ -134,7 +134,7 @@ export async function POST(request: Request) {
     }
 
     // Replacing an approved entry would reset it to pending while the points
-    // it already earned stay on the account — so it is locked once approved.
+    // it already earned stay on the account - so it is locked once approved.
     if (existing && existing.status === "approved") {
       return NextResponse.json(
         {

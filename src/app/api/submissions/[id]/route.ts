@@ -12,7 +12,7 @@ const MAX_NOTES = 2000;
 /**
  * Who may edit or withdraw an entry. Individual entries belong to whoever
  * posted them; a group entry belongs to the whole team, so any current member
- * counts — otherwise a team would be stuck whenever the poster went offline.
+ * counts - otherwise a team would be stuck whenever the poster went offline.
  */
 async function callerOwns(
   submission: { userEmail: string; teamId?: unknown },
@@ -76,7 +76,7 @@ export async function PUT(
       );
     }
 
-    // Status is a review decision — admins only, whoever owns the entry.
+    // Status is a review decision - admins only, whoever owns the entry.
     if (status !== undefined) {
       if (!admin) {
         return NextResponse.json(
@@ -147,7 +147,7 @@ export async function PUT(
           warning =
             `This submission was already approved and granted ${granted} ` +
             `point${granted === 1 ? "" : "s"} to ${submission.userEmail}. ` +
-            `Those points have NOT been removed automatically — deduct ` +
+            `Those points have NOT been removed automatically - deduct ` +
             `${granted} from this delegate in Manage Users to keep their ` +
             `total accurate.`;
         }
@@ -243,7 +243,7 @@ export async function DELETE(
       granted > 0
         ? `This submission had been approved and granted ${granted} ` +
           `point${granted === 1 ? "" : "s"} to ${submission.userEmail}. ` +
-          `Deleting it does NOT remove those points — deduct ${granted} from ` +
+          `Deleting it does NOT remove those points - deduct ${granted} from ` +
           `this delegate in Manage Users to keep their total accurate.`
         : null;
 

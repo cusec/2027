@@ -177,7 +177,7 @@ const Shop = ({ user, dbUser }: ShopProps) => {
                 <>
                   <p className="aero-shop__note">
                     <Gem aria-hidden="true" />
-                    Collectibles are sold here too &mdash; buy them with points
+                    Collectibles are sold here too - buy them with points
                     and they land in your bag.
                   </p>
                   <div className="aero-grid aero-grid--wide">

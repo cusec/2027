@@ -45,7 +45,7 @@ function formatWindow(challenge: Challenge): string | null {
       hour: "numeric",
       minute: "2-digit",
     });
-  return `${fmt(challenge.activationStart)} — ${fmt(challenge.activationEnd)}`;
+  return `${fmt(challenge.activationStart)} - ${fmt(challenge.activationEnd)}`;
 }
 
 const ChallengeCard = ({
@@ -110,7 +110,7 @@ const ChallengeCard = ({
         <div className="v2-chal__team">
           {teamName ? (
             <p>
-              Submitting as <b>{teamName}</b> — one entry counts for the whole
+              Submitting as <b>{teamName}</b> - one entry counts for the whole
               team.
             </p>
           ) : (
@@ -163,7 +163,7 @@ const ChallengeCard = ({
         <p className="v2-chal__note">
           Approved
           {submission.pointsAwarded > 0
-            ? ` — ${submission.pointsAwarded} point${
+            ? ` - ${submission.pointsAwarded} point${
                 submission.pointsAwarded === 1 ? "" : "s"
               } added to your total.`
             : "."}{" "}

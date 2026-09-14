@@ -275,7 +275,7 @@ const InventoryModal = ({ userId, isOpen, onClose }: InventoryModalProps) => {
               {/*
                 The hand-off is physical and delegates kept missing it, so say
                 so where they are already looking at what they hold. Only shown
-                once they have something to collect — the empty state below
+                once they have something to collect - the empty state below
                 carries its own call to action.
               */}
               {collectibles.length > 0 && (
@@ -366,7 +366,7 @@ const InventoryModal = ({ userId, isOpen, onClose }: InventoryModalProps) => {
                     No approved submissions yet.
                   </p>
                   <p className="text-light-mode/40 text-sm mt-1">
-                    Enter a challenge — approved entries land here.
+                    Enter a challenge - approved entries land here.
                   </p>
                 </div>
               ) : (

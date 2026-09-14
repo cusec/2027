@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { Country, State } from "country-state-city";
 import { auth0 } from "@/lib/auth0";
 import { User, DemographicInfo } from "@/lib/models";
 import connectMongoDB from "@/lib/mongodb";
@@ -6,10 +7,10 @@ import isAdmin from "@/lib/isAdmin";
 import { logAdminAction } from "@/lib/adminAuditLogger";
 
 /**
- * GET - one user's demographic survey answers.
+ * GET - one user's attendee profile.
  *
  * Admin only, deliberately narrower than the sibling routes here, which also
- * admit Volunteers: this is the confidential survey, and the wizard tells
+ * admit Volunteers: this is the confidential profile, and the wizard tells
  * delegates so. The read is audit-logged for the same reason.
  *
  * The log records only who looked at whose record. Never put answers in it:
@@ -45,9 +46,9 @@ export async function GET(
       return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
 
-    const doc = await DemographicInfo.findOne({ user: userId }).lean<
-      Record<string, unknown>
-    >();
+    const doc = await DemographicInfo.findOne({ user: userId })
+      .select("-_id -user -__v -resumePublicId")
+      .lean<Record<string, unknown>>();
 
     await logAdminAction({
       adminEmail: session.user.email as string,
@@ -62,38 +63,26 @@ export async function GET(
       return NextResponse.json({ success: true, demographics: null });
     }
 
+    // Country and region names are resolved here so the admin panel never has
+    // to ship the location dataset to the browser.
+    const country = typeof doc.travelCountry === "string" ? doc.travelCountry : "";
+    const region = typeof doc.travelRegion === "string" ? doc.travelRegion : "";
+
     return NextResponse.json({
       success: true,
       demographics: {
-        attendeeType: doc.attendeeType ?? "",
-        pronoun: doc.pronoun ?? "",
-        tshirtSize: doc.tshirtSize ?? "",
-        dietaryRestrictions: doc.dietaryRestrictions ?? "",
-        fieldOfStudy: doc.fieldOfStudy ?? "",
-        schoolHasHeadDelegate: doc.schoolHasHeadDelegate ?? "",
-        company: doc.company ?? "",
-        jobTitle: doc.jobTitle ?? "",
-        resumeUrl: doc.resumeUrl ?? "",
-        githubUrl: doc.githubUrl ?? "",
-        linkedinUrl: doc.linkedinUrl ?? "",
-        travelFrom: doc.travelFrom ?? "",
-        travelMethod: doc.travelMethod ?? "",
-        howDidYouHear: doc.howDidYouHear ?? "",
-        previouslyAttended: doc.previouslyAttended ?? "",
-        previouslyAttendedYear: doc.previouslyAttendedYear ?? "",
-        excitedEvents: Array.isArray(doc.excitedEvents) ? doc.excitedEvents : [],
-        whyAttendCUSEC: doc.whyAttendCUSEC ?? "",
-        schoolCommunityInvolvement: doc.schoolCommunityInvolvement ?? "",
-        cusecAssociation: doc.cusecAssociation ?? "",
-        submittedAt: doc.createdAt ?? null,
-        updatedAt: doc.updatedAt ?? null,
+        ...doc,
+        travelCountryName: country ? (Country.getCountryByCode(country)?.name ?? country) : "",
+        travelRegionName:
+          country && region
+            ? (State.getStateByCodeAndCountry(region, country)?.name ?? region)
+            : "",
       },
     });
   } catch (error) {
-    // The message only, never the record: an error object here can carry the
-    // document that failed validation.
+    // The message only: a failed read can carry the answers themselves.
     console.error(
-      "Error fetching user demographics:",
+      "Error fetching demographics:",
       error instanceof Error ? error.message : "unknown error"
     );
     return NextResponse.json(

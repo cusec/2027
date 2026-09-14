@@ -31,7 +31,7 @@ export const Dust = ({ seed }: SeedProps) => (
   </svg>
 );
 
-/** Decorative — the name beside it is what gets read out. */
+/** Decorative - the name beside it is what gets read out. */
 const Signature = ({ seed }: SeedProps) => (
   <>
     <Dust seed={seed} />

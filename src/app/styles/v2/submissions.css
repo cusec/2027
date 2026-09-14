@@ -1,5 +1,5 @@
 /* ==========================================================================
-   v2 — /scavenger/submissions
+   v2 - /scavenger/submissions
    Challenge submission platform, restyled onto the main site's design system.
    Follows the dark-glass-card-over-painting language of .v2-card / .v2-board
    rather than the grayscale Tailwind theme the rest of the scavenger island
@@ -8,7 +8,7 @@
 
 /* The splash-era Win95 locale switcher / motion toggle is rendered for every
    route by [locale]/layout.tsx. It clashes badly with the v2 painting, and on
-   this page it is dead weight anyway — the scavenger island is hardcoded
+   this page it is dead weight anyway - the scavenger island is hardcoded
    English, so the switcher changes nothing. Scoped to pages that opted into
    `.v2`, so the splash page and /scavenger keep theirs. */
 body:has(.v2) .Navbar {
@@ -174,7 +174,7 @@ body:has(.v2) .Navbar {
     color: var(--v2-mint-bright);
 }
 
-/* status pill — lime approved, gold pending, red rejected */
+/* status pill - lime approved, gold pending, red rejected */
 .v2-chal__status {
     display: inline-flex;
     flex: none;
@@ -466,7 +466,7 @@ body:has(.v2) .Navbar {
 }
 
 /* --------------------------------------------------------------------------
-   Group challenges — team panel
+   Group challenges - team panel
    -------------------------------------------------------------------------- */
 .v2-chal__mode {
     margin: 5px 0 0;

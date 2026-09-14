@@ -3,7 +3,7 @@
 
    Three ingredients carry the era's look: a bottom-lit body (upward radial
    glow over a dark-to-light base), a top highlight inset from the edges, and
-   a diagonal sheen. Panels float directly on the painting — one level of
+   a diagonal sheen. Panels float directly on the painting - one level of
    glass, never nested.
    ========================================================================== */
 
@@ -201,12 +201,12 @@
    ========================================================================== */
 /*
  * The scrollbar gutter sits outside the viewport's content box, so nothing in
- * the page — .v2-scene__backdrop included — can paint there, and a transparent
+ * the page - .v2-scene__backdrop included - can paint there, and a transparent
  * track just reveals the canvas, which globals.css paints white.
  *
  * The canvas takes its background from the root element, but only the
  * background *colour* fills it: Chrome clips a root background-image to the
- * root's border box, which stops at the gutter. Measured, not assumed — an
+ * root's border box, which stops at the gutter. Measured, not assumed - an
  * image sized to overflow the box by 20px still left a 16px gutter reading a
  * flat #3A94D4 top to bottom. So the strip can only ever be a colour, and the
  * one to use is .v2-scene's own base, the same colour the painting sits on.

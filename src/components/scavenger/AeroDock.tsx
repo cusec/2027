@@ -168,7 +168,7 @@ const AeroDock = ({
           <AlertCircle className="w-10 h-10 mb-3 text-amber-500" />
           <p className="mb-5 text-sm">
             {dbUser.active
-              ? "Link the email on your ticket before scanning codes — you'll find it on your profile."
+              ? "Link the email on your ticket before scanning codes - you'll find it on your profile."
               : "This account is inactive. Please talk to an organizer."}
           </p>
           {dbUser.active && (

@@ -5,7 +5,7 @@ import { useTranslations } from "next-intl";
 import { SkipBack, SkipForward, Play, Pause } from "lucide-react";
 
 /**
- * CUSEC.FM — the decorative CD widget from the Figma frame.
+ * CUSEC.FM - the decorative CD widget from the Figma frame.
  * It does not play audio; clicking play just spins the disc.
  */
 export default function V2CdPlayer() {

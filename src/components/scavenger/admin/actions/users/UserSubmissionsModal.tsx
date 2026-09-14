@@ -105,7 +105,7 @@ const UserSubmissionsModal = ({
       pointsAwarded > 0
         ? `\n\n⚠️ This submission granted ${pointsAwarded} point${
             pointsAwarded === 1 ? "" : "s"
-          }. Deleting it will NOT remove them — you must deduct them manually.`
+          }. Deleting it will NOT remove them - you must deduct them manually.`
         : `\n\n⚠️ Note: This will NOT change the user's points. To adjust points, manually edit them in the user settings.`;
 
     const confirmed = window.confirm(

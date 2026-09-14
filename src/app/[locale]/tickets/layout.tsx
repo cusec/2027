@@ -7,8 +7,8 @@ import { auth0 } from "@/lib/auth0";
  * nobody has a dashboard to navigate to until the purchase is done.
  *
  * This is also the flag gate for every step. One check here rather than four
- * in the pages below it — /tickets, and the demographics, avatar and purchase
- * steps — because a gate that only covers some of them is not a gate.
+ * in the pages below it - /tickets, and the demographics, avatar and purchase
+ * steps - because a gate that only covers some of them is not a gate.
  * Admins and volunteers always get through, so the flow can be rehearsed
  * against production before tickets open.
  */
@@ -52,7 +52,7 @@ export default async function TicketsLayout({
               <h1 className="tickets-heading">Tickets open soon</h1>
               <p className="tickets-subheading">
                 CUSEC 2027 is in Montréal this January. Ticket sales
-                aren&rsquo;t open yet — watch the home page for the date.
+                aren&rsquo;t open yet - watch the home page for the date.
               </p>
             </div>
             <div className="wizard-intro-card">

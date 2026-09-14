@@ -29,7 +29,7 @@ const AvatarCustomize = ({ onComplete }: AvatarCustomizeProps) => {
           Customize your avatar
         </h1>
         <p className="text-gray-400 text-sm mb-8">
-          Coming soon — we&apos;re still cooking this up.
+          Coming soon - we&apos;re still cooking this up.
         </p>
 
         <button

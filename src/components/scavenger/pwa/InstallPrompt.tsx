@@ -17,7 +17,7 @@ const InstallPrompt: React.FC = () => {
         <ol className="mx-auto px-8 md:px-24 text-md sm:text-lg md:text-xl leading-relaxed list-decimal text-start">
           <li className="mb-4">
             If you see an Install button at the top of this page, next to
-            &quot;Start Hunting&quot; & &quot;FAQ&quot; — clicking it will
+            &quot;Start Hunting&quot; & &quot;FAQ&quot; - clicking it will
             prompt you to add the app to your home screen.
           </li>
           <li>

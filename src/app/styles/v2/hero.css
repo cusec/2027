@@ -1,9 +1,9 @@
 /* ==========================================================================
-   v2 — Hero
+   v2 - Hero
    ========================================================================== */
 .v2-hero {
     /* The section is a full viewport (base.css) and centres its stack, so these
-       are the clearances used when the stack is taller than the screen — the
+       are the clearances used when the stack is taller than the screen - the
        top one has to keep the floating nav off the logo. The bottom is the
        larger of the two on purpose: it lifts the block so the wordmark, which
        sits below the stack's own midpoint, lands on the viewport's centre. */

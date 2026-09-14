@@ -28,7 +28,7 @@ const hashSeed = (value: string): number => {
   return hash >>> 0;
 };
 
-/** mulberry32 — identical across runtimes, so server and client agree. */
+/** mulberry32 - identical across runtimes, so server and client agree. */
 const makeRandom = (seed: number) => {
   let state = seed >>> 0;
   return () => {

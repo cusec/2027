@@ -6,7 +6,7 @@ import V2Scene from "@/app/components/v2/Scene/V2Scene";
  *
  * Deliberately not localized: next-intl's provider is set up inside
  * [locale]/layout.tsx, and a page reached by an unmatched URL may render
- * outside it. English only beats a render error — which is also why the nav
+ * outside it. English only beats a render error - which is also why the nav
  * and footer are left off, since both read from the translation context.
  */
 export default function NotFound() {
@@ -17,7 +17,7 @@ export default function NotFound() {
 					<div className="v2-404__inner">
 						<p className="v2-404__eyebrow">Error 404</p>
 
-						{/* The middle zero is a soap bubble — the painting is full of
+						{/* The middle zero is a soap bubble - the painting is full of
 						    them, and it beats a third numeral. Decorative: the eyebrow
 						    above already says "Error 404" out loud. */}
 						<p className="v2-404__code" aria-hidden="true">
@@ -28,7 +28,7 @@ export default function NotFound() {
 
 						<h1 className="v2-404__title">This page floated away</h1>
 						<p className="v2-404__body">
-							The address you tried doesn&rsquo;t lead anywhere — or leads
+							The address you tried doesn&rsquo;t lead anywhere - or leads
 							somewhere that isn&rsquo;t open yet. More of the site unlocks as
 							January gets closer.
 						</p>

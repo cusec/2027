@@ -6,7 +6,7 @@ import { v2 as cloudinary } from "cloudinary";
  *
  * When Cloudinary credentials are present, images are uploaded to Cloudinary
  * under a CUSEC-2027-only root folder (`cusec-2027/...`) so this year's assets
- * stay isolated from previous years on the same shared Cloudinary account — no
+ * stay isolated from previous years on the same shared Cloudinary account - no
  * new account or extra storage purchase required. When credentials are absent,
  * every helper transparently falls back to the legacy "base64 in Mongo"
  * behaviour, so local dev and builds work with zero configuration.

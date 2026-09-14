@@ -1,43 +1,278 @@
 import { NextResponse } from "next/server";
+import { Country, State } from "country-state-city";
 import { auth0 } from "@/lib/auth0";
 import connectMongoDB from "@/lib/mongodb";
 import { User, DemographicInfo } from "@/lib/models";
+import { INSTITUTIONS, findInstitution } from "@/lib/institutions";
+import {
+  ATTEND_REASON_OPTIONS,
+  ATTENDED_OPTIONS,
+  ATTENDEE_TYPE_OPTIONS,
+  COMMUNITY_OPTIONS,
+  CONNECT_SCHOOL_OPTIONS,
+  CONVINCED_BY_OPTIONS,
+  CREDENTIAL_OPTIONS,
+  CURRENT_ROLE_OPTIONS,
+  EXPERIENCE_OPTIONS,
+  FIELD_OF_STUDY_OPTIONS,
+  FIRST_TIME,
+  GRADUATION_OPTIONS,
+  HEARD_FROM_OPTIONS,
+  INDEPENDENT_DELEGATION,
+  INTERNSHIP_COUNT_OPTIONS,
+  LIMITS,
+  NOT_LOOKING,
+  OPPORTUNITY_OPTIONS,
+  OTHER,
+  PRONOUN_OPTIONS,
+  SCHOOL_TYPES,
+  SECTIONS,
+  SESSION_FORMAT_OPTIONS,
+  STUDIES_TYPES,
+  STUDY_LEVEL_OPTIONS,
+  SUCCESS_OPTIONS,
+  TECH_AREA_OPTIONS,
+  TEXT_MAX,
+  TRANSPORT_OPTIONS,
+  WORK_ARRANGEMENT_OPTIONS,
+  WORK_LOCATION_OPTIONS,
+  WORK_TYPES,
+  YES_NO_UNSURE_OPTIONS,
+  isValidLink,
+  normalizeUrl,
+  type Option,
+  type SectionId,
+} from "@/lib/ticketWizardOptions";
 
-function sanitizeInput(input: unknown): string {
-  if (typeof input !== "string") return "";
-  return input
-    .replace(/[<>"'`]/g, "")
-    .replace(/[\\]/g, "")
-    .replace(/\s{2,}/g, " ")
-    .trim();
+const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[a-z]{2,}$/i;
+
+/** Thrown for a bad answer; `field` names the input so the form can point at it. */
+class InvalidAnswer extends Error {
+  constructor(public field: string) {
+    super(`invalid ${field}`);
+  }
 }
 
-function sanitizeArray(input: unknown): string[] {
-  if (!Array.isArray(input)) return [];
-  return input.filter((v): v is string => typeof v === "string").map(sanitizeInput);
+type Answers = Record<string, unknown>;
+type Update = Record<string, string | string[] | boolean | Date | null>;
+
+// --- answer readers --------------------------------------------------------
+// Every value is re-read from the request by name, never spread into the
+// document, so a client can only ever set the fields its section owns.
+
+const text = (answers: Answers, field: string, required = false): string => {
+  const raw = answers[field];
+  const value = typeof raw === "string" ? raw.trim().slice(0, TEXT_MAX) : "";
+  if (required && !value) throw new InvalidAnswer(field);
+  return value;
+};
+
+const email = (answers: Answers, field: string, required = false): string => {
+  const value = text(answers, field, required).toLowerCase();
+  if (value && !EMAIL_RE.test(value)) throw new InvalidAnswer(field);
+  return value;
+};
+
+const one = (answers: Answers, field: string, options: Option[], required = false): string => {
+  const value = text(answers, field);
+  if (!value) {
+    if (required) throw new InvalidAnswer(field);
+    return "";
+  }
+  if (!options.some((o) => o.value === value)) throw new InvalidAnswer(field);
+  return value;
+};
+
+const many = (answers: Answers, field: string, options: Option[], max?: number): string[] => {
+  const raw = answers[field];
+  if (raw === undefined || raw === null) return [];
+  if (!Array.isArray(raw)) throw new InvalidAnswer(field);
+  const values = [...new Set(raw.filter((v): v is string => typeof v === "string"))];
+  if (values.some((v) => !options.some((o) => o.value === v))) throw new InvalidAnswer(field);
+  if (max !== undefined && values.length > max) throw new InvalidAnswer(field);
+  return values;
+};
+
+/** A single choice plus its "Other" box: the text is kept only when Other is picked. */
+const oneWithOther = (
+  answers: Answers,
+  field: string,
+  options: Option[],
+  required = false
+): Update => {
+  const value = one(answers, field, options, required);
+  const other = value === OTHER ? text(answers, `${field}Other`, required) : "";
+  return { [field]: value, [`${field}Other`]: other };
+};
+
+const manyWithOther = (
+  answers: Answers,
+  field: string,
+  options: Option[],
+  max?: number
+): Update => {
+  const values = many(answers, field, options, max);
+  const other = values.includes(OTHER) ? text(answers, `${field}Other`) : "";
+  return { [field]: values, [`${field}Other`]: other };
+};
+
+// --- sections --------------------------------------------------------------
+
+function basics(answers: Answers): Update {
+  return {
+    firstName: text(answers, "firstName", true),
+    lastName: text(answers, "lastName", true),
+    primaryEmail: email(answers, "primaryEmail", true),
+    secondaryEmail: email(answers, "secondaryEmail"),
+    ...oneWithOther(answers, "pronoun", PRONOUN_OPTIONS, true),
+    ...oneWithOther(answers, "attendeeType", ATTENDEE_TYPE_OPTIONS, true),
+  };
 }
 
-const TSHIRT_SIZES = ["XS", "S", "M", "L", "XL", "XXL", "XXXL"];
-const HEAD_DELEGATE_VALUES = ["yes", "no", "unsure"];
-const ATTENDEE_TYPES = ["student", "professional"];
-const YES_NO = ["yes", "no"];
-const TRAVEL_METHODS = ["plane", "train", "bus", "car", "local", "undecided"];
-const PRONOUNS = [
-  "she/her",
-  "he/him",
-  "they/them",
-  "she/they",
-  "he/they",
-  "prefer-not-to-say",
-  "other",
-];
-// CUSEC has run every year since 2003; 2026 is the latest past edition.
-const ATTENDED_YEARS = Array.from({ length: 2026 - 2003 + 1 }, (_, i) =>
-  String(2003 + i)
-);
+// Which questions apply depends on the attendee type saved with Basics, read
+// from the database rather than the request so the two sections can't be made
+// to disagree. Questions that don't apply are stored blank, so switching type
+// never leaves stale answers behind.
+function background(answers: Answers, attendeeType: string): Update {
+  const update: Update = {
+    school: "",
+    schoolOther: "",
+    campus: "",
+    fieldOfStudy: "",
+    fieldOfStudyOther: "",
+    credential: "",
+    credentialOther: "",
+    studyLevel: "",
+    studyLevelOther: "",
+    expectedGraduation: "",
+    internships: "",
+    currentRole: "",
+    currentRoleOther: "",
+    experience: "",
+  };
 
-// GET - the caller's own demographic survey answers, or null if not submitted yet.
-// Scoped strictly to the authenticated session's own record.
+  if (SCHOOL_TYPES.includes(attendeeType)) {
+    const school = text(answers, "school", true);
+    if (school === OTHER) {
+      update.school = OTHER;
+      update.schoolOther = text(answers, "schoolOther", true);
+    } else {
+      const institution = findInstitution(school);
+      if (!institution) throw new InvalidAnswer("school");
+      update.school = school;
+      const campus = text(answers, "campus");
+      if (campus && !institution.campuses?.includes(campus)) throw new InvalidAnswer("campus");
+      update.campus = institution.campuses ? campus : "";
+    }
+  }
+
+  if (STUDIES_TYPES.includes(attendeeType)) {
+    Object.assign(
+      update,
+      oneWithOther(answers, "fieldOfStudy", FIELD_OF_STUDY_OPTIONS, true),
+      oneWithOther(answers, "credential", CREDENTIAL_OPTIONS, true),
+      oneWithOther(answers, "studyLevel", STUDY_LEVEL_OPTIONS, true)
+    );
+    update.expectedGraduation = one(answers, "expectedGraduation", GRADUATION_OPTIONS, true);
+    update.internships = one(answers, "internships", INTERNSHIP_COUNT_OPTIONS, true);
+  }
+
+  if (WORK_TYPES.includes(attendeeType)) {
+    Object.assign(update, oneWithOther(answers, "currentRole", CURRENT_ROLE_OPTIONS, true));
+    update.experience = one(answers, "experience", EXPERIENCE_OPTIONS, true);
+  }
+
+  // Travel origin: country and, where the dataset has them, province or state.
+  // The city is free text by the time it arrives, picked from the list or
+  // typed in under Other, so it is only length-checked.
+  const country = text(answers, "travelCountry", true).toUpperCase();
+  if (!Country.getCountryByCode(country)) throw new InvalidAnswer("travelCountry");
+  const hasRegions = State.getStatesOfCountry(country).length > 0;
+  const region = text(answers, "travelRegion", hasRegions).toUpperCase();
+  if (region && !State.getStateByCodeAndCountry(region, country)) {
+    throw new InvalidAnswer("travelRegion");
+  }
+  update.travelCountry = country;
+  update.travelRegion = region;
+  update.travelCity = text(answers, "travelCity", true);
+
+  return update;
+}
+
+function goals(answers: Answers): Update {
+  const opportunities = manyWithOther(answers, "opportunities", OPPORTUNITY_OPTIONS);
+  const picked = opportunities.opportunities as string[];
+  // "Not currently looking" stands alone, and where or how they'd work is only
+  // asked of someone who is looking, so it is stored blank otherwise.
+  const looking = !picked.includes(NOT_LOOKING);
+  if (!looking && picked.length > 1) throw new InvalidAnswer("opportunities");
+
+  return {
+    ...manyWithOther(answers, "attendReasons", ATTEND_REASON_OPTIONS, LIMITS.attendReasons),
+    ...manyWithOther(answers, "successMeasures", SUCCESS_OPTIONS, LIMITS.successMeasures),
+    ...opportunities,
+    ...manyWithOther(answers, "techAreas", TECH_AREA_OPTIONS, LIMITS.techAreas),
+    workLocations: looking ? many(answers, "workLocations", WORK_LOCATION_OPTIONS) : [],
+    workArrangement: looking ? one(answers, "workArrangement", WORK_ARRANGEMENT_OPTIONS) : "",
+  };
+}
+
+function experience(answers: Answers): Update {
+  const delegation = one(answers, "delegation", YES_NO_UNSURE_OPTIONS);
+
+  // Which delegation is only asked after a yes.
+  let delegationSchool = "";
+  let delegationOther = "";
+  if (delegation === "yes") {
+    delegationSchool = text(answers, "delegationSchool");
+    const known =
+      !delegationSchool ||
+      delegationSchool === OTHER ||
+      delegationSchool === INDEPENDENT_DELEGATION ||
+      INSTITUTIONS.some((i) => i.value === delegationSchool);
+    if (!known) throw new InvalidAnswer("delegationSchool");
+    if (delegationSchool === OTHER) delegationOther = text(answers, "delegationOther");
+  }
+
+  // "First time" and a list of past years can't both be true.
+  const attended = many(answers, "attended", ATTENDED_OPTIONS);
+  if (attended.includes(FIRST_TIME) && attended.length > 1) throw new InvalidAnswer("attended");
+
+  return {
+    ...oneWithOther(answers, "transport", TRANSPORT_OPTIONS),
+    delegation,
+    delegationSchool,
+    delegationOther,
+    connectWithSchool: one(answers, "connectWithSchool", CONNECT_SCHOOL_OPTIONS),
+    travelFunding: one(answers, "travelFunding", YES_NO_UNSURE_OPTIONS),
+    accommodation: one(answers, "accommodation", YES_NO_UNSURE_OPTIONS),
+    ...oneWithOther(answers, "heardFrom", HEARD_FROM_OPTIONS),
+    ...oneWithOther(answers, "convincedBy", CONVINCED_BY_OPTIONS),
+    attended,
+    ...manyWithOther(answers, "sessionFormats", SESSION_FORMAT_OPTIONS, LIMITS.sessionFormats),
+    ...manyWithOther(answers, "communityInvolvement", COMMUNITY_OPTIONS),
+    communityProject: text(answers, "communityProject"),
+  };
+}
+
+function links(answers: Answers, consentedBefore: boolean): Update {
+  const update: Update = {};
+  for (const field of ["linkedinUrl", "githubUrl", "portfolioUrl"] as const) {
+    const value = text(answers, field);
+    if (!isValidLink(field, value)) throw new InvalidAnswer(field);
+    update[field] = normalizeUrl(value);
+  }
+  const consent = answers.sponsorConsent === true;
+  update.sponsorConsent = consent;
+  // Keep the original consent time when it is re-saved unchanged.
+  if (consent && !consentedBefore) update.sponsorConsentAt = new Date();
+  if (!consent) update.sponsorConsentAt = null;
+  return update;
+}
+
+// --- handlers --------------------------------------------------------------
+
+// GET - the caller's own profile, or null. Scoped strictly to the session.
 export async function GET() {
   const session = await auth0.getSession();
   if (!session?.user?.email) {
@@ -50,116 +285,32 @@ export async function GET() {
     return NextResponse.json({ error: "User not found" }, { status: 404 });
   }
 
-  const demographics = await DemographicInfo.findOne({ user: user._id }).lean();
+  const demographics = await DemographicInfo.findOne({ user: user._id })
+    .select("-resumePublicId")
+    .lean();
   return NextResponse.json({ demographics: demographics ?? null });
 }
 
-// PUT - upsert the caller's own demographic survey answers.
+// PUT { section, answers } - saves one section of the caller's profile.
 export async function PUT(request: Request) {
   const session = await auth0.getSession();
   if (!session?.user?.email) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  let body: Record<string, unknown>;
+  let body: { section?: unknown; answers?: unknown };
   try {
     body = await request.json();
   } catch {
     return NextResponse.json({ error: "Invalid JSON" }, { status: 400 });
   }
 
-  const attendeeType = sanitizeInput(body.attendeeType);
-  const isStudent = attendeeType === "student";
-  const previouslyAttended = sanitizeInput(body.previouslyAttended);
-
-  // Name, emails, university, graduation and degree are intentionally not
-  // accepted here — Ticket Tailor's checkout already collects them, and
-  // duplicating the ask is exactly what this survey was trimmed to avoid.
-  const data = {
-    attendeeType,
-    pronoun: sanitizeInput(body.pronoun),
-    tshirtSize: sanitizeInput(body.tshirtSize),
-    dietaryRestrictions: sanitizeInput(body.dietaryRestrictions),
-
-    // The branch that does not apply is stored blank rather than left off,
-    // so switching the toggle can never leave stale answers behind.
-    fieldOfStudy: isStudent ? sanitizeInput(body.fieldOfStudy) : "",
-    schoolHasHeadDelegate: isStudent
-      ? sanitizeInput(body.schoolHasHeadDelegate)
-      : "unsure",
-    company: isStudent ? "" : sanitizeInput(body.company),
-    jobTitle: isStudent ? "" : sanitizeInput(body.jobTitle),
-
-    resumeUrl: sanitizeInput(body.resumeUrl),
-    githubUrl: sanitizeInput(body.githubUrl),
-    linkedinUrl: sanitizeInput(body.linkedinUrl),
-
-    travelFrom: sanitizeInput(body.travelFrom),
-    travelMethod: sanitizeInput(body.travelMethod),
-
-    howDidYouHear: sanitizeInput(body.howDidYouHear),
-    previouslyAttended,
-    previouslyAttendedYear:
-      previouslyAttended === "yes"
-        ? sanitizeInput(body.previouslyAttendedYear)
-        : "",
-    excitedEvents: sanitizeArray(body.excitedEvents),
-
-    whyAttendCUSEC: sanitizeInput(body.whyAttendCUSEC),
-    schoolCommunityInvolvement: sanitizeInput(body.schoolCommunityInvolvement),
-    cusecAssociation: sanitizeInput(body.cusecAssociation),
-  };
-
-  const requiredFields: [string, string][] = [
-    ["attendeeType", data.attendeeType],
-    ["pronoun", data.pronoun],
-    ["tshirtSize", data.tshirtSize],
-    ["previouslyAttended", data.previouslyAttended],
-    ["travelFrom", data.travelFrom],
-    ["travelMethod", data.travelMethod],
-  ];
-  if (isStudent) {
-    requiredFields.push(["fieldOfStudy", data.fieldOfStudy]);
-  } else {
-    requiredFields.push(["company", data.company]);
-    requiredFields.push(["jobTitle", data.jobTitle]);
+  const section = body.section as SectionId;
+  if (!SECTIONS.includes(section)) {
+    return NextResponse.json({ error: "Unknown section" }, { status: 400 });
   }
-  for (const [field, value] of requiredFields) {
-    if (!value) {
-      return NextResponse.json({ error: `${field} is required` }, { status: 400 });
-    }
-  }
-
-  if (!ATTENDEE_TYPES.includes(data.attendeeType)) {
-    return NextResponse.json({ error: "Invalid attendee type" }, { status: 400 });
-  }
-  if (!PRONOUNS.includes(data.pronoun)) {
-    return NextResponse.json({ error: "Invalid pronouns" }, { status: 400 });
-  }
-  if (!TSHIRT_SIZES.includes(data.tshirtSize)) {
-    return NextResponse.json({ error: "Invalid t-shirt size" }, { status: 400 });
-  }
-  if (isStudent && !HEAD_DELEGATE_VALUES.includes(data.schoolHasHeadDelegate)) {
-    return NextResponse.json({ error: "Invalid head delegate answer" }, { status: 400 });
-  }
-  if (!TRAVEL_METHODS.includes(data.travelMethod)) {
-    return NextResponse.json({ error: "Invalid travel method" }, { status: 400 });
-  }
-  if (!YES_NO.includes(data.previouslyAttended)) {
-    return NextResponse.json({ error: "Invalid previously-attended answer" }, { status: 400 });
-  }
-  if (
-    data.previouslyAttended === "yes" &&
-    !ATTENDED_YEARS.includes(data.previouslyAttendedYear)
-  ) {
-    return NextResponse.json(
-      { error: "Pick the year you attended (2003-2026)" },
-      { status: 400 }
-    );
-  }
-  if (data.excitedEvents.length !== 3) {
-    return NextResponse.json({ error: "Pick exactly 3 events" }, { status: 400 });
-  }
+  const answers =
+    body.answers && typeof body.answers === "object" ? (body.answers as Answers) : {};
 
   await connectMongoDB();
   const user = await User.findOne({ email: session.user.email });
@@ -167,23 +318,71 @@ export async function PUT(request: Request) {
     return NextResponse.json({ error: "User not found" }, { status: 404 });
   }
 
-  await DemographicInfo.findOneAndUpdate(
-    { user: user._id },
-    { $set: { user: user._id, ...data } },
-    { upsert: true, new: true, setDefaultsOnInsert: true }
-  );
+  const existing = await DemographicInfo.findOne({ user: user._id })
+    .select("attendeeType sponsorConsent sections")
+    .lean<{
+      attendeeType?: string;
+      sponsorConsent?: boolean;
+      sections?: Partial<Record<SectionId, Date | null>>;
+    }>();
 
-  // Completing the survey is enough to guarantee the legacy scavenger
-  // onboarding (personality quiz + email-link screens) never appears for a
-  // wizard user, at any point they might abandon the rest of the wizard.
+  // Background depends on the attendee type, so Basics has to be saved first.
+  if (section === "background" && !existing?.sections?.basics) {
+    return NextResponse.json({ error: "Save the basics first" }, { status: 409 });
+  }
+
+  let update: Update;
+  try {
+    switch (section) {
+      case "basics":
+        update = basics(answers);
+        break;
+      case "background":
+        update = background(answers, existing?.attendeeType ?? "");
+        break;
+      case "goals":
+        update = goals(answers);
+        break;
+      case "experience":
+        update = experience(answers);
+        break;
+      case "links":
+        update = links(answers, Boolean(existing?.sponsorConsent));
+        break;
+    }
+  } catch (error) {
+    if (error instanceof InvalidAnswer) {
+      // The field name only, never the value: answers are confidential.
+      return NextResponse.json({ error: "invalid-answer", field: error.field }, { status: 400 });
+    }
+    throw error;
+  }
+
+  const saved = await DemographicInfo.findOneAndUpdate(
+    { user: user._id },
+    { $set: { user: user._id, ...update, [`sections.${section}`]: new Date() } },
+    { upsert: true, new: true, setDefaultsOnInsert: true }
+  )
+    .select("sections")
+    .lean<{ sections?: Partial<Record<SectionId, Date | null>> }>();
+
+  // The first save is what stops the legacy hunt onboarding (email-link screen
+  // and personality quiz) from ever appearing for a wizard user, at whatever
+  // point they leave the flow. Don't defer it to a later section.
   user.hasSeenIntro = true;
-  if (user.ticketWizard.currentStep === "demographics") {
-    user.ticketWizard.currentStep = "avatar";
+  const done = (id: SectionId) => Boolean(saved?.sections?.[id]);
+  if (!["purchase", "completed"].includes(user.ticketWizard.currentStep)) {
+    user.ticketWizard.currentStep =
+      done("basics") && done("background")
+        ? done("goals") && done("experience")
+          ? "purchase"
+          : "interests"
+        : "profile";
   }
   await user.save();
 
-  // No PII in logs - this data is confidential.
-  console.log(`Demographics saved for user ${user._id}`);
+  // No answers in logs: the profile is confidential.
+  console.log(`Profile section "${section}" saved for user ${user._id}`);
 
-  return NextResponse.json({ success: true });
+  return NextResponse.json({ success: true, sections: saved?.sections ?? {} });
 }

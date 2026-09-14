@@ -91,7 +91,7 @@ export default function V2Archive() {
 							) : null}
 						</div>
 
-						{/* right-hand controls — decorative */}
+						{/* right-hand controls - decorative */}
 						<div className="v2-cam__controls" aria-hidden="true">
 							<span className="v2-cam__speaker" />
 

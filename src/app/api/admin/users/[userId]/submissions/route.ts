@@ -162,13 +162,13 @@ export async function DELETE(
     });
 
     // Same policy as everywhere else in this feature: points already granted
-    // are never clawed back automatically — the admin is told the amount.
+    // are never clawed back automatically - the admin is told the amount.
     const granted = submission.pointsAwarded || 0;
     const warning =
       granted > 0
         ? `This submission had been approved and granted ${granted} ` +
           `point${granted === 1 ? "" : "s"}. Deleting it does NOT remove ` +
-          `those points — deduct ${granted} from this user's total above to ` +
+          `those points - deduct ${granted} from this user's total above to ` +
           `keep it accurate.`
         : null;
 

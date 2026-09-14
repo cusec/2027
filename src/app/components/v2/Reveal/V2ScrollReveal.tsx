@@ -6,7 +6,7 @@ import { useEffect } from "react";
  * Fades sections in as they scroll into view.
  *
  * Mounted once per page rather than wrapping each section, so every section
- * stays a server component — it just finds `.v2-reveal` in the DOM and adds
+ * stays a server component - it just finds `.v2-reveal` in the DOM and adds
  * `.is-in`. Reveals are one-way: an element is unobserved once shown, so
  * scrolling back up doesn't replay anything.
  */
@@ -53,7 +53,7 @@ export default function V2ScrollReveal() {
 		// An observer always reports every target's initial state shortly after
 		// observe(), so one callback having landed proves it is live. If none has,
 		// the environment isn't delivering them at all and the whole page below the
-		// hero would sit invisible — show everything rather than risk that. (Seen
+		// hero would sit invisible - show everything rather than risk that. (Seen
 		// for real: headless Chrome under --virtual-time-budget never delivers.)
 		const backstop = window.setTimeout(() => {
 			if (!delivered) showAll();

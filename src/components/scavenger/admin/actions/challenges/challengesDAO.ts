@@ -233,7 +233,7 @@ export const useChallengeSubmissions = (
         current.map((s) => (s._id === submissionId ? data.submission : s))
       );
 
-      // The API never deducts points on its own — if it returned a warning,
+      // The API never deducts points on its own - if it returned a warning,
       // the admin has a manual adjustment to make.
       setWarning(data.warning ?? null);
     } catch (err) {

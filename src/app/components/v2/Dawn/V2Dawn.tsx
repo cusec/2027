@@ -87,7 +87,7 @@ export default function V2Dawn() {
 					/>
 
 					{/* Every line here restates something the site already states
-					    elsewhere (hero pill, FAQ) — nothing about the venue, meals or
+					    elsewhere (hero pill, FAQ) - nothing about the venue, meals or
 					    transit, which are still unconfirmed. */}
 					<article className="v2-card v2-glass v2-dawn__know">
 						<p className="v2-card__eyebrow">{t("know-eyebrow")}</p>

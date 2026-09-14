@@ -6,7 +6,7 @@ import V2Footer from "@/app/components/v2/Footer/V2Footer";
 
 /**
  * Privacy policy, code of conduct and ticket terms. A route group, so the
- * URLs stay flat (/privacy-policy, not /policy/privacy-policy) — the 2026 site
+ * URLs stay flat (/privacy-policy, not /policy/privacy-policy) - the 2026 site
  * used those paths and Auth0's consent text links to them.
  *
  * Same shell as /speakers and /sponsors, and deliberately without

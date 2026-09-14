@@ -22,7 +22,7 @@ interface DashboardFAQProps {
  * (site/v2 `V2Faq`): white pads scattered across the painting, exactly one
  * open at a time, each widening to reveal its answer.
  *
- * Deliberately not the shared Radix accordion — the pad's reveal animates
+ * Deliberately not the shared Radix accordion - the pad's reveal animates
  * both height and width together, which the accordion's height-only
  * transition can't express.
  */

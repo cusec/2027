@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { Link } from "@/i18n/navigation";
 
 export const metadata: Metadata = {
-  title: "Ticket Terms — CUSEC 2027",
+  title: "Ticket Terms - CUSEC 2027",
   description:
     "Terms covering CUSEC 2027 ticket sales: who you are buying from, payment, refunds and admission.",
 };
@@ -13,7 +13,7 @@ export const metadata: Metadata = {
  * account, the ticket links by email) or from the published FAQ.
  *
  * The refund window and the no-resale rule are the FAQ's wording (V2.faq.a5
- * on site/v2) rather than anything invented here — if the FAQ changes, change
+ * on site/v2) rather than anything invented here - if the FAQ changes, change
  * this with it, or the two say different things to the same delegate.
  */
 export default function TicketTermsPage() {
@@ -44,7 +44,7 @@ export default function TicketTermsPage() {
         <h2>Prices and taxes</h2>
         <p>
           Prices are shown in Canadian dollars at checkout, and the total you
-          are charged — including any applicable taxes and fees — is the total
+          are charged - including any applicable taxes and fees - is the total
           shown before you confirm payment.
         </p>
 
@@ -64,8 +64,8 @@ export default function TicketTermsPage() {
         </p>
         <p>
           If you cannot attend, email{" "}
-          <a href="mailto:info@cusec.net">info@cusec.net</a> — and copy your
-          Head Delegate if you have one — as early as you can. We will do what
+          <a href="mailto:info@cusec.net">info@cusec.net</a> - and copy your
+          Head Delegate if you have one - as early as you can. We will do what
           we can to help.
         </p>
 
@@ -84,7 +84,7 @@ export default function TicketTermsPage() {
 
         <h2>Admission</h2>
         <p>
-          Bring your ticket — printed or on your phone — and photo ID matching
+          Bring your ticket - printed or on your phone - and photo ID matching
           the name on it. We may refuse admission to, or remove, anyone in
           breach of the <Link href="/code-of-conduct">Code of Conduct</Link>, without
           a refund.

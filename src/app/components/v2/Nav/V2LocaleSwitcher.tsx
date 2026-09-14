@@ -12,7 +12,7 @@ const SHORT: Record<string, string> = {
 	"fr-CA": "FR",
 };
 
-// Endonyms — each language names itself, so these are deliberately not
+// Endonyms - each language names itself, so these are deliberately not
 // translated and don't live in messages/.
 const NAME: Record<string, string> = {
 	"en-CA": "English",
@@ -25,7 +25,7 @@ const NAME: Record<string, string> = {
  *
  * This is a hand-rolled listbox rather than a <select>. It used to be a native
  * select stretched invisibly over the pill, but a select's popup is drawn by
- * the OS and cannot be styled — no radius, no glass, no brand colours — so the
+ * the OS and cannot be styled - no radius, no glass, no brand colours - so the
  * menu was the one piece of the navbar that ignored the design. The cost is
  * that the keyboard and ARIA behaviour a select gives for free has to be
  * implemented here: see the key handlers below.

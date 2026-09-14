@@ -161,7 +161,6 @@ export default async function ScavengerPreview({
   return (
     <section className="aero-page aero-preview">
       <header className="aero-preview__hero">
-        <p className="aero-eyebrow">CUSEC 2027</p>
         <h1 className="aero-title aero-preview__title">Scavenger Hunt</h1>
         <p className="aero-preview__lead">
           Scan codes hidden around the venue, take on challenges with your

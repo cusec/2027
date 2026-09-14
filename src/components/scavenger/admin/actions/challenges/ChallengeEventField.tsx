@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { CHALLENGE_EVENTS } from "@/lib/challenges";
 
-/** Sentinel for the select — never stored, only ever swapped for typed text. */
+/** Sentinel for the select - never stored, only ever swapped for typed text. */
 const OTHER = "__other__";
 
 interface ChallengeEventFieldProps {
