@@ -127,9 +127,6 @@ export async function PUT(request: Request) {
       isLinked: registeredUser.isLinked,
     });
 
-    // Which addresses count as this ticket's: its own, plus its personal and
-    // student addresses when no other ticket row claims them, so another
-    // delegate's link is never touched in either direction.
     const addresses = [registeredUser.linkedEmail];
     for (const address of [registeredUser.personalEmail, registeredUser.studentEmail]) {
       if (!address || addresses.includes(address)) continue;
@@ -144,9 +141,6 @@ export async function PUT(request: Request) {
     let attachedAccount: string | null = null;
 
     if (isLinked) {
-      // Linking is only real with an account attached. Marking the row alone
-      // would also block the automatic linking later, which never moves a
-      // row that is already marked linked.
       const holder = await User.findOne({ linked_email: { $in: addresses } }).select("email");
       if (holder) {
         attachedAccount = holder.email;
@@ -171,18 +165,12 @@ export async function PUT(request: Request) {
             { status: 409 }
           );
         }
-        // Linked under the row's own address, which is what the wizard and
-        // the hunt look the ticket up by.
         account.linked_email = registeredUser.linkedEmail;
         account.ticketWizard.currentStep = "completed";
         await account.save();
         attachedAccount = account.email;
       }
     } else {
-      // Unlinking detaches the account too. Flipping only the flag left the
-      // account holding linked_email and the ticket name: the purchase page
-      // offered Buy again, while relinking refused because the account still
-      // looked linked, so a new purchase could never attach.
       const account = await User.findOneAndUpdate(
         { linked_email: { $in: addresses } },
         {

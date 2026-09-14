@@ -3,9 +3,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useTranslations } from "next-intl";
 import { useRouter } from "@/i18n/navigation";
-import type { ProfileAnswers } from "@/lib/interface";
 import TicketConfirmation from "./TicketConfirmation";
-import type { ResumeMeta } from "./ProfileLinksForm";
 import TicketsSection from "@/app/components/Tickets/TicketsSection";
 import type { TicketType, TicketWidgetConfig } from "@/lib/ticketTailor";
 
@@ -15,13 +13,9 @@ interface PurchaseStepClientProps {
   alreadyComplete: boolean;
   purchasedTicketName: string | null;
   accountEmail: string;
-  /** SCAVENGER_HUNT_ENABLED without the staff bypass: where a finished purchase lands. */
   huntOpen: boolean;
   baseURL: string;
-  /** Shown on the confirmation beside the email: who holds the ticket. */
   accountName: string;
-  profile: ProfileAnswers | null;
-  resume: ResumeMeta | null;
 }
 
 // Idle pages barely poll; an open checkout polls often; the window right
@@ -80,8 +74,6 @@ export default function PurchaseStepClient({
   huntOpen,
   baseURL,
   accountName,
-  profile,
-  resume,
 }: PurchaseStepClientProps) {
   const t = useTranslations("TicketWizard");
   const router = useRouter();
@@ -131,9 +123,6 @@ export default function PurchaseStepClient({
       setVerifying(false);
       setVerifyFailed(false);
 
-      // The confirmation takes over from here. It shows which account holds
-      // the ticket and offers the optional profile, so nothing navigates away
-      // on its own; refresh() just lets server components see the link.
       router.refresh();
     },
     [router]
@@ -458,8 +447,6 @@ export default function PurchaseStepClient({
         accountEmail={accountEmail}
         huntOpen={huntOpen}
         baseURL={baseURL}
-        profile={profile}
-        resume={resume}
       />
     );
   }

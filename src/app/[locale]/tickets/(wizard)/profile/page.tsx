@@ -20,8 +20,6 @@ export default async function ProfilePage() {
     name: session?.user?.name || "Attendee",
   });
 
-  // One ticket per account: a ticketed account re-opening the profile would
-  // look like a second purchase in progress.
   const status = await getWizardStatus(email);
   if (status.purchaseComplete) {
     return (
@@ -37,7 +35,6 @@ export default async function ProfilePage() {
   const doc = await DemographicInfo.findOne({ user: user._id }).lean();
   const saved = doc ? (JSON.parse(JSON.stringify(doc)) as SavedProfile) : null;
 
-  // Names and email start from the account, so most delegates only confirm.
   const profile = session.user as { given_name?: string; family_name?: string; name?: string };
   const [first, ...rest] = (profile.name ?? "").trim().split(/\s+/);
   const initial = answersFrom(saved);
@@ -45,7 +42,6 @@ export default async function ProfilePage() {
   initial.lastName ||= profile.family_name || rest.join(" ");
   initial.primaryEmail ||= email;
 
-  // Resume on Background when Basics is already saved.
   const startIndex = saved?.sections?.basics && !saved.sections.background ? 1 : 0;
 
   return (

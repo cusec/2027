@@ -2,8 +2,6 @@ import type { Metadata, Viewport } from "next";
 import { GeistPixelSquare } from "geist/font/pixel";
 import { Nunito } from "next/font/google";
 import "./globals.css";
-// The ticket wizard's sheets. They used to arrive through styles/index.css
-// alongside the splash page, and are still needed now the splash is gone.
 import "./styles/Tickets/TicketCard.css";
 import "./styles/TicketWizard/TicketWizard.css";
 import "./styles/v2/index.css";
@@ -138,8 +136,6 @@ export default function RootLayout({
     <html
       lang="en-CA"
       dir="ltr"
-      // Next 16 leaves scroll-behavior alone during navigation unless told;
-      // with this, page changes jump while in-page anchors still glide.
       data-scroll-behavior="smooth"
       className={`${bodyFont.variable} ${GeistPixelSquare.variable}`}
       suppressHydrationWarning

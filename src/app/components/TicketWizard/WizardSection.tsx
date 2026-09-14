@@ -3,7 +3,6 @@
 import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
 
-/** The title on the painting, its note pill, and where this section sits. */
 export function StepHeader({
   title,
   note,
@@ -12,8 +11,7 @@ export function StepHeader({
   total,
 }: {
   title: string;
-  note: string;
-  /** "confidential" is the yellow pill; "note" is the neutral one. */
+  note?: string;
   tone?: "note" | "confidential";
   current?: number;
   total?: number;
@@ -22,7 +20,7 @@ export function StepHeader({
   return (
     <div className="tickets-header wizard-step-header">
       <h1 className="tickets-heading">{title}</h1>
-      <p className={`wizard-note-pill wizard-note-pill--${tone}`}>{note}</p>
+      {note && <p className={`wizard-note-pill wizard-note-pill--${tone}`}>{note}</p>}
       {current !== undefined && total !== undefined && total > 1 && (
         <p className="wizard-section-count">
           {t("section-count", { current, total })}
@@ -32,10 +30,6 @@ export function StepHeader({
   );
 }
 
-/**
- * Back and Continue under the cards. Continue is the form's submit button, so
- * pressing it runs native validation on exactly the fields on screen.
- */
 export function StepActions({
   submitLabel,
   busy,

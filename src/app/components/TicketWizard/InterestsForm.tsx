@@ -2,7 +2,7 @@
 
 import { useState, type FormEvent } from "react";
 import { useTranslations } from "next-intl";
-import { Info, Sparkles, TrainFront } from "lucide-react";
+import { Check, Link2, Sparkles, TrainFront } from "lucide-react";
 import { useRouter } from "@/i18n/navigation";
 import type { ProfileAnswers } from "@/lib/interface";
 import { INSTITUTIONS } from "@/lib/institutions";
@@ -15,6 +15,7 @@ import {
   FIRST_TIME,
   HEARD_FROM_OPTIONS,
   INDEPENDENT_DELEGATION,
+  INTEREST_SECTIONS,
   LIMITS,
   NOT_LOOKING,
   OPPORTUNITY_OPTIONS,
@@ -26,6 +27,8 @@ import {
   WORK_ARRANGEMENT_OPTIONS,
   WORK_LOCATION_OPTIONS,
   YES_NO_UNSURE_OPTIONS,
+  isValidLink,
+  type LinkField,
   type SectionId,
 } from "@/lib/ticketWizardOptions";
 import {
@@ -39,21 +42,24 @@ import {
   WizardCard,
 } from "./WizardFields";
 import { StepActions, StepHeader } from "./WizardSection";
+import ResumeUpload, { type ResumeMeta } from "./ResumeUpload";
 import { focusField, saveSection } from "./profileAnswers";
 
-const STEPS: SectionId[] = ["goals", "experience"];
+const INTEREST_STEPS: SectionId[] = INTEREST_SECTIONS;
+
+const LINKS: { field: LinkField; placeholder: string }[] = [
+  { field: "linkedinUrl", placeholder: "https://linkedin.com/in/your-name" },
+  { field: "githubUrl", placeholder: "https://github.com/your-name" },
+  { field: "portfolioUrl", placeholder: "https://your-site.com" },
+];
 
 interface InterestsFormProps {
   initial: ProfileAnswers;
   startIndex: number;
+  initialResume: ResumeMeta | null;
 }
 
-/**
- * The Interests step: goals and career interests, then getting to CUSEC and
- * how they found it. Every question here is optional. Each section still
- * saves on Continue, blank or not, which is what moves the delegate on.
- */
-export default function InterestsForm({ initial, startIndex }: InterestsFormProps) {
+export default function InterestsForm({ initial, startIndex, initialResume }: InterestsFormProps) {
   const t = useTranslations("TicketWizard");
   const router = useRouter();
   const [answers, setAnswers] = useState<ProfileAnswers>(initial);
@@ -64,7 +70,8 @@ export default function InterestsForm({ initial, startIndex }: InterestsFormProp
   const set = <K extends keyof ProfileAnswers>(key: K, value: ProfileAnswers[K]) =>
     setAnswers((prev) => ({ ...prev, [key]: value }));
 
-  const section = STEPS[index];
+  const section = INTEREST_STEPS[index];
+  const isLast = index === INTEREST_STEPS.length - 1;
 
   const go = (next: number) => {
     setError(null);
@@ -74,20 +81,33 @@ export default function InterestsForm({ initial, startIndex }: InterestsFormProp
 
   const submit = async (e: FormEvent) => {
     e.preventDefault();
+
+    if (section === "links") {
+      const bad = LINKS.find(({ field }) => !isValidLink(field, answers[field]));
+      if (bad) {
+        setError(t(`error-${bad.field}`));
+        focusField(bad.field);
+        return;
+      }
+    }
+
     setBusy(true);
     setError(null);
     const result = await saveSection(section, answers);
     setBusy(false);
 
     if (!result.ok) {
-      setError(result.field ? t("error-field") : t("error-generic"));
+      const linkField = LINKS.some(({ field }) => field === result.field);
+      setError(
+        linkField ? t(`error-${result.field}`) : result.field ? t("error-field") : t("error-generic")
+      );
       focusField(result.field);
       return;
     }
-    if (index < STEPS.length - 1) {
-      go(index + 1);
-    } else {
+    if (isLast) {
       router.push("/tickets/purchase");
+    } else {
+      go(index + 1);
     }
   };
 
@@ -102,10 +122,8 @@ export default function InterestsForm({ initial, startIndex }: InterestsFormProp
         <>
           <StepHeader
             title={t("goals-heading")}
-            note={t("confidential-notice")}
-            tone="confidential"
             current={index + 1}
-            total={STEPS.length}
+            total={INTEREST_STEPS.length}
           />
 
           <WizardCard title={t("card-goals")} subtitle={t("all-optional")}>
@@ -153,7 +171,6 @@ export default function InterestsForm({ initial, startIndex }: InterestsFormProp
                   setAnswers((prev) => ({
                     ...prev,
                     opportunities: v,
-                    // Not looking: where and how they'd work no longer apply.
                     ...(v.includes(NOT_LOOKING) ? { workLocations: [], workArrangement: "" } : {}),
                   }))
                 }
@@ -211,10 +228,8 @@ export default function InterestsForm({ initial, startIndex }: InterestsFormProp
         <>
           <StepHeader
             title={t("experience-heading")}
-            note={t("confidential-notice")}
-            tone="confidential"
             current={index + 1}
-            total={STEPS.length}
+            total={INTEREST_STEPS.length}
           />
 
           <div className="wizard-card-pair">
@@ -384,18 +399,59 @@ export default function InterestsForm({ initial, startIndex }: InterestsFormProp
                   onChange={(e) => set("communityProject", e.target.value)}
                 />
               </Question>
-
-              <p className="wizard-card__foot">
-                <Info aria-hidden="true" />
-                {t("aggregate-only")}
-              </p>
             </WizardCard>
           </div>
         </>
       )}
 
+      {section === "links" && (
+        <>
+          <StepHeader
+            title={t("links-heading")}
+            current={index + 1}
+            total={INTEREST_STEPS.length}
+          />
+
+          <WizardCard title={t("card-links")} subtitle={t("all-optional")} icon={<Link2 />}>
+            <div className="wizard-grid">
+              <Question label={t("q-resume")} htmlFor="resume" hint={t("resume-hint")} wide>
+                <ResumeUpload id="resume" initialResume={initialResume} />
+              </Question>
+
+              {LINKS.map(({ field, placeholder }) => (
+                <Question key={field} label={t(`q-${field}`)} htmlFor={field}>
+                  <input
+                    id={field}
+                    className="wizard-input"
+                    type="text"
+                    inputMode="url"
+                    autoComplete="url"
+                    placeholder={placeholder}
+                    value={answers[field]}
+                    onChange={(e) => set(field, e.target.value)}
+                  />
+                </Question>
+              ))}
+            </div>
+
+            <label className={`wizard-chip wizard-consent${answers.sponsorConsent ? " is-on" : ""}`}>
+              <input
+                className="wizard-chip__input"
+                type="checkbox"
+                checked={answers.sponsorConsent}
+                onChange={(e) => set("sponsorConsent", e.target.checked)}
+              />
+              <span className="wizard-chip__mark" aria-hidden="true">
+                {answers.sponsorConsent && <Check strokeWidth={3} />}
+              </span>
+              <span className="wizard-chip__text">{t("q-sponsor-consent")}</span>
+            </label>
+          </WizardCard>
+        </>
+      )}
+
       <StepActions
-        submitLabel={index < STEPS.length - 1 ? t("continue-button") : t("review-ticket")}
+        submitLabel={isLast ? t("review-ticket") : t("continue-button")}
         busy={busy}
         error={error}
         onBack={index > 0 ? () => go(index - 1) : undefined}

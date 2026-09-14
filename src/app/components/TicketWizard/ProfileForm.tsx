@@ -2,7 +2,6 @@
 
 import { useState, type FormEvent } from "react";
 import { useLocale, useTranslations } from "next-intl";
-import { Info } from "lucide-react";
 import { useRouter } from "@/i18n/navigation";
 import type { ProfileAnswers } from "@/lib/interface";
 import { INSTITUTIONS, findInstitution } from "@/lib/institutions";
@@ -20,17 +19,18 @@ import {
   STUDIES_TYPES,
   STUDY_LEVEL_OPTIONS,
   WORK_TYPES,
+  optionLabel,
   type SectionId,
 } from "@/lib/ticketWizardOptions";
 import {
   ChoiceChips,
   Combobox,
-  OriginFields,
   OtherInput,
   Question,
   SelectField,
   WizardCard,
 } from "./WizardFields";
+import CityPicker from "./CityPicker";
 import { StepActions, StepHeader } from "./WizardSection";
 import { focusField, saveSection } from "./profileAnswers";
 
@@ -38,16 +38,9 @@ const STEPS: SectionId[] = ["basics", "background"];
 
 interface ProfileFormProps {
   initial: ProfileAnswers;
-  /** Opens on the first section that hasn't been saved yet. */
   startIndex: number;
 }
 
-/**
- * The Profile step: Basics, then Education or Professional background with
- * where the delegate travels from. Both sections are required before the
- * ticket step, and each saves on its own Continue, so leaving after the first
- * keeps it.
- */
 export default function ProfileForm({ initial, startIndex }: ProfileFormProps) {
   const t = useTranslations("TicketWizard");
   const locale = useLocale();
@@ -66,6 +59,7 @@ export default function ProfileForm({ initial, startIndex }: ProfileFormProps) {
   const asksWork = WORK_TYPES.includes(type);
   const institution = findInstitution(answers.school);
   const section = STEPS[index];
+  const typeOption = ATTENDEE_TYPE_OPTIONS.find((o) => o.value === type);
 
   const go = (next: number) => {
     setError(null);
@@ -96,12 +90,7 @@ export default function ProfileForm({ initial, startIndex }: ProfileFormProps) {
 
   return (
     <form className="wizard-form" onSubmit={submit}>
-      <StepHeader
-        title={t("profile-heading")}
-        note={t("profile-note")}
-        current={index + 1}
-        total={STEPS.length}
-      />
+      <StepHeader title={t("profile-heading")} current={index + 1} total={STEPS.length} />
 
       {section === "basics" && (
         <WizardCard title={t("card-basics")}>
@@ -130,7 +119,11 @@ export default function ProfileForm({ initial, startIndex }: ProfileFormProps) {
                 onChange={(e) => set("lastName", e.target.value)}
               />
             </Question>
-            <Question label={t("q-primary-email")} htmlFor="primaryEmail" hint={t("q-primary-email-hint")}>
+            <Question
+              label={t("q-primary-email")}
+              htmlFor="primaryEmail"
+              hint={t("q-primary-email-hint")}
+            >
               <input
                 id="primaryEmail"
                 className="wizard-input"
@@ -197,12 +190,9 @@ export default function ProfileForm({ initial, startIndex }: ProfileFormProps) {
       {section === "background" && (
         <WizardCard
           title={asksStudies ? t("card-education") : t("card-professional")}
-          subtitle={t(`attending-as`, {
-            type:
-              ATTENDEE_TYPE_OPTIONS.find((o) => o.value === type)?.[
-                locale === "fr-CA" ? "fr" : "en"
-              ] ?? "",
-          })}
+          subtitle={
+            typeOption ? t("attending-as", { type: optionLabel(typeOption, locale) }) : undefined
+          }
         >
           <div className="wizard-grid">
             {asksSchool && (
@@ -213,9 +203,7 @@ export default function ProfileForm({ initial, startIndex }: ProfileFormProps) {
                   value={answers.school}
                   otherLabel={t("q-school-other")}
                   required
-                  onChange={(v) =>
-                    setAnswers((prev) => ({ ...prev, school: v, campus: "" }))
-                  }
+                  onChange={(v) => setAnswers((prev) => ({ ...prev, school: v, campus: "" }))}
                 />
                 <OtherInput
                   show={answers.school === OTHER}
@@ -352,17 +340,13 @@ export default function ProfileForm({ initial, startIndex }: ProfileFormProps) {
             )}
           </div>
 
-          <Question label={t("q-travel-from")} labelId="travel-from-label" wide>
-            <OriginFields
+          <Question label={t("q-travel-from")} htmlFor="travel-city" wide>
+            <CityPicker
+              id="travel-city"
               value={answers}
               onChange={(next) => setAnswers((prev) => ({ ...prev, ...next }))}
             />
           </Question>
-
-          <p className="wizard-card__foot">
-            <Info aria-hidden="true" />
-            {t("aggregate-note")}
-          </p>
         </WizardCard>
       )}
 

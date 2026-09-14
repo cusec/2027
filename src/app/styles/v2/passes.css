@@ -24,8 +24,6 @@
     margin-inline: auto;
 }
 
-/* A column, so both buttons line up along the bottom whatever the perk
-   count. */
 .v2-pass {
     position: relative;
     display: flex;
@@ -109,8 +107,6 @@
     list-style: none;
 }
 
-/* Perks run to two lines, so the marker sits on the first line rather than
-   centring on the whole item. */
 .v2-pass__perks li {
     display: flex;
     align-items: flex-start;

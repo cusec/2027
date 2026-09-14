@@ -527,8 +527,6 @@
     text-shadow: none;
 }
 
-/* Aero type carries a dark shadow for legibility over the painting. The pads
-   are white, where that shadow only smudges. */
 .v2-aero .v2-pad {
     text-shadow: none;
 }
@@ -1157,8 +1155,6 @@
     text-shadow: 0 1px 3px rgba(9, 28, 45, 0.8), 0 2px 12px rgba(9, 28, 45, 0.6);
 }
 
-/* Held on a dark pill: the hero sits over the painting's cloud band, where
-   bare lime text would wash out. */
 .aero-preview__when {
     display: inline-flex;
     align-items: center;
@@ -1226,7 +1222,7 @@
     border: 0;
     background: none;
     color: inherit;
-    cursor: pointer;
+    cursor: var(--cursor-hand);
 }
 
 .aero-preview__linked button svg {
@@ -1286,21 +1282,14 @@
     height: 19px;
 }
 
-
-/* The preview is a page of the public site until the hunt opens, so it sits
-   under the fixed site nav. */
 .aero-preview {
     padding-top: calc(var(--v2-nav-h) + clamp(28px, 5vh, 56px));
 }
 
-/* The preview already spaces its sections; drop the section padding the FAQ
-   brings from faq.css. */
 .aero-preview .v2-faq {
     padding-block: 0 clamp(34px, 6vh, 64px);
 }
 
-/* Dark ink on the note cards. They are light glass, and the white type the
-   hunt uses over the painting washed out on them. */
 .aero-preview .aero-note h3 {
     color: var(--v2-ink-glass-deep);
     text-shadow: none;
@@ -1322,8 +1311,6 @@
     text-shadow: none;
 }
 
-/* Signed-out pages under /scavenger carry the fixed site nav, so the gate
-   cards clear it the way the preview does. */
 .v2-nav ~ .aero-scene .aero-page {
     padding-top: calc(var(--v2-nav-h) + clamp(28px, 5vh, 56px));
 }

@@ -15,9 +15,6 @@
     font-size: clamp(1.2rem, 2.6vw, 1.85rem);
 }
 
-/* Two columns of pads. They used to be scattered across loose lanes, which
-   read as a broken three-column grid on wide screens. Each pad fills its
-   column, so opening one only grows it downward and its row-mate stays put. */
 .v2-faq__pond {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -56,7 +53,7 @@
     font-size: 15px;
     line-height: 1.4;
     color: var(--v2-ink-deep);
-    cursor: pointer;
+    cursor: var(--cursor-hand);
 }
 
 .v2-pad__toggle {
@@ -84,8 +81,6 @@
     transform: rotate(0deg);
 }
 
-/* 0fr -> 1fr reveals the answer at the column's width, so the text never
-   reflows while it animates. */
 .v2-pad__a {
     display: grid;
     grid-template-rows: 0fr;

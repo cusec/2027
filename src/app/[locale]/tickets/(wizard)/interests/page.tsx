@@ -7,6 +7,10 @@ import { DemographicInfo } from "@/lib/models";
 import { getWizardStatus } from "@/lib/ticketWizard";
 import { getBaseUrl } from "@/lib/siteUrl";
 import type { DemographicInfo as SavedProfile } from "@/lib/interface";
+// INTEREST_SECTIONS comes from the plain options module on purpose: importing
+// a value from InterestsForm (a "use client" file) hands a server component a
+// client reference instead of the array, so .findIndex is not a function.
+import { INTEREST_SECTIONS } from "@/lib/ticketWizardOptions";
 import InterestsForm from "@/app/components/TicketWizard/InterestsForm";
 import AlreadyTicketedModal from "@/app/components/TicketWizard/AlreadyTicketedModal";
 import SignInCard from "@/app/components/TicketWizard/SignInCard";
@@ -38,15 +42,23 @@ export default async function InterestsPage() {
   }
 
   await connectMongoDB();
-  const doc = await DemographicInfo.findOne({ user: user._id }).lean();
+  const doc = await DemographicInfo.findOne({ user: user._id }).select("-resumePublicId").lean();
   const saved = doc ? (JSON.parse(JSON.stringify(doc)) as SavedProfile) : null;
 
-  // Resume on the second section when only the first is saved.
-  const startIndex = saved?.sections?.goals && !saved.sections.experience ? 1 : 0;
+  const firstUnsaved = INTEREST_SECTIONS.findIndex((id) => !saved?.sections?.[id]);
+  const startIndex = firstUnsaved === -1 ? 0 : firstUnsaved;
+
+  const resume = saved?.resumeFileName
+    ? {
+        fileName: saved.resumeFileName,
+        size: saved.resumeSize ?? 0,
+        uploadedAt: saved.resumeUploadedAt ?? null,
+      }
+    : null;
 
   return (
     <div className="tickets-wrapper">
-      <InterestsForm initial={answersFrom(saved)} startIndex={startIndex} />
+      <InterestsForm initial={answersFrom(saved)} startIndex={startIndex} initialResume={resume} />
     </div>
   );
 }

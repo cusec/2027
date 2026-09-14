@@ -19,6 +19,7 @@ import {
   GRADUATION_OPTIONS,
   HEARD_FROM_OPTIONS,
   INDEPENDENT_DELEGATION,
+  INTEREST_SECTIONS,
   INTERNSHIP_COUNT_OPTIONS,
   LIMITS,
   NOT_LOOKING,
@@ -46,7 +47,6 @@ import {
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[a-z]{2,}$/i;
 
-/** Thrown for a bad answer; `field` names the input so the form can point at it. */
 class InvalidAnswer extends Error {
   constructor(public field: string) {
     super(`invalid ${field}`);
@@ -55,10 +55,6 @@ class InvalidAnswer extends Error {
 
 type Answers = Record<string, unknown>;
 type Update = Record<string, string | string[] | boolean | Date | null>;
-
-// --- answer readers --------------------------------------------------------
-// Every value is re-read from the request by name, never spread into the
-// document, so a client can only ever set the fields its section owns.
 
 const text = (answers: Answers, field: string, required = false): string => {
   const raw = answers[field];
@@ -93,7 +89,6 @@ const many = (answers: Answers, field: string, options: Option[], max?: number):
   return values;
 };
 
-/** A single choice plus its "Other" box: the text is kept only when Other is picked. */
 const oneWithOther = (
   answers: Answers,
   field: string,
@@ -116,8 +111,6 @@ const manyWithOther = (
   return { [field]: values, [`${field}Other`]: other };
 };
 
-// --- sections --------------------------------------------------------------
-
 function basics(answers: Answers): Update {
   return {
     firstName: text(answers, "firstName", true),
@@ -129,10 +122,6 @@ function basics(answers: Answers): Update {
   };
 }
 
-// Which questions apply depends on the attendee type saved with Basics, read
-// from the database rather than the request so the two sections can't be made
-// to disagree. Questions that don't apply are stored blank, so switching type
-// never leaves stale answers behind.
 function background(answers: Answers, attendeeType: string): Update {
   const update: Update = {
     school: "",
@@ -182,9 +171,6 @@ function background(answers: Answers, attendeeType: string): Update {
     update.experience = one(answers, "experience", EXPERIENCE_OPTIONS, true);
   }
 
-  // Travel origin: country and, where the dataset has them, province or state.
-  // The city is free text by the time it arrives, picked from the list or
-  // typed in under Other, so it is only length-checked.
   const country = text(answers, "travelCountry", true).toUpperCase();
   if (!Country.getCountryByCode(country)) throw new InvalidAnswer("travelCountry");
   const hasRegions = State.getStatesOfCountry(country).length > 0;
@@ -202,8 +188,6 @@ function background(answers: Answers, attendeeType: string): Update {
 function goals(answers: Answers): Update {
   const opportunities = manyWithOther(answers, "opportunities", OPPORTUNITY_OPTIONS);
   const picked = opportunities.opportunities as string[];
-  // "Not currently looking" stands alone, and where or how they'd work is only
-  // asked of someone who is looking, so it is stored blank otherwise.
   const looking = !picked.includes(NOT_LOOKING);
   if (!looking && picked.length > 1) throw new InvalidAnswer("opportunities");
 
@@ -220,7 +204,6 @@ function goals(answers: Answers): Update {
 function experience(answers: Answers): Update {
   const delegation = one(answers, "delegation", YES_NO_UNSURE_OPTIONS);
 
-  // Which delegation is only asked after a yes.
   let delegationSchool = "";
   let delegationOther = "";
   if (delegation === "yes") {
@@ -234,7 +217,6 @@ function experience(answers: Answers): Update {
     if (delegationSchool === OTHER) delegationOther = text(answers, "delegationOther");
   }
 
-  // "First time" and a list of past years can't both be true.
   const attended = many(answers, "attended", ATTENDED_OPTIONS);
   if (attended.includes(FIRST_TIME) && attended.length > 1) throw new InvalidAnswer("attended");
 
@@ -264,15 +246,11 @@ function links(answers: Answers, consentedBefore: boolean): Update {
   }
   const consent = answers.sponsorConsent === true;
   update.sponsorConsent = consent;
-  // Keep the original consent time when it is re-saved unchanged.
   if (consent && !consentedBefore) update.sponsorConsentAt = new Date();
   if (!consent) update.sponsorConsentAt = null;
   return update;
 }
 
-// --- handlers --------------------------------------------------------------
-
-// GET - the caller's own profile, or null. Scoped strictly to the session.
 export async function GET() {
   const session = await auth0.getSession();
   if (!session?.user?.email) {
@@ -291,7 +269,6 @@ export async function GET() {
   return NextResponse.json({ demographics: demographics ?? null });
 }
 
-// PUT { section, answers } - saves one section of the caller's profile.
 export async function PUT(request: Request) {
   const session = await auth0.getSession();
   if (!session?.user?.email) {
@@ -326,7 +303,6 @@ export async function PUT(request: Request) {
       sections?: Partial<Record<SectionId, Date | null>>;
     }>();
 
-  // Background depends on the attendee type, so Basics has to be saved first.
   if (section === "background" && !existing?.sections?.basics) {
     return NextResponse.json({ error: "Save the basics first" }, { status: 409 });
   }
@@ -352,7 +328,6 @@ export async function PUT(request: Request) {
     }
   } catch (error) {
     if (error instanceof InvalidAnswer) {
-      // The field name only, never the value: answers are confidential.
       return NextResponse.json({ error: "invalid-answer", field: error.field }, { status: 400 });
     }
     throw error;
@@ -366,22 +341,18 @@ export async function PUT(request: Request) {
     .select("sections")
     .lean<{ sections?: Partial<Record<SectionId, Date | null>> }>();
 
-  // The first save is what stops the legacy hunt onboarding (email-link screen
-  // and personality quiz) from ever appearing for a wizard user, at whatever
-  // point they leave the flow. Don't defer it to a later section.
   user.hasSeenIntro = true;
   const done = (id: SectionId) => Boolean(saved?.sections?.[id]);
   if (!["purchase", "completed"].includes(user.ticketWizard.currentStep)) {
     user.ticketWizard.currentStep =
       done("basics") && done("background")
-        ? done("goals") && done("experience")
+        ? INTEREST_SECTIONS.every(done)
           ? "purchase"
           : "interests"
         : "profile";
   }
   await user.save();
 
-  // No answers in logs: the profile is confidential.
   console.log(`Profile section "${section}" saved for user ${user._id}`);
 
   return NextResponse.json({ success: true, sections: saved?.sections ?? {} });

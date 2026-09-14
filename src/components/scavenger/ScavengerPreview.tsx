@@ -146,21 +146,11 @@ const NEW_THIS_YEAR = [
   },
 ];
 
-/**
- * The public /scavenger page: how the hunt works, what is new in 2027, and
- * the FAQ, carried over from the 2026 page.
- *
- * While the hunt is closed, every visitor (and every page under /scavenger)
- * gets it, with the opening date and a "nothing to do yet" note. Once it is
- * open, signed-out visitors get the same page with those removed and a
- * sign-in in place of the ticket link; signed-in players get the dashboard.
- */
 export default async function ScavengerPreview({
   signedIn,
   huntOpen = false,
 }: {
   signedIn: boolean;
-  /** The hunt is running: invite a sign-in instead of saying it opens later. */
   huntOpen?: boolean;
 }) {
   const signOutHref = signedIn

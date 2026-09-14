@@ -5,15 +5,6 @@ import { useLocale, useTranslations } from "next-intl";
 import { Check, X } from "lucide-react";
 import { OTHER, optionLabel, type Option } from "@/lib/ticketWizardOptions";
 
-// Building blocks for every step of the attendee profile. Each one is a thin
-// skin over a native control (radio, checkbox, select, text input) so browser
-// validation, keyboard use and screen readers keep working, with the glass
-// chip and card look from the design mockups layered on top.
-
-// ---------------------------------------------------------------------------
-// Layout
-// ---------------------------------------------------------------------------
-
 export function WizardCard({
   title,
   subtitle,
@@ -43,7 +34,6 @@ export function WizardCard({
   );
 }
 
-/** One question: an uppercase label above its control, with an optional hint. */
 export function Question({
   label,
   hint,
@@ -54,7 +44,6 @@ export function Question({
 }: {
   label: string;
   hint?: string;
-  /** For a single native control; groups pass `labelId` instead. */
   htmlFor?: string;
   labelId?: string;
   wide?: boolean;
@@ -77,11 +66,6 @@ export function Question({
   );
 }
 
-// ---------------------------------------------------------------------------
-// Chips
-// ---------------------------------------------------------------------------
-
-/** Single choice as a row of glass chips. */
 export function ChoiceChips({
   name,
   options,
@@ -110,7 +94,6 @@ export function ChoiceChips({
               name={name}
               value={option.value}
               checked={on}
-              // Native validation only needs one radio in the group marked.
               required={required && index === 0}
               onChange={() => onChange(option.value)}
             />
@@ -123,7 +106,6 @@ export function ChoiceChips({
   );
 }
 
-/** Multiple choice as chips, optionally capped, with values that stand alone. */
 export function MultiChips({
   options,
   values,
@@ -137,7 +119,6 @@ export function MultiChips({
   onChange: (values: string[]) => void;
   labelId: string;
   max?: number;
-  /** Picking one of these clears the rest, and picking anything else clears it. */
   exclusive?: string[];
 }) {
   const locale = useLocale();
@@ -180,7 +161,6 @@ export function MultiChips({
   );
 }
 
-/** Tags with a remove button, added from a dropdown of what's left. */
 export function TagPicker({
   id,
   options,
@@ -237,11 +217,6 @@ export function TagPicker({
   );
 }
 
-// ---------------------------------------------------------------------------
-// Dropdowns
-// ---------------------------------------------------------------------------
-
-/** A native select over an option list, with a placeholder. */
 export function SelectField({
   id,
   options,
@@ -275,7 +250,6 @@ export function SelectField({
   );
 }
 
-/** The free-text box that follows an "Other" pick. Renders nothing otherwise. */
 export function OtherInput({
   show,
   value,
@@ -287,7 +261,6 @@ export function OtherInput({
   value: string;
   onChange: (value: string) => void;
   required?: boolean;
-  /** Accessible name, since the box has no visible label of its own. */
   label: string;
 }) {
   const t = useTranslations("TicketWizard");
@@ -316,11 +289,6 @@ const fold = (s: string) =>
 
 const MAX_MATCHES = 60;
 
-/**
- * A searchable single-choice dropdown: type to filter, arrow keys to move,
- * Enter to pick. Used where a native select would be unusably long (schools,
- * cities). `otherLabel` appends an "Other" choice that is always reachable.
- */
 export function Combobox({
   id,
   options,
@@ -343,7 +311,6 @@ export function Combobox({
   const t = useTranslations("TicketWizard");
   const listId = useId();
   const inputRef = useRef<HTMLInputElement>(null);
-  // Null while not typing, so the box shows the picked label otherwise.
   const [query, setQuery] = useState<string | null>(null);
   const [open, setOpen] = useState(false);
   const [active, setActive] = useState(0);
@@ -362,8 +329,6 @@ export function Combobox({
     return otherLabel ? [...list, { value: OTHER, label: otherLabel }] : list;
   }, [options, query, otherLabel]);
 
-  // Picking is what satisfies "required"; typing a name that isn't in the
-  // list is not an answer, so the browser blocks Continue until one is chosen.
   useEffect(() => {
     inputRef.current?.setCustomValidity(required && !value ? t("combobox-pick") : "");
   }, [required, value, t]);
@@ -398,7 +363,6 @@ export function Combobox({
           if (value) onChange("");
         }}
         onBlur={() => {
-          // Let a click on an option land before the list closes.
           window.setTimeout(() => {
             setOpen(false);
             setQuery(null);
@@ -448,16 +412,11 @@ export function Combobox({
   );
 }
 
-// ---------------------------------------------------------------------------
-// Travel origin
-// ---------------------------------------------------------------------------
-
 interface Place {
   code: string;
   name: string;
 }
 
-// Lists never change during a visit, so each is fetched at most once.
 const cache = new Map<string, Promise<Record<string, unknown>>>();
 function loadPlaces(query: string) {
   let hit = cache.get(query);
@@ -475,7 +434,6 @@ export interface Origin {
   travelCity: string;
 }
 
-/** Country, then province or state, then city, each narrowing the next. */
 export function OriginFields({
   value,
   onChange,
@@ -508,7 +466,6 @@ export function OriginFields({
       if (!alive) return;
       const list = (d.regions as Place[]) ?? [];
       setRegions(list);
-      // A country with no subdivisions lists its cities directly.
       if (list.length === 0) setCities((d.cities as string[]) ?? []);
     });
     return () => {
@@ -529,7 +486,6 @@ export function OriginFields({
 
   const hasRegions = regions === null || regions.length > 0;
   const cityListReady = cities !== null && (!hasRegions || Boolean(region));
-  // A saved city that isn't in the list was typed in under Other.
   const cityIsOther =
     otherChosen || (cityListReady && Boolean(city) && !cities.includes(city));
 

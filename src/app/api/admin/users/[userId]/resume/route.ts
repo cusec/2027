@@ -6,13 +6,6 @@ import isAdmin from "@/lib/isAdmin";
 import { logAdminAction } from "@/lib/adminAuditLogger";
 import { resumeDownloadUrl, resumeStorageEnabled } from "@/lib/resumeStorage";
 
-/**
- * GET - download one user's résumé.
- *
- * Admin only, like the profile it belongs to, and audit-logged on every
- * download. Responds with a redirect to a signed Cloudinary link that expires
- * after a minute, so a copied URL is useless shortly after.
- */
 export async function GET(
   request: Request,
   { params }: { params: Promise<{ userId: string }> }

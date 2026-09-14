@@ -18,8 +18,11 @@ This block is written and re-added by `next dev` — verify at `node_modules/nex
 
 > The old Win95-style splash page has been **deleted**. If you find a reference
 > to `SplashPage`, `UIWindow`, `navigation_ui_window*`, Vanta birds, the
-> waitlist API or the Win95 cursors, it is a leftover — remove it rather than
-> restoring it.
+> or waitlist API, it is a leftover — remove it rather than restoring it.
+> The Win95 cursors are **not** leftovers: `public/assets/cursor-win95.webp`
+> and `pointer-win95.webp` are the site-wide cursors, set as `--cursor-arrow` /
+> `--cursor-hand` in `globals.css`. Use those variables for any `cursor`, never
+> `pointer` or `default`.
 
 ---
 
@@ -455,7 +458,7 @@ There is no in-app motion toggle. `base.css` honours
 4. **Plain `<img>` is intentional** throughout — `next/image` was dropped to avoid Vercel's image-optimization quota. The `no-img-element` lint warnings are expected; don't "fix" them.
 5. **Never hand-write `-webkit-backdrop-filter`.** Write only the standard `backdrop-filter` and let the build prefix it. When both are authored, Lightning CSS (Turbopack's minifier) collapses the pair down to *only* the `-webkit-` version, which Chrome ignores — every glass surface silently renders as a flat tint. This bit the whole site once already. If a frosted panel looks flat, check the computed `backdrop-filter` in devtools before touching the colours.
 6. **`src/app/page.tsx` (the root one) is essentially unused** — the proxy redirects past it. Real pages live under `[locale]/`.
-7. **`public/assets/` still holds splash-era files** (`navigation_ui_window*`, `splash_bg.webp`, `cursor-win95.webp`, `calendar.webp`, `globe.webp`, `/splash_waveform.webm`, `/logo_animated.webm`). Nothing references them; they're safe to delete.
+7. **`public/assets/` still holds splash-era files** (`navigation_ui_window*`, `splash_bg.webp`, `calendar.webp`, `globe.webp`, `/splash_waveform.webm`, `/logo_animated.webm`). Nothing references them; they're safe to delete.
 8. **`three` and `vanta` are still in `package.json`** but nothing imports them — the only consumer was the splash background.
 
 ---
@@ -601,9 +604,10 @@ setup checklist (DNS, webhook, env, Auth0 URLs) lives in
                          Logged in -> first incomplete step, or the confirmation.
 /tickets/profile         Required: Basics, then Education or Professional background
                          with travel origin. Two sections, one save each.
-/tickets/interests       Optional answers, but both sections are saved (blank is fine)
-                         before the ticket step: goals and career interests, then
-                         getting to CUSEC, community and discovery.
+/tickets/interests       Optional answers, but all three sections are saved (blank is
+                         fine) before the ticket step: goals and career interests,
+                         getting to CUSEC and discovery, then résumé, links and
+                         sponsor consent.
 /tickets/purchase        Ticket cards + checkout in an on-page modal.
 /tickets/demographics    Redirects to /tickets/profile (old links, Auth0 returnTo).
 /tickets/avatar          Redirects to /tickets. The avatar step is hidden until the
@@ -621,11 +625,12 @@ re-derived from the `sections.<id>` timestamps on `DemographicInfo` plus
 background questions apply depends on the attendee type saved with Basics,
 read from the database, and questions that don't apply are stored blank.
 
-After purchase the confirmation (`TicketConfirmation`) shows the account that
-holds the ticket and offers optional profile completion: LinkedIn, GitHub and
-portfolio links, and explicit consent to share the profile with sponsors.
-Nothing navigates away on its own. Résumé upload is not built yet: storage is
-undecided.
+The résumé, links and sponsor consent are the last Interests section, before
+purchase, because delegates tend to leave straight after buying and the résumé
+book is promised to sponsors. Résumés upload to Cloudinary as private files
+(`src/lib/resumeStorage.ts`), PDF only, 2 MB max. After purchase the
+confirmation (`TicketConfirmation`) only shows the account that holds the
+ticket; nothing navigates away on its own.
 
 **Account creation is just Auth0 signup** (`/auth/login?screen_hint=signup`).
 There is no second auth system. `findOrCreateUser` creates the `User`, same as
@@ -662,7 +667,7 @@ Two independent paths do that linking, both via `linkTicketPurchase()` in
 | `src/app/api/locations/route.ts` | Countries, provinces/states and cities from `country-state-city`, served per level so the dataset never ships to the browser. |
 | `src/lib/models.ts` | `DemographicInfo` model + `ticketWizard` subdoc on `userSchema`. |
 | `src/app/api/{demographics,ticket-wizard/*,ticket-tailor/webhook}/route.ts` | Wizard APIs. |
-| `src/app/components/TicketWizard/*` | `WizardStepNav`, `ProfileForm`, `InterestsForm`, `WizardFields` (chips, searchable dropdown, origin pickers), `TicketConfirmation`, `ProfileLinksForm`, `PurchaseStepClient`. |
+| `src/app/components/TicketWizard/*` | `WizardStepNav`, `ProfileForm`, `InterestsForm`, `WizardFields` (chips, searchable dropdown, origin fields), `CityPicker` (one search box for city, province and country), `ResumeUpload`, `TicketConfirmation`, `PurchaseStepClient`. |
 
 ## Checkout rendering (hard-won — don't undo)
 

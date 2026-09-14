@@ -4,17 +4,12 @@ import { useEffect, useRef, useState } from "react";
 import { useTranslations } from "next-intl";
 import { SkipBack, SkipForward, Play, Pause, Volume1 } from "lucide-react";
 
-/** The station's playlist, in play order. Files live in public/assets/v2/audio. */
 const TRACKS = [
 	{ title: "Main Menu", file: "Main Menu - Nintendo Wii Music Collection - Nintend'OST.mp3" },
 	{ title: "Mii Plaza", file: "Mii Plaza - Nintendo Wii Music Collection - Nintend'OST.mp3" },
 	{ title: "Shop Channel", file: "Shop Channel - Nintendo Wii Music Collection - Nintend'OST.mp3" },
 ];
 
-/**
- * Starts nearly silent on purpose: a page that opens loud is the fastest way
- * to lose someone. Visitors turn it up with the slider if they want more.
- */
 const DEFAULT_VOLUME = 0.05;
 
 const src = (file: string) => encodeURI(`/assets/v2/audio/${file}`).replace(/'/g, "%27");
@@ -32,12 +27,10 @@ export default function V2CdPlayer() {
 	const [progress, setProgress] = useState(0);
 	const [volume, setVolume] = useState(DEFAULT_VOLUME);
 
-	// Keep the element in step with the chosen volume.
 	useEffect(() => {
 		if (audioRef.current) audioRef.current.volume = volume;
 	}, [volume]);
 
-	// A new track starts playing if the player was already playing.
 	useEffect(() => {
 		const audio = audioRef.current;
 		if (!audio) return;

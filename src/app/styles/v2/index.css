@@ -19,7 +19,6 @@
 /* /speakers */
 @import "./speakers.css";
 
-/* Signed-in app shell: scavenger hunt, submissions, profile, ticket wizard */
 @import "./aero.css";
 @import "./submissions.css";
 @import "./scavenger.css";

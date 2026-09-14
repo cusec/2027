@@ -47,7 +47,6 @@ interface UserDemographicsModalProps {
   userEmail: string;
 }
 
-// Labels in English: the admin panel is English-only.
 const one = (options: Option[], value?: string, other?: string) => {
   if (!value) return "";
   if (value === OTHER) return other ? `Other: ${other}` : "Other";
@@ -66,7 +65,6 @@ const school = (value?: string, other?: string) => {
 
 const when = (value?: string | null) => (value ? new Date(value).toLocaleString() : "");
 
-/** Read-only: the profile is the delegate's to change, not an admin's. */
 const Row = ({ label, value }: { label: string; value?: string }) => (
   <div className="flex flex-col gap-0.5 border-b border-gray-100 py-2 last:border-b-0">
     <span className="text-xs font-medium uppercase tracking-wide text-gray-500">
@@ -222,7 +220,7 @@ const UserDemographicsModal = ({
               <Row label="Student or work email" value={data.secondaryEmail} />
               <Row label="Pronouns" value={one(PRONOUN_OPTIONS, data.pronoun, data.pronounOther)} />
               <Row
-                label="Attending as"
+                label="Career stage"
                 value={one(ATTENDEE_TYPE_OPTIONS, data.attendeeType, data.attendeeTypeOther)}
               />
             </Section>
@@ -314,8 +312,6 @@ const UserDemographicsModal = ({
               <LinkRow label="LinkedIn" url={data.linkedinUrl} />
               <LinkRow label="GitHub" url={data.githubUrl} />
               <LinkRow label="Portfolio" url={data.portfolioUrl} />
-              {/* The route checks admin again, logs the download and redirects
-                  to a link that expires after a minute. */}
               <LinkRow
                 label={
                   data.resumeFileName

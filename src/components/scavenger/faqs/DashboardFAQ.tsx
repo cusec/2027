@@ -11,9 +11,7 @@ interface PadItem {
 
 interface DashboardFAQProps {
   heading?: string;
-  /** Defaults to the in-hunt FAQ. The /scavenger preview passes its own. */
   items?: PadItem[];
-  /** Section id, for in-page links. */
   id?: string;
 }
 

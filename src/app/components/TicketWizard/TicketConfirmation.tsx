@@ -3,41 +3,22 @@
 import { useTranslations } from "next-intl";
 import { CircleCheck } from "lucide-react";
 import { Link } from "@/i18n/navigation";
-import type { ProfileAnswers } from "@/lib/interface";
 import { TICKET_LINKED_FLAG } from "@/lib/ticketLinkedFlag";
-import ProfileLinksForm, { type ResumeMeta } from "./ProfileLinksForm";
 
 interface TicketConfirmationProps {
-  resume: ResumeMeta | null;
   ticketName: string | null;
-  /** The CUSEC account the ticket is attached to. */
   accountName: string;
   accountEmail: string;
-  /** SCAVENGER_HUNT_ENABLED without the staff bypass. */
   huntOpen: boolean;
-  /** Absolute site URL; Auth0 needs a fully qualified returnTo. */
   baseURL: string;
-  profile: ProfileAnswers | null;
 }
 
-/**
- * Shown once the ticket is linked, both straight after checkout and on any
- * later visit to /tickets. It says which account holds the ticket, since
- * that is the account to sign in with at the conference, and offers the
- * optional profile completion underneath.
- *
- * With the hunt closed there is no dashboard to go to, so the one action signs
- * out to the /scavenger preview. That is safe: this only renders once the
- * ticket is linked server-side.
- */
 export default function TicketConfirmation({
   ticketName,
   accountName,
   accountEmail,
   huntOpen,
   baseURL,
-  profile,
-  resume,
 }: TicketConfirmationProps) {
   const t = useTranslations("TicketWizard");
   const signOutToHunt = `/auth/logout?returnTo=${encodeURIComponent(`${baseURL}/scavenger`)}`;
@@ -85,7 +66,6 @@ export default function TicketConfirmation({
               try {
                 sessionStorage.setItem(TICKET_LINKED_FLAG, "1");
               } catch {
-                // private mode: the preview just skips the confirmation
               }
             }}
           >
@@ -93,8 +73,6 @@ export default function TicketConfirmation({
           </a>
         )}
       </div>
-
-      {profile && <ProfileLinksForm initial={profile} initialResume={resume} />}
     </div>
   );
 }

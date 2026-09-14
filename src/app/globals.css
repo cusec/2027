@@ -28,11 +28,45 @@
 
 :root {
   color-scheme: light;
+  --cursor-arrow: url("/assets/cursor-win95.webp") 1 1, auto;
+  --cursor-hand: url("/assets/pointer-win95.webp") 7 1, pointer;
 }
 
 html {
   -webkit-text-size-adjust: 100%;
   text-size-adjust: 100%;
+  cursor: var(--cursor-arrow);
+}
+
+/* Win95 cursors everywhere. Unlayered, so these beat Tailwind's cursor utilities. */
+a[href],
+button,
+select,
+summary,
+label[for],
+[role="button"],
+[role="option"],
+[role="tab"],
+[role="menuitem"],
+[role="switch"],
+input[type="checkbox"],
+input[type="radio"],
+input[type="file"],
+input[type="range"],
+input[type="submit"],
+input[type="button"],
+.cursor-pointer {
+  cursor: var(--cursor-hand);
+}
+
+:disabled,
+[aria-disabled="true"],
+.cursor-default,
+.cursor-not-allowed,
+.cursor-wait,
+button.disabled\:cursor-not-allowed:disabled,
+button.disabled\:cursor-wait:disabled {
+  cursor: var(--cursor-arrow);
 }
 
 body {
@@ -111,8 +145,6 @@ body {
   border-color: var(--color-light-mode);
 }
 
-/* In-page anchor links glide to their section. V2ScrollToTop, in the locale
-   layout, keeps a page change from gliding too. */
 html {
   scroll-behavior: smooth;
 }
@@ -123,7 +155,6 @@ html {
   }
 }
 
-/* An anchored section stops just below the fixed nav, not underneath it. */
 .v2 section[id] {
   scroll-margin-top: calc(var(--v2-nav-h, 82px) + 12px);
 }

@@ -13,7 +13,6 @@ export default async function ProfilePage() {
   const session = await auth0.getSession();
   const user = session?.user;
 
-  // The profile is part of the hunt, so it opens with the hunt.
   const { huntOpen } = await getScavengerAccess();
   if (!huntOpen) {
     return <ScavengerPreview signedIn={Boolean(user)} />;

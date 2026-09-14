@@ -413,7 +413,7 @@ body:has(.v2) .Navbar {
 
 .v2-chal .v2-btn:disabled {
     opacity: 0.55;
-    cursor: not-allowed;
+    cursor: var(--cursor-arrow);
     transform: none;
 }
 

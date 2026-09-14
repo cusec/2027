@@ -1,10 +1,3 @@
-// Client-safe list of post-secondary institutions for the school and
-// delegation pickers. Canadian universities, colleges and CEGEPs first, since
-// that is who CUSEC draws from, plus the handful of nearby US schools that
-// have sent delegates. Anyone missing picks "Other" and types their school.
-//
-// `campuses` is only set for institutions that genuinely split across
-// campuses a delegate would name; the campus question is hidden otherwise.
 
 export interface Institution {
   value: string;
@@ -13,7 +6,6 @@ export interface Institution {
 }
 
 export const INSTITUTIONS: Institution[] = [
-  // Québec: universities
   { value: "concordia", name: "Concordia University", campuses: ["Sir George Williams (downtown)", "Loyola"] },
   { value: "mcgill", name: "McGill University", campuses: ["Downtown", "Macdonald"] },
   { value: "polytechnique", name: "Polytechnique Montréal" },
@@ -32,7 +24,6 @@ export const INSTITUTIONS: Institution[] = [
   { value: "inrs", name: "Institut national de la recherche scientifique (INRS)" },
   { value: "teluq", name: "Université TÉLUQ" },
 
-  // Québec: CEGEPs and colleges
   { value: "dawson", name: "Dawson College" },
   { value: "vanier", name: "Vanier College" },
   { value: "john-abbott", name: "John Abbott College" },
@@ -60,7 +51,6 @@ export const INSTITUTIONS: Institution[] = [
   { value: "cegep-chicoutimi", name: "Cégep de Chicoutimi" },
   { value: "college-lasalle", name: "LaSalle College" },
 
-  // Ontario
   { value: "waterloo", name: "University of Waterloo" },
   { value: "uoft", name: "University of Toronto", campuses: ["St. George", "Mississauga", "Scarborough"] },
   { value: "york", name: "York University", campuses: ["Keele", "Glendon", "Markham"] },
@@ -94,7 +84,6 @@ export const INSTITUTIONS: Institution[] = [
   { value: "fanshawe", name: "Fanshawe College" },
   { value: "durham-college", name: "Durham College" },
 
-  // Atlantic
   { value: "dalhousie", name: "Dalhousie University" },
   { value: "unb", name: "University of New Brunswick", campuses: ["Fredericton", "Saint John"] },
   { value: "umoncton", name: "Université de Moncton", campuses: ["Moncton", "Edmundston", "Shippagan"] },
@@ -107,7 +96,6 @@ export const INSTITUTIONS: Institution[] = [
   { value: "cape-breton", name: "Cape Breton University" },
   { value: "nscc", name: "Nova Scotia Community College" },
 
-  // Prairies and territories
   { value: "manitoba", name: "University of Manitoba" },
   { value: "uwinnipeg", name: "University of Winnipeg" },
   { value: "usask", name: "University of Saskatchewan" },
@@ -121,7 +109,6 @@ export const INSTITUTIONS: Institution[] = [
   { value: "nait", name: "NAIT" },
   { value: "yukon", name: "Yukon University" },
 
-  // British Columbia
   { value: "ubc", name: "University of British Columbia", campuses: ["Vancouver", "Okanagan"] },
   { value: "sfu", name: "Simon Fraser University", campuses: ["Burnaby", "Surrey", "Vancouver"] },
   { value: "uvic", name: "University of Victoria" },
@@ -135,7 +122,6 @@ export const INSTITUTIONS: Institution[] = [
   { value: "ufv", name: "University of the Fraser Valley" },
   { value: "ecuad", name: "Emily Carr University of Art + Design" },
 
-  // United States
   { value: "mit", name: "Massachusetts Institute of Technology" },
   { value: "cmu", name: "Carnegie Mellon University" },
   { value: "cornell", name: "Cornell University" },

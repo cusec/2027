@@ -75,14 +75,11 @@ export default async function TicketsPage() {
     );
   }
 
-  // The Auth0 account exists, so the Account step is done.
   const user = await findOrCreateUser({
     email,
     name: session?.user?.name || "Attendee",
   });
 
-  // Straight to whichever step is next. Interests are optional, but each of
-  // its sections is still saved once (blank is fine) before the ticket step.
   const status = await getWizardStatus(email);
   if (!status.profileComplete) {
     redirect({ href: "/tickets/profile", locale });
@@ -98,14 +95,6 @@ export default async function TicketsPage() {
   const doc = await DemographicInfo.findOne({ user: user._id }).lean();
   const saved = doc ? (JSON.parse(JSON.stringify(doc)) as SavedProfile) : null;
   const profile = answersFrom(saved);
-
-  const resume = saved?.resumeFileName
-    ? {
-        fileName: saved.resumeFileName,
-        size: saved.resumeSize ?? 0,
-        uploadedAt: saved.resumeUploadedAt ?? null,
-      }
-    : null;
   const accountName =
     `${profile.firstName} ${profile.lastName}`.trim() || session?.user?.name || email;
 
@@ -117,8 +106,6 @@ export default async function TicketsPage() {
         accountEmail={email}
         huntOpen={process.env.SCAVENGER_HUNT_ENABLED === "true"}
         baseURL={await getBaseUrl()}
-        profile={saved ? profile : null}
-        resume={resume}
       />
     </div>
   );

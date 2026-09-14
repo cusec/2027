@@ -38,14 +38,6 @@ export default async function PurchasePage() {
   const doc = await DemographicInfo.findOne({ user: user._id }).lean();
   const saved = doc ? (JSON.parse(JSON.stringify(doc)) as SavedProfile) : null;
   const profile = answersFrom(saved);
-
-  const resume = saved?.resumeFileName
-    ? {
-        fileName: saved.resumeFileName,
-        size: saved.resumeSize ?? 0,
-        uploadedAt: saved.resumeUploadedAt ?? null,
-      }
-    : null;
   const accountName =
     `${profile.firstName} ${profile.lastName}`.trim() || session?.user?.name || email;
 
@@ -61,8 +53,6 @@ export default async function PurchasePage() {
     lastName: profile.lastName || null,
   });
 
-  // The raw flag, not the staff bypass: an organizer rehearsing a purchase
-  // while the hunt is closed should land exactly where a delegate would.
   const huntOpen = process.env.SCAVENGER_HUNT_ENABLED === "true";
 
   return (
@@ -85,8 +75,6 @@ export default async function PurchasePage() {
         purchasedTicketName={status.purchasedTicketName}
         accountEmail={email}
         accountName={accountName}
-        profile={saved ? profile : null}
-        resume={resume}
         huntOpen={huntOpen}
         baseURL={await getBaseUrl()}
       />

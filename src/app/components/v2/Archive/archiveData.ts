@@ -12,7 +12,6 @@ export type ArchiveEdition = {
 	photos: ArchivePhoto[];
 };
 
-/** Photos live one folder per edition: public/assets/v2/photos/archive/<year>/. */
 const photo = (year: number, file: string, caption: string): ArchivePhoto => ({
 	src: `/assets/v2/photos/archive/${year}/${year}-${file}.webp`,
 	caption,

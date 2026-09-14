@@ -9,9 +9,7 @@ import {
 export type WizardStep = "profile" | "interests" | "purchase" | "completed";
 
 export interface WizardStatus {
-  /** Basics and background saved: the only sections required before buying. */
   profileComplete: boolean;
-  /** Both interest sections saved, even with every optional answer left blank. */
   interestsComplete: boolean;
   purchaseComplete: boolean;
   linkedEmail: string | null;
@@ -28,10 +26,6 @@ interface LeanWizardUser {
 
 type SavedSections = Partial<Record<SectionId, Date | string | null>>;
 
-// Every gate re-derives its prerequisite from real data: which profile
-// sections carry a saved timestamp, and whether the linked email is verified
-// against RegisteredUser. ticketWizard.currentStep is only a cache for
-// UI/analytics and is never trusted here.
 export async function getWizardStatus(email: string): Promise<WizardStatus> {
   await connectMongoDB();
 
@@ -65,9 +59,6 @@ export async function getWizardStatus(email: string): Promise<WizardStatus> {
     interestsComplete: INTEREST_SECTIONS.every(saved),
     purchaseComplete,
     linkedEmail: user.linked_email ?? null,
-    // Only reported alongside a linked ticket. The stored name outlives an
-    // unlinked or refunded order, and the ticket cards mark themselves
-    // "Purchased" from it, which blocked buying again.
     purchasedTicketName: purchaseComplete
       ? (user.ticketWizard?.purchasedTicketName ?? null)
       : null,

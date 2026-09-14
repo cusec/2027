@@ -127,7 +127,7 @@
     border: 1px solid rgba(31, 59, 44, 0.18);
     color: var(--v2-ink);
     font: inherit;
-    cursor: pointer;
+    cursor: var(--cursor-hand);
     transition: background-color 140ms ease, border-color 140ms ease;
 }
 
@@ -210,7 +210,7 @@
     color: var(--v2-mint);
     font-size: 14px;
     line-height: 1;
-    cursor: pointer;
+    cursor: var(--cursor-hand);
     transition: background-color 140ms ease, color 140ms ease;
 }
 
@@ -312,6 +312,34 @@
 
 .v2-nav__mobile-end .v2-btn {
     flex: 1;
+}
+
+.v2-nav__mobile-end .v2-locale__trigger {
+    padding-block: 10px;
+    background: rgba(178, 254, 231, 0.12);
+    border-color: rgba(178, 254, 231, 0.4);
+    color: var(--v2-mint-bright);
+}
+
+.v2-nav__mobile-end .v2-locale__trigger:hover,
+.v2-nav__mobile-end .v2-locale.is-open .v2-locale__trigger {
+    background: rgba(178, 254, 231, 0.2);
+    border-color: rgba(178, 254, 231, 0.6);
+}
+
+.v2-nav__mobile-end .v2-locale__trigger:focus-visible {
+    outline-color: var(--v2-mint-bright);
+}
+
+.v2-nav__mobile-end .v2-locale__menu {
+    right: auto;
+    left: 0;
+    max-width: calc(100vw - 64px);
+}
+
+.v2-nav__mobile-end .v2-locale__menu::before {
+    right: auto;
+    left: 20px;
 }
 
 @media (max-width: 1080px) {

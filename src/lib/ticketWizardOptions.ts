@@ -19,18 +19,12 @@ export type Locale = "en-CA" | "fr-CA";
 export const optionLabel = (option: Option, locale: string) =>
   locale === "fr-CA" ? option.fr : option.en;
 
-/** Every list whose last entry opens a free-text box carries this value. */
 export const OTHER = "other";
-
-// ---------------------------------------------------------------------------
-// Basics
-// ---------------------------------------------------------------------------
 
 export const PRONOUN_OPTIONS: Option[] = [
   { value: "he-him", en: "He/him", fr: "Il/lui" },
   { value: "she-her", en: "She/her", fr: "Elle" },
   { value: "they-them", en: "They/them", fr: "Iel" },
-  { value: "use-name", en: "Use my name", fr: "Utiliser mon prénom" },
   { value: "prefer-not", en: "Prefer not to say", fr: "Je préfère ne pas répondre" },
   { value: OTHER, en: "Other", fr: "Autre" },
 ];
@@ -39,31 +33,24 @@ export const ATTENDEE_TYPE_OPTIONS: Option[] = [
   { value: "student", en: "Student", fr: "Étudiant·e" },
   { value: "recent-graduate", en: "Recent graduate", fr: "Récemment diplômé·e" },
   { value: "professional", en: "Professional", fr: "Professionnel·le" },
-  { value: "educator", en: "Educator or faculty", fr: "Enseignant·e ou corps professoral" },
-  { value: "sponsor", en: "Sponsor or recruiter", fr: "Commanditaire ou recruteur·e" },
   { value: OTHER, en: "Other", fr: "Autre" },
 ];
 
-/** Who is asked about their studies, and who about their work. */
 export const STUDIES_TYPES = ["student", "recent-graduate"];
-export const SCHOOL_TYPES = ["student", "recent-graduate", "educator"];
-export const WORK_TYPES = ["recent-graduate", "professional", "educator", "sponsor", OTHER];
-
-// ---------------------------------------------------------------------------
-// Education
-// ---------------------------------------------------------------------------
+export const SCHOOL_TYPES = ["student", "recent-graduate"];
+export const WORK_TYPES = ["recent-graduate", "professional", OTHER];
 
 export const FIELD_OF_STUDY_OPTIONS: Option[] = [
-  { value: "computer-science", en: "Computer science", fr: "Informatique" },
-  { value: "software-engineering", en: "Software engineering", fr: "Génie logiciel" },
-  { value: "computer-engineering", en: "Computer engineering", fr: "Génie informatique" },
-  { value: "electrical-engineering", en: "Electrical engineering", fr: "Génie électrique" },
-  { value: "data-science", en: "Data science", fr: "Science des données" },
-  { value: "math-stats", en: "Mathematics or statistics", fr: "Mathématiques ou statistique" },
+  { value: "computer-science", en: "Computer Science", fr: "Informatique" },
+  { value: "software-engineering", en: "Software Engineering", fr: "Génie logiciel" },
+  { value: "computer-engineering", en: "Computer Engineering", fr: "Génie informatique" },
+  { value: "electrical-engineering", en: "Electrical Engineering", fr: "Génie électrique" },
+  { value: "data-science", en: "Data Science", fr: "Science des données" },
+  { value: "math-stats", en: "Mathematics or Statistics", fr: "Mathématiques ou statistique" },
   { value: "cybersecurity", en: "Cybersecurity", fr: "Cybersécurité" },
-  { value: "information-technology", en: "Information technology", fr: "Technologies de l’information" },
+  { value: "information-technology", en: "Information Technology", fr: "Technologies de l’information" },
   { value: "design-ux", en: "Design or UX", fr: "Design ou UX" },
-  { value: "business", en: "Business or commerce", fr: "Administration ou commerce" },
+  { value: "business", en: "Business or Commerce", fr: "Administration ou commerce" },
   { value: "other-engineering", en: "Another engineering field", fr: "Autre domaine du génie" },
   { value: "non-technical", en: "Another non-technical field", fr: "Autre domaine non technique" },
   { value: "undeclared", en: "Undeclared", fr: "Non déclaré" },
@@ -99,7 +86,6 @@ const SEASONS: { value: string; en: string; fr: string }[] = [
   { value: "fall", en: "Fall", fr: "Automne" },
 ];
 
-/** Fall 2026 onward, season by season, then the two answers that aren't a term. */
 export const GRADUATION_OPTIONS: Option[] = (() => {
   const terms: Option[] = [];
   for (let year = 2026; year <= 2032; year++) {
@@ -128,10 +114,6 @@ export const INTERNSHIP_COUNT_OPTIONS: Option[] = [
   { value: "5-plus", en: "5 or more", fr: "5 ou plus" },
 ];
 
-// ---------------------------------------------------------------------------
-// Professional background
-// ---------------------------------------------------------------------------
-
 export const CURRENT_ROLE_OPTIONS: Option[] = [
   { value: "software", en: "Software or engineering", fr: "Logiciel ou génie" },
   { value: "data-ai", en: "Data or AI", fr: "Données ou IA" },
@@ -153,15 +135,6 @@ export const EXPERIENCE_OPTIONS: Option[] = [
   { value: "prefer-not", en: "Prefer not to say", fr: "Je préfère ne pas répondre" },
 ];
 
-// ---------------------------------------------------------------------------
-// Career interests
-// ---------------------------------------------------------------------------
-
-/**
- * Picked alone in "What opportunities are you interested in?". It also stands
- * in for the old career-focus dropdown's "not looking", and hides the
- * where-and-how-would-you-work questions, so none of them ask it twice.
- */
 export const NOT_LOOKING = "not-looking";
 
 export const OPPORTUNITY_OPTIONS: Option[] = [
@@ -212,10 +185,6 @@ export const WORK_ARRANGEMENT_OPTIONS: Option[] = [
   { value: "no-preference", en: "No preference", fr: "Aucune préférence" },
 ];
 
-// ---------------------------------------------------------------------------
-// Conference goals
-// ---------------------------------------------------------------------------
-
 export const ATTEND_REASON_OPTIONS: Option[] = [
   { value: "emerging-tech", en: "Learn about emerging technologies", fr: "Découvrir les technologies émergentes" },
   { value: "technical-skills", en: "Develop technical skills", fr: "Développer mes compétences techniques" },
@@ -244,8 +213,6 @@ export const SUCCESS_OPTIONS: Option[] = [
   { value: OTHER, en: "Other", fr: "Autre" },
 ];
 
-// The spec's session formats plus the three events from the first round of
-// notes: speaker-hosted talks, the Dev's Den pitch competition and the hunt.
 export const SESSION_FORMAT_OPTIONS: Option[] = [
   { value: "keynotes", en: "Keynotes", fr: "Conférences d’ouverture" },
   { value: "technical-talks", en: "Technical talks", fr: "Conférences techniques" },
@@ -262,10 +229,6 @@ export const SESSION_FORMAT_OPTIONS: Option[] = [
   { value: OTHER, en: "Other", fr: "Autre" },
 ];
 
-// ---------------------------------------------------------------------------
-// School and community
-// ---------------------------------------------------------------------------
-
 export const YES_NO_UNSURE_OPTIONS: Option[] = [
   { value: "yes", en: "Yes", fr: "Oui" },
   { value: "no", en: "No", fr: "Non" },
@@ -278,7 +241,6 @@ export const CONNECT_SCHOOL_OPTIONS: Option[] = [
   { value: "later", en: "Maybe later", fr: "Peut-être plus tard" },
 ];
 
-/** Picked in the delegation box instead of a school. */
 export const INDEPENDENT_DELEGATION = "independent";
 
 export const COMMUNITY_OPTIONS: Option[] = [
@@ -294,10 +256,6 @@ export const COMMUNITY_OPTIONS: Option[] = [
   { value: OTHER, en: "Other", fr: "Autre" },
 ];
 
-// ---------------------------------------------------------------------------
-// Travel
-// ---------------------------------------------------------------------------
-
 export const TRANSPORT_OPTIONS: Option[] = [
   { value: "transit", en: "Local public transit", fr: "Transport en commun local" },
   { value: "train", en: "Train", fr: "Train" },
@@ -309,10 +267,6 @@ export const TRANSPORT_OPTIONS: Option[] = [
   { value: "unsure", en: "Not sure", fr: "Pas certain" },
   { value: OTHER, en: "Other", fr: "Autre" },
 ];
-
-// ---------------------------------------------------------------------------
-// Discovery
-// ---------------------------------------------------------------------------
 
 export const HEARD_FROM_OPTIONS: Option[] = [
   { value: "head-delegate", en: "Head Delegate", fr: "Chef de délégation" },
@@ -346,7 +300,6 @@ export const CONVINCED_BY_OPTIONS: Option[] = [
   { value: OTHER, en: "Other", fr: "Autre" },
 ];
 
-/** "first-time" can't sit alongside a year; the form clears one for the other. */
 export const FIRST_TIME = "first-time";
 
 export const ATTENDED_OPTIONS: Option[] = [
@@ -358,10 +311,6 @@ export const ATTENDED_OPTIONS: Option[] = [
   { value: "earlier", en: "Earlier", fr: "Avant" },
 ];
 
-// ---------------------------------------------------------------------------
-// Limits
-// ---------------------------------------------------------------------------
-
 export const LIMITS = {
   attendReasons: 3,
   successMeasures: 3,
@@ -371,11 +320,6 @@ export const LIMITS = {
 
 export const TEXT_MAX = 200;
 
-// ---------------------------------------------------------------------------
-// Professional links
-// ---------------------------------------------------------------------------
-
-/** Adds https:// to a bare "github.com/me" so people can paste either form. */
 export function normalizeUrl(value: string): string {
   const trimmed = value.trim();
   if (!trimmed) return "";
@@ -390,21 +334,12 @@ export const LINK_PATTERNS = {
 
 export type LinkField = keyof typeof LINK_PATTERNS;
 
-/** Where each profile link is allowed to point. Portfolios can be anywhere. */
 const LINK_HOSTS: Record<LinkField, RegExp | null> = {
   linkedinUrl: /^([a-z]{2,3}\.)?linkedin\.com$/i,
   githubUrl: /^(www\.)?github\.com$/i,
   portfolioUrl: null,
 };
 
-/**
- * Empty is valid: every link is optional. Otherwise the value must parse as a
- * real https URL, with a real host (no userinfo, no "javascript:" or "data:"
- * smuggled in as a hostname), and match that field's pattern. These are only
- * ever stored as strings and rendered as escaped React text or an href, so
- * this is about keeping them honest links, not about query safety: MongoDB
- * never sees them as anything but a value.
- */
 export function isValidLink(field: LinkField, value: string): boolean {
   const url = normalizeUrl(value);
   if (!url) return true;
@@ -425,18 +360,9 @@ export function isValidLink(field: LinkField, value: string): boolean {
   return LINK_PATTERNS[field].test(url);
 }
 
-// ---------------------------------------------------------------------------
-// Sections
-// ---------------------------------------------------------------------------
-
-/**
- * The profile saves one section at a time, so a delegate who leaves halfway
- * keeps everything up to the last Continue. Only "basics" and "background"
- * are required before the ticket step; the rest are shown but optional.
- */
 export const SECTIONS = ["basics", "background", "goals", "experience", "links"] as const;
 export type SectionId = (typeof SECTIONS)[number];
 
 export const REQUIRED_SECTIONS: SectionId[] = ["basics", "background"];
 export const PROFILE_SECTIONS: SectionId[] = ["basics", "background"];
-export const INTEREST_SECTIONS: SectionId[] = ["goals", "experience"];
+export const INTEREST_SECTIONS: SectionId[] = ["goals", "experience", "links"];

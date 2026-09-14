@@ -340,7 +340,6 @@ export interface DemographicInfo {
   updatedAt?: string;
 }
 
-/** Everything a delegate can edit, without the bookkeeping fields. */
 export type ProfileAnswers = Omit<
   DemographicInfo,
   | "_id"

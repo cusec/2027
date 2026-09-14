@@ -3,9 +3,6 @@
 import { Link, usePathname } from "@/i18n/navigation";
 import { useTranslations } from "next-intl";
 
-// Account is the Auth0 signup, so it is always done by the time a signed-in
-// delegate sees this bar. The avatar step is gone until the avatar builder is
-// ready; bring it back here and in src/lib/ticketWizard.ts together.
 const STEPS = ["account", "profile", "interests", "ticket"] as const;
 type Step = (typeof STEPS)[number];
 
@@ -16,8 +13,6 @@ const PATH_STEP_MAP: Record<string, Step> = {
   "/tickets/purchase": "ticket",
 };
 
-// The profile and interests forms carry their own Back buttons, since each
-// has sections to step back through first. Only the ticket step needs one here.
 const BACK_TARGETS: Partial<Record<Step, string>> = {
   ticket: "/tickets/interests",
 };

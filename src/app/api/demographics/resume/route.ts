@@ -10,10 +10,6 @@ import {
   uploadResume,
 } from "@/lib/resumeStorage";
 
-// The caller's own résumé: POST (multipart, field "file") uploads or replaces
-// it, DELETE removes it. Scoped strictly to the session's user. No file
-// contents or names ever reach the logs.
-
 async function currentUser() {
   const session = await auth0.getSession();
   if (!session?.user?.email) return null;
@@ -30,8 +26,6 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "unavailable" }, { status: 503 });
   }
 
-  // Refuse an oversized body before reading it, when the client says how big
-  // it is; the byte count below is the check that actually counts.
   const declared = Number(request.headers.get("content-length") ?? 0);
   if (declared > RESUME_MAX_BYTES + 64 * 1024) {
     return NextResponse.json({ error: "too-large" }, { status: 413 });

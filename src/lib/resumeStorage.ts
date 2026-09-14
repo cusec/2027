@@ -1,29 +1,14 @@
 import { v2 as cloudinary } from "cloudinary";
 import { isCloudinaryEnabled } from "./imageStorage";
 
-/**
- * Résumé storage for the attendee profile.
- *
- * Résumés live in Cloudinary rather than MongoDB: the database is on the free
- * 512 MB tier, and a few hundred PDFs would fill it. They are uploaded as
- * `authenticated` raw files, so no public URL exists; the only way to fetch
- * one is a short-lived signed download link, which only the admin route
- * hands out.
- *
- * Each delegate has exactly one path, keyed by their user id, so uploading
- * again replaces the old file instead of leaving it behind.
- */
-
 export const RESUME_MAX_BYTES = 2 * 1024 * 1024;
 
 const FOLDER = "cusec-2027/resumes";
 
 const publicIdFor = (userId: string) => `${FOLDER}/${userId}.pdf`;
 
-/** Whether uploads can work at all in this environment. */
 export const resumeStorageEnabled = () => isCloudinaryEnabled();
 
-/** A real PDF starts with "%PDF-", whatever its name or claimed type says. */
 export function looksLikePdf(bytes: Uint8Array): boolean {
   return (
     bytes.length > 5 &&
@@ -61,7 +46,6 @@ export async function deleteResume(publicId: string): Promise<void> {
   });
 }
 
-/** A download link that stops working after a minute. */
 export function resumeDownloadUrl(publicId: string): string {
   return cloudinary.utils.private_download_url(publicId, "", {
     resource_type: "raw",

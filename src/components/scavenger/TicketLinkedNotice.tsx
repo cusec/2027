@@ -4,8 +4,6 @@ import { useSyncExternalStore } from "react";
 import { CircleCheck, X } from "lucide-react";
 import { TICKET_LINKED_FLAG } from "@/lib/ticketLinkedFlag";
 
-// sessionStorage has no change event within the same tab, so dismissing
-// notifies subscribers itself.
 const listeners = new Set<() => void>();
 
 function subscribe(listener: () => void) {
@@ -23,11 +21,6 @@ function readFlag() {
   }
 }
 
-/**
- * Confirms a just-finished purchase on the /scavenger preview. The purchase
- * step sets the flag right before signing the delegate out, so this only ever
- * shows in the tab that bought the ticket, and never on a server render.
- */
 export default function TicketLinkedNotice() {
   const linked = useSyncExternalStore(subscribe, readFlag, () => false);
 
@@ -37,7 +30,6 @@ export default function TicketLinkedNotice() {
     try {
       sessionStorage.removeItem(TICKET_LINKED_FLAG);
     } catch {
-      // nothing stored, nothing to clear
     }
     listeners.forEach((listener) => listener());
   };

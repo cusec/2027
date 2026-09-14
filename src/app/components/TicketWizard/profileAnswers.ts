@@ -1,8 +1,6 @@
 import type { DemographicInfo, ProfileAnswers } from "@/lib/interface";
 import type { SectionId } from "@/lib/ticketWizardOptions";
 
-// Client-side helpers shared by the Profile, Interests and post-purchase forms.
-
 export const EMPTY_ANSWERS: ProfileAnswers = {
   firstName: "",
   lastName: "",
@@ -63,7 +61,6 @@ export const EMPTY_ANSWERS: ProfileAnswers = {
   sponsorConsent: false,
 };
 
-/** Saved values over the blanks, ignoring anything the form doesn't own. */
 export function answersFrom(saved: Partial<DemographicInfo> | null): ProfileAnswers {
   const answers = { ...EMPTY_ANSWERS };
   if (!saved) return answers;
@@ -78,7 +75,6 @@ export function answersFrom(saved: Partial<DemographicInfo> | null): ProfileAnsw
 
 export type SaveResult = { ok: true } | { ok: false; field?: string };
 
-/** Saves one section. On a rejected answer, `field` names the offending input. */
 export async function saveSection(
   section: SectionId,
   answers: Partial<ProfileAnswers>
@@ -97,7 +93,6 @@ export async function saveSection(
   }
 }
 
-/** Moves focus to the input the server rejected, when it is on the page. */
 export function focusField(field?: string) {
   if (!field) return;
   const el = document.getElementById(field);

@@ -63,8 +63,6 @@ export async function GET(
       return NextResponse.json({ success: true, demographics: null });
     }
 
-    // Country and region names are resolved here so the admin panel never has
-    // to ship the location dataset to the browser.
     const country = typeof doc.travelCountry === "string" ? doc.travelCountry : "";
     const region = typeof doc.travelRegion === "string" ? doc.travelRegion : "";
 
@@ -80,7 +78,6 @@ export async function GET(
       },
     });
   } catch (error) {
-    // The message only: a failed read can carry the answers themselves.
     console.error(
       "Error fetching demographics:",
       error instanceof Error ? error.message : "unknown error"

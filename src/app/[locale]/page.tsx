@@ -8,7 +8,6 @@ import V2Dawn from "@/app/components/v2/Dawn/V2Dawn";
 import V2Archive from "@/app/components/v2/Archive/V2Archive";
 import V2Hunt from "@/app/components/v2/Hunt/V2Hunt";
 import V2Passes from "@/app/components/v2/Passes/V2Passes";
-// Sponsors are hidden until they are announced; restore with the section below.
 // import V2Sponsors from "@/app/components/v2/Sponsors/V2Sponsors";
 import V2Faq from "@/app/components/v2/Faq/V2Faq";
 import V2Closing from "@/app/components/v2/Closing/V2Closing";

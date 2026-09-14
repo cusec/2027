@@ -15,9 +15,6 @@ export default async function ScavengerLayout({
 }) {
   const { user, anyOpen } = await getScavengerAccess();
 
-  // Anyone signed out, and everyone while the hunt is closed, is on a page of
-  // the public site: it carries the site nav and footer. Signed-in players
-  // have the dock instead.
   const publicShell = !anyOpen || !user;
 
   let dbUser: DbUser | null = null;
@@ -44,9 +41,6 @@ export default async function ScavengerLayout({
         fetchPriority="high"
       />
 
-      {/* While the hunt is closed, /scavenger is a page of the public site,
-          reached from its navbar, so it carries the site nav and footer the
-          way /speakers does. Once open, the dock is the navigation instead. */}
       {publicShell && (
         <>
           <V2Nav />
@@ -75,10 +69,6 @@ export default async function ScavengerLayout({
           />
         )}
 
-        {/* One gate for /scavenger and every page under it: a gate that only
-            covers some of them is not a gate. While the hunt and submissions
-            are both closed, everyone who is not staff gets the preview, signed
-            in or not, with no dock to reach the pages behind it. */}
         {anyOpen ? (
           <div className={dbUser ? "aero-stage" : undefined}>{children}</div>
         ) : (

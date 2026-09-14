@@ -1,14 +1,6 @@
 import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
 
-/**
- * The tickets on sale on the website: early bird student admission, alone or
- * with the VIP add-on. Professional, general and the internal tickets are
- * deliberately left off (see CUSEC 2027 Ticket Strategy); Ticket Tailor still
- * lists every type, but the site only promotes these two.
- *
- * Copy mirrors the Ticket Tailor listing so the card and the checkout agree.
- */
 const TICKETS = [
 	{ id: "early", perks: 4, badge: false },
 	{ id: "vip", perks: 5, badge: true },

@@ -51,8 +51,6 @@ export default async function ScavengerPage() {
     }
   }
 
-  // Only reachable while submissions are open and the hunt is not: the
-  // layout turns everyone away while both are closed.
   if (!scavengerEnabled && !isUserAdmin && !isUserVolunteer) {
     return <ScavengerPreview signedIn={Boolean(user)} />;
   }
@@ -60,8 +58,6 @@ export default async function ScavengerPage() {
   const showDashboard =
     user && (scavengerEnabled || isUserAdmin || isUserVolunteer);
 
-  // Signed out with the hunt open: the same public page as while it is
-  // closed, with a sign-in in place of the ticket link.
   if (!showDashboard) {
     return <ScavengerPreview signedIn={false} huntOpen />;
   }

@@ -4,9 +4,6 @@ import V2Nav from "@/app/components/v2/Nav/V2Nav";
 import V2Scene from "@/app/components/v2/Scene/V2Scene";
 import V2Scrollbar from "@/app/components/v2/Scrollbar/V2Scrollbar";
 import V2SponsorsHero from "@/app/components/v2/Sponsors/V2SponsorsHero";
-// Placeholder until sponsors are announced: the hero alone says so. The
-// honeycomb, why-sponsor and tiers sections carry invented logos and tiers,
-// so they stay out until there is real content. Restore with the JSX below.
 // import V2SponsorHexes from "@/app/components/v2/Sponsors/V2SponsorHexes";
 // import V2SponsorWhy from "@/app/components/v2/Sponsors/V2SponsorWhy";
 // import V2SponsorTiers from "@/app/components/v2/Sponsors/V2SponsorTiers";

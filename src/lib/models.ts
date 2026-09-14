@@ -67,8 +67,6 @@ const userSchema = new Schema(
         {
           currentStep: {
             type: String,
-            // "demographics" and "avatar" are the retired steps, still listed so
-            // records saved under them keep validating.
             enum: ["profile", "interests", "purchase", "completed", "demographics", "avatar"],
             default: "profile",
           },
@@ -312,12 +310,6 @@ const demographicInfoSchema = new Schema(
       index: true,
     },
 
-    // The profile saves one section at a time, so a delegate who leaves
-    // halfway keeps everything up to their last Continue. Each timestamp is
-    // set by /api/demographics when that section saves, and wizard progress
-    // is derived from these, never from a client flag. Validation lives in
-    // that route, per section, because most fields only apply to some
-    // attendee types; nothing here is required beyond the user.
     sections: {
       basics: { type: Date, default: null },
       background: { type: Date, default: null },
@@ -326,7 +318,6 @@ const demographicInfoSchema = new Schema(
       links: { type: Date, default: null },
     },
 
-    // Basics
     firstName: text(),
     lastName: text(),
     primaryEmail: text(),
@@ -336,7 +327,6 @@ const demographicInfoSchema = new Schema(
     attendeeType: text(),
     attendeeTypeOther: text(),
 
-    // Education (students, recent graduates; school also for educators)
     school: text(),
     schoolOther: text(),
     campus: text(),
@@ -349,17 +339,14 @@ const demographicInfoSchema = new Schema(
     expectedGraduation: text(),
     internships: text(),
 
-    // Professional background
     currentRole: text(),
     currentRoleOther: text(),
     experience: text(),
 
-    // Where they travel from, asked with the profile
     travelCountry: text(),
     travelRegion: text(),
     travelCity: text(),
 
-    // Goals and career interests
     attendReasons: list(),
     attendReasonsOther: text(),
     successMeasures: list(),
@@ -371,7 +358,6 @@ const demographicInfoSchema = new Schema(
     workLocations: list(),
     workArrangement: text(),
 
-    // Getting there, community and discovery
     transport: text(),
     transportOther: text(),
     delegation: text(),
@@ -391,17 +377,12 @@ const demographicInfoSchema = new Schema(
     communityInvolvementOther: text(),
     communityProject: text(),
 
-    // Optional, after purchase
     linkedinUrl: text(),
     githubUrl: text(),
     portfolioUrl: text(),
-    // Only an explicit yes counts. Recorded with a timestamp because it is
-    // what permits sharing this profile with sponsors.
     sponsorConsent: { type: Boolean, default: false },
     sponsorConsentAt: { type: Date, default: null },
 
-    // Résumé: the file itself is in Cloudinary as a private raw upload (see
-    // src/lib/resumeStorage.ts); only where it is and what to call it live here.
     resumePublicId: text(),
     resumeFileName: text(),
     resumeSize: { type: Number, default: 0 },

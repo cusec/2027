@@ -392,6 +392,11 @@
     color: #E8EEF4;
 }
 
+.v2-cam__browse svg {
+    width: 70%;
+    height: 70%;
+}
+
 .v2-cam__browse button:hover {
     background: var(--v2-lime);
     color: var(--v2-ink);
@@ -646,6 +651,47 @@
 }
 
 @media (max-width: 620px) {
+    .v2-cam {
+        grid-template-rows: 10% 1fr auto;
+    }
+
+    .v2-cam__strip {
+        gap: 6px;
+        padding-top: 8px;
+    }
+
+    .v2-cam__thumb {
+        flex: 1 1 0;
+        min-width: 0;
+        width: auto;
+        height: auto;
+        aspect-ratio: 8.27 / 5;
+    }
+
+    .v2-cam__thumb.is-active {
+        border-width: 2px;
+    }
+
+    .v2-cam__browse {
+        gap: 6px;
+        margin-left: 4px;
+    }
+
+    .v2-cam__browse > span {
+        display: none;
+    }
+
+    .v2-cam__browse button {
+        width: 32px;
+        height: 32px;
+        border-radius: 8px;
+    }
+
+    .v2-cam__browse svg {
+        width: 18px;
+        height: 18px;
+    }
+
     .v2-sd {
         width: 128px;
         height: 154px;
