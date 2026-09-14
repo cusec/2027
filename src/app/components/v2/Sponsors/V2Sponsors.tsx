@@ -1,5 +1,4 @@
 import { useTranslations } from "next-intl";
-import { Hexagon } from "lucide-react";
 import V2SponsorHexes from "./V2SponsorHexes";
 
 /** Landing-page teaser. The full story lives on /sponsors. */
@@ -11,7 +10,6 @@ export default function V2Sponsors() {
 			<div className="v2-container">
 				<div className="v2-sponsors__head">
 					<h2 className="v2-heading-pill">
-						<Hexagon size={18} aria-hidden="true" />
 						{t("heading")}
 					</h2>
 				</div>

@@ -10,12 +10,11 @@
             "conference": "Conference",
             "hunt": "Scavenger Hunt",
             "team": "Team",
-            "cta": "Tickets"
+            "cta": "Get tickets"
         },
         "hero": {
-            "edition": "26th edition · January 8–10, 2027 · Montréal",
             "tagline": "Canada's longest-running student software engineering conference.",
-            "cta-primary": "Get your ticket",
+            "cta-primary": "Get tickets",
             "cta-secondary": "Explore CUSEC"
         },
         "sky": {
@@ -66,7 +65,7 @@
             "who-title": "Everyone from first-years to new grads.",
             "who-body": "Students at every stage of their journey come to learn and grow. Many attend with a school delegation led by a Head Delegate, who coordinates funding and school logistics; others come independently. No delegation at your school? Come solo, or start one and represent your organization.",
             "who-link": "Become a Head Delegate",
-            "stats-cta": "Get your ticket",
+            "stats-cta": "Get tickets",
             "know-eyebrow": "Good to know",
             "know-1": "January 7-9, 2027 in Montréal.",
             "know-2": "The venue, schedule, and speakers are announced as they are confirmed.",
@@ -123,11 +122,11 @@
             "vip-perk-2": "Access to Daily VIP Speaker “Meet & Greet”",
             "vip-perk-3": "Professional Headshot",
             "vip-perk-4": "VIP custom keychains (*or similar item depending on quantities available)",
-            "cta": "Get your ticket",
+            "cta": "Get tickets",
             "note": "One ticket per delegate, bought with your own CUSEC account"
         },
         "sponsors": {
-            "heading": "Built with our sponsors",
+            "heading": "Sponsors",
             "become": "become a sponsor",
             "tier-platinum": "platinum logo",
             "tier-gold": "gold logo",
@@ -168,7 +167,7 @@
         },
         "closing": {
             "heading": "See you in Montréal.",
-            "cta": "Get your ticket"
+            "cta": "Get tickets"
         },
         "footer": {
             "about": "About",
@@ -189,7 +188,7 @@
         "speakers": {
             "meta-title": "Speakers",
             "badge": "Speakers · revealed through the fall",
-            "heading": "Meet the people behind the work.",
+            "heading": "The Speakers",
             "subline": "We will reveal the 2027 lineup as speakers are confirmed - keynotes first, then the full program.",
             "keynote-eyebrow": "Opening keynote · to be announced",
             "keynote-title": "The first name drops this fall.",
@@ -212,7 +211,8 @@
             "pitch-body": "We reserve stage time for students and first-time speakers every single year.",
             "pitch-cta": "Pitch a talk",
             "pitch-secondary": "Nominate a speaker",
-            "keynote-announced-eyebrow": "Keynote · announced"
+            "keynote-announced-eyebrow": "Keynote · announced",
+            "coming-soon": "Coming soon...."
         }
     },
     "TicketsPage": {

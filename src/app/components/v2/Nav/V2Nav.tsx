@@ -6,11 +6,11 @@ import { Link, usePathname } from "@/i18n/navigation";
 import V2LocaleSwitcher from "./V2LocaleSwitcher";
 
 const LINKS = [
-	{ key: "about", href: "/#about" },
+	// { key: "about", href: "/#about" },
 	{ key: "speakers", href: "/speakers" },
 	{ key: "sponsors", href: "/sponsors" },
-	{ key: "conference", href: "/#conference" },
-	{ key: "hunt", href: "/scavenger" },
+	// { key: "conference", href: "/#conference" },
+	// { key: "hunt", href: "/scavenger" },
 	// Hidden for the first v2 release: landing, speakers, sponsors and
 	// policy & terms only. Restore once the team section exists.
 	// { key: "team", href: "/#team" },

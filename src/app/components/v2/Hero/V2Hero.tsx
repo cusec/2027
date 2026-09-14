@@ -20,8 +20,6 @@ export default function V2Hero() {
 					/>
 				</span>
 
-				<p className="v2-hero__pill v2-pixel">{t("edition")}</p>
-
 				<V2Wordmark text="CUSEC 2027" />
 
 				<p className="v2-hero__tagline">{t("tagline")}</p>

@@ -185,7 +185,7 @@ export default async function ScavengerPreview({
           ) : (
             <Link href="/tickets" className="aero-btn">
               <Ticket aria-hidden="true" />
-              Get your ticket
+              Get tickets
             </Link>
           )}
           <a href="#faq" className="aero-btn aero-btn--glass">

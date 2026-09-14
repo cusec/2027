@@ -10,12 +10,11 @@
             "conference": "Conférence",
             "hunt": "Chasse au trésor",
             "team": "Équipe",
-            "cta": "Billets"
+            "cta": "Obtenir des billets"
         },
         "hero": {
-            "edition": "26e édition · 8–10 janvier 2027 · Montréal",
             "tagline": "La plus ancienne conférence étudiante canadienne en génie logiciel.",
-            "cta-primary": "Obtenir mon billet",
+            "cta-primary": "Obtenir des billets",
             "cta-secondary": "Découvrir CUSEC"
         },
         "sky": {
@@ -66,7 +65,7 @@
             "who-title": "Des étudiants de première année aux nouveaux diplômés.",
             "who-body": "Les étudiants à toutes les étapes de leur parcours viennent apprendre et progresser. Plusieurs participent avec une délégation menée par un chef de délégation, qui coordonne le financement et la logistique scolaire; d’autres viennent de façon indépendante. Votre école n’a pas de délégation? Venez seul ou lancez-en une pour représenter votre organisation.",
             "who-link": "Devenir chef de délégation",
-            "stats-cta": "Obtenir votre billet",
+            "stats-cta": "Obtenir des billets",
             "know-eyebrow": "Bon à savoir",
             "know-1": "Du 7 au 9 janvier 2027 à Montréal - trois jours ensemble.",
             "know-2": "Le lieu, l’horaire et les conférenciers seront annoncés au fur et à mesure des confirmations.",
@@ -123,11 +122,11 @@
             "vip-perk-2": "Accès à la rencontre quotidienne « Meet & Greet » VIP avec les conférenciers",
             "vip-perk-3": "Photo professionnelle",
             "vip-perk-4": "Porte-clés VIP personnalisés (*ou article similaire selon les quantités disponibles)",
-            "cta": "Obtenir mon billet",
+            "cta": "Obtenir des billets",
             "note": "Un billet par délégué, acheté avec votre propre compte CUSEC"
         },
         "sponsors": {
-            "heading": "Bâti avec nos commanditaires",
+            "heading": "Commanditaires",
             "become": "devenir commanditaire",
             "tier-platinum": "logo platine",
             "tier-gold": "logo or",
@@ -168,7 +167,7 @@
         },
         "closing": {
             "heading": "À bientôt à Montréal.",
-            "cta": "Obtenir mon billet"
+            "cta": "Obtenir des billets"
         },
         "footer": {
             "about": "À propos",
@@ -189,7 +188,7 @@
         "speakers": {
             "meta-title": "Conférenciers",
             "badge": "Conférenciers · dévoilés au fil de l’automne",
-            "heading": "Rencontrez les personnes derrière le travail.",
+            "heading": "Les conférenciers",
             "subline": "La programmation 2027 sera dévoilée à mesure que les conférenciers seront confirmés - les conférences d’ouverture d’abord, puis le programme complet.",
             "keynote-eyebrow": "Conférence d’ouverture · à annoncer",
             "keynote-title": "Le premier nom sera dévoilé cet automne.",
@@ -212,7 +211,8 @@
             "pitch-body": "Nous réservons du temps de scène aux étudiants et aux nouveaux conférenciers chaque année.",
             "pitch-cta": "Proposer une conférence",
             "pitch-secondary": "Proposer quelqu’un",
-            "keynote-announced-eyebrow": "Conférence d’ouverture · annoncée"
+            "keynote-announced-eyebrow": "Conférence d’ouverture · annoncée",
+            "coming-soon": "À venir...."
         }
     },
     "TicketsPage": {

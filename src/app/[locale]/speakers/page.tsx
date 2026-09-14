@@ -4,8 +4,9 @@ import V2Nav from "@/app/components/v2/Nav/V2Nav";
 import V2Scene from "@/app/components/v2/Scene/V2Scene";
 import V2Scrollbar from "@/app/components/v2/Scrollbar/V2Scrollbar";
 import V2SpeakersHero from "@/app/components/v2/Speakers/V2SpeakersHero";
-import V2Keynote from "@/app/components/v2/Speakers/V2Keynote";
-import V2SpeakerGrid from "@/app/components/v2/Speakers/V2SpeakerGrid";
+// import V2Keynote from "@/app/components/v2/Speakers/V2Keynote";
+// import V2SpeakerGrid from "@/app/components/v2/Speakers/V2SpeakerGrid";
+import V2SpeakersSoon from "@/app/components/v2/Speakers/V2SpeakersSoon";
 import V2SpeakerPitch from "@/app/components/v2/Speakers/V2SpeakerPitch";
 import V2Footer from "@/app/components/v2/Footer/V2Footer";
 
@@ -29,8 +30,9 @@ export default function SpeakersPage() {
 			<V2Scrollbar />
 			<V2Scene>
 				<V2SpeakersHero />
-				<V2Keynote />
-				<V2SpeakerGrid />
+				{/* <V2Keynote />
+				<V2SpeakerGrid /> */}
+				<V2SpeakersSoon />
 				<V2SpeakerPitch />
 			</V2Scene>
 			<V2Footer />
