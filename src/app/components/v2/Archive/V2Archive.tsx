@@ -1,10 +1,25 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useTranslations } from "next-intl";
 import { ChevronLeft, ChevronRight, Camera } from "lucide-react";
 import { EDITIONS } from "./archiveData";
 import V2SdCard from "./V2SdCard";
+
+const warmed = new Set<string>();
+
+/** Fetch and decode a card's photos ahead of time so a swap shows them at once. */
+function preload(yearIndex: number) {
+	for (const p of EDITIONS[yearIndex]?.photos ?? []) {
+		for (const src of [p.thumb, p.src]) {
+			if (warmed.has(src)) continue;
+			warmed.add(src);
+			const img = new Image();
+			img.src = src;
+			img.decode().catch(() => {});
+		}
+	}
+}
 
 export default function V2Archive() {
 	const t = useTranslations("V2.archive");
@@ -12,9 +27,31 @@ export default function V2Archive() {
 	const [shotIndex, setShotIndex] = useState(0);
 	// drives the insert/eject animation and the LCD glitch
 	const [swapping, setSwapping] = useState(false);
+	const sectionRef = useRef<HTMLElement>(null);
 
 	const edition = EDITIONS[yearIndex];
 	const photo = edition.photos[shotIndex];
+
+	// Warm every card once the camera is close to the viewport, not on page load.
+	useEffect(() => {
+		const el = sectionRef.current;
+		const warmAll = () => EDITIONS.forEach((_, i) => preload(i));
+		if (!el || typeof IntersectionObserver === "undefined") {
+			warmAll();
+			return;
+		}
+		const io = new IntersectionObserver(
+			(entries) => {
+				if (entries.some((e) => e.isIntersecting)) {
+					io.disconnect();
+					warmAll();
+				}
+			},
+			{ rootMargin: "800px 0px" },
+		);
+		io.observe(el);
+		return () => io.disconnect();
+	}, []);
 
 	function loadCard(index: number) {
 		if (index === yearIndex) return;
@@ -34,7 +71,7 @@ export default function V2Archive() {
 	}
 
 	return (
-		<section className="v2-section v2-archive v2-reveal" id="archive">
+		<section ref={sectionRef} className="v2-section v2-archive v2-reveal" id="archive">
 			<div className="v2-container">
 				<div className="v2-archive__head">
 					<h2 className="v2-heading-pill">
@@ -125,7 +162,7 @@ export default function V2Archive() {
 									onClick={() => setShotIndex(i)}
 									aria-current={i === shotIndex}
 								>
-									<img src={p.src} alt="" aria-hidden="true" />
+									<img src={p.thumb} alt="" aria-hidden="true" decoding="async" />
 									<span className="v2-sr">{p.caption}</span>
 								</button>
 							))}
@@ -164,6 +201,9 @@ export default function V2Archive() {
 												i < yearIndex ? i : i - 1
 											}`
 								}
+								// backstop in case the viewport warm-up hasn't run yet
+								onPointerEnter={() => preload(i)}
+								onFocus={() => preload(i)}
 							>
 								<V2SdCard
 									edition={e}

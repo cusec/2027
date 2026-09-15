@@ -3,7 +3,7 @@ import { Country, State } from "country-state-city";
 import { auth0 } from "@/lib/auth0";
 import connectMongoDB from "@/lib/mongodb";
 import { User, DemographicInfo } from "@/lib/models";
-import { INSTITUTIONS, findInstitution } from "@/lib/institutions";
+import { DELEGATION_SCHOOLS, findInstitution } from "@/lib/institutions";
 import {
   ATTEND_REASON_OPTIONS,
   ATTENDED_OPTIONS,
@@ -221,7 +221,7 @@ function travel(answers: Answers): Update {
       !delegationSchool ||
       delegationSchool === OTHER ||
       delegationSchool === INDEPENDENT_DELEGATION ||
-      INSTITUTIONS.some((i) => i.value === delegationSchool);
+      DELEGATION_SCHOOLS.includes(delegationSchool);
     if (!known) throw new InvalidAnswer("delegationSchool");
     if (delegationSchool === OTHER) delegationOther = text(answers, "delegationOther", true);
   }

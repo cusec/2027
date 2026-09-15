@@ -1,5 +1,7 @@
 export type ArchivePhoto = {
 	src: string;
+	/** 480px copy for the strip, so a card swap never pulls four full photos. */
+	thumb: string;
 	caption: string;
 	stamp?: string;
 };
@@ -12,8 +14,12 @@ export type ArchiveEdition = {
 	photos: ArchivePhoto[];
 };
 
+// Keep new photos at 1800px on the long edge (webp q80) and add a 480px copy
+// under thumbs/. Camera originals (6000px, 15 MB) made the older cards sit
+// grey for seconds before anything showed.
 const photo = (year: number, file: string, caption: string): ArchivePhoto => ({
 	src: `/assets/v2/photos/archive/${year}/${year}-${file}.webp`,
+	thumb: `/assets/v2/photos/archive/${year}/thumbs/${year}-${file}.webp`,
 	caption,
 });
 
