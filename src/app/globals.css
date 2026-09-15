@@ -32,10 +32,16 @@
   --cursor-hand: url("/assets/pointer-win95.webp") 7 1, pointer;
 }
 
+/* iOS rubber-bands past the end of the page and paints the canvas there. With
+   no html background that was the body's white, a blank screen under the
+   footer. The canvas takes the footer's colour, and the bounce is switched off
+   where the browser allows it. */
 html {
   -webkit-text-size-adjust: 100%;
   text-size-adjust: 100%;
   cursor: var(--cursor-arrow);
+  background-color: #173B3D;
+  overscroll-behavior-y: none;
 }
 
 /* Win95 cursors everywhere. Unlayered, so these beat Tailwind's cursor utilities. */
