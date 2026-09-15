@@ -1,0 +1,565 @@
+import mongoose, { Schema } from "mongoose";
+
+const userSchema = new Schema(
+  {
+    email: { type: String, required: true, unique: true },
+    name: { type: String, default: "Display Name" },
+    linked_email: { type: String, required: false, unique: true, sparse: true },
+    active: { type: Boolean, default: true },
+    discord_handle: { type: String, default: null },
+    points: { type: Number, default: 0 },
+    claimedItems: {
+      type: [
+        {
+          type: Schema.Types.ObjectId,
+          ref: "HuntItem",
+        },
+      ],
+      default: [],
+    },
+    collectibles: {
+      type: [
+        {
+          collectibleId: {
+            type: Schema.Types.ObjectId,
+            ref: "Collectible",
+          },
+          used: {
+            type: Boolean,
+            default: false,
+          },
+          addedAt: {
+            type: Date,
+            default: Date.now,
+          },
+        },
+      ],
+      default: [],
+    },
+    shopPrizes: {
+      type: [
+        {
+          type: Schema.Types.ObjectId,
+          ref: "ShopItem",
+        },
+      ],
+      default: [],
+    },
+    claim_attempts: {
+      type: [
+        {
+          identifier: String,
+          success: Boolean,
+          timestamp: { type: Date, default: Date.now },
+          item_id: {
+            type: Schema.Types.ObjectId,
+            ref: "HuntItem",
+            required: false,
+          },
+        },
+      ],
+      default: [],
+    },
+    hasSeenIntro: { type: Boolean, default: false },
+    personalityType: { type: String, default: null },
+    ticketWizard: {
+      type: new Schema(
+        {
+          currentStep: {
+            type: String,
+            enum: ["profile", "interests", "purchase", "completed", "demographics", "avatar"],
+            default: "profile",
+          },
+          avatarCompletedAt: { type: Date, default: null },
+          // Best-effort, set from the order.created webhook's line_items -
+          // used only to show which ticket the user has on the purchase
+          // confirmation screen, not for any access-control decision.
+          purchasedTicketTypeId: { type: String, default: null },
+          purchasedTicketName: { type: String, default: null },
+        },
+        { _id: false }
+      ),
+      default: () => ({}),
+    },
+  },
+  {
+    timestamps: true,
+  },
+);
+
+const huntItemSchema = new Schema(
+  {
+    name: String,
+    description: String,
+    // Indexed and unique: every QR scan looks an item up by this field, so at
+    // the conference it is the single hottest query in the app. Without an
+    // index each scan is a full collection scan, and they all arrive at once.
+    // Deliberately not unique. Uniqueness is already enforced when an item is
+    // created, and a unique index that fails to build over legacy duplicates
+    // would leave us with no index at all, which is the thing we are fixing.
+    identifier: { type: String, index: true },
+    points: { type: Number, default: 0 },
+    maxClaims: { type: Number, default: null },
+    claimCount: { type: Number, default: 0 },
+    active: { type: Boolean, default: true },
+    activationStart: { type: Date, default: null },
+    activationEnd: { type: Date, default: null },
+    collectibles: {
+      type: [
+        {
+          type: Schema.Types.ObjectId,
+          ref: "Collectible",
+        },
+      ],
+      default: [],
+    },
+    createdBy: {
+      type: Schema.Types.ObjectId,
+      ref: "User",
+    },
+    qrCodes: {
+      type: new Schema(
+        {
+          localhost: { type: String, default: null },
+          production: { type: String, default: null },
+          staging: { type: String, default: null },
+        },
+        { _id: false },
+      ),
+      default: () => ({}),
+    },
+  },
+  {
+    timestamps: true,
+  },
+);
+
+const adminAuditLogSchema = new Schema(
+  {
+    adminEmail: {
+      type: String,
+      required: true,
+      index: true,
+    },
+    targetUserEmail: {
+      type: String,
+      required: false,
+      index: true,
+    },
+    action: {
+      type: String,
+      required: true,
+      index: true,
+    },
+    resourceType: {
+      type: String,
+      required: true,
+      enum: [
+        "user",
+        "huntItem",
+        "claimAttempts",
+        "scheduleItem",
+        "shopItem",
+        "collectible",
+        "challenge",
+        "submission",
+        "team",
+        "demographics",
+      ],
+      index: true,
+    },
+    resourceId: {
+      type: String,
+      required: false,
+    },
+    details: {
+      type: Schema.Types.Mixed,
+      required: false,
+    },
+    previousData: {
+      type: Schema.Types.Mixed,
+      required: false,
+    },
+    newData: {
+      type: Schema.Types.Mixed,
+      required: false,
+    },
+    ipAddress: {
+      type: String,
+      required: false,
+    },
+    userAgent: {
+      type: String,
+      required: false,
+    },
+  },
+  {
+    timestamps: true,
+  },
+);
+
+// Add indexes for better query performance
+adminAuditLogSchema.index({ createdAt: -1 });
+adminAuditLogSchema.index({ adminEmail: 1, createdAt: -1 });
+adminAuditLogSchema.index({ targetUserEmail: 1, createdAt: -1 });
+adminAuditLogSchema.index({ action: 1, createdAt: -1 });
+
+// Day & ScheduleItem models
+
+const ScheduleItemSchema = new Schema({
+  startTime: { type: String, required: true },
+  endTime: { type: String, required: true },
+  title: { type: String, required: true },
+  location: { type: String },
+  description: { type: String },
+  detailedDescription: { type: String },
+  track: { type: String, enum: ["A", "B", "C", "AB", "BC"], required: true },
+  color: {
+    type: String,
+    enum: ["primary", "secondary", "accent", "sunset", "sea", "white"],
+    default: "primary",
+  },
+});
+
+const DaySchema = new Schema({
+  day: { type: String, required: true },
+  date: { type: String, required: true },
+  timestamp: { type: Number, required: true }, // Format: YYYYMMDD (e.g., 20260101)
+  schedule: { type: [ScheduleItemSchema], required: true },
+});
+
+const shopItemSchema = new Schema(
+  {
+    name: { type: String, required: true, unique: true },
+    description: { type: String, required: true },
+    cost: { type: Number, required: true, default: 0 },
+    discountedCost: { type: Number, default: null },
+    limited: { type: Boolean, default: false },
+    remaining: { type: Number, default: 0 },
+    active: { type: Boolean, default: true },
+    activationStart: { type: Date, default: null },
+    activationEnd: { type: Date, default: null },
+    imageData: { type: String, default: null }, // Base64 encoded image data (optional)
+    imageContentType: { type: String, default: null }, // MIME type (optional)
+    claimCount: { type: Number, default: 0 },
+  },
+  {
+    timestamps: true,
+  },
+);
+
+const noticeSchema = new Schema(
+  {
+    title: { type: String, required: true },
+    description: { type: String, required: true },
+  },
+  {
+    timestamps: true,
+  },
+);
+
+const collectibleSchema = new Schema(
+  {
+    name: { type: String, required: true, unique: true },
+    description: { type: String, default: "" },
+    cost: { type: Number, default: 0 },
+    discountedCost: { type: Number, default: null },
+    purchasable: { type: Boolean, default: false },
+    limited: { type: Boolean, default: false },
+    remaining: { type: Number, default: 0 },
+    active: { type: Boolean, default: true },
+    activationStart: { type: Date, default: null },
+    activationEnd: { type: Date, default: null },
+    imageData: { type: String, default: null }, // Base64 encoded image data (optional)
+    imageContentType: { type: String, default: null }, // MIME type (optional)
+    claimCount: { type: Number, default: 0 },
+  },
+  {
+    timestamps: true,
+  },
+);
+
+const registeredUserSchema = new Schema(
+  {
+    name: { type: String, required: true },
+    linkedEmail: { type: String, required: true, unique: true },
+    studentEmail: { type: String, required: false },
+    personalEmail: { type: String, required: false },
+    isLinked: { type: Boolean, default: false },
+  },
+  {
+    timestamps: false,
+  },
+);
+
+// Confidential ticket-purchase-wizard survey answers. Kept in its own
+// collection (rather than embedded on User) so access can be scoped and
+// audited separately from hunt gameplay data.
+// Plain factories rather than one shared literal, so no two paths ever share
+// a default array.
+const text = () => ({ type: String, default: "" });
+const list = () => ({ type: [String], default: [] });
+
+const demographicInfoSchema = new Schema(
+  {
+    user: {
+      type: Schema.Types.ObjectId,
+      ref: "User",
+      required: true,
+      unique: true,
+      index: true,
+    },
+
+    sections: {
+      basics: { type: Date, default: null },
+      background: { type: Date, default: null },
+      goals: { type: Date, default: null },
+      travel: { type: Date, default: null },
+      experience: { type: Date, default: null },
+      links: { type: Date, default: null },
+    },
+
+    firstName: text(),
+    lastName: text(),
+    primaryEmail: text(),
+    secondaryEmail: text(),
+    pronoun: text(),
+    pronounOther: text(),
+    attendeeType: text(),
+    attendeeTypeOther: text(),
+
+    school: text(),
+    schoolOther: text(),
+    campus: text(),
+    fieldOfStudy: text(),
+    fieldOfStudyOther: text(),
+    credential: text(),
+    credentialOther: text(),
+    studyLevel: text(),
+    studyLevelOther: text(),
+    expectedGraduation: text(),
+    internships: text(),
+
+    currentRole: text(),
+    currentRoleOther: text(),
+    experience: text(),
+
+    travelCountry: text(),
+    travelRegion: text(),
+    travelCity: text(),
+
+    attendReasons: list(),
+    attendReasonsOther: text(),
+    successMeasures: list(),
+    successMeasuresOther: text(),
+    opportunities: list(),
+    opportunitiesOther: text(),
+    techAreas: list(),
+    techAreasOther: text(),
+    workLocations: list(),
+    workArrangement: text(),
+
+    transport: text(),
+    transportOther: text(),
+    delegation: text(),
+    delegationSchool: text(),
+    delegationOther: text(),
+    connectWithSchool: text(),
+    travelFunding: text(),
+    accommodation: text(),
+    heardFrom: text(),
+    heardFromOther: text(),
+    convincedBy: text(),
+    convincedByOther: text(),
+    attended: list(),
+    sessionFormats: list(),
+    sessionFormatsOther: text(),
+    communityInvolvement: list(),
+    communityInvolvementOther: text(),
+    communityProject: text(),
+
+    linkedinUrl: text(),
+    githubUrl: text(),
+    portfolioUrl: text(),
+    sponsorConsent: { type: Boolean, default: false },
+    sponsorConsentAt: { type: Date, default: null },
+
+    resumePublicId: text(),
+    resumeFileName: text(),
+    resumeSize: { type: Number, default: 0 },
+    resumeUploadedAt: { type: Date, default: null },
+  },
+  {
+    timestamps: true,
+  }
+);
+
+// Challenge & Submission models
+//
+// Events host their own challenges (see TECHxEVENTS.txt) - tech's only job is
+// to let delegates submit a link against one. The activation-window fields
+// mirror huntItemSchema so the admin form and active/inactive logic behave
+// identically to hunt items.
+
+const challengeSchema = new Schema(
+  {
+    title: { type: String, required: true },
+    description: { type: String, default: "" },
+    eventName: { type: String, default: "" },
+    // "group" challenges (Dev's Den) are submitted once per team rather than
+    // once per delegate; everything else about them behaves identically.
+    mode: {
+      type: String,
+      enum: ["individual", "group"],
+      default: "individual",
+      index: true,
+    },
+    // Awarded to the delegate when an admin approves their submission.
+    points: { type: Number, default: 0 },
+    active: { type: Boolean, default: true },
+    activationStart: { type: Date, default: null },
+    activationEnd: { type: Date, default: null },
+    // null = unlimited
+    maxSubmissions: { type: Number, default: null },
+    submissionCount: { type: Number, default: 0 },
+    createdBy: {
+      type: Schema.Types.ObjectId,
+      ref: "User",
+    },
+  },
+  {
+    timestamps: true,
+  },
+);
+
+// A team is a real-world unit, not a per-challenge one: you form it once and
+// it can submit to any group challenge. Membership is the source of truth -
+// there is no separate "leader" role, since any member submitting produces the
+// single entry the team is allowed.
+const teamSchema = new Schema(
+  {
+    // Teams are scoped to a challenge: the same people can pair up differently
+    // for each group challenge, and a name is only reserved within its own.
+    challengeId: {
+      type: Schema.Types.ObjectId,
+      ref: "Challenge",
+      required: true,
+      index: true,
+    },
+    name: { type: String, required: true, trim: true },
+    members: {
+      type: [{ type: Schema.Types.ObjectId, ref: "User" }],
+      default: [],
+    },
+    createdBy: { type: Schema.Types.ObjectId, ref: "User" },
+    // Lets a team stay findable without browsing the whole list.
+    joinCode: { type: String, required: true, unique: true, index: true },
+  },
+  {
+    timestamps: true,
+  },
+);
+
+// One team name per challenge, case-insensitively.
+teamSchema.index(
+  { challengeId: 1, name: 1 },
+  { unique: true, collation: { locale: "en", strength: 2 } },
+);
+
+const submissionSchema = new Schema(
+  {
+    challengeId: {
+      type: Schema.Types.ObjectId,
+      ref: "Challenge",
+      required: true,
+      index: true,
+    },
+    userId: {
+      type: Schema.Types.ObjectId,
+      ref: "User",
+      required: true,
+      index: true,
+    },
+    userEmail: { type: String, required: true, index: true },
+    // Set only on group submissions; identifies which team the entry belongs
+    // to, so every member sees it rather than just whoever posted it.
+    teamId: {
+      type: Schema.Types.ObjectId,
+      ref: "Team",
+      default: null,
+      index: true,
+    },
+    url: { type: String, required: true },
+    notes: { type: String, default: "", maxlength: 2000 },
+    status: {
+      type: String,
+      enum: ["pending", "approved", "rejected"],
+      default: "pending",
+      index: true,
+    },
+    // How many points this submission actually granted on approval. Kept even
+    // after the status is reverted, so the admin can be told the exact amount
+    // they need to claw back by hand (points are never auto-deducted).
+    pointsAwarded: { type: Number, default: 0 },
+  },
+  {
+    timestamps: true,
+  },
+);
+
+// One submission per delegate per challenge - re-submitting replaces the
+// existing entry rather than creating a duplicate.
+submissionSchema.index({ challengeId: 1, userId: 1 }, { unique: true });
+// The group equivalent. Partial so individual submissions (teamId null) are
+// left out entirely rather than colliding with each other on null.
+submissionSchema.index(
+  { challengeId: 1, teamId: 1 },
+  {
+    unique: true,
+    partialFilterExpression: { teamId: { $type: "objectId" } },
+  },
+);
+submissionSchema.index({ createdAt: -1 });
+
+const Day = mongoose.models.Day || mongoose.model("Day", DaySchema);
+
+const User = mongoose.models.User || mongoose.model("User", userSchema);
+const HuntItem =
+  mongoose.models.HuntItem || mongoose.model("HuntItem", huntItemSchema);
+const AdminAuditLog =
+  mongoose.models.AdminAuditLog ||
+  mongoose.model("AdminAuditLog", adminAuditLogSchema);
+const ShopItem =
+  mongoose.models.ShopItem || mongoose.model("ShopItem", shopItemSchema);
+const Notice = mongoose.models.Notice || mongoose.model("Notice", noticeSchema);
+const Collectible =
+  mongoose.models.Collectible ||
+  mongoose.model("Collectible", collectibleSchema);
+
+const RegisteredUser =
+  mongoose.models.RegisteredUser ||
+  mongoose.model("RegisteredUser", registeredUserSchema);
+
+const DemographicInfo =
+  mongoose.models.DemographicInfo ||
+  mongoose.model("DemographicInfo", demographicInfoSchema);
+const Team = mongoose.models.Team || mongoose.model("Team", teamSchema);
+const Challenge =
+  mongoose.models.Challenge || mongoose.model("Challenge", challengeSchema);
+const Submission =
+  mongoose.models.Submission || mongoose.model("Submission", submissionSchema);
+
+export {
+  User,
+  HuntItem,
+  AdminAuditLog,
+  Day,
+  ShopItem,
+  Notice,
+  Collectible,
+  RegisteredUser,
+  DemographicInfo,
+  Challenge,
+  Submission,
+  Team,
+};

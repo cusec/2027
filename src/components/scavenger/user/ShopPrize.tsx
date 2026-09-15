@@ -1,0 +1,442 @@
+"use client";
+
+import { useState } from "react";
+import { ShopItem } from "@/lib/interface";
+import { resolveImageSrc } from "@/lib/imageSrc";
+import Modal from "@/components/ui/modal";
+import { Search, User, X, Loader2 } from "lucide-react";
+import { invalidateInventory } from "./inventoryCache";
+
+interface ShopPrizeProps {
+  item: ShopItem;
+  isVolunteerOrAdmin: boolean;
+  onRedeemSuccess?: () => void;
+}
+
+interface SearchUser {
+  _id: string;
+  email: string;
+  name: string;
+  linked_email: string | undefined;
+  discord_handle: string | null;
+  points: number;
+}
+
+// Helper function to get image source from shop item
+const getImageSrc = (item: ShopItem): string | null =>
+  resolveImageSrc(item.imageData, item.imageContentType);
+
+const ShopPrize = ({
+  item,
+  isVolunteerOrAdmin,
+  onRedeemSuccess,
+}: ShopPrizeProps) => {
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isRedeemModalOpen, setIsRedeemModalOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [searchResults, setSearchResults] = useState<SearchUser[]>([]);
+  const [selectedUser, setSelectedUser] = useState<SearchUser | null>(null);
+  const [isSearching, setIsSearching] = useState(false);
+  const [isRedeeming, setIsRedeeming] = useState(false);
+  const [redeemError, setRedeemError] = useState<string | null>(null);
+  const [redeemSuccess, setRedeemSuccess] = useState<string | null>(null);
+
+  const openItemModal = () => {
+    setIsModalOpen(true);
+  };
+
+  const closeModal = () => {
+    setIsModalOpen(false);
+  };
+
+  const openRedeemModal = () => {
+    setIsRedeemModalOpen(true);
+    setSearchQuery("");
+    setSearchResults([]);
+    setSelectedUser(null);
+    setRedeemError(null);
+    setRedeemSuccess(null);
+  };
+
+  const closeRedeemModal = () => {
+    setIsRedeemModalOpen(false);
+    setSearchQuery("");
+    setSearchResults([]);
+    setSelectedUser(null);
+    setRedeemError(null);
+    setRedeemSuccess(null);
+  };
+
+  const handleSearch = async (query: string) => {
+    setSearchQuery(query);
+    setRedeemError(null);
+
+    if (query.length < 2) {
+      setSearchResults([]);
+      return;
+    }
+
+    setIsSearching(true);
+    try {
+      const response = await fetch(
+        `/api/shop/search-users?search=${encodeURIComponent(query)}&limit=10`
+      );
+      const data = await response.json();
+
+      if (data.success) {
+        invalidateInventory();
+        setSearchResults(data.users);
+      } else {
+        setSearchResults([]);
+      }
+    } catch (error) {
+      console.error("Error searching users:", error);
+      setSearchResults([]);
+    } finally {
+      setIsSearching(false);
+    }
+  };
+
+  const selectUser = (user: SearchUser) => {
+    setSelectedUser(user);
+    setSearchQuery("");
+    setSearchResults([]);
+    setRedeemError(null);
+  };
+
+  const clearSelectedUser = () => {
+    setSelectedUser(null);
+    setRedeemError(null);
+  };
+
+  const handleRedeem = async () => {
+    if (!selectedUser) return;
+
+    // Check if user has enough points
+    if (selectedUser.points < (item.discountedCost ?? item.cost)) {
+      setRedeemError(
+        `${selectedUser.name} doesn't have enough points. They have ${selectedUser.points} points but need ${item.cost}.`
+      );
+      return;
+    }
+
+    setIsRedeeming(true);
+    setRedeemError(null);
+
+    try {
+      const response = await fetch("/api/shop/redeem", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          shopItemId: item._id,
+          userId: selectedUser._id,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        invalidateInventory();
+        setRedeemSuccess(data.message);
+        setTimeout(() => {
+          closeRedeemModal();
+          onRedeemSuccess?.();
+        }, 2000);
+      } else {
+        setRedeemError(data.error || "Failed to redeem item");
+      }
+    } catch (error) {
+      console.error("Error redeeming item:", error);
+      setRedeemError("Failed to redeem item. Please try again.");
+    } finally {
+      setIsRedeeming(false);
+    }
+  };
+
+  const isSoldOut = item.limited && item.remaining === 0;
+
+  return (
+    <>
+      <div
+        onClick={openItemModal}
+        className="v2-card v2-glass aero-tile flex flex-col gap-2 mx-auto justify-center items-center text-center h-62 w-62"
+      >
+        {getImageSrc(item) && (
+          <div className="w-24 h-24 rounded-lg overflow-hidden">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={getImageSrc(item)!}
+              alt={item.name}
+              className="w-full h-full object-cover"
+            />
+          </div>
+        )}
+
+        <p>{item.name}</p>
+
+        <div className="flex items-center justify-center space-x-1 text-xs md:text-sm">
+          <div className="aero-tile__cost">
+            {item.discountedCost != null ? (
+              <>
+                <s>{item.cost} </s>&nbsp;
+                {`-> ${item.discountedCost}`}
+              </>
+            ) : (
+              <>{item.cost}</>
+            )}
+          </div>
+
+          {item.limited && (
+            <span className="aero-tile__left">
+              {item.remaining} left
+            </span>
+          )}
+        </div>
+      </div>
+
+      {/* Item Detail Modal */}
+      <Modal
+        isOpen={isModalOpen}
+        onClose={closeModal}
+        title={
+          item.discountedCost != null
+            ? `${item.name} (Price Updated)`
+            : item.name
+        }
+        className="max-w-md text-light-mode"
+      >
+        <div className="space-y-4">
+          {/* Large Image */}
+          {getImageSrc(item) && (
+            <div className="w-50 h-50 mx-auto rounded-lg overflow-hidden">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={getImageSrc(item)!}
+                alt={item.name}
+                className="w-full h-full object-cover"
+              />
+            </div>
+          )}
+
+          {/* Description */}
+          <p>{item.description}</p>
+
+          {/* Details */}
+          <div className="space-y-2 text-sm">
+            <div className="flex justify-between">
+              <span className="font-medium">Cost:</span>
+              <span className="font-medium">
+                {item.discountedCost != null ? (
+                  <>
+                    <s>{item.cost} </s>&nbsp;
+                    {`-> ${item.discountedCost}`}
+                  </>
+                ) : (
+                  <>{item.cost}</>
+                )}{" "}
+                points
+              </span>
+            </div>
+            {item.limited && (
+              <div className="flex justify-between">
+                <span className="font-medium">Availability:</span>
+                <span
+                  className={
+                    item.remaining > 0 ? "text-orange-300" : "text-red-300"
+                  }
+                >
+                  {item.remaining > 0
+                    ? `${item.remaining} remaining`
+                    : "Sold out"}
+                </span>
+              </div>
+            )}
+          </div>
+
+          {/* Redeem Button (only for volunteers/admins) */}
+          {isVolunteerOrAdmin && (
+            <button
+              onClick={() => {
+                closeModal();
+                openRedeemModal();
+              }}
+              disabled={isSoldOut}
+              className="aero-btn w-full disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {isSoldOut ? "Sold Out" : "Redeem for User"}
+            </button>
+          )}
+        </div>
+      </Modal>
+
+      {/* Redeem Modal (for volunteers/admins) */}
+      <Modal
+        isOpen={isRedeemModalOpen}
+        onClose={closeRedeemModal}
+        title={`Redeem: ${item.name}`}
+        className="max-w-md text-light-mode"
+      >
+        <div className="space-y-4">
+          {redeemSuccess ? (
+            <div className="text-center py-4">
+              <div className="text-green-300 font-semibold mb-2">
+                ✓ {redeemSuccess}
+              </div>
+            </div>
+          ) : (
+            <>
+              {/* Item Info */}
+              <div className="v2-modal__row flex items-center space-x-4 p-3">
+                {getImageSrc(item) && (
+                  <div className="w-12 h-12 rounded-full overflow-hidden shrink-0">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src={getImageSrc(item)!}
+                      alt={item.name}
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+                )}
+                <div>
+                  <p className="font-semibold">
+                    {item.name} (
+                    {item.discountedCost != null ? (
+                      <>
+                        <s>{item.cost} </s>&nbsp;
+                        {`-> ${item.discountedCost}`}
+                      </>
+                    ) : (
+                      <>{item.cost}</>
+                    )}{" "}
+                    points)
+                  </p>
+                </div>
+              </div>
+
+              {/* User Selection */}
+              {selectedUser ? (
+                <div className="space-y-2">
+                  <label className="block text-sm font-medium">
+                    Selected User
+                  </label>
+                  <div className="flex items-center justify-between p-3 rounded-lg border border-blue-200">
+                    <div className="flex items-center space-x-3">
+                      <User className="w-8 h-8 " />
+                      <div>
+                        <p className="font-semibold">{selectedUser.name}</p>
+                        <p className="text-sm ">{selectedUser.email}</p>
+                        {selectedUser.linked_email && (
+                          <p className="text-xs">
+                            Linked: {selectedUser.linked_email}
+                          </p>
+                        )}
+                        {selectedUser.discord_handle && (
+                          <p className="text-xs">
+                            Discord: {selectedUser.discord_handle}
+                          </p>
+                        )}
+                        <p className="text-sm font-medium">
+                          {selectedUser.points} points available
+                        </p>
+                      </div>
+                    </div>
+                    <button
+                      onClick={clearSelectedUser}
+                      className="p-1 hover:bg-blue-100 rounded-full"
+                    >
+                      <X className="w-5 h-5 " />
+                    </button>
+                  </div>
+
+                  {/* Points Check */}
+                  {selectedUser.points < (item.discountedCost ?? item.cost) && (
+                    <p className="text-red-300 text-sm">
+                      ⚠️ This user doesn&apos;t have enough points (needs{" "}
+                      {item.discountedCost ?? item.cost}, has{" "}
+                      {selectedUser.points})
+                    </p>
+                  )}
+                </div>
+              ) : (
+                <div className="space-y-2">
+                  <label className="block text-sm font-medium">
+                    Search for User
+                  </label>
+                  <div className="relative">
+                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4" />
+                    <input
+                      type="text"
+                      value={searchQuery}
+                      onChange={(e) => handleSearch(e.target.value)}
+                      placeholder="Search by name, email, linked email, or discord..."
+                      className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg"
+                    />
+                    {isSearching && (
+                      <Loader2 className="absolute right-3 top-1/2 transform -translate-y-1/2 w-4 h-4 animate-spin" />
+                    )}
+                  </div>
+
+                  {/* Search Results */}
+                  {searchResults.length > 0 && (
+                    <div className="border border-gray-200 rounded-lg max-h-48 overflow-y-auto">
+                      {searchResults.map((user) => (
+                        <button
+                          key={user._id}
+                          onClick={() => selectUser(user)}
+                          className="w-full p-3 text-left hover:bg-dark-mode border-b border-gray-100 last:border-b-0"
+                        >
+                          <p className="font-semibold">{user.name}</p>
+                          <p className="text-sm ">{user.email}</p>
+                          <p className="text-xs ">{user.points} points</p>
+                        </button>
+                      ))}
+                    </div>
+                  )}
+
+                  {searchQuery.length >= 2 &&
+                    !isSearching &&
+                    searchResults.length === 0 && (
+                      <p className="text-sm  text-center py-2">
+                        No users found
+                      </p>
+                    )}
+                </div>
+              )}
+
+              {/* Error Message */}
+              {redeemError && (
+                <div className="p-3 bg-red-500/15 border border-red-400/40 text-red-200 rounded-lg text-sm">
+                  {redeemError}
+                </div>
+              )}
+
+              {/* Confirm Redeem Button */}
+              <button
+                onClick={handleRedeem}
+                disabled={
+                  !selectedUser ||
+                  selectedUser.points < (item.discountedCost ?? item.cost) ||
+                  isRedeeming
+                }
+                className="aero-btn w-full disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {isRedeeming ? (
+                  <>
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                    Redeeming...
+                  </>
+                ) : (
+                  "Confirm Redemption"
+                )}
+              </button>
+            </>
+          )}
+        </div>
+      </Modal>
+    </>
+  );
+};
+
+export default ShopPrize;

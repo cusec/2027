@@ -1,0 +1,1668 @@
+/* ==========================================================================
+   Ticket purchase wizard - Frutiger Aero, matching /scavenger
+
+   Same three rules as the hunt: headings float on the painting in the pixel
+   face; content lives on one level of light glass with ink on it, never glass
+   on glass; actions are lime pills. Tokens come from .v2 (base.css) and
+   .v2-aero (aero.css), which src/app/[locale]/tickets/layout.tsx wraps every
+   step in.
+   ========================================================================== */
+
+.wizard-wrapper {
+    width: 100%;
+    max-width: 960px;
+    margin-inline: auto;
+    padding-inline: 24px;
+}
+
+/* Every wizard step renders a .tickets-wrapper inside this one, which would
+   otherwise clear the navbar a second time and inset the content twice over.
+   The nav above it has already done both. */
+.wizard-wrapper .tickets-wrapper {
+    max-width: none;
+    padding-top: clamp(14px, 2.5vh, 26px);
+    padding-inline: 0;
+}
+
+/* --------------------------------------------------------------------------
+   Step nav
+   -------------------------------------------------------------------------- */
+
+/* Raised above the avatar step, which renders as a fixed inset-0 z-50
+   overlay, so Back/Cancel stay reachable on that step too. */
+.wizard-nav {
+    position: relative;
+    z-index: 60;
+    padding-top: calc(52px + env(safe-area-inset-top, 0px) + 0.8rem);
+}
+
+.wizard-nav-actions {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+}
+
+/* Glass pill: it sits on the painting, not on a card. */
+.wizard-nav-btn {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.4rem 0.9rem;
+    border: 1px solid rgba(255, 255, 255, 0.42);
+    border-radius: 999px;
+    /* Opaque enough to back the dark ink below. The pill drifts over cloud as
+       often as sky, and white ink on it disappeared against the cloud. */
+    background: linear-gradient(
+        to bottom,
+        rgba(255, 255, 255, 0.72),
+        rgba(255, 255, 255, 0.52)
+    );
+    box-shadow: 0 3px 9px rgba(9, 28, 45, 0.3);
+    backdrop-filter: blur(8px);
+    color: var(--v2-ink-glass-deep);
+    font-family: var(--v2-font-pixel);
+    font-weight: var(--v2-font-pixel-weight);
+    font-size: 10.5px;
+    letter-spacing: 0.08em;
+    text-decoration: none;
+    text-shadow: 0 1px 0 rgba(255, 255, 255, 0.6);
+    transition: transform 160ms ease, filter 160ms ease;
+}
+
+.wizard-nav-btn:hover {
+    transform: translateY(-1px);
+    filter: brightness(1.12);
+}
+
+.wizard-nav-btn--cancel {
+    margin-left: auto;
+}
+
+.wizard-step-nav {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: 0.45rem;
+    padding: 1.1rem 0 0.2rem;
+}
+
+.wizard-step-nav-item {
+    display: flex;
+    align-items: center;
+    gap: 0.45rem;
+}
+
+.wizard-step-pill {
+    padding: 0.38rem 0.85rem;
+    border: 1px solid rgba(255, 255, 255, 0.34);
+    border-radius: 999px;
+    background: rgba(9, 28, 45, 0.26);
+    backdrop-filter: blur(8px);
+    color: color-mix(in srgb, var(--v2-white) 72%, transparent);
+    font-family: var(--v2-font-pixel);
+    font-weight: var(--v2-font-pixel-weight);
+    font-size: 10px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    text-shadow: 0 1px 2px rgba(9, 28, 45, 0.7);
+}
+
+/* The step you are on is the one lit thing on the page. */
+.wizard-step-pill--active {
+    border-color: rgba(255, 255, 255, 0.5);
+    background: linear-gradient(to bottom, var(--v2-lime-deep), var(--v2-lime));
+    box-shadow: 0 4px 12px rgba(9, 28, 45, 0.36);
+    color: var(--aero-ink);
+    text-shadow: 0 1px 0 rgba(255, 255, 255, 0.4);
+}
+
+.wizard-step-pill--done {
+    background: rgba(78, 201, 168, 0.4);
+    color: var(--v2-white);
+}
+
+.wizard-step-nav-connector {
+    width: 1.3rem;
+    height: 2px;
+    border-radius: 2px;
+    background: rgba(255, 255, 255, 0.4);
+}
+
+/* --------------------------------------------------------------------------
+   Glass panels - intro, sign-in, confirmation, verification
+   -------------------------------------------------------------------------- */
+
+/* The one glass recipe, written out rather than shared through .v2-glass so
+   the wizard's markup stays untouched. Never author the -webkit- pair of
+   backdrop-filter: Lightning CSS then drops the standard one. */
+.wizard-intro-card,
+.wizard-verify-card,
+.wizard-fieldset,
+.wizard-modal {
+    border: 1.5px solid var(--v2-glass-edge);
+    border-radius: 28px;
+    background: linear-gradient(
+        180deg,
+        var(--v2-glass-top) 0%,
+        var(--v2-glass-mid) 50%,
+        var(--v2-glass-end) 100%
+    );
+    box-shadow: var(--v2-glass-shadow), inset 0 1.5px 1px rgba(255, 255, 255, 0.9);
+    backdrop-filter: blur(11px);
+    color: var(--v2-ink-glass);
+}
+
+.wizard-intro-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.5rem;
+    max-width: 640px;
+    margin: 0 auto;
+    padding: 38px clamp(28px, 5vw, 44px);
+    text-align: center;
+}
+
+.wizard-intro-card p {
+    margin: 0;
+    font-size: 0.95rem;
+    line-height: 1.65;
+}
+
+/* --------------------------------------------------------------------------
+   Intro steps - one card per step
+   -------------------------------------------------------------------------- */
+
+/* A fixed 2x2 rather than auto-fit: the container is 912px wide, so auto-fit
+   settled on three columns and left step 4 orphaned on its own row. Two
+   columns are the same at every desktop width and sit the same width as the
+   button below them. */
+.wizard-steps {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 14px;
+    width: 100%;
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 0;
+    list-style: none;
+}
+
+.wizard-step-card {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    padding: 20px 22px 22px;
+    border: 1.5px solid var(--v2-glass-edge);
+    border-radius: 20px;
+    background: linear-gradient(
+        180deg,
+        var(--v2-glass-top) 0%,
+        var(--v2-glass-mid) 50%,
+        var(--v2-glass-end) 100%
+    );
+    box-shadow: var(--v2-glass-shadow), inset 0 1.5px 1px rgba(255, 255, 255, 0.9);
+    backdrop-filter: blur(11px);
+    color: var(--v2-ink-glass);
+}
+
+/* Number beside the title, not stacked above it, so the card opens on one
+   line of type instead of three stacked blocks. */
+.wizard-step-card__head {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+}
+
+.wizard-step-card__num {
+    display: grid;
+    place-items: center;
+    flex: none;
+    width: 1.55rem;
+    height: 1.55rem;
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    border-radius: 999px;
+    background: linear-gradient(to bottom, var(--v2-lime-deep), var(--v2-lime));
+    box-shadow: 0 2px 6px rgba(9, 28, 45, 0.24);
+    color: var(--aero-ink);
+    font-family: var(--v2-font-pixel);
+    font-weight: var(--v2-font-pixel-weight);
+    font-size: 10px;
+}
+
+.wizard-step-card__title {
+    margin: 0;
+    font-size: 0.98rem;
+    font-weight: 700;
+    line-height: 1.3;
+    color: var(--v2-ink-glass-deep);
+}
+
+.wizard-step-card__note {
+    margin: 0;
+    font-size: 0.84rem;
+    line-height: 1.55;
+}
+
+.wizard-steps__cta {
+    display: block;
+    width: fit-content;
+    margin: 0 auto;
+    text-align: center;
+    text-decoration: none;
+}
+
+@media (max-width: 620px) {
+    .wizard-steps {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* Sits under the purchase subheading. Same pill shape as the confidential
+   notice but neutral glass, since this is guidance rather than a warning. */
+.wizard-confidential-notice {
+    max-width: fit-content;
+    margin: 0.2rem auto 0;
+    padding: 0.55rem 1rem;
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    border-radius: 999px;
+    background: rgba(255, 244, 190, 0.86);
+    box-shadow: 0 6px 16px rgba(9, 28, 45, 0.26);
+    backdrop-filter: blur(8px);
+    color: #6B5A05;
+    font-size: 0.8rem;
+    line-height: 1.5;
+    text-align: center;
+}
+
+/* --------------------------------------------------------------------------
+   Intro extras - the three facts under the card
+   -------------------------------------------------------------------------- */
+
+/* Small enough to read as labels on the painting rather than as a third
+   surface competing with the card above them. */
+.wizard-facts {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 10px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+/* One line each, label and value side by side, so the three read as a caption
+   strip under the button rather than three more boxes competing with the step
+   cards. Still the dark glass, not the light: white ink on a white-glass tile
+   disappears the moment the tile sits over a cloud. */
+.wizard-facts li {
+    display: flex;
+    align-items: baseline;
+    gap: 0.6rem;
+    padding: 9px 18px;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 999px;
+    background: rgba(9, 28, 45, 0.28);
+    box-shadow: 0 4px 12px rgba(9, 28, 45, 0.24);
+    backdrop-filter: blur(8px);
+}
+
+.wizard-facts span {
+    font-family: var(--v2-font-pixel);
+    font-weight: var(--v2-font-pixel-weight);
+    font-size: 8.5px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--v2-lime);
+    text-shadow: 0 1px 3px rgba(9, 28, 45, 0.85);
+}
+
+.wizard-facts b {
+    font-family: var(--v2-font-pixel);
+    font-weight: var(--v2-font-pixel-weight);
+    font-size: 0.82rem;
+    color: var(--v2-white);
+    text-shadow: 0 1px 2px rgba(9, 28, 45, 0.9);
+}
+
+/* --------------------------------------------------------------------------
+   Demographics form
+   -------------------------------------------------------------------------- */
+.wizard-form {
+    display: flex;
+    flex-direction: column;
+    /* Wide enough to clear the legend now sitting above each card. */
+    gap: 2.6rem;
+    margin: 2.4rem 0 3rem;
+}
+
+.wizard-fieldset {
+    position: relative;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1.1rem;
+    padding: 24px 26px 26px;
+}
+
+/* Lifted out of the card entirely and onto the painting above it. A legend
+   inside a `display: grid` fieldset was taking a grid cell of its own, and
+   dark ink notched into the glass edge read as neither on the card nor off
+   it. Absolute positioning takes it out of the grid, so it needs no cell and
+   the fields keep both columns. The margin on `.wizard-form` is what reserves
+   the room it now sits in. */
+.wizard-fieldset legend {
+    position: absolute;
+    top: -1.85rem;
+    left: 6px;
+    padding: 0;
+    font-family: var(--v2-font-pixel);
+    font-weight: var(--v2-font-pixel-weight);
+    font-size: 0.95rem;
+    letter-spacing: 0.02em;
+    color: var(--v2-white);
+    text-shadow: 0 1px 2px rgba(9, 28, 45, 0.95), 0 2px 12px rgba(9, 28, 45, 0.8),
+        0 0 22px rgba(9, 28, 45, 0.6);
+}
+
+.wizard-field {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+    font-family: var(--v2-font-pixel);
+    font-weight: var(--v2-font-pixel-weight);
+    font-size: 10px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--v2-teal-deep);
+}
+
+.wizard-field--wide {
+    grid-column: 1 / -1;
+}
+
+/* Inputs are wells sunk into the glass: a light fill, a hairline, and the
+   card's own ink - the same treatment the hunt's modals use. */
+.wizard-field input[type="text"],
+.wizard-field input[type="email"],
+.wizard-field input[type="url"],
+.wizard-field input[type="month"],
+.wizard-field select,
+.wizard-field textarea,
+.wizard-claim-form input {
+    padding: 0.6rem 0.75rem;
+    border: 1px solid rgba(9, 37, 26, 0.16);
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.72);
+    box-shadow: inset 0 1px 2px rgba(9, 37, 26, 0.08);
+    color: var(--v2-ink-glass-deep);
+    font-family: var(--v2-font-body);
+    font-size: 0.92rem;
+    letter-spacing: 0;
+    text-transform: none;
+    transition: border-color 160ms ease, box-shadow 160ms ease;
+}
+
+.wizard-field :is(input, select, textarea):focus {
+    border-color: var(--v2-teal);
+    box-shadow: inset 0 1px 2px rgba(9, 37, 26, 0.08),
+        0 0 0 3px rgba(78, 201, 168, 0.28);
+    outline: none;
+}
+
+.wizard-field textarea {
+    min-height: 4.8rem;
+    resize: vertical;
+}
+
+.wizard-field select {
+    appearance: none;
+    padding-right: 2rem;
+    /* Chevron drawn in the card's ink, since the OS one is black on light. */
+    background-image: linear-gradient(45deg, transparent 50%, var(--v2-teal-deep) 50%),
+        linear-gradient(135deg, var(--v2-teal-deep) 50%, transparent 50%);
+    background-position: calc(100% - 17px) calc(50% + 2px),
+        calc(100% - 12px) calc(50% + 2px);
+    background-size: 5px 5px, 5px 5px;
+    background-repeat: no-repeat;
+}
+
+.wizard-checkbox {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    font-family: var(--v2-font-body);
+    font-size: 0.88rem;
+    letter-spacing: 0;
+    text-transform: none;
+    color: var(--v2-ink-glass);
+}
+
+.wizard-checkbox input {
+    accent-color: var(--v2-lime-deep);
+    width: 1rem;
+    height: 1rem;
+}
+
+.wizard-checkbox-group {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.55rem 1.1rem;
+}
+
+.wizard-field-hint {
+    margin: 0.15rem 0 0;
+    font-family: var(--v2-font-body);
+    font-size: 0.78rem;
+    letter-spacing: 0;
+    text-transform: none;
+    color: color-mix(in srgb, var(--v2-ink-glass) 72%, transparent);
+}
+
+.wizard-form-error {
+    padding: 0.7rem 1rem;
+    border: 1px solid rgba(190, 46, 36, 0.35);
+    border-radius: 14px;
+    background: rgba(255, 219, 214, 0.9);
+    color: #9C2B22;
+    font-size: 0.86rem;
+    line-height: 1.5;
+}
+
+.wizard-form-actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+}
+
+.wizard-form-submit {
+    min-width: 220px;
+}
+
+.wizard-form-back {
+    min-width: 110px;
+}
+
+/* --------------------------------------------------------------------------
+   Sub-step progress
+   -------------------------------------------------------------------------- */
+.wizard-substep-progress {
+    display: flex;
+    flex-direction: column;
+    gap: 0.55rem;
+}
+
+.wizard-substep-labels {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.4rem;
+}
+
+.wizard-substep-label {
+    padding: 0.32rem 0.75rem;
+    border: 1px solid rgba(255, 255, 255, 0.32);
+    border-radius: 999px;
+    background: rgba(9, 28, 45, 0.26);
+    backdrop-filter: blur(8px);
+    color: color-mix(in srgb, var(--v2-white) 70%, transparent);
+    font-family: var(--v2-font-pixel);
+    font-weight: var(--v2-font-pixel-weight);
+    font-size: 9.5px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    text-shadow: 0 1px 2px rgba(9, 28, 45, 0.7);
+}
+
+.wizard-substep-label--active {
+    border-color: rgba(255, 255, 255, 0.5);
+    background: linear-gradient(to bottom, var(--v2-lime-deep), var(--v2-lime));
+    color: var(--aero-ink);
+    text-shadow: 0 1px 0 rgba(255, 255, 255, 0.4);
+}
+
+.wizard-substep-label--done {
+    background: rgba(78, 201, 168, 0.4);
+    color: var(--v2-white);
+}
+
+.wizard-substep-label:disabled {
+    cursor: var(--cursor-arrow);
+}
+
+.wizard-substep-bar {
+    height: 10px;
+    overflow: hidden;
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    border-radius: 999px;
+    background: rgba(9, 28, 45, 0.3);
+    box-shadow: inset 0 1px 3px rgba(9, 28, 45, 0.4);
+    backdrop-filter: blur(8px);
+}
+
+.wizard-substep-bar-fill {
+    height: 100%;
+    border-radius: 999px;
+    background: linear-gradient(to bottom, var(--v2-lime), var(--v2-lime-deep));
+    box-shadow: 0 0 12px rgba(195, 233, 86, 0.5);
+    transition: width 250ms ease-out;
+}
+
+.wizard-substep-count {
+    margin: 0;
+    font-family: var(--v2-font-pixel);
+    font-weight: var(--v2-font-pixel-weight);
+    font-size: 10px;
+    letter-spacing: 0.14em;
+    text-align: center;
+    text-transform: uppercase;
+    color: color-mix(in srgb, var(--v2-white) 78%, transparent);
+    text-shadow: 0 1px 3px rgba(9, 28, 45, 0.75);
+}
+
+/* --------------------------------------------------------------------------
+   Purchase status + confirmation
+   -------------------------------------------------------------------------- */
+
+/* On the painting by default; the rules further down re-point it wherever it
+   sits on glass instead. */
+.wizard-purchase-status {
+    margin-top: 1rem;
+    font-family: var(--v2-font-pixel);
+    font-weight: var(--v2-font-pixel-weight);
+    font-size: 10.5px;
+    letter-spacing: 0.1em;
+    text-align: center;
+    color: color-mix(in srgb, var(--v2-white) 86%, transparent);
+    text-shadow: 0 1px 3px rgba(9, 28, 45, 0.75);
+}
+
+.wizard-purchase-status--timeout {
+    color: #FFD98A;
+}
+
+.wizard-verify-card {
+    max-width: 34rem;
+    margin: 1rem auto 0;
+    padding: 22px 24px 24px;
+}
+
+.wizard-verify-card .wizard-purchase-status {
+    margin-top: 0;
+    color: var(--v2-ink-glass);
+    text-shadow: none;
+}
+
+.wizard-verify-card .wizard-purchase-status--timeout {
+    color: #7A5A05;
+}
+
+.wizard-verify-actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: 0.8rem;
+    margin-top: 0.9rem;
+}
+
+.wizard-verify-link {
+    padding: 0;
+    border: none;
+    background: none;
+    color: var(--v2-teal-deep);
+    font-family: var(--v2-font-pixel);
+    font-weight: var(--v2-font-pixel-weight);
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    text-decoration: underline;
+    text-transform: uppercase;
+    cursor: var(--cursor-hand);
+}
+
+.wizard-claim-form {
+    display: flex;
+    flex-direction: column;
+    gap: 0.45rem;
+    margin-top: 1rem;
+    font-family: var(--v2-font-pixel);
+    font-weight: var(--v2-font-pixel-weight);
+    font-size: 10px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--v2-teal-deep);
+}
+
+/* --------------------------------------------------------------------------
+   Checkout modal - the Ticket Tailor embed lives inside
+   -------------------------------------------------------------------------- */
+.wizard-checkout-backdrop {
+    position: fixed;
+    z-index: 100;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+    background: rgba(6, 20, 14, 0.62);
+    backdrop-filter: blur(6px);
+    animation: wizard-checkout-in 200ms ease-out both;
+}
+
+@keyframes wizard-checkout-in {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+.wizard-checkout-modal {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    /* Sized to the checkout content itself - Ticket Tailor renders it as a
+       narrow card, so a wide modal just adds dead space. */
+    max-width: 560px;
+    max-height: 92vh;
+    overflow: hidden;
+    border: 1.5px solid var(--v2-glass-edge);
+    border-radius: 28px;
+    background: linear-gradient(
+        180deg,
+        var(--v2-glass-top) 0%,
+        var(--v2-glass-mid) 50%,
+        var(--v2-glass-end) 100%
+    );
+    box-shadow: 0 30px 70px -12px rgba(6, 20, 14, 0.6),
+        inset 0 1.5px 1px rgba(255, 255, 255, 0.9);
+    backdrop-filter: blur(16px);
+    color: var(--v2-ink-glass);
+}
+
+.wizard-checkout-modal-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 0.85rem 0.9rem 0.7rem 1.4rem;
+    color: var(--v2-ink-glass-deep);
+    font-family: var(--v2-font-pixel);
+    font-weight: var(--v2-font-pixel-weight);
+    font-size: 12px;
+    letter-spacing: 0.06em;
+}
+
+.wizard-checkout-close {
+    display: grid;
+    place-items: center;
+    width: 1.9rem;
+    height: 1.9rem;
+    border: 1px solid rgba(9, 37, 26, 0.16);
+    border-radius: 999px;
+    background: rgba(9, 37, 26, 0.07);
+    color: var(--v2-ink-glass-deep);
+    font-size: 16px;
+    line-height: 1;
+    cursor: var(--cursor-hand);
+    transition: background 160ms ease, transform 160ms ease;
+}
+
+.wizard-checkout-close:hover {
+    background: rgba(9, 37, 26, 0.14);
+    transform: scale(1.05);
+}
+
+/* The iframe scrolls its own content (we set scrolling="yes" and own the
+   frame directly, rather than letting Ticket Tailor's resizer disable it).
+   White, not glass: it is someone else's page, and tinting it would fight
+   whatever they render. */
+.wizard-checkout-frame {
+    flex: 1;
+    display: block;
+    width: auto;
+    min-height: 70vh;
+    margin: 0 0.85rem;
+    border: 1px solid rgba(9, 37, 26, 0.14);
+    border-radius: 18px;
+    background: #ffffff;
+}
+
+.wizard-checkout-modal .wizard-purchase-status {
+    margin: 0.7rem 0 0.5rem;
+    color: var(--v2-ink-glass);
+    text-shadow: none;
+}
+
+.wizard-checkout-modal .wizard-purchase-status--timeout {
+    color: #7A5A05;
+}
+
+.wizard-checkout-newtab {
+    margin: 0 0.9rem 0.9rem;
+    font-family: var(--v2-font-pixel);
+    font-weight: var(--v2-font-pixel-weight);
+    font-size: 10px;
+    letter-spacing: 0.08em;
+    text-align: center;
+}
+
+.wizard-checkout-newtab a {
+    color: var(--v2-teal-deep);
+    text-decoration: underline;
+}
+
+/* --------------------------------------------------------------------------
+   "You already have a ticket" modal
+   -------------------------------------------------------------------------- */
+.wizard-modal-overlay {
+    position: fixed;
+    z-index: 120;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+    background: rgba(6, 20, 14, 0.62);
+    backdrop-filter: blur(6px);
+}
+
+.wizard-modal {
+    position: relative;
+    max-width: 460px;
+    padding: 28px 26px;
+    text-align: center;
+}
+
+.wizard-modal-close {
+    position: absolute;
+    top: 12px;
+    right: 14px;
+    display: grid;
+    place-items: center;
+    width: 1.9rem;
+    height: 1.9rem;
+    border: 1px solid rgba(9, 37, 26, 0.14);
+    border-radius: 999px;
+    background: rgba(9, 37, 26, 0.07);
+    color: var(--v2-ink-glass-deep);
+    font-size: 1.1rem;
+    line-height: 1;
+    text-decoration: none;
+    transition: background 160ms ease, transform 160ms ease;
+}
+
+.wizard-modal-close:hover {
+    background: rgba(9, 37, 26, 0.14);
+    transform: translateY(-1px);
+}
+
+.wizard-modal-heading {
+    margin: 0 0 0.7rem;
+    font-family: var(--v2-font-pixel);
+    font-weight: var(--v2-font-pixel-weight);
+    font-size: 1.15rem;
+    color: var(--v2-ink-glass-deep);
+}
+
+.wizard-modal-body {
+    margin: 0 0 1.3rem;
+    font-size: 0.92rem;
+    line-height: 1.65;
+    color: var(--v2-ink-glass);
+}
+
+.wizard-modal-actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: 0.7rem;
+}
+
+/* --------------------------------------------------------------------------
+   Actions - the wizard's buttons become the hunt's lime pill
+   -------------------------------------------------------------------------- */
+.v2-aero .cta-btn {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 11px 22px;
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    border-radius: 999px;
+    background: radial-gradient(
+            farthest-corner at 50% 118%,
+            rgba(255, 255, 255, 0.7),
+            transparent 70%
+        ),
+        linear-gradient(to bottom, var(--aero-lime-deep), var(--aero-lime));
+    box-shadow: 0 4px 10px rgba(9, 28, 45, 0.38);
+    color: var(--aero-ink);
+    font-family: var(--v2-font-pixel);
+    font-weight: var(--v2-font-pixel-weight);
+    font-size: 13px;
+    letter-spacing: 0.05em;
+    text-decoration: none;
+    text-shadow: 0 1px 0 rgba(255, 255, 255, 0.4);
+    cursor: var(--cursor-hand);
+    transition: transform 160ms ease, box-shadow 160ms ease, filter 160ms ease;
+}
+
+/* The splash button draws its face with a ::before; the pill doesn't. */
+.v2-aero .cta-btn::before {
+    content: none;
+}
+
+/* The splash button bobs on hover (hover-float) and scales; the pill lifts
+   once and stops. Both have to be unset explicitly - they are set on
+   `.cta-btn:hover`, which this rule overrides property by property. */
+.v2-aero .cta-btn:hover:not(:disabled) {
+    transform: translateY(-1px);
+    box-shadow: 0 7px 14px rgba(9, 28, 45, 0.4);
+    filter: brightness(1.05);
+    animation: none;
+}
+
+/* `scale` is reset in a rule of its own, and it has to stay that way. Written
+   alongside the `transform` above, Lightning CSS folds the two together into
+   `transform: translateY(-1px) scale3d(1, 1, 1)` and drops the standalone
+   `scale` declaration. `scale` and `transform` are independent properties, so
+   the splash rule's `scale: 1.05` then still applies and the button grows on
+   hover. Alone in its own rule there is no transform to fold into. */
+.v2-aero .cta-btn:hover {
+    scale: 1;
+}
+
+.v2-aero .cta-btn:active:not(:disabled) {
+    transform: translateY(1px);
+    box-shadow: 0 2px 5px rgba(9, 28, 45, 0.42);
+}
+
+.v2-aero .cta-btn:disabled {
+    opacity: 0.55;
+    cursor: var(--cursor-arrow);
+    filter: saturate(0.5);
+}
+
+/* Secondary actions read as glass, so the lime stays the one thing to press. */
+.v2-aero .wizard-form-back,
+.v2-aero .wizard-modal-actions .cta-btn:last-child:not(:only-child) {
+    background: rgba(9, 37, 26, 0.08);
+    border-color: rgba(9, 37, 26, 0.16);
+    box-shadow: 0 3px 8px rgba(10, 36, 23, 0.16);
+    color: var(--v2-ink-glass-deep);
+    text-shadow: none;
+}
+
+@media (max-width: 640px) {
+    .wizard-fieldset {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* The avatar step's placeholder mark, sitting inside the intro card. */
+.wizard-avatar-mark {
+    display: grid;
+    place-items: center;
+    width: 4.4rem;
+    height: 4.4rem;
+    border: 1px solid rgba(255, 255, 255, 0.6);
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.5);
+    box-shadow: inset 0 1.5px 1px rgba(255, 255, 255, 0.9);
+    font-size: 2rem;
+    line-height: 1;
+}
+
+
+/* Still carried by the sign-in and confirmation cards on every step. */
+.wizard-intro-cta {
+    text-align: center;
+    text-decoration: none;
+}
+
+/* ==========================================================================
+   Attendee profile - cards, chips and pickers from the design mockups
+   ========================================================================== */
+
+.wizard-form {
+    gap: 1.6rem;
+    margin: 0 0 3rem;
+}
+
+.wizard-form--compact {
+    margin: 0;
+}
+
+.wizard-step-header {
+    gap: 0.75rem;
+}
+
+.wizard-note-pill {
+    max-width: fit-content;
+    margin: 0 auto;
+    padding: 0.6rem 1.3rem;
+    border: 1px solid rgba(255, 255, 255, 0.6);
+    border-radius: 999px;
+    box-shadow: 0 6px 16px rgba(9, 28, 45, 0.22);
+    backdrop-filter: blur(8px);
+    font-size: 0.9rem;
+    line-height: 1.45;
+    text-align: center;
+}
+
+.wizard-note-pill--note {
+    background: linear-gradient(to right, rgba(236, 246, 196, 0.94), rgba(255, 246, 204, 0.94));
+    color: #3B4A10;
+}
+
+.wizard-note-pill--confidential {
+    background: rgba(255, 244, 190, 0.92);
+    color: #6B5A05;
+}
+
+.wizard-section-count {
+    margin: 0.2rem 0 0;
+    font-family: var(--v2-font-pixel);
+    font-weight: var(--v2-font-pixel-weight);
+    font-size: 11px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--v2-white);
+    text-shadow: 0 1px 3px rgba(9, 28, 45, 0.8);
+}
+
+.wizard-card {
+    display: flex;
+    flex-direction: column;
+    gap: 1.2rem;
+    padding: 26px clamp(20px, 3vw, 32px) 28px;
+    border: 1.5px solid var(--v2-glass-edge);
+    border-radius: 28px;
+    background: linear-gradient(
+        180deg,
+        var(--v2-glass-top) 0%,
+        var(--v2-glass-mid) 50%,
+        var(--v2-glass-end) 100%
+    );
+    box-shadow: var(--v2-glass-shadow), inset 0 1.5px 1px rgba(255, 255, 255, 0.9);
+    backdrop-filter: blur(11px);
+    color: var(--v2-ink-glass-deep);
+}
+
+.wizard-card:focus-within,
+.wizard-card:has(.is-open) {
+    position: relative;
+    z-index: 5;
+}
+
+.wizard-card__head {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+}
+
+.wizard-card__icon {
+    display: grid;
+    place-items: center;
+    flex: none;
+    width: 52px;
+    height: 52px;
+    border: 1px solid rgba(255, 255, 255, 0.8);
+    border-radius: 999px;
+    background: rgba(214, 244, 240, 0.9);
+    color: var(--v2-teal-deep);
+}
+
+.wizard-card__icon svg {
+    width: 24px;
+    height: 24px;
+}
+
+.wizard-card__title {
+    margin: 0;
+    font-family: var(--v2-font-pixel);
+    font-weight: var(--v2-font-pixel-weight);
+    font-size: clamp(1.2rem, 2.4vw, 1.55rem);
+    line-height: 1.2;
+    color: var(--v2-ink-glass-deep);
+}
+
+.wizard-card__body {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+}
+
+.wizard-card__foot {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 0;
+    font-size: 0.85rem;
+    color: #3C5A4D;
+}
+
+.wizard-card__foot svg {
+    flex: none;
+    width: 18px;
+    height: 18px;
+}
+
+.wizard-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1.2rem 1.6rem;
+}
+
+.wizard-q {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    min-width: 0;
+}
+
+.wizard-q--wide {
+    grid-column: 1 / -1;
+}
+
+.wizard-q__label {
+    font-size: 0.74rem;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--v2-teal-deep);
+}
+
+.wizard-q__req {
+    color: #C2412D;
+}
+
+.wizard-q__hint {
+    margin: 0;
+    font-size: 0.8rem;
+    color: #4A675A;
+}
+
+.wizard-input {
+    width: 100%;
+    min-height: 48px;
+    padding: 0.7rem 0.95rem;
+    border: 1px solid rgba(9, 37, 26, 0.14);
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.9);
+    box-shadow: 0 2px 6px rgba(9, 37, 26, 0.06);
+    color: var(--v2-ink-glass-deep);
+    font-family: var(--v2-font-body);
+    font-size: 1rem;
+    transition: border-color 160ms ease, box-shadow 160ms ease;
+}
+
+.wizard-input:focus {
+    border-color: var(--v2-teal);
+    box-shadow: 0 0 0 3px rgba(78, 201, 168, 0.3);
+    outline: none;
+}
+
+.wizard-input:disabled {
+    opacity: 0.6;
+}
+
+select.wizard-input {
+    appearance: none;
+    padding-right: 2.4rem;
+    background-image: linear-gradient(45deg, transparent 50%, var(--v2-ink-glass-deep) 50%),
+        linear-gradient(135deg, var(--v2-ink-glass-deep) 50%, transparent 50%);
+    background-position: calc(100% - 20px) calc(50% + 2px), calc(100% - 14px) calc(50% + 2px);
+    background-size: 6px 6px, 6px 6px;
+    background-repeat: no-repeat;
+}
+
+.wizard-input--other {
+    margin-top: 0.1rem;
+}
+
+.wizard-textarea {
+    min-height: 96px;
+    line-height: 1.5;
+    resize: vertical;
+}
+
+.wizard-select,
+.wizard-multi {
+    position: relative;
+}
+
+.wizard-select__trigger {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.6rem;
+    text-align: left;
+    cursor: var(--cursor-hand);
+    user-select: none;
+}
+
+.wizard-select__trigger:focus-visible,
+.wizard-select.is-open .wizard-select__trigger {
+    border-color: var(--v2-teal);
+    box-shadow: 0 0 0 3px rgba(78, 201, 168, 0.3);
+    outline: none;
+}
+
+.wizard-select__trigger.is-disabled {
+    opacity: 0.6;
+    cursor: var(--cursor-arrow);
+}
+
+.wizard-select__placeholder {
+    color: #4A675A;
+}
+
+.wizard-select__chev {
+    flex: none;
+    width: 18px;
+    height: 18px;
+    color: var(--v2-teal-deep);
+    transition: transform 160ms ease;
+}
+
+.wizard-select.is-open .wizard-select__chev,
+.wizard-multi.is-open .wizard-select__chev {
+    transform: rotate(180deg);
+}
+
+.wizard-select__native {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 1px;
+    padding: 0;
+    border: 0;
+    opacity: 0;
+    pointer-events: none;
+}
+
+.wizard-prefix {
+    display: flex;
+    align-items: center;
+    padding: 0 0 0 0.95rem;
+}
+
+.wizard-prefix:focus-within {
+    border-color: var(--v2-teal);
+    box-shadow: 0 0 0 3px rgba(78, 201, 168, 0.3);
+}
+
+.wizard-prefix__text {
+    flex: none;
+    color: #4A675A;
+    user-select: none;
+}
+
+.wizard-prefix input {
+    flex: 1;
+    min-width: 0;
+    min-height: 46px;
+    padding: 0.7rem 0.95rem 0.7rem 0.1rem;
+    border: 0;
+    background: transparent;
+    color: inherit;
+    font: inherit;
+    outline: none;
+}
+
+.wizard-chips {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 190px), 1fr));
+    gap: 0.7rem;
+}
+
+.wizard-chip {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 0.7rem;
+    min-height: 48px;
+    padding: 0.6rem 1rem;
+    border: 1px solid rgba(9, 37, 26, 0.12);
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.72);
+    box-shadow: 0 2px 6px rgba(9, 37, 26, 0.05);
+    color: var(--v2-ink-glass-deep);
+    font-size: 0.95rem;
+    line-height: 1.3;
+    cursor: var(--cursor-hand);
+    transition: background 160ms ease, border-color 160ms ease, box-shadow 160ms ease;
+}
+
+.wizard-chip:hover {
+    border-color: rgba(9, 37, 26, 0.24);
+}
+
+.wizard-chip.is-on {
+    border-color: rgba(122, 160, 30, 0.55);
+    background: linear-gradient(to bottom, #E8F7B3, #D5EE86);
+    box-shadow: 0 4px 12px rgba(96, 130, 20, 0.2);
+    font-weight: 600;
+}
+
+.wizard-chip.is-disabled {
+    opacity: 0.5;
+    cursor: var(--cursor-arrow);
+}
+
+.wizard-chip__input {
+    position: absolute;
+    opacity: 0;
+    width: 1px;
+    height: 1px;
+}
+
+.wizard-chip:has(.wizard-chip__input:focus-visible) {
+    box-shadow: 0 0 0 3px rgba(78, 201, 168, 0.45);
+}
+
+.wizard-chip__mark {
+    display: grid;
+    place-items: center;
+    flex: none;
+    width: 22px;
+    height: 22px;
+    border: 2px solid rgba(9, 37, 26, 0.45);
+    border-radius: 6px;
+    background: rgba(255, 255, 255, 0.9);
+    color: #FFFFFF;
+}
+
+.wizard-chip__mark svg {
+    width: 14px;
+    height: 14px;
+}
+
+.wizard-chip.is-on .wizard-chip__mark,
+.wizard-chip__mark.is-on {
+    border-color: var(--v2-ink-glass-deep);
+    background: var(--v2-ink-glass-deep);
+}
+
+.wizard-chip__mark--radio {
+    border-radius: 999px;
+}
+
+.wizard-chip.is-on .wizard-chip__mark--radio {
+    background: radial-gradient(circle, var(--v2-ink-glass-deep) 45%, #FFFFFF 50%);
+}
+
+.wizard-tags {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5rem;
+    min-height: 56px;
+    padding: 0.5rem;
+    border: 1px solid rgba(9, 37, 26, 0.14);
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.9);
+}
+
+.wizard-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    padding: 0.45rem 0.55rem 0.45rem 0.85rem;
+    border: 1px solid rgba(122, 160, 30, 0.45);
+    border-radius: 10px;
+    background: linear-gradient(to bottom, #E8F7B3, #D5EE86);
+    color: var(--v2-ink-glass-deep);
+    font-size: 0.9rem;
+    font-weight: 600;
+}
+
+.wizard-tag__remove {
+    display: grid;
+    place-items: center;
+    padding: 2px;
+    border: 0;
+    border-radius: 999px;
+    background: none;
+    color: inherit;
+    cursor: var(--cursor-hand);
+}
+
+.wizard-tag__remove:hover {
+    background: rgba(9, 37, 26, 0.1);
+}
+
+.wizard-tag__remove svg {
+    width: 14px;
+    height: 14px;
+}
+
+.wizard-tags__add {
+    display: flex;
+    flex: 1;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+    min-width: 160px;
+    min-height: 38px;
+    padding: 0.4rem 0.5rem;
+    color: #3C5A4D;
+    font-family: var(--v2-font-body);
+    font-size: 0.92rem;
+    cursor: var(--cursor-hand);
+    user-select: none;
+}
+
+.wizard-tags__add:focus {
+    outline: none;
+}
+
+.wizard-tags:focus-within,
+.wizard-multi.is-open .wizard-tags {
+    border-color: var(--v2-teal);
+    box-shadow: 0 0 0 3px rgba(78, 201, 168, 0.3);
+}
+
+.wizard-combo {
+    position: relative;
+}
+
+.wizard-combo__list {
+    position: absolute;
+    z-index: 30;
+    top: calc(100% + 6px);
+    left: 0;
+    right: 0;
+    max-height: 280px;
+    margin: 0;
+    padding: 6px;
+    overflow-y: auto;
+    border: 1.5px solid rgba(78, 201, 168, 0.55);
+    border-radius: 16px;
+    background: linear-gradient(180deg, #FFFFFF 0%, #F3FBF8 100%);
+    box-shadow: 0 18px 40px rgba(9, 28, 45, 0.3), inset 0 1px 0 #FFFFFF;
+    list-style: none;
+}
+
+/* Inset, rounded scrollbar so it never squares off the list's corners. */
+.wizard-combo__list::-webkit-scrollbar {
+    width: 12px;
+}
+
+.wizard-combo__list::-webkit-scrollbar-track {
+    margin-block: 14px;
+    background: transparent;
+}
+
+.wizard-combo__list::-webkit-scrollbar-thumb {
+    border: 4px solid transparent;
+    border-radius: 999px;
+    background: rgba(9, 37, 26, 0.28) padding-box;
+}
+
+.wizard-combo__list::-webkit-scrollbar-button {
+    display: none;
+}
+
+@supports not selector(::-webkit-scrollbar) {
+    .wizard-combo__list {
+        scrollbar-width: thin;
+        scrollbar-color: rgba(9, 37, 26, 0.28) transparent;
+    }
+}
+
+.wizard-combo__option,
+.wizard-combo__empty {
+    padding: 0.6rem 0.8rem;
+    border-radius: 10px;
+    color: var(--v2-ink-glass-deep);
+    font-size: 0.95rem;
+}
+
+.wizard-combo__option {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    cursor: var(--cursor-hand);
+}
+
+.wizard-combo__option.is-active {
+    background: linear-gradient(to bottom, #E8F7B3, #D5EE86);
+}
+
+.wizard-combo__option[aria-selected="true"] {
+    font-weight: 700;
+}
+
+.wizard-combo__option.is-disabled {
+    opacity: 0.45;
+    cursor: var(--cursor-arrow);
+}
+
+.wizard-combo__tick {
+    flex: none;
+    width: 16px;
+    height: 16px;
+    margin-left: auto;
+    color: var(--v2-lime-dark);
+}
+
+.wizard-combo__option--other {
+    border-top: 1px solid rgba(9, 37, 26, 0.08);
+    font-style: italic;
+}
+
+.wizard-combo__empty {
+    color: #4A675A;
+}
+
+.wizard-origin {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.8rem 1.6rem;
+}
+
+.wizard-confirm {
+    display: flex;
+    flex-direction: column;
+    gap: 1.6rem;
+    width: 100%;
+    max-width: 760px;
+    margin: 0 auto;
+}
+
+.wizard-confirm-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+    padding: 34px clamp(22px, 5vw, 44px);
+    border: 1.5px solid var(--v2-glass-edge);
+    border-radius: 28px;
+    background: linear-gradient(
+        180deg,
+        var(--v2-glass-top) 0%,
+        var(--v2-glass-mid) 50%,
+        var(--v2-glass-end) 100%
+    );
+    box-shadow: var(--v2-glass-shadow), inset 0 1.5px 1px rgba(255, 255, 255, 0.9);
+    backdrop-filter: blur(11px);
+    color: var(--v2-ink-glass-deep);
+    text-align: center;
+    text-shadow: none;
+}
+
+.wizard-confirm-card p {
+    margin: 0;
+    color: var(--v2-ink-glass-deep);
+    font-size: 0.98rem;
+    line-height: 1.6;
+}
+
+.wizard-confirm-card__icon {
+    width: 48px;
+    height: 48px;
+    color: var(--v2-teal-deep);
+}
+
+.wizard-confirm-card__title {
+    margin: 0;
+    font-family: var(--v2-font-pixel);
+    font-weight: var(--v2-font-pixel-weight);
+    font-size: clamp(1.3rem, 3vw, 1.8rem);
+    color: var(--v2-ink-glass-deep);
+}
+
+.wizard-confirm-card .wizard-confirm-card__note {
+    font-size: 0.88rem;
+    color: #3C5A4D;
+}
+
+.wizard-account {
+    display: grid;
+    gap: 0;
+    width: 100%;
+    max-width: 480px;
+    margin: 0.2rem 0;
+    border: 1px solid rgba(9, 37, 26, 0.12);
+    border-radius: 16px;
+    background: rgba(255, 255, 255, 0.72);
+    text-align: left;
+}
+
+.wizard-account > div {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 0.75rem 1rem;
+}
+
+.wizard-account > div + div {
+    border-top: 1px solid rgba(9, 37, 26, 0.08);
+}
+
+.wizard-account dt {
+    font-size: 0.74rem;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--v2-teal-deep);
+}
+
+.wizard-account dd {
+    margin: 0;
+    color: var(--v2-ink-glass-deep);
+    font-weight: 600;
+    text-align: right;
+    overflow-wrap: anywhere;
+}
+
+.wizard-consent {
+    align-items: center;
+}
+
+.wizard-saved {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin: 0;
+    color: var(--v2-teal-deep);
+    font-weight: 700;
+}
+
+.wizard-saved svg {
+    width: 18px;
+    height: 18px;
+}
+
+
+@media (max-width: 640px) {
+    .wizard-grid,
+    .wizard-origin {
+        grid-template-columns: 1fr;
+    }
+
+    .wizard-chips {
+        grid-template-columns: repeat(auto-fill, minmax(min(100%, 130px), 1fr));
+    }
+}
+
+.wizard-file__input {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    opacity: 0;
+    pointer-events: none;
+}
+
+.wizard-file__pick {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    cursor: var(--cursor-hand);
+    text-align: left;
+}
+
+.wizard-file {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.6rem;
+    min-height: 48px;
+    padding: 0.5rem 0.8rem;
+    border: 1px solid rgba(9, 37, 26, 0.14);
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.9);
+    color: var(--v2-ink-glass-deep);
+}
+
+.wizard-file svg,
+.wizard-file__pick svg {
+    flex: none;
+    width: 20px;
+    height: 20px;
+    color: var(--v2-teal-deep);
+}
+
+.wizard-file__name {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    min-width: 0;
+    font-weight: 600;
+    overflow-wrap: anywhere;
+}
+
+.wizard-file__name small {
+    font-weight: 400;
+    color: #4A675A;
+}
+
+.wizard-file__action {
+    padding: 0.35rem 0.7rem;
+    border: 1px solid rgba(9, 37, 26, 0.16);
+    border-radius: 999px;
+    background: rgba(9, 37, 26, 0.06);
+    color: var(--v2-ink-glass-deep);
+    font-size: 0.85rem;
+    cursor: var(--cursor-hand);
+}
+
+.wizard-file__action:hover:not(:disabled) {
+    background: rgba(9, 37, 26, 0.12);
+}
+
+.wizard-chip__text {
+    min-width: 0;
+    overflow-wrap: anywhere;
+    hyphens: auto;
+}
