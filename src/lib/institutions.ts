@@ -131,5 +131,24 @@ export const INSTITUTIONS: Institution[] = [
   { value: "northeastern", name: "Northeastern University" },
 ];
 
+/** Schools with a head delegate this year: the only options in the delegation picker. */
+export const DELEGATION_SCHOOLS: string[] = [
+  "carleton",
+  "concordia",
+  "john-abbott",
+  "ontario-tech",
+  "ucalgary",
+  "udem",
+  "guelph",
+  "manitoba",
+  "uottawa",
+  "uregina",
+  "york",
+];
+
+export const DELEGATION_INSTITUTIONS = INSTITUTIONS.filter((i) =>
+  DELEGATION_SCHOOLS.includes(i.value)
+).sort((a, b) => a.name.localeCompare(b.name));
+
 export const findInstitution = (value: string) =>
   INSTITUTIONS.find((institution) => institution.value === value);

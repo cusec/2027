@@ -5,7 +5,7 @@ import { useTranslations } from "next-intl";
 import { Check, Link2, Sparkles, TrainFront } from "lucide-react";
 import { useRouter } from "@/i18n/navigation";
 import type { ProfileAnswers } from "@/lib/interface";
-import { INSTITUTIONS } from "@/lib/institutions";
+import { DELEGATION_INSTITUTIONS } from "@/lib/institutions";
 import {
   ATTEND_REASON_OPTIONS,
   ATTENDED_OPTIONS,
@@ -216,7 +216,7 @@ export default function InterestsForm({ initial, startIndex, initialResume }: In
 
   const delegationOptions = [
     { value: INDEPENDENT_DELEGATION, label: t("q-delegation-independent") },
-    ...INSTITUTIONS.map((i) => ({ value: i.value, label: i.name })),
+    ...DELEGATION_INSTITUTIONS.map((i) => ({ value: i.value, label: i.name })),
   ];
 
   const looking = !answers.opportunities.includes(NOT_LOOKING);
