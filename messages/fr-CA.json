@@ -15,7 +15,8 @@
         "hero": {
             "tagline": "La plus ancienne conférence étudiante canadienne en génie logiciel.",
             "cta-primary": "Obtenir des billets",
-            "cta-secondary": "Découvrir CUSEC"
+            "cta-secondary": "Découvrir CUSEC",
+            "dates": "7 au 9 janvier 2027 · Montréal, QC"
         },
         "sky": {
             "heading": "Vingt-cinq ans de conversations dans les couloirs devenues des carrières.",
@@ -71,7 +72,8 @@
             "know-2": "Le lieu, l’horaire et les conférenciers seront annoncés au fur et à mesure des confirmations.",
             "know-3": "Informez-vous d’abord auprès du chef de délégation de votre école ; l’admission générale ouvre ensuite.",
             "know-4": "Les remboursements sont possibles pendant 30 jours après l’achat, jusqu’au 27 décembre 2026.",
-            "player-volume": "Volume"
+            "player-volume": "Volume",
+            "player-hide": "Masquer le lecteur"
         },
         "archive": {
             "heading": "Les archives – choisissez une carte, une année",
@@ -183,7 +185,12 @@
             "linkedin": "LinkedIn",
             "youtube": "YouTube",
             "github": "GitHub",
-            "legal": "© 2026 CUSEC · Fait avec 💚 · la rivière où coulent les rêves"
+            "legal": "© 2026 CUSEC · Fait avec 💚 · la rivière où coulent les rêves",
+            "tagline": "La plus ancienne conférence étudiante en génie logiciel au Canada.",
+            "col-site": "Site",
+            "col-legal": "Légal",
+            "col-social": "Suivez-nous",
+            "dates": "7 au 9 janvier 2027 · Montréal, QC"
         },
         "speakers": {
             "meta-title": "Conférenciers",

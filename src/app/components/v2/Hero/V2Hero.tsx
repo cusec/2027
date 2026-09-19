@@ -24,6 +24,8 @@ export default function V2Hero() {
 
 				<p className="v2-hero__tagline">{t("tagline")}</p>
 
+				<p className="v2-hero__dates">{t("dates")}</p>
+
 				<div className="v2-hero__actions">
 					<a className="v2-btn v2-btn--primary" href="#passes">
 						{t("cta-primary")}

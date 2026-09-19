@@ -34,9 +34,9 @@
     margin-inline: auto;
     padding: 10px 12px 10px 22px;
     border-radius: 999px;
-    background: rgba(255, 255, 255, 0.22);
-    border: 1px solid rgba(255, 255, 255, 0.55);
-    backdrop-filter: blur(30px) saturate(1.6) brightness(1.18);
+    background: rgba(255, 255, 255, 0.42);
+    border: 1px solid rgba(255, 255, 255, 0.72);
+    backdrop-filter: blur(30px) saturate(1.5) brightness(1.2);
     box-shadow: 0 10px 30px rgba(11, 26, 58, 0.16),
         inset 0 1px 0 rgba(255, 255, 255, 0.5);
     color: var(--v2-ink-deep);
@@ -45,8 +45,8 @@
 }
 
 .v2-nav__bar.is-lifted {
-    background: rgba(255, 255, 255, 0.38);
-    border-color: rgba(255, 255, 255, 0.7);
+    background: rgba(255, 255, 255, 0.55);
+    border-color: rgba(255, 255, 255, 0.82);
     backdrop-filter: blur(34px) saturate(1.6) brightness(1.24);
     box-shadow: 0 14px 38px rgba(11, 26, 58, 0.2),
         inset 0 1px 0 rgba(255, 255, 255, 0.6);
@@ -365,5 +365,21 @@
 @media (min-width: 1081px) {
     .v2-nav__mobile {
         display: none;
+    }
+}
+
+/* Tactile press, matching .v2-btn:active in base.css. */
+.v2-locale__trigger {
+    transition: background-color 160ms ease, border-color 160ms ease,
+        transform 120ms cubic-bezier(0.2, 0, 0.2, 1);
+}
+
+.v2-locale__trigger:active {
+    transform: translateY(1px) scale(0.98);
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .v2-locale__trigger:active {
+        transform: none;
     }
 }

@@ -356,3 +356,19 @@
         grid-template-columns: 1fr;
     }
 }
+
+/* Tactile press, matching .v2-btn:active in base.css. */
+.ticket-toggle__option {
+    transition: background-color 160ms ease, color 160ms ease,
+        transform 120ms cubic-bezier(0.2, 0, 0.2, 1);
+}
+
+.ticket-toggle__option:active {
+    transform: translateY(1px) scale(0.98);
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .ticket-toggle__option:active {
+        transform: none;
+    }
+}
