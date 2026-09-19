@@ -1,60 +1,133 @@
 /* ==========================================================================
    v2 - Footer
+
+   A wide sign-off rather than a centred stack: brand and dates on the left,
+   three short link columns on the right, then the wordmark set as large as
+   the container allows, the way a poster signs its own bottom edge.
    ========================================================================== */
 .v2-footer {
     position: relative;
     z-index: 1;
-    padding-block: 46px 40px;
+    padding-block: 72px 28px;
     background: #173B3D;
     color: var(--v2-white);
-    text-align: center;
 }
 
 .v2-footer__inner {
     display: flex;
     flex-direction: column;
-    align-items: center;
-    gap: 18px;
+    gap: 44px;
+}
+
+.v2-footer__top {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 40px 64px;
+}
+
+.v2-footer__intro {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    max-width: 34ch;
 }
 
 .v2-footer__brand {
     display: inline-flex;
     align-items: center;
-    gap: 9px;
+    gap: 10px;
     color: var(--v2-white);
     text-decoration: none;
-    font-size: 16px;
+    font-size: 18px;
 }
 
-.v2-footer__links,
-.v2-footer__socials {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 10px 22px;
+.v2-footer__tagline {
+    margin: 0;
+    font-size: 15px;
+    line-height: 1.55;
+    color: rgba(244, 255, 252, 0.72);
 }
 
-.v2-footer__links a {
-    color: rgba(255, 255, 255, 0.9);
-    text-decoration: none;
-    font-size: 14px;
-}
-
-.v2-footer__socials a {
-    color: var(--v2-lime);
-    text-decoration: none;
-    font-size: 13.5px;
-}
-
-.v2-footer__links a:hover,
-.v2-footer__socials a:hover {
-    text-decoration: underline;
-}
-
-.v2-footer__legal {
-    margin: 6px 0 0;
-    font-size: 11px;
+.v2-footer__dates {
+    margin: 0;
+    font-size: 12px;
     letter-spacing: 0.08em;
     color: var(--v2-lime);
 }
 
+.v2-footer__cols {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 28px 56px;
+}
+
+.v2-footer__col {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    min-width: 110px;
+}
+
+.v2-footer__col-head {
+    margin: 0 0 2px;
+    font-size: 11px;
+    font-weight: var(--v2-font-pixel-weight);
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: rgba(244, 255, 252, 0.5);
+}
+
+.v2-footer__col a {
+    width: fit-content;
+    color: rgba(244, 255, 252, 0.88);
+    text-decoration: none;
+    font-size: 14.5px;
+    transition: color 160ms ease, transform 160ms ease;
+}
+
+.v2-footer__col a:hover {
+    color: var(--v2-lime);
+    transform: translateX(3px);
+}
+
+/* Fills the width at every size: the wordmark is the footer's rule line. */
+.v2-footer__wordmark {
+    margin: 0;
+    padding-top: 28px;
+    border-top: 1px solid rgba(244, 255, 252, 0.14);
+    font-size: clamp(2.6rem, 15.2vw, 13.5rem);
+    line-height: 0.95;
+    letter-spacing: -0.01em;
+    text-align: center;
+    color: rgba(244, 255, 252, 0.1);
+    user-select: none;
+}
+
+.v2-footer__legal {
+    margin: 0;
+    font-size: 11.5px;
+    letter-spacing: 0.06em;
+    text-align: center;
+    color: rgba(244, 255, 252, 0.45);
+}
+
+@media (max-width: 720px) {
+    .v2-footer {
+        padding-block: 52px 24px;
+    }
+
+    .v2-footer__inner {
+        gap: 34px;
+    }
+
+    .v2-footer__cols {
+        gap: 24px 40px;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .v2-footer__col a:hover {
+        transform: none;
+    }
+}

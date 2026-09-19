@@ -114,6 +114,26 @@
     text-shadow: 0 2px 12px rgba(11, 26, 58, 0.35);
 }
 
+/* The dates were only stated far down the page, so the hero carries them. */
+.v2-hero__dates {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    margin: 18px 0 0;
+    padding: 9px 18px;
+    border: 1px solid rgba(255, 255, 255, 0.6);
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.24);
+    backdrop-filter: blur(10px);
+    box-shadow: 0 6px 18px rgba(11, 26, 58, 0.18);
+    color: var(--v2-white);
+    font-family: var(--v2-font-pixel);
+    font-weight: var(--v2-font-pixel-weight);
+    font-size: clamp(12px, 1.5vw, 14px);
+    letter-spacing: 0.06em;
+    text-shadow: 0 1px 6px rgba(11, 26, 58, 0.4);
+}
+
 .v2-hero__actions {
     display: flex;
     flex-wrap: wrap;

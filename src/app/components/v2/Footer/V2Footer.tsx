@@ -5,7 +5,9 @@ import { Link } from "@/i18n/navigation";
  * `route` marks a link that leaves the current page, so it renders through the
  * i18n Link rather than a bare anchor. The rest are in-page fragments.
  */
-const LINKS: { key: string; route?: string }[] = [
+type FooterLink = { key: string; route?: string };
+
+const SITE_LINKS: FooterLink[] = [
 	{ key: "about" },
 	{ key: "speakers", route: "/speakers" },
 	// Hidden for the first v2 release: landing, speakers, sponsors and
@@ -17,6 +19,9 @@ const LINKS: { key: string; route?: string }[] = [
 	...(process.env.SCAVENGER_HUNT_ENABLED === "true"
 		? [{ key: "hunt", route: "/scavenger" }]
 		: []),
+];
+
+const LEGAL_LINKS: FooterLink[] = [
 	{ key: "conduct", route: "/code-of-conduct" },
 	{ key: "privacy", route: "/privacy-policy" },
 	{ key: "terms", route: "/ticket-terms" },
@@ -29,46 +34,78 @@ const SOCIALS = [
 	{ key: "github", href: "https://github.com/cusec" },
 ] as const;
 
+function FooterColumn({
+	heading,
+	links,
+	t,
+}: {
+	heading: string;
+	links: FooterLink[];
+	t: (key: string) => string;
+}) {
+	return (
+		<nav className="v2-footer__col">
+			<h2 className="v2-footer__col-head v2-pixel">{heading}</h2>
+			{links.map(({ key, route }) =>
+				route ? (
+					<Link key={key} href={route}>
+						{t(key)}
+					</Link>
+				) : (
+					<a key={key} href={`#${key}`}>
+						{t(key)}
+					</a>
+				),
+			)}
+		</nav>
+	);
+}
+
 export default function V2Footer() {
 	const t = useTranslations("V2.footer");
 
 	return (
 		<footer className="v2-footer" id="team">
 			<div className="v2-container v2-footer__inner">
-				<a className="v2-footer__brand" href="#top">
-					<img
-						src="/assets/v2/logo-icosahedron.webp"
-						alt=""
-						width={28}
-						height={28}
-						aria-hidden="true"
-					/>
-					<span className="v2-pixel">CUSEC 2027</span>
-				</a>
-
-				<nav className="v2-footer__links">
-					{LINKS.map(({ key, route }) =>
-						route ? (
-							<Link key={key} href={route}>
-								{t(key)}
-							</Link>
-						) : (
-							<a key={key} href={`#${key}`}>
-								{t(key)}
-							</a>
-						),
-					)}
-				</nav>
-
-				<nav className="v2-footer__socials">
-					{SOCIALS.map(({ key, href }) => (
-						<a key={key} href={href} target="_blank" rel="noreferrer noopener">
-							{t(key)}
+				<div className="v2-footer__top">
+					<div className="v2-footer__intro">
+						<a className="v2-footer__brand" href="#top">
+							<img
+								src="/assets/v2/logo-icosahedron.webp"
+								alt=""
+								width={34}
+								height={34}
+								aria-hidden="true"
+							/>
+							<span className="v2-pixel">CUSEC 2027</span>
 						</a>
-					))}
-				</nav>
+						<p className="v2-footer__tagline">{t("tagline")}</p>
+						<p className="v2-footer__dates v2-pixel">{t("dates")}</p>
+					</div>
 
-				<p className="v2-footer__legal v2-pixel">{t("legal")}</p>
+					<div className="v2-footer__cols">
+						<FooterColumn heading={t("col-site")} links={SITE_LINKS} t={t} />
+						<FooterColumn heading={t("col-legal")} links={LEGAL_LINKS} t={t} />
+
+						<nav className="v2-footer__col">
+							<h2 className="v2-footer__col-head v2-pixel">{t("col-social")}</h2>
+							{SOCIALS.map(({ key, href }) => (
+								<a key={key} href={href} target="_blank" rel="noreferrer noopener">
+									{t(key)}
+								</a>
+							))}
+						</nav>
+					</div>
+				</div>
+
+				{/* The sign-off: the wordmark set as big as the column allows, the way
+				    a poster signs its own bottom edge. Decorative - the same words
+				    are already the brand link above. */}
+				<p className="v2-footer__wordmark v2-pixel" aria-hidden="true">
+					CUSEC 2027
+				</p>
+
+				<p className="v2-footer__legal">{t("legal")}</p>
 			</div>
 		</footer>
 	);

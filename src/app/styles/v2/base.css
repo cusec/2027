@@ -216,6 +216,37 @@
     outline-offset: 3px;
 }
 
+/* Tactile press. The lift on hover is the button rising off the page; this is
+   it going back down under a finger, shadow collapsing with it. Kept short so
+   a tap still registers the dip before the page moves on. */
+.v2-btn {
+    transition: transform 120ms cubic-bezier(0.2, 0, 0.2, 1),
+        box-shadow 160ms ease, background-color 160ms ease, filter 120ms ease;
+}
+
+.v2-btn:active:not(:disabled) {
+    transform: translateY(2px) scale(0.985);
+    filter: brightness(0.97);
+    transition-duration: 60ms;
+}
+
+.v2-btn--primary:active:not(:disabled) {
+    box-shadow: 0 2px 6px rgba(31, 59, 44, 0.3),
+        inset 0 2px 5px rgba(31, 59, 44, 0.22);
+}
+
+.v2-btn--ghost:active:not(:disabled) {
+    background: rgba(255, 255, 255, 0.3);
+    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.4),
+        inset 0 2px 6px rgba(11, 26, 58, 0.22);
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .v2-btn:active:not(:disabled) {
+        transform: none;
+    }
+}
+
 /* Page hero ---------------------------------------------------------------
    The badge / title / subline stack at the top of a sub-page. Shared by
    /speakers and /sponsors, which is why it lives here rather than in either

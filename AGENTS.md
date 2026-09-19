@@ -89,7 +89,8 @@ The `[locale]` segment is internal routing only — it never appears in the brow
 One folder per page section, each named after the section and holding that
 section's component plus anything only it uses. Sections are composed in order
 by `[locale]/page.tsx`. All components are prefixed `V2`; only `V2Nav`,
-`V2LocaleSwitcher`, `V2CdPlayer`, `V2Archive`, `V2Wordmark`, `V2ScrollReveal`
+`V2LocaleSwitcher`, `MusicProvider`, `V2CdPlayer`, `V2MiniPlayer`, `V2Archive`,
+`V2Wordmark`, `V2ScrollReveal`
 `V2Faq` and `V2Passes` are client components, everything else is a server component.
 
 ```
@@ -100,6 +101,7 @@ components/v2/
   Hero/      V2Hero.tsx · V2Wordmark.tsx
   Sky/       V2Sky.tsx
   Dawn/      V2Dawn.tsx · V2CdPlayer.tsx · V2Polaroid.tsx
+  Music/     MusicProvider.tsx · V2MiniPlayer.tsx
   Archive/   V2Archive.tsx · V2SdCard.tsx · archiveData.ts
   Hunt/      V2Hunt.tsx
   Passes/    V2Passes.tsx
@@ -121,12 +123,14 @@ since its sections are not reused anywhere else.
 |---|---|
 | `V2Nav` | Floating capsule navbar (see below). Deepens its glass on scroll. |
 | `V2LocaleSwitcher` | Globe pill + a custom listbox for en-CA / fr-CA (see below). Uses `useRouter`/`usePathname` from `@/i18n/navigation`. |
-| `V2Hero` | Icosahedron, edition pill, `CUSEC 2027` wordmark, tagline, two CTAs. |
+| `V2Hero` | Icosahedron, `CUSEC 2027` wordmark, tagline, dates pill, two CTAs. |
 | `V2Wordmark` | The `CUSEC 2027` wordmark: idle letter wave + cursor repel (see below). |
 | `V2ScrollReveal` | One IntersectionObserver that fades in every `.v2-reveal` section. Renders nothing. |
 | `V2Sky` | Statement heading + three frosted info cards. |
 | `V2Dawn` | The collage: polaroids, stat tiles, CUSEC.FM, about / who / good-to-know cards. |
-| `V2CdPlayer` | Decorative CUSEC.FM widget. Plays no audio — the button just spins the disc. |
+| `V2CdPlayer` | The CUSEC.FM widget on the landing page. Only a face for `MusicProvider` - it owns no audio of its own. |
+| `MusicProvider` | Owns the site's one `<audio>`. Mounted in `[locale]/layout.tsx` so a track survives navigation into the ticket flow. Starts itself on the visitor's first gesture (browsers block sound before that) and routes volume through a Web Audio gain node, because iOS ignores `audio.volume`. Build the graph only inside a gesture - a suspended context plays silently. |
+| `V2MiniPlayer` | The dock the player keeps on every page but the landing page, where `V2CdPlayer` already shows. Collapses to a disc so it never covers a form. |
 | `V2Polaroid` | Tilted photo frame with a caption. |
 | `V2Archive` | CUSEC-CAM 2000 + swappable SD cards (see below). |
 | `V2SdCard` | One CUSEC-SD card, rebuilt in CSS so its inserted/idle state can follow the loaded year. |
@@ -153,13 +157,14 @@ Everything is namespaced under a `.v2` root class.
 | `hero.css` | `.v2-hero*` |
 | `sky.css` | `.v2-sky*` |
 | `dawn.css` | `.v2-polaroid`, `.v2-stat`, `.v2-cd*`, `.v2-dawn*` |
+| `music.css` | `.v2-mini*` - the CUSEC.FM dock |
 | `archive.css` | `.v2-cam*`, `.v2-sd*`, `.v2-archive*` |
 | `hunt.css` | `.v2-hunt*`, `.v2-board*` |
 | `passes.css` | `.v2-pass*`, `.v2-passes*` |
 | `sponsors.css` | `.v2-hex*`, `.v2-sponsors*`, and the `/sponsors` page's `.v2-spon-*` |
 | `faq.css` | `.v2-faq*`, `.v2-pad*` |
 | `closing.css` | `.v2-closing*` |
-| `footer.css` | `.v2-footer*` |
+| `footer.css` | `.v2-footer*` - brand and dates left, three link columns right, oversized wordmark as the sign-off |
 | `speakers.css` | everything on `/speakers` — `.v2-spk-*`, `.v2-keynote*`, `.v2-pitch*`, `.v2-btn--outline` |
 
 **Design tokens** live on `.v2` in `base.css`. The palette values were lifted

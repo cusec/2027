@@ -15,7 +15,8 @@
         "hero": {
             "tagline": "Canada's longest-running student software engineering conference.",
             "cta-primary": "Get tickets",
-            "cta-secondary": "Explore CUSEC"
+            "cta-secondary": "Explore CUSEC",
+            "dates": "January 7 to 9, 2027 · Montréal, QC"
         },
         "sky": {
             "heading": "Twenty-five years of hallway conversations that became careers.",
@@ -71,7 +72,8 @@
             "know-2": "The venue, schedule, and speakers are announced as they are confirmed.",
             "know-3": "Ask your school’s Head Delegate about tickets first; general admission opens afterward.",
             "know-4": "Refunds are available for 30 days after purchase, until December 27, 2026.",
-            "player-volume": "Volume"
+            "player-volume": "Volume",
+            "player-hide": "Hide the player"
         },
         "archive": {
             "heading": "The Archive – pick a card, any year",
@@ -183,7 +185,12 @@
             "linkedin": "LinkedIn",
             "youtube": "YouTube",
             "github": "GitHub",
-            "legal": "© 2026 CUSEC · Made with 💚 · the river where dreams flow"
+            "legal": "© 2026 CUSEC · Made with 💚 · the river where dreams flow",
+            "tagline": "Canada's longest-running student software engineering conference.",
+            "col-site": "Site",
+            "col-legal": "Legal",
+            "col-social": "Follow",
+            "dates": "January 7 to 9, 2027 · Montréal, QC"
         },
         "speakers": {
             "meta-title": "Speakers",
