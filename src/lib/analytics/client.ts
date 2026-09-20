@@ -33,11 +33,14 @@ async function getPostHog() {
   const posthog = (await import("posthog-js")).default;
   if (!initialized) {
     initialized = true;
+    const host =
+      process.env.NEXT_PUBLIC_POSTHOG_HOST ?? "https://us.i.posthog.com";
     posthog.init(key, {
       // Same-origin proxy (next.config.ts rewrites) so ad blockers don't
-      // strand the events; ui_host points PostHog's toolbar at the real app.
+      // strand the events; ui_host points PostHog's toolbar at the real app
+      // (us.i.posthog.com is ingestion, us.posthog.com is the app).
       api_host: "/ingest",
-      ui_host: process.env.NEXT_PUBLIC_POSTHOG_HOST ?? "https://us.posthog.com",
+      ui_host: host.replace(".i.posthog.com", ".posthog.com"),
       autocapture: false,
       capture_pageview: false,
       disable_session_recording: true,
