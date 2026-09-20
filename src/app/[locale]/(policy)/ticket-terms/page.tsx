@@ -1,12 +1,21 @@
 import type { Metadata } from "next";
+import { alternatesFor } from "@/lib/seo";
 import { analyticsAttributes } from "@/lib/analytics/events";
 import { Link } from "@/i18n/navigation";
 
-export const metadata: Metadata = {
-  title: "Ticket Terms - CUSEC 2027",
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+  const { locale } = await params;
+  return {
+    title: "Ticket Terms",
   description:
     "Terms covering CUSEC 2027 ticket sales: who you are buying from, payment, refunds and admission.",
-};
+    alternates: alternatesFor(locale, "/ticket-terms"),
+  };
+}
 
 /**
  * Ticket sale terms. Everything stated here is drawn from how the purchase

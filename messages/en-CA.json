@@ -190,7 +190,9 @@
             "col-site": "Site",
             "col-legal": "Legal",
             "col-social": "Follow",
-            "dates": "January 7 to 9, 2027 · Montréal, QC"
+            "dates": "January 7 to 9, 2027 · Montréal, QC",
+            "col-editions": "Past editions",
+            "all-editions": "All editions"
         },
         "speakers": {
             "meta-title": "Speakers",
@@ -239,7 +241,9 @@
         "checkout-not-configured": "Coming Soon",
         "loading-checkout": "Loading…",
         "purchased": "Purchased",
-        "vip-chip": "+{price} VIP"
+        "vip-chip": "+{price} VIP",
+        "meta-title": "Tickets",
+        "meta-description": "Passes for CUSEC 2027, January 7 to 9, 2027 in Montréal. What each step of registration asks for, and what a ticket includes."
     },
     "TicketWizard": {
         "nav-label": "Ticket purchase steps",

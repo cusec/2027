@@ -9,6 +9,7 @@ import V2SpeakersHero from "@/app/components/v2/Speakers/V2SpeakersHero";
 import V2SpeakersSoon from "@/app/components/v2/Speakers/V2SpeakersSoon";
 import V2SpeakerPitch from "@/app/components/v2/Speakers/V2SpeakerPitch";
 import V2Footer from "@/app/components/v2/Footer/V2Footer";
+import { alternatesFor } from "@/lib/seo";
 
 export async function generateMetadata({
 	params,
@@ -20,6 +21,7 @@ export async function generateMetadata({
 	return {
 		title: t("meta-title"),
 		description: t("subline"),
+		alternates: alternatesFor(locale, "/speakers"),
 	};
 }
 

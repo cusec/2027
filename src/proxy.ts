@@ -15,7 +15,8 @@ const intlMiddleware = createIntlMiddleware(routing);
  *      callback, profile, access-token) and rolls/refreshes the session cookie
  *      on every request.
  *   2. next-intl - locale detection + `NEXT_LOCALE` cookie. Uses
- *      `localePrefix: 'never'`, so the locale never appears in the URL.
+ *      `localePrefix: 'as-needed'`: English stays unprefixed, French is
+ *      served under `/fr-CA` so it has a URL search engines can index.
  *
  * Order: Auth0 runs first so it can rotate the session cookie; next-intl then
  * produces the response, and we carry Auth0's Set-Cookie values onto it.

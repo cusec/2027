@@ -1,11 +1,20 @@
 import type { Metadata } from "next";
+import { alternatesFor } from "@/lib/seo";
 import { analyticsAttributes } from "@/lib/analytics/events";
 
-export const metadata: Metadata = {
-  title: "Code of Conduct - CUSEC 2027",
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+  const { locale } = await params;
+  return {
+    title: "Code of Conduct",
   description:
     "The behaviour expected of everyone taking part in CUSEC 2027, and how to report a violation.",
-};
+    alternates: alternatesFor(locale, "/code-of-conduct"),
+  };
+}
 
 /**
  * Carried over from https://2026.cusec.net/code-of-conduct. The wording is the

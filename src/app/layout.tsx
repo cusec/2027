@@ -8,6 +8,7 @@ import "./globals.css";
 import "./styles/Tickets/TicketCard.css";
 import "./styles/TicketWizard/TicketWizard.css";
 import "./styles/v2/index.css";
+import { SITE_URL } from "@/lib/seo";
 
 // Body copy face for the main site. Exposed as a CSS variable so swapping it
 // for the real Figma font later is a one-line change.
@@ -18,14 +19,9 @@ const bodyFont = Nunito({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL(
-    process.env.NEXT_PUBLIC_SITE_URL || "https://2027.cusec.net"
-  ),
+  metadataBase: new URL(SITE_URL),
 
-  title: {
-    default: "CUSEC 2027 - Canadian University Software Engineering Conference",
-    template: "%s | CUSEC 2027",
-  },
+  title: "CUSEC 2027 - Canadian University Software Engineering Conference",
   description:
     "CUSEC 2027 is the 26th annual Canadian University Software Engineering Conference - Canada's longest-running student-led software engineering conference, held in Montréal, QC in January 2027.",
   keywords: [
@@ -63,14 +59,14 @@ export const metadata: Metadata = {
   },
 
   alternates: {
-    canonical: "/",
+    canonical: "./",
   },
 
   openGraph: {
     title: "CUSEC 2027 - Canadian University Software Engineering Conference",
     description:
       "Three days of talks, workshops, career conversations, and late-night ideas at Canada's longest-running student-led software engineering conference.",
-    url: "/",
+    url: "./",
     siteName: "CUSEC 2027",
     type: "website",
     locale: "en_CA",
