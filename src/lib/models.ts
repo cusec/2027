@@ -79,6 +79,10 @@ const userSchema = new Schema(
     },
     hasSeenIntro: { type: Boolean, default: false },
     personalityType: { type: String, default: null },
+    // Random UUID used as the PostHog distinct id for this account's client
+    // and server events. Deliberately NOT the Mongo or Auth0 id: analytics
+    // systems must never hold identifiers that can be joined back to PII.
+    analyticsId: { type: String, default: null, unique: true, sparse: true },
     // First-party campaign attribution. firstTouch is written once and never
     // changes; latestTouch moves only on a new campaign/referrer touch. The
     // pending pre-auth copy lives in the `cusec_attribution` cookie until the

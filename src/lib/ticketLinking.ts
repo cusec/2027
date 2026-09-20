@@ -6,6 +6,7 @@ import {
 } from "./ticketTailor";
 import { trackServerEvent } from "./analytics/server";
 import { ticketCategoryFromName } from "./analytics/events";
+import { ensureAnalyticsId } from "./userService";
 
 export interface LinkResult {
   linked: boolean;
@@ -129,10 +130,14 @@ export async function linkTicketPurchase(
 
   // The purchase conversion. Only in this branch: the already-linked early
   // return above must not re-emit it.
-  void trackServerEvent("ticket_purchase_completed", {
-    ticket_type: ticketCategoryFromName(ticket.name ?? ""),
-    completion_path: completionPath,
-  });
+  void trackServerEvent(
+    "ticket_purchase_completed",
+    {
+      ticket_type: ticketCategoryFromName(ticket.name ?? ""),
+      completion_path: completionPath,
+    },
+    await ensureAnalyticsId(matchedUser),
+  );
 
   return { linked: true, purchasedTicketName: ticket.name };
 }

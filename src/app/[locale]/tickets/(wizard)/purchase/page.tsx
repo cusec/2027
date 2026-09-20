@@ -1,7 +1,7 @@
 import { getTranslations, getLocale } from "next-intl/server";
 import { auth0 } from "@/lib/auth0";
 import { redirect } from "@/i18n/navigation";
-import { findOrCreateUser } from "@/lib/userService";
+import { findOrCreateUser, ensureAnalyticsId } from "@/lib/userService";
 import connectMongoDB from "@/lib/mongodb";
 import { DemographicInfo } from "@/lib/models";
 import { getWizardStatus } from "@/lib/ticketWizard";
@@ -10,6 +10,7 @@ import { getBaseUrl } from "@/lib/siteUrl";
 import { getTicketTypes, getTicketWidgetConfig } from "@/lib/ticketTailor";
 import type { DemographicInfo as SavedProfile } from "@/lib/interface";
 import PurchaseStepClient from "@/app/components/TicketWizard/PurchaseStepClient";
+import PostHogIdentify from "@/app/components/Analytics/PostHogIdentify";
 import SignInCard from "@/app/components/TicketWizard/SignInCard";
 import { answersFrom } from "@/app/components/TicketWizard/profileAnswers";
 
@@ -63,6 +64,7 @@ export default async function PurchasePage() {
 
   return (
     <div className="tickets-wrapper">
+      <PostHogIdentify analyticsId={await ensureAnalyticsId(user)} />
       {!status.purchaseComplete && (
         <div className="tickets-header">
           <h1 className="tickets-heading">{t("purchase-heading")}</h1>

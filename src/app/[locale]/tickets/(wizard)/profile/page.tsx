@@ -4,6 +4,7 @@ import { getBaseUrl } from "@/lib/siteUrl";
 import type { DemographicInfo as SavedProfile } from "@/lib/interface";
 import { isLocalTicketPreview, LOCAL_TICKET_PREVIEW_EMAIL } from "@/lib/localTicketPreview";
 import ProfileForm from "@/app/components/TicketWizard/ProfileForm";
+import PostHogIdentify from "@/app/components/Analytics/PostHogIdentify";
 import AlreadyTicketedModal from "@/app/components/TicketWizard/AlreadyTicketedModal";
 import SignInCard from "@/app/components/TicketWizard/SignInCard";
 import { answersFrom, EMPTY_ANSWERS } from "@/app/components/TicketWizard/profileAnswers";
@@ -26,7 +27,7 @@ export default async function ProfilePage() {
   const email = session?.user?.email;
   if (!email) return <SignInCard returnTo="/tickets/profile" />;
 
-  const [{ findOrCreateUser }, { default: connectMongoDB }, { DemographicInfo }, { getWizardStatus }] =
+  const [{ findOrCreateUser, ensureAnalyticsId }, { default: connectMongoDB }, { DemographicInfo }, { getWizardStatus }] =
     await Promise.all([
       import("@/lib/userService"),
       import("@/lib/mongodb"),
@@ -67,6 +68,7 @@ export default async function ProfilePage() {
 
   return (
     <div className="tickets-wrapper">
+      <PostHogIdentify analyticsId={await ensureAnalyticsId(user)} />
       <ProfileForm initial={initial} startIndex={startIndex} />
     </div>
   );
