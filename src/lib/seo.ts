@@ -17,6 +17,22 @@ export const PUBLIC_PATHS = [
 	"/ticket-terms",
 ] as const;
 
+/**
+ * Served at a /fr-CA URL but rendered from hardcoded English: the policy copy
+ * has no translation yet. They get no hreflang and canonicalise to the English
+ * URL rather than claiming a French version that does not exist. Remove a path
+ * from here the moment its copy is translated.
+ */
+const UNTRANSLATED_PATHS: readonly string[] = [
+	"/code-of-conduct",
+	"/privacy-policy",
+	"/ticket-terms",
+];
+
+export function isTranslated(path: string) {
+	return !UNTRANSLATED_PATHS.includes(path);
+}
+
 export function absoluteUrl(locale: string, path: string) {
 	return new URL(getPathname({ locale, href: path }), SITE_URL).toString();
 }
@@ -27,6 +43,10 @@ export function absoluteUrl(locale: string, path: string) {
  * every page rather than only the alternate.
  */
 export function alternatesFor(locale: string, path: string) {
+	if (!isTranslated(path)) {
+		return { canonical: absoluteUrl(routing.defaultLocale, path) };
+	}
+
 	const languages = Object.fromEntries(
 		routing.locales.map((l) => [l, absoluteUrl(l, path)]),
 	);
