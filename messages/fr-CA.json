@@ -15,7 +15,7 @@
         "hero": {
             "tagline": "La plus ancienne conférence étudiante canadienne en génie logiciel.",
             "cta-primary": "Obtenir des billets",
-            "cta-secondary": "Découvrir CUSEC",
+            "cta-secondary": "Découvrir CUCIL",
             "dates": "7 au 9 janvier 2027 · Montréal, QC"
         },
         "sky": {
@@ -28,8 +28,8 @@
             "card-3-body": "Quiz, karaoké et démos tardives. Les conversations continuent bien après la dernière conférence."
         },
         "dawn": {
-            "photo-1-caption": "tirée des archives de CUSEC",
-            "photo-2-caption": "tirée des archives de CUSEC",
+            "photo-1-caption": "tirée des archives de CUCIL",
+            "photo-2-caption": "tirée des archives de CUCIL",
             "stat-1-value": "26",
             "stat-1-label": "éditions",
             "stat-2-value": "350+",
@@ -44,9 +44,9 @@
             "player-play": "Lecture",
             "player-pause": "Pause",
             "player-next": "Piste suivante",
-            "about-eyebrow": "Qu'est-ce que CUSEC",
+            "about-eyebrow": "Qu'est-ce que CUCIL",
             "about-title": "La plus ancienne conférence canadienne de génie logiciel menée par des étudiants.",
-            "about-body": "Chaque année, des bénévoles étudiants de partout au Canada bâtissent CUSEC de A à Z. Le programme reste ainsi près de ce que les étudiants apprennent, créent et cherchent à comprendre aujourd’hui.",
+            "about-body": "CUCIL — Conférence universitaire canadienne en informatique et génie logiciel, connue en anglais sous le nom de CUSEC — est bâtie chaque année de A à Z par des bénévoles étudiants de partout au Canada. Le programme reste ainsi près de ce que les étudiants apprennent, créent et cherchent à comprendre aujourd’hui.",
             "about-tag-1": "Apprendre",
             "about-tag-1-body": "auprès d’experts de renommée mondiale, sur scène et dans les ateliers",
             "about-tag-2": "Rencontrer",
@@ -91,7 +91,7 @@
             "next-photo": "Photo suivante"
         },
         "hunt": {
-            "title": "La chasse au trésor de CUSEC",
+            "title": "La chasse au trésor de CUCIL",
             "body": "Trouvez des indices partout dans le lieu de la conférence, notamment dans les présentations, aux kiosques des commanditaires et dans les corridors. Balayez des codes, résolvez des énigmes, grimpez au classement en direct et courez la chance de gagner des prix.",
             "board-title": "Comment jouer",
             "board-live": "2027",
@@ -125,7 +125,7 @@
             "vip-perk-3": "Photo professionnelle",
             "vip-perk-4": "Porte-clés VIP personnalisés (*ou article similaire selon les quantités disponibles)",
             "cta": "Obtenir des billets",
-            "note": "Un billet par délégué, acheté avec votre propre compte CUSEC"
+            "note": "Un billet par délégué, acheté avec votre propre compte CUCIL"
         },
         "sponsors": {
             "heading": "Commanditaires",
@@ -140,7 +140,7 @@
             "subline": "Nous annoncerons les entreprises qui soutiennent CUSEC 2027 au fil des confirmations. Vous souhaitez commanditer? Écrivez-nous.",
             "cta-primary": "Devenir commanditaire",
             "cta-secondary": "Voir les niveaux",
-            "photo-caption": "tiré des archives CUSEC",
+            "photo-caption": "tiré des archives CUCIL",
             "why-eyebrow": "Pourquoi commanditer",
             "why-title": "Rencontrez les étudiants qui bâtissent la suite.",
             "why-body": "Trois jours à Montréal avec des étudiants de partout au Canada - dans les conférences, dans les ateliers et dans les discussions de couloir entre les deux.",
@@ -165,7 +165,7 @@
             "q4": "Dois-je organiser mon propre hébergement ?",
             "a4": "<p>Les étudiants qui participent avec une délégation doivent loger dans l’hébergement organisé par leur chef de délégation. Regrouper les délégations aide les chefs de délégation à coordonner les arrivées, la présence et le soutien pendant la conférence.</p><p>Adressez vos questions d’hébergement ou toute situation exceptionnelle à votre chef de délégation.</p>",
             "q5": "Puis-je obtenir un remboursement ou revendre mon billet ?",
-            "a5": "<p>Vous ne pouvez pas revendre un billet CUSEC à un prix supérieur à celui que vous avez payé.</p><p>Les remboursements sont possibles pendant 30 jours après l’achat, ou jusqu’au 27 décembre 2026 à 23 h 59 HNE, selon la première échéance.</p><p>Si vous ne pouvez pas venir, écrivez à <email>info@cusec.net</email> et mettez votre chef de délégation en copie s’il y a lieu. Nous ferons notre possible pour vous aider.</p>"
+            "a5": "<p>Vous ne pouvez pas revendre un billet CUCIL à un prix supérieur à celui que vous avez payé.</p><p>Les remboursements sont possibles pendant 30 jours après l’achat, ou jusqu’au 27 décembre 2026 à 23 h 59 HNE, selon la première échéance.</p><p>Si vous ne pouvez pas venir, écrivez à <email>info@cusec.net</email> et mettez votre chef de délégation en copie s’il y a lieu. Nous ferons notre possible pour vous aider.</p>"
         },
         "closing": {
             "heading": "À bientôt à Montréal.",
@@ -216,7 +216,7 @@
             "topic-design": "Design et UX",
             "topic-oss": "Logiciel libre",
             "topic-grad": "Cycles supérieurs",
-            "pitch-title": "Vous voulez prendre la parole à CUSEC ?",
+            "pitch-title": "Vous voulez prendre la parole à CUCIL ?",
             "pitch-body": "Nous réservons du temps de scène aux étudiants et aux nouveaux conférenciers chaque année.",
             "pitch-cta": "Proposer une conférence",
             "pitch-secondary": "Proposer quelqu’un",
@@ -276,7 +276,7 @@
         "purchase-claim-label": "Courriel utilisé au paiement",
         "purchase-claim-submit": "Associer mon billet",
         "purchase-claim-error-no-order": "Aucune commande CUSEC 2027 complétée n'a été trouvée pour ce courriel.",
-        "purchase-claim-error-taken": "Ce billet est déjà associé à un autre compte. Contactez l'équipe CUSEC.",
+        "purchase-claim-error-taken": "Ce billet est déjà associé à un autre compte. Contactez l'équipe CUCIL.",
         "purchase-claim-error-invalid": "Veuillez entrer une adresse courriel valide.",
         "purchase-embed-blocked": "Le paiement n'a pas pu s'afficher dans cette fenêtre. Continuez ci-dessous. Nous vous ramènerons ici et confirmerons votre billet automatiquement.",
         "nav-back": "← Retour",
@@ -293,7 +293,7 @@
         "nav-profile": "Profil",
         "nav-interests": "Intérêts",
         "nav-ticket": "Billet",
-        "intro-step-account": "Créez votre compte CUSEC",
+        "intro-step-account": "Créez votre compte CUCIL",
         "intro-step-account-note": "Inscrivez-vous avec le courriel que vous utiliserez pendant tout le congrès. Votre billet s’y rattache automatiquement.",
         "intro-step-profile": "Créez votre profil de participant",
         "intro-step-profile-note": "Quelques questions sur vous, vos études ou votre travail, et d’où vous venez.",
@@ -336,16 +336,16 @@
         "q-travel-from": "D’où voyagez-vous?",
         "goals-heading": "Qu’est-ce qui vous amène?",
         "card-goals": "Vos objectifs",
-        "q-attend-reasons": "Pourquoi participez-vous à CUSEC? Choisissez-en jusqu’à 3.",
-        "q-success": "Qu’est-ce qui ferait de CUSEC un succès pour vous? Choisissez-en jusqu’à 3.",
+        "q-attend-reasons": "Pourquoi participez-vous à CUCIL? Choisissez-en jusqu’à 3.",
+        "q-success": "Qu’est-ce qui ferait de CUCIL un succès pour vous? Choisissez-en jusqu’à 3.",
         "card-career": "Intérêts professionnels",
         "q-work-arrangement": "Mode de travail préféré",
         "q-opportunities": "Quelles occasions vous intéressent?",
         "q-tech-areas": "Quels domaines techniques vous intéressent? Choisissez-en jusqu’à 5.",
         "q-work-locations": "Où êtes-vous prêt à travailler? Choisissez-en jusqu’à 5.",
         "travel-heading": "Planifiez votre voyage",
-        "experience-heading": "Planifiez votre expérience CUSEC",
-        "card-travel": "Se rendre à CUSEC",
+        "experience-heading": "Planifiez votre expérience CUCIL",
+        "card-travel": "Se rendre à CUCIL",
         "q-transport": "Comment vous rendez-vous à Montréal?",
         "q-delegation": "Voyagez-vous avec une délégation de votre école?",
         "q-delegation-school": "Quelle délégation?",
@@ -353,8 +353,8 @@
         "q-connect-school": "Voulez-vous rencontrer les participants de votre école?",
         "q-travel-funding": "Une aide au voyage influencerait-elle votre capacité à participer?",
         "q-accommodation": "Avez-vous besoin d’hébergement?",
-        "card-about": "À propos de CUSEC",
-        "q-heard-from": "Comment avez-vous entendu parler de CUSEC?",
+        "card-about": "À propos de CUCIL",
+        "q-heard-from": "Comment avez-vous entendu parler de CUCIL?",
         "q-convinced-by": "Qu’est-ce qui vous a convaincu de vous inscrire?",
         "q-attended": "À quelles éditions avez-vous participé?",
         "q-session-formats": "Quels formats de séance vous intéressent? Choisissez-en jusqu’à 5.",
