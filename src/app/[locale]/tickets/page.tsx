@@ -1,4 +1,6 @@
+import type { Metadata } from "next";
 import { getTranslations, getLocale } from "next-intl/server";
+import { alternatesFor } from "@/lib/seo";
 import { auth0 } from "@/lib/auth0";
 import { findOrCreateUser, ensureAnalyticsId } from "@/lib/userService";
 import { analyticsAttributes } from "@/lib/analytics/events";
@@ -19,6 +21,20 @@ import { answersFrom } from "@/app/components/TicketWizard/profileAnswers";
  * the reader opening anything.
  */
 const INTRO_STEPS = ["account", "profile", "interests", "ticket"] as const;
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+  const { locale } = await params;
+  const tp = await getTranslations({ locale, namespace: "TicketsPage" });
+  return {
+    title: tp("meta-title"),
+    description: tp("meta-description"),
+    alternates: alternatesFor(locale, "/tickets"),
+  };
+}
 
 export default async function TicketsPage() {
   const t = await getTranslations("TicketWizard");

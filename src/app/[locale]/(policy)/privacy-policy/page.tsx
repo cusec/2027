@@ -1,11 +1,20 @@
 import type { Metadata } from "next";
+import { alternatesFor } from "@/lib/seo";
 import { analyticsAttributes } from "@/lib/analytics/events";
 
-export const metadata: Metadata = {
-  title: "Privacy Policy - CUSEC 2027",
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+  const { locale } = await params;
+  return {
+    title: "Privacy Policy",
   description:
     "What personal information CUSEC 2027 collects, why, and how long we keep it.",
-};
+    alternates: alternatesFor(locale, "/privacy-policy"),
+  };
+}
 
 /**
  * Carried over from https://2026.cusec.net/privacy-policy and extended to

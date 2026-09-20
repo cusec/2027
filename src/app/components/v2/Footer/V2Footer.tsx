@@ -28,6 +28,10 @@ const LEGAL_LINKS: FooterLink[] = [
 	{ key: "terms", route: "/ticket-terms" },
 ];
 
+// 2023 is absent on purpose: 2023.cusec.net serves a certificate that does not
+// cover the custom domain, so the link would land on a TLS interstitial.
+const PAST_EDITIONS = ["2026", "2025", "2024", "2022", "2021", "2020"] as const;
+
 const SOCIALS = [
 	{ key: "instagram", href: "https://www.instagram.com/cusecofficial/" },
 	{ key: "linkedin", href: "https://www.linkedin.com/company/cusec/" },
@@ -104,6 +108,16 @@ export default function V2Footer() {
 									{t(key)}
 								</a>
 							))}
+						</nav>
+
+						<nav className="v2-footer__col">
+							<h2 className="v2-footer__col-head v2-pixel">{t("col-editions")}</h2>
+							{PAST_EDITIONS.map((year) => (
+								<a key={year} href={`https://${year}.cusec.net`}>
+									CUSEC {year}
+								</a>
+							))}
+							<a href="https://www.cusec.net">{t("all-editions")}</a>
 						</nav>
 					</div>
 				</div>

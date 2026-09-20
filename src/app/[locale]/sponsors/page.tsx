@@ -9,6 +9,7 @@ import V2SponsorsHero from "@/app/components/v2/Sponsors/V2SponsorsHero";
 // import V2SponsorTiers from "@/app/components/v2/Sponsors/V2SponsorTiers";
 // import V2SponsorCta from "@/app/components/v2/Sponsors/V2SponsorCta";
 import V2Footer from "@/app/components/v2/Footer/V2Footer";
+import { alternatesFor } from "@/lib/seo";
 
 export async function generateMetadata({
 	params,
@@ -20,6 +21,7 @@ export async function generateMetadata({
 	return {
 		title: t("meta-title"),
 		description: t("subline"),
+		alternates: alternatesFor(locale, "/sponsors"),
 	};
 }
 
