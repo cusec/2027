@@ -47,6 +47,9 @@ export const metadata: Metadata = {
     "CUSEC 26th edition",
     "conférence génie logiciel",
   ],
+  verification: {
+    google: "rr8EHeTgYYXM7QyXAgy2-R715ahKGs6lkLyR9vsKHMY",
+  },
   authors: [{ name: "CUSEC Organization" }],
   creator: "CUSEC Organization",
   publisher: "CUSEC",
