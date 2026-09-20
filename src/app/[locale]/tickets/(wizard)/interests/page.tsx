@@ -25,6 +25,7 @@ export default async function InterestsPage() {
   const user = await findOrCreateUser({
     email,
     name: session?.user?.name || "Attendee",
+    entryPoint: "tickets",
   });
 
   const status = await getWizardStatus(email);

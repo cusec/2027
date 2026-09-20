@@ -1,4 +1,6 @@
 import { auth0 } from "@/lib/auth0";
+import { isLocalTicketPreview } from "@/lib/localTicketPreview";
+import { headers } from "next/headers";
 
 /**
  * The ticket wizard sits on the same painting as /scavenger, so a delegate
@@ -17,10 +19,12 @@ export default async function TicketsLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const session = await auth0.getSession();
+  const requestHeaders = await headers();
+  const localPreview = isLocalTicketPreview(requestHeaders.get("host"));
+  const session = localPreview ? null : await auth0.getSession();
   const roles = session?.user?.["cusec/roles"] as string[] | undefined;
   const canPreview = !!roles?.includes("Admin") || !!roles?.includes("Volunteer");
-  const open = process.env.TICKETS_ENABLED === "true" || canPreview;
+  const open = localPreview || process.env.TICKETS_ENABLED === "true" || canPreview;
 
   return (
     <div className="v2 v2-aero">

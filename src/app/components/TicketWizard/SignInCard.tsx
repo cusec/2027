@@ -1,4 +1,5 @@
 import { getTranslations } from "next-intl/server";
+import { analyticsAttributes } from "@/lib/analytics/events";
 
 export default async function SignInCard({ returnTo }: { returnTo: string }) {
   const t = await getTranslations("TicketWizard");
@@ -12,6 +13,10 @@ export default async function SignInCard({ returnTo }: { returnTo: string }) {
         <a
           href={`/auth/login?returnTo=${encodeURIComponent(returnTo)}`}
           className="cta-btn wizard-intro-cta"
+          {...analyticsAttributes("login_started", {
+            location: "sign_in_card",
+            return_to: returnTo,
+          })}
         >
           {t("signin-cta")}
         </a>

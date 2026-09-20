@@ -1,48 +1,53 @@
 import connectMongoDB from "./mongodb";
 import { User } from "./models";
+import { trackServerEvent } from "./analytics/server";
 
 export interface UserData {
   email: string;
   name?: string;
+  /**
+   * Where the account was created from - a controlled value for the
+   * `account_created` event, never free text.
+   */
+  entryPoint?: "tickets" | "scavenger" | "other";
 }
 
 export async function findOrCreateUser(userData: UserData) {
-  console.log("findOrCreateUser called with:", userData);
-
   await connectMongoDB();
-  console.log("MongoDB connected");
 
   try {
-    // Find user by email
-    console.log("Looking for user with email:", userData.email);
-    let user = await User.findOne({ email: userData.email });
+    const user = await User.findOne({ email: userData.email });
 
     if (!user) {
-      console.log("User not found, creating new user");
-      // Create new user
-      user = new User({
+      const created = new User({
         email: userData.email,
         name: userData.name,
         points: 0,
         claimedItems: [],
         claim_attempts: [],
       });
-      await user.save();
-      console.log(`Created new user: ${userData.email}`);
-    } else {
-      console.log("User found:", user.email);
-      // User exists, update name if provided and not already set
-      if (userData.name && !user.name) {
-        console.log("Updating user name");
-        user.name = userData.name;
-        await user.save();
-      }
+      await created.save();
 
-      // Initialize claim_attempts if it doesn't exist (for existing users)
-      if (!user.claim_attempts) {
-        user.claim_attempts = [];
-        await user.save();
-      }
+      // The account-creation conversion. Emitted only in this branch so
+      // returning users can never inflate it.
+      void trackServerEvent("account_created", {
+        entry_point: userData.entryPoint ?? "other",
+        method: "auth0",
+      });
+
+      return created;
+    }
+
+    // Update name if provided and not already set
+    if (userData.name && !user.name) {
+      user.name = userData.name;
+      await user.save();
+    }
+
+    // Initialize claim_attempts if it doesn't exist (for existing users)
+    if (!user.claim_attempts) {
+      user.claim_attempts = [];
+      await user.save();
     }
 
     return user;

@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useTranslations } from "next-intl";
 import { Link, usePathname } from "@/i18n/navigation";
+import { analyticsAttributes } from "@/lib/analytics/events";
 import V2LocaleSwitcher from "./V2LocaleSwitcher";
 
 const LINKS = [
@@ -87,7 +88,14 @@ export default function V2Nav() {
 
 				<div className="v2-nav__end">
 					<V2LocaleSwitcher label={t("language")} />
-					<Link className="v2-btn v2-btn--primary v2-nav__cta" href="/#passes">
+					<Link
+						className="v2-btn v2-btn--primary v2-nav__cta"
+						href="/#passes"
+						{...analyticsAttributes("ticket_cta_clicked", {
+							location: "nav_desktop",
+							destination: "passes",
+						})}
+					>
 						{t("cta")}
 					</Link>
 				</div>
@@ -118,6 +126,10 @@ export default function V2Nav() {
 						className="v2-btn v2-btn--primary"
 						href="/#passes"
 						onClick={() => setOpen(false)}
+						{...analyticsAttributes("ticket_cta_clicked", {
+							location: "nav_mobile",
+							destination: "passes",
+						})}
 					>
 						{t("cta")}
 					</Link>

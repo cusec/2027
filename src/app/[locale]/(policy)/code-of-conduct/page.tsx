@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { analyticsAttributes } from "@/lib/analytics/events";
 
 export const metadata: Metadata = {
   title: "Code of Conduct - CUSEC 2027",
@@ -71,7 +72,7 @@ export default function CodeOfConductPage() {
         <h2>Enforcement</h2>
         <p>
           Violations of the Code of Conduct may be reported by sending an email
-          to <a href="mailto:incidents@cusec.net">incidents@cusec.net</a>. All
+          to <a href="mailto:incidents@cusec.net" {...analyticsAttributes("contact_clicked", { purpose: "conduct", location: "code_of_conduct" })}>incidents@cusec.net</a>. All
           reports will be reviewed and investigated, resulting in responses
           deemed appropriate. We reserve the right to remove comments or
           contributions not aligned with this Code of Conduct.
@@ -86,7 +87,7 @@ export default function CodeOfConductPage() {
         <dl>
           <dt>Report an incident</dt>
           <dd>
-            <a href="mailto:incidents@cusec.net">incidents@cusec.net</a>
+            <a href="mailto:incidents@cusec.net" {...analyticsAttributes("contact_clicked", { purpose: "conduct", location: "code_of_conduct" })}>incidents@cusec.net</a>
           </dd>
           <dt>Non-emergency local law enforcement (SPVM)</dt>
           <dd>

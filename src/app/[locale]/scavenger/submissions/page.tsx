@@ -1,5 +1,6 @@
 import { auth0 } from "@/lib/auth0";
 import { findOrCreateUser } from "@/lib/userService";
+import { analyticsAttributes } from "@/lib/analytics/events";
 import SubmissionsPage from "@/components/submissions/SubmissionsPage";
 import { Send } from "lucide-react";
 
@@ -19,6 +20,7 @@ export default async function SubmissionsRoute() {
     await findOrCreateUser({
       email: user.email,
       name: user.name || "Delegate",
+      entryPoint: "scavenger",
     });
   }
 
@@ -36,6 +38,10 @@ export default async function SubmissionsRoute() {
         <a
           href="/auth/login?returnTo=/scavenger/submissions"
           className="aero-btn"
+          {...analyticsAttributes("login_started", {
+            location: "scavenger_submissions",
+            return_to: "/scavenger/submissions",
+          })}
         >
           <Send className="h-4 w-4" />
           {submissionsEnabled ? "Sign in to submit" : "Beta access login"}

@@ -1,6 +1,7 @@
 import { getTranslations, getLocale } from "next-intl/server";
 import { auth0 } from "@/lib/auth0";
 import { findOrCreateUser } from "@/lib/userService";
+import { analyticsAttributes } from "@/lib/analytics/events";
 import connectMongoDB from "@/lib/mongodb";
 import { DemographicInfo } from "@/lib/models";
 import { getWizardStatus } from "@/lib/ticketWizard";
@@ -54,6 +55,10 @@ export default async function TicketsPage() {
         <a
           href="/auth/login?screen_hint=signup&returnTo=/tickets/profile"
           className="cta-btn wizard-steps__cta"
+          {...analyticsAttributes("registration_started", {
+            location: "tickets_page",
+            method: "auth0_signup",
+          })}
         >
           {t("intro-cta-signup")}
         </a>
@@ -79,6 +84,7 @@ export default async function TicketsPage() {
   const user = await findOrCreateUser({
     email,
     name: session?.user?.name || "Attendee",
+    entryPoint: "tickets",
   });
 
   let status = await getWizardStatus(email);

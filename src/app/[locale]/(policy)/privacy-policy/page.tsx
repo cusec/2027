@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { analyticsAttributes } from "@/lib/analytics/events";
 
 export const metadata: Metadata = {
   title: "Privacy Policy - CUSEC 2027",
@@ -78,6 +79,21 @@ export default function PrivacyPolicyPage() {
           delegates.
         </p>
 
+        <h3>How you found us</h3>
+        <p>
+          When you visit the site we note which campaign link, referring
+          website, or search brought you here - the marketing campaign tags in
+          the address (such as <code>utm_source</code> and
+          <code>utm_campaign</code>), the hostname of the site that linked you
+          to us, and the page you landed on. We never record the full address
+          of the page that sent you, only its hostname, and no other query
+          parameters are kept. We use this to understand which outreach brings
+          attendees to the conference, and to connect it to your account and
+          ticket purchase if you create one. It is stored with your account and
+          deleted when your account is deleted; before you sign in it is kept
+          for up to 30 days in a small cookie on your own device.
+        </p>
+
         <h2>How we use it</h2>
         <ul>
           <li>To sell you a ticket and get you into the conference.</li>
@@ -124,7 +140,7 @@ export default function PrivacyPolicyPage() {
           the understanding that we may be unable to provide you with some of
           your desired services. You can ask us to show you what we hold about
           you, correct it, or delete it, by emailing{" "}
-          <a href="mailto:info@cusec.net">info@cusec.net</a>. Your continued use
+          <a href="mailto:info@cusec.net" {...analyticsAttributes("contact_clicked", { purpose: "privacy", location: "privacy_policy" })}>info@cusec.net</a>. Your continued use
           of our website will be regarded as acceptance of our practices around
           privacy and personal information.
         </p>
@@ -132,7 +148,7 @@ export default function PrivacyPolicyPage() {
         <h2>Contact</h2>
         <p>
           Questions about how we handle user data and personal information:{" "}
-          <a href="mailto:info@cusec.net">info@cusec.net</a>.
+          <a href="mailto:info@cusec.net" {...analyticsAttributes("contact_clicked", { purpose: "privacy", location: "privacy_policy" })}>info@cusec.net</a>.
         </p>
       </article>
     </>

@@ -1,4 +1,5 @@
 import { useTranslations } from "next-intl";
+import { analyticsAttributes } from "@/lib/analytics/events";
 
 export default function V2SponsorsHero() {
 	const t = useTranslations("V2.sponsors");
@@ -15,6 +16,10 @@ export default function V2SponsorsHero() {
 						href="https://forms.gle/TzbNoCKmALEYryLw7"
 						target="_blank"
 						rel="noopener noreferrer"
+						{...analyticsAttributes("sponsor_application_clicked", {
+							location: "sponsors_page",
+							destination: "sponsor_form",
+						})}
 					>
 						{t("cta-primary")} <span aria-hidden="true">→</span>
 					</a>

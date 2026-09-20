@@ -42,6 +42,19 @@ export interface TicketWizardProgress {
   purchasedTicketName?: string | null;
 }
 
+/**
+ * One acquisition touch - re-exported from the canonical definition in
+ * `attribution.ts` so there is a single source of truth for the shape (the
+ * Mongoose schema in models.ts mirrors it).
+ */
+export type { AttributionTouch } from "./attribution";
+import type { AttributionTouch } from "./attribution";
+
+export interface UserAttribution {
+  firstTouch: AttributionTouch | null;
+  latestTouch: AttributionTouch | null;
+}
+
 export interface DbUser {
   _id: string;
   email: string;
@@ -56,6 +69,7 @@ export interface DbUser {
   claim_attempts?: ClaimAttempt[];
   hasSeenIntro?: boolean;
   personalityType?: string | null;
+  attribution?: UserAttribution | null;
   ticketWizard?: TicketWizardProgress;
 }
 

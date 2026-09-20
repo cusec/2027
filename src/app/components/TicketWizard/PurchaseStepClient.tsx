@@ -5,6 +5,8 @@ import { useTranslations } from "next-intl";
 import { useRouter } from "@/i18n/navigation";
 import TicketConfirmation from "./TicketConfirmation";
 import TicketsSection from "@/app/components/Tickets/TicketsSection";
+import { trackEvent } from "@/lib/analytics/client";
+import { ticketCategoryFromName } from "@/lib/analytics/events";
 import type { TicketType, TicketWidgetConfig } from "@/lib/ticketTailor";
 
 interface PurchaseStepClientProps {
@@ -362,10 +364,17 @@ export default function PurchaseStepClient({
     }
   }, []);
 
-  const openCheckout = useCallback(() => {
+  const openCheckout = useCallback((ticket: TicketType) => {
     openedRef.current = true;
     setEmbedState("loading");
     setVerifyFailed(false);
+
+    // The checkout-started event: a controlled ticket category plus whether
+    // the delegate pays inside our frame or in a handed-over tab.
+    trackEvent("ticket_checkout_started", {
+      ticket_type: ticketCategoryFromName(ticket.name),
+      checkout_mode: !canFrame && checkoutPageUrl ? "new_tab" : "inline",
+    });
 
     // Where the frame would only be refused, hand the whole tab over to
     // checkout instead of spawning a second one. Ticket Tailor's "Redirect

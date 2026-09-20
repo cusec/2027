@@ -23,6 +23,7 @@ export default async function ScavengerPage() {
     let mongoUser = await findOrCreateUser({
       email: user.email,
       name: user.name || "Hunter",
+      entryPoint: "scavenger",
     });
 
     // If this account isn't linked to a ticket yet, ask Ticket Tailor whether
@@ -35,6 +36,7 @@ export default async function ScavengerPage() {
         mongoUser = await findOrCreateUser({
           email: user.email,
           name: user.name || "Hunter",
+          entryPoint: "scavenger",
         });
       }
     }

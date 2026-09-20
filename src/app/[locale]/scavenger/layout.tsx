@@ -23,6 +23,7 @@ export default async function ScavengerLayout({
     const mongoUser = await findOrCreateUser({
       email: user.email,
       name: user.name || "Hunter",
+      entryPoint: "scavenger",
     });
     if (mongoUser) {
       const plain = mongoUser.toObject();

@@ -1,5 +1,22 @@
 import mongoose, { Schema } from "mongoose";
 
+// One acquisition touch: where a visitor came from before they signed up.
+// Only whitelisted, clamped fields (see src/lib/attribution.ts) ever reach
+// here - no full URLs, no arbitrary query parameters.
+const attributionTouchSchema = new Schema(
+  {
+    source: { type: String, default: "", maxlength: 100 },
+    medium: { type: String, default: "", maxlength: 100 },
+    campaign: { type: String, default: "", maxlength: 200 },
+    content: { type: String, default: "", maxlength: 200 },
+    term: { type: String, default: "", maxlength: 200 },
+    referrerHost: { type: String, default: "", maxlength: 200 },
+    landingPath: { type: String, default: "", maxlength: 512 },
+    capturedAt: { type: Date, default: null },
+  },
+  { _id: false },
+);
+
 const userSchema = new Schema(
   {
     email: { type: String, required: true, unique: true },
@@ -62,12 +79,33 @@ const userSchema = new Schema(
     },
     hasSeenIntro: { type: Boolean, default: false },
     personalityType: { type: String, default: null },
+    // First-party campaign attribution. firstTouch is written once and never
+    // changes; latestTouch moves only on a new campaign/referrer touch. The
+    // pending pre-auth copy lives in the `cusec_attribution` cookie until the
+    // account exists (see /api/attribution).
+    attribution: {
+      type: new Schema(
+        {
+          firstTouch: { type: attributionTouchSchema, default: null },
+          latestTouch: { type: attributionTouchSchema, default: null },
+        },
+        { _id: false },
+      ),
+      default: null,
+    },
     ticketWizard: {
       type: new Schema(
         {
           currentStep: {
             type: String,
-            enum: ["profile", "interests", "purchase", "completed", "demographics", "avatar"],
+            enum: [
+              "profile",
+              "interests",
+              "purchase",
+              "completed",
+              "demographics",
+              "avatar",
+            ],
             default: "profile",
           },
           avatarCompletedAt: { type: Date, default: null },
@@ -77,7 +115,7 @@ const userSchema = new Schema(
           purchasedTicketTypeId: { type: String, default: null },
           purchasedTicketName: { type: String, default: null },
         },
-        { _id: false }
+        { _id: false },
       ),
       default: () => ({}),
     },
@@ -391,7 +429,7 @@ const demographicInfoSchema = new Schema(
   },
   {
     timestamps: true,
-  }
+  },
 );
 
 // Challenge & Submission models

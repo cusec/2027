@@ -1,5 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
-import { extractPurchaser, extractPurchasedTicket, verifyTicketTailorWebhook } from "@/lib/ticketTailor";
+import {
+  extractPurchaser,
+  extractPurchasedTicket,
+  verifyTicketTailorWebhook,
+} from "@/lib/ticketTailor";
 import { linkTicketPurchase } from "@/lib/ticketLinking";
 
 // Seeds the RegisteredUser allowlist that /api/users/link-email checks
@@ -10,7 +14,9 @@ import { linkTicketPurchase } from "@/lib/ticketLinking";
 export async function POST(request: NextRequest) {
   const secret = process.env.TICKET_TAILOR_WEBHOOK_SECRET;
   if (!secret) {
-    console.error("Ticket Tailor webhook received but TICKET_TAILOR_WEBHOOK_SECRET is unset");
+    console.error(
+      "Ticket Tailor webhook received but TICKET_TAILOR_WEBHOOK_SECRET is unset",
+    );
     return NextResponse.json({ error: "not-configured" }, { status: 503 });
   }
 
@@ -29,14 +35,17 @@ export async function POST(request: NextRequest) {
   }
 
   if (envelope.event !== "order.created") {
-    return NextResponse.json({ ok: true, skipped: envelope.event ?? "unknown-event" });
+    return NextResponse.json({
+      ok: true,
+      skipped: envelope.event ?? "unknown-event",
+    });
   }
 
   const purchaser = extractPurchaser(envelope.payload ?? {});
   if (!purchaser) {
     console.error(
       "Ticket Tailor order.created webhook had no parseable buyer email:",
-      JSON.stringify(envelope.payload)
+      JSON.stringify(envelope.payload),
     );
     return NextResponse.json({ ok: true, skipped: "no-email" });
   }
@@ -44,7 +53,9 @@ export async function POST(request: NextRequest) {
   await linkTicketPurchase(
     purchaser.email,
     purchaser.name,
-    extractPurchasedTicket(envelope.payload ?? {})
+    extractPurchasedTicket(envelope.payload ?? {}),
+    purchaser.email,
+    "webhook",
   );
 
   return NextResponse.json({ ok: true });

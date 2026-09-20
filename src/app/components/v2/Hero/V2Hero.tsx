@@ -1,4 +1,5 @@
 import { useTranslations } from "next-intl";
+import { analyticsAttributes } from "@/lib/analytics/events";
 import V2Wordmark from "@/app/components/v2/Hero/V2Wordmark";
 
 export default function V2Hero() {
@@ -27,7 +28,11 @@ export default function V2Hero() {
 				<p className="v2-hero__dates">{t("dates")}</p>
 
 				<div className="v2-hero__actions">
-					<a className="v2-btn v2-btn--primary" href="#passes">
+					<a
+						className="v2-btn v2-btn--primary"
+						href="#passes"
+						{...analyticsAttributes("ticket_cta_clicked", { location: "hero", destination: "passes" })}
+					>
 						{t("cta-primary")}
 					</a>
 					<a className="v2-btn v2-btn--ghost" href="#about">

@@ -2,6 +2,7 @@ import createIntlMiddleware from "next-intl/middleware";
 import type { NextRequest } from "next/server";
 import { routing } from "./i18n/routing";
 import { auth0 } from "./lib/auth0";
+import { isLocalTicketPreview } from "./lib/localTicketPreview";
 
 const intlMiddleware = createIntlMiddleware(routing);
 
@@ -21,6 +22,10 @@ const intlMiddleware = createIntlMiddleware(routing);
  */
 export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
+
+  if (isLocalTicketPreview(request.nextUrl.hostname) && pathname.startsWith("/tickets")) {
+    return intlMiddleware(request);
+  }
 
   // Auth0 fully owns its own routes - return its response directly.
   if (pathname.startsWith("/auth")) {

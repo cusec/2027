@@ -2,6 +2,8 @@
 
 import { useState, type ReactNode } from "react";
 import { useTranslations } from "next-intl";
+import { analyticsAttributes } from "@/lib/analytics/events";
+import { trackEvent } from "@/lib/analytics/client";
 
 const PADS = [1, 2, 3, 4, 5] as const;
 
@@ -21,7 +23,17 @@ export default function V2Faq() {
 		b: (chunks: ReactNode) => <strong>{chunks}</strong>,
 		ul: (chunks: ReactNode) => <ul className="v2-pad__list">{chunks}</ul>,
 		li: (chunks: ReactNode) => <li>{chunks}</li>,
-		email: (chunks: ReactNode) => <a href="mailto:info@cusec.net">{chunks}</a>,
+		email: (chunks: ReactNode) => (
+			<a
+				href="mailto:info@cusec.net"
+				{...analyticsAttributes("contact_clicked", {
+					purpose: "faq",
+					location: "faq",
+				})}
+			>
+				{chunks}
+			</a>
+		),
 	};
 
 	return (
@@ -44,7 +56,13 @@ export default function V2Faq() {
 									className="v2-pad__q"
 									aria-expanded={isOpen}
 									aria-controls={`v2-faq-a-${n}`}
-									onClick={() => setOpenPad(isOpen ? null : n)}
+									onClick={() => {
+										if (!isOpen) {
+											// only an open counts - closing is not a signal
+											trackEvent("faq_opened", { faq_id: `faq_${n}`, page: "landing" });
+										}
+										setOpenPad(isOpen ? null : n);
+									}}
 								>
 									{t(`q${n}`)}
 									<span className="v2-pad__toggle" aria-hidden="true" />
