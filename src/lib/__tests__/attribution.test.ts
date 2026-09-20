@@ -5,6 +5,7 @@ import {
   ATTRIBUTION_COOKIE_NAME,
   DIRECT_SOURCE,
   applyTouchToAttribution,
+  attachAttribution,
   decodePendingAttribution,
   encodePendingAttribution,
   mergePendingTouch,
@@ -194,6 +195,70 @@ describe("applyTouchToAttribution (post-auth Mongo state)", () => {
 
     expect(applied.firstTouch.campaign).toBe("fall2026");
     expect(applied.latestTouch.campaign).toBe("fall2026");
+  });
+});
+
+describe("attachAttribution (the signed-in route decision)", () => {
+  it("seeds the first touch from the pending cookie, not the fresh visit", () => {
+    // Visitor hit campaign A, then campaign B, signed up, and landed back
+    // with no campaign in the URL. First touch must be A; latest, B.
+    const pending = {
+      first: campaignTouch({ source: "google", campaign: "spring" }),
+      latest: campaignTouch({ campaign: "fall2026" }),
+    };
+    const direct = campaignTouch({
+      source: DIRECT_SOURCE,
+      medium: "none",
+      referrerHost: "",
+    });
+    const attached = attachAttribution(null, pending, direct);
+
+    expect(attached.firstTouch.campaign).toBe("spring");
+    expect(attached.latestTouch.campaign).toBe("fall2026");
+  });
+
+  it("lets a fresh acquisition touch win the latest slot over the cookie", () => {
+    const pending = {
+      first: campaignTouch({ source: "google", campaign: "spring" }),
+      latest: campaignTouch({ campaign: "fall2026" }),
+    };
+    const fresh = campaignTouch({ source: "reddit.com", campaign: "winter" });
+    const attached = attachAttribution(null, pending, fresh);
+
+    expect(attached.firstTouch.campaign).toBe("spring");
+    expect(attached.latestTouch.campaign).toBe("winter");
+  });
+
+  it("replays a stale pending cookie against an existing attribution without touching its first", () => {
+    const existing = {
+      firstTouch: campaignTouch({ source: "google", campaign: "spring" }),
+      latestTouch: campaignTouch({ source: "google", campaign: "spring" }),
+    };
+    const pending = {
+      first: campaignTouch({ source: "google", campaign: "spring" }),
+      latest: campaignTouch({ campaign: "fall2026" }),
+    };
+    const direct = campaignTouch({
+      source: DIRECT_SOURCE,
+      medium: "none",
+      referrerHost: "",
+    });
+    const attached = attachAttribution(existing, pending, direct);
+
+    expect(attached.firstTouch.campaign).toBe("spring");
+    expect(attached.latestTouch.campaign).toBe("fall2026");
+  });
+
+  it("ignores the cookie when the fresh visit is the only signal", () => {
+    const direct = campaignTouch({
+      source: DIRECT_SOURCE,
+      medium: "none",
+      referrerHost: "",
+    });
+    const attached = attachAttribution(null, null, direct);
+
+    expect(attached.firstTouch.source).toBe(DIRECT_SOURCE);
+    expect(attached.latestTouch.source).toBe(DIRECT_SOURCE);
   });
 });
 

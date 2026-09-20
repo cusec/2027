@@ -3,9 +3,8 @@ import { auth0 } from "@/lib/auth0";
 import {
   ATTRIBUTION_COOKIE_MAX_AGE_SECONDS,
   ATTRIBUTION_COOKIE_NAME,
-  applyTouchToAttribution,
+  attachAttribution,
   decodePendingAttribution,
-  isNewAcquisition,
   mergePendingTouch,
   sanitizeTouch,
   type AttributionTouch,
@@ -35,6 +34,15 @@ export async function POST(request: NextRequest) {
 
   const touch: AttributionTouch = sanitizeTouch(body);
 
+  // Mongo stores capturedAt as a Date; the cookie and the client payload
+  // carry it as an ISO string.
+  const asMongoTouch = (
+    t: AttributionTouch,
+  ): Omit<AttributionTouch, "capturedAt"> & { capturedAt: Date } => ({
+    ...t,
+    capturedAt: new Date(t.capturedAt),
+  });
+
   try {
     const session = await auth0.getSession();
     const email = session?.user?.email;
@@ -49,34 +57,40 @@ export async function POST(request: NextRequest) {
         const pending = decodePendingAttribution(
           request.cookies.get(ATTRIBUTION_COOKIE_NAME)?.value,
         );
-        // A pending pre-auth touch outranks a fresh direct visit: the visitor
-        // may have landed on a campaign and signed up on a later page load.
-        // A fresh acquisition touch always outranks the pending one.
-        const effective =
-          isNewAcquisition(touch) || !pending?.first ? touch : pending.latest;
-        const applied = applyTouchToAttribution(user.attribution, {
-          ...effective,
-          capturedAt: new Date(effective.capturedAt),
-        });
+        const applied = attachAttribution(
+          user.attribution,
+          pending
+            ? {
+                first: asMongoTouch(pending.first),
+                latest: asMongoTouch(pending.latest),
+              }
+            : null,
+          asMongoTouch(touch),
+        );
 
-        const firstChanged =
-          JSON.stringify(applied.firstTouch) !==
-          JSON.stringify(user.attribution?.firstTouch ?? null);
-        const latestChanged =
-          JSON.stringify(applied.latestTouch) !==
-          JSON.stringify(user.attribution?.latestTouch ?? null);
-        if (firstChanged || latestChanged) {
+        const changed =
+          JSON.stringify(applied) !==
+          JSON.stringify({
+            firstTouch: user.attribution?.firstTouch ?? null,
+            latestTouch: user.attribution?.latestTouch ?? null,
+          });
+        if (changed) {
           user.attribution = {
             firstTouch: applied.firstTouch,
             latestTouch: applied.latestTouch,
           };
           await user.save();
         }
+
+        // Attached (or already there) - the pending cookie has served its
+        // purpose. With no user record yet, keep it so a later page load can
+        // still attach the touch.
+        const response = NextResponse.json({ ok: true });
+        response.cookies.delete(ATTRIBUTION_COOKIE_NAME);
+        return response;
       }
 
-      const response = NextResponse.json({ ok: true });
-      response.cookies.delete(ATTRIBUTION_COOKIE_NAME);
-      return response;
+      return NextResponse.json({ ok: true });
     }
 
     // Signed out: rotate the pending cookie. The first touch is pinned; the

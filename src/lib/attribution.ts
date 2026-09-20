@@ -183,6 +183,40 @@ export function applyTouchToAttribution<
   };
 }
 
+/**
+ * The signed-in attach decision, as one pure function so the route stays a
+ * thin shell and the Auth0-redirect persistence rules are testable.
+ *
+ * `pending` is the pre-auth cookie (if any), `touch` the fresh visit. The
+ * cookie is replayed oldest-first so the pending FIRST touch seeds
+ * firstTouch - attaching `pending.latest` would silently lose the real first
+ * campaign. A fresh acquisition touch then wins the latest slot over the
+ * cookie, and firstTouch is never changed once set.
+ */
+export function attachAttribution<
+  T extends {
+    source: string;
+    medium: string;
+    campaign: string;
+    content: string;
+    term: string;
+    referrerHost: string;
+    landingPath: string;
+    capturedAt: string | Date;
+  },
+>(
+  existing: { firstTouch: T | null; latestTouch: T | null } | null | undefined,
+  pending: { first: T; latest: T } | null,
+  touch: T,
+): { firstTouch: T; latestTouch: T } {
+  let state = existing ?? null;
+  if (pending) {
+    state = applyTouchToAttribution(state, pending.first);
+    state = applyTouchToAttribution(state, pending.latest);
+  }
+  return applyTouchToAttribution(state, touch);
+}
+
 export function encodePendingAttribution(pending: PendingAttribution): string {
   return JSON.stringify(pending);
 }

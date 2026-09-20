@@ -93,6 +93,30 @@ export interface AnalyticsEventProps {
 
 export type AnalyticsEventName = keyof AnalyticsEventProps;
 
+/**
+ * Runtime mirror of the catalog's property keys. Direct `trackEvent` calls
+ * are checked by the compiler; the click delegator reads attributes back at
+ * runtime, so it validates against this instead - unknown attributes are
+ * dropped and the two-property budget holds for every event.
+ */
+export const EVENT_PROPERTY_KEYS: {
+  [K in AnalyticsEventName]: readonly (keyof AnalyticsEventProps[K] & string)[];
+} = {
+  ticket_cta_clicked: ["location", "destination"],
+  registration_started: ["location", "method"],
+  account_created: ["entry_point", "method"],
+  registration_step_completed: ["step", "flow"],
+  profile_completed: ["attendee_type", "flow"],
+  registration_completed: ["flow", "next_step"],
+  ticket_checkout_started: ["ticket_type", "checkout_mode"],
+  ticket_purchase_completed: ["ticket_type", "completion_path"],
+  login_started: ["location", "return_to"],
+  faq_opened: ["faq_id", "page"],
+  social_clicked: ["platform", "location"],
+  contact_clicked: ["purpose", "location"],
+  sponsor_application_clicked: ["location", "destination"],
+};
+
 const EVENT_NAMES: readonly AnalyticsEventName[] = [
   "ticket_cta_clicked",
   "registration_started",
@@ -109,7 +133,9 @@ const EVENT_NAMES: readonly AnalyticsEventName[] = [
   "sponsor_application_clicked",
 ];
 
-export function isAnalyticsEventName(value: string): value is AnalyticsEventName {
+export function isAnalyticsEventName(
+  value: string,
+): value is AnalyticsEventName {
   return (EVENT_NAMES as readonly string[]).includes(value);
 }
 
@@ -122,7 +148,7 @@ export function isAnalyticsEventName(value: string): value is AnalyticsEventName
  */
 export function analyticsAttributes<K extends AnalyticsEventName>(
   event: K,
-  props: AnalyticsEventProps[K]
+  props: AnalyticsEventProps[K],
 ): Record<string, string> {
   const attributes: Record<string, string> = { "data-analytics-event": event };
   for (const [key, value] of Object.entries(props)) {
