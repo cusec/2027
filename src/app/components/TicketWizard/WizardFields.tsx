@@ -615,7 +615,7 @@ export function Combobox({
   };
 
   return (
-    <div className="wizard-combo">
+    <div className={`wizard-combo${open && !disabled ? " is-open" : ""}`}>
       <input
         ref={inputRef}
         id={id}

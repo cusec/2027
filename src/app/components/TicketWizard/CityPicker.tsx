@@ -116,7 +116,7 @@ export default function CityPicker({
   const shown = query ?? (picked ? label || value.travelCity : "");
 
   return (
-    <div className="wizard-combo">
+    <div className={`wizard-combo${open ? " is-open" : ""}`}>
       <input
         ref={inputRef}
         id={id}
