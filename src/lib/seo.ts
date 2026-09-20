@@ -1,8 +1,10 @@
 import { getPathname } from "@/i18n/navigation";
 import { routing } from "@/i18n/routing";
 
-export const SITE_URL =
-	process.env.NEXT_PUBLIC_SITE_URL || "https://2027.cusec.net";
+// Deliberately not NEXT_PUBLIC_SITE_URL: that is set per Vercel environment,
+// so canonicals, hreflang and the sitemap would advertise the preview host.
+// A canonical names the production origin from every deployment.
+export const SITE_URL = "https://2027.cusec.net";
 
 /** Every path that belongs in the sitemap, in sitemap order. */
 export const PUBLIC_PATHS = [
