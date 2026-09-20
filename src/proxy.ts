@@ -23,7 +23,10 @@ const intlMiddleware = createIntlMiddleware(routing);
 export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
-  if (isLocalTicketPreview(request.nextUrl.hostname) && pathname.startsWith("/tickets")) {
+  if (
+    isLocalTicketPreview(request.nextUrl.hostname) &&
+    pathname.startsWith("/tickets")
+  ) {
     return intlMiddleware(request);
   }
 
@@ -54,8 +57,9 @@ export async function proxy(request: NextRequest) {
 
 export const config = {
   // Match all pathnames except for
-  // - /api, /trpc, /_next, /_vercel
+  // - /api, /trpc, /_next, /_vercel, /ingest (the PostHog proxy target -
+  //   next-intl must not locale-rewrite it)
   // - files containing a dot (e.g. favicon.ico)
   // `/auth/*` is intentionally NOT excluded so Auth0 can handle it.
-  matcher: "/((?!api|trpc|_next|_vercel|.*\\..*).*)",
+  matcher: "/((?!api|trpc|_next|_vercel|ingest|.*\\..*).*)",
 };

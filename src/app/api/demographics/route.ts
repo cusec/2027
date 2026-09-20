@@ -4,6 +4,7 @@ import { auth0 } from "@/lib/auth0";
 import { User, DemographicInfo } from "@/lib/models";
 import { isLocalTicketPreview } from "@/lib/localTicketPreview";
 import { trackServerEvent } from "@/lib/analytics/server";
+import { ensureAnalyticsId } from "@/lib/userService";
 import { DELEGATION_SCHOOLS, findInstitution } from "@/lib/institutions";
 import {
   ATTEND_REASON_OPTIONS,
@@ -494,13 +495,19 @@ export async function PUT(request: Request) {
 
   // Funnel events. Each fires only on the first completion of its condition,
   // so re-saving a section never inflates the funnel. Properties are
-  // controlled values only - never the answers themselves.
+  // controlled values only - never the answers themselves. The distinct id
+  // is the user's random analytics UUID, never an email or Mongo id.
+  const analyticsId = await ensureAnalyticsId(user);
   const profileSections = existing?.profile?.sections;
   if (!profileSections?.[section]) {
-    void trackServerEvent("registration_step_completed", {
-      step: section,
-      flow: "ticket_wizard",
-    });
+    void trackServerEvent(
+      "registration_step_completed",
+      {
+        step: section,
+        flow: "ticket_wizard",
+      },
+      analyticsId,
+    );
   }
 
   const wasProfileComplete = Boolean(
@@ -513,10 +520,14 @@ export async function PUT(request: Request) {
       section === "basics"
         ? String(update.attendeeType ?? "")
         : (existing?.profile?.attendeeType ?? "");
-    void trackServerEvent("profile_completed", {
-      attendee_type: attendeeType === OTHER ? "other" : attendeeType,
-      flow: "ticket_wizard",
-    });
+    void trackServerEvent(
+      "profile_completed",
+      {
+        attendee_type: attendeeType === OTHER ? "other" : attendeeType,
+        flow: "ticket_wizard",
+      },
+      analyticsId,
+    );
   }
 
   const ALL_SECTIONS: SectionId[] = [
@@ -531,10 +542,14 @@ export async function PUT(request: Request) {
     Boolean(profileSections?.[id]),
   );
   if (!wasRegistrationComplete && ALL_SECTIONS.every(done)) {
-    void trackServerEvent("registration_completed", {
-      flow: "ticket_wizard",
-      next_step: "purchase",
-    });
+    void trackServerEvent(
+      "registration_completed",
+      {
+        flow: "ticket_wizard",
+        next_step: "purchase",
+      },
+      analyticsId,
+    );
   }
 
   return NextResponse.json({ success: true, sections: saved?.sections ?? {} });

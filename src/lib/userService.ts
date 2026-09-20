@@ -1,3 +1,4 @@
+import { randomUUID } from "node:crypto";
 import connectMongoDB from "./mongodb";
 import { User } from "./models";
 import { trackServerEvent } from "./analytics/server";
@@ -30,10 +31,14 @@ export async function findOrCreateUser(userData: UserData) {
 
       // The account-creation conversion. Emitted only in this branch so
       // returning users can never inflate it.
-      void trackServerEvent("account_created", {
-        entry_point: userData.entryPoint ?? "other",
-        method: "auth0",
-      });
+      void trackServerEvent(
+        "account_created",
+        {
+          entry_point: userData.entryPoint ?? "other",
+          method: "auth0",
+        },
+        await ensureAnalyticsId(created),
+      );
 
       return created;
     }
@@ -67,4 +72,19 @@ export async function getUserByEmail(email: string) {
     console.error("Error in getUserByEmail:", error);
     throw error;
   }
+}
+
+/**
+ * Returns the user's random PostHog distinct id, assigning one on first use.
+ * Duck-typed so any hydrated User doc works; the write is a one-time lazy
+ * backfill for accounts created before analytics existed.
+ */
+export async function ensureAnalyticsId(user: {
+  analyticsId?: string | null;
+  save(): Promise<unknown>;
+}): Promise<string> {
+  if (user.analyticsId) return user.analyticsId;
+  user.analyticsId = randomUUID();
+  await user.save();
+  return user.analyticsId;
 }

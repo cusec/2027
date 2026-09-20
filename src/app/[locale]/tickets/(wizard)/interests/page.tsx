@@ -1,7 +1,7 @@
 import { getLocale } from "next-intl/server";
 import { auth0 } from "@/lib/auth0";
 import { redirect } from "@/i18n/navigation";
-import { findOrCreateUser } from "@/lib/userService";
+import { findOrCreateUser, ensureAnalyticsId } from "@/lib/userService";
 import connectMongoDB from "@/lib/mongodb";
 import { DemographicInfo } from "@/lib/models";
 import { getWizardStatus } from "@/lib/ticketWizard";
@@ -12,6 +12,7 @@ import type { DemographicInfo as SavedProfile } from "@/lib/interface";
 // client reference instead of the array, so .findIndex is not a function.
 import { INTEREST_SECTIONS } from "@/lib/ticketWizardOptions";
 import InterestsForm from "@/app/components/TicketWizard/InterestsForm";
+import PostHogIdentify from "@/app/components/Analytics/PostHogIdentify";
 import AlreadyTicketedModal from "@/app/components/TicketWizard/AlreadyTicketedModal";
 import SignInCard from "@/app/components/TicketWizard/SignInCard";
 import { answersFrom } from "@/app/components/TicketWizard/profileAnswers";
@@ -60,6 +61,7 @@ export default async function InterestsPage() {
 
   return (
     <div className="tickets-wrapper">
+      <PostHogIdentify analyticsId={await ensureAnalyticsId(user)} />
       <InterestsForm initial={answersFrom(saved)} startIndex={startIndex} initialResume={resume} />
     </div>
   );

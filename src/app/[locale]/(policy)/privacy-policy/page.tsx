@@ -94,6 +94,18 @@ export default function PrivacyPolicyPage() {
           for up to 30 days in a small cookie on your own device.
         </p>
 
+        <h3>Site analytics</h3>
+        <p>
+          Beyond the campaign attribution above, we measure how the site is
+          used through PostHog (PostHog Inc.): which pages are viewed and
+          which buttons are clicked. Automatic data collection and session
+          recording are disabled, and we never send PostHog your name, email
+          address, or any survey answer - events carry only a random
+          identifier and coarse values like which button was clicked. You can
+          read PostHog&rsquo;s privacy practices at{" "}
+          <a href="https://posthog.com/privacy">posthog.com/privacy</a>.
+        </p>
+
         <h2>How we use it</h2>
         <ul>
           <li>To sell you a ticket and get you into the conference.</li>

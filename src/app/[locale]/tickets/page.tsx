@@ -1,6 +1,6 @@
 import { getTranslations, getLocale } from "next-intl/server";
 import { auth0 } from "@/lib/auth0";
-import { findOrCreateUser } from "@/lib/userService";
+import { findOrCreateUser, ensureAnalyticsId } from "@/lib/userService";
 import { analyticsAttributes } from "@/lib/analytics/events";
 import connectMongoDB from "@/lib/mongodb";
 import { DemographicInfo } from "@/lib/models";
@@ -10,6 +10,7 @@ import { getBaseUrl } from "@/lib/siteUrl";
 import { redirect } from "@/i18n/navigation";
 import type { DemographicInfo as SavedProfile } from "@/lib/interface";
 import TicketConfirmation from "@/app/components/TicketWizard/TicketConfirmation";
+import PostHogIdentify from "@/app/components/Analytics/PostHogIdentify";
 import { answersFrom } from "@/app/components/TicketWizard/profileAnswers";
 
 /**
@@ -111,6 +112,7 @@ export default async function TicketsPage() {
 
   return (
     <div className="tickets-wrapper">
+      <PostHogIdentify analyticsId={await ensureAnalyticsId(user)} />
       <TicketConfirmation
         ticketName={status.purchasedTicketName}
         accountName={accountName}
