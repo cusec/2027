@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
+import { analyticsAttributes } from "@/lib/analytics/events";
 import VipChip from "@/app/components/Tickets/VipChip";
 
 const AUDIENCES = ["student", "professional"] as const;
@@ -62,7 +63,11 @@ export default function V2Passes() {
 							))}
 						</ul>
 
-						<Link className="v2-btn v2-btn--primary v2-pass__cta" href="/tickets">
+						<Link
+							className="v2-btn v2-btn--primary v2-pass__cta"
+							href="/tickets"
+							{...analyticsAttributes("ticket_cta_clicked", { location: "passes", destination: "tickets" })}
+						>
 							{t("cta")}
 						</Link>
 					</article>

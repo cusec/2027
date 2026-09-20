@@ -42,6 +42,23 @@ export interface TicketWizardProgress {
   purchasedTicketName?: string | null;
 }
 
+/** One acquisition touch - mirrors the `attributionTouchSchema` in models.ts. */
+export interface AttributionTouch {
+  source: string;
+  medium: string;
+  campaign: string;
+  content: string;
+  term: string;
+  referrerHost: string;
+  landingPath: string;
+  capturedAt: string | Date | null;
+}
+
+export interface UserAttribution {
+  firstTouch: AttributionTouch | null;
+  latestTouch: AttributionTouch | null;
+}
+
 export interface DbUser {
   _id: string;
   email: string;
@@ -56,6 +73,7 @@ export interface DbUser {
   claim_attempts?: ClaimAttempt[];
   hasSeenIntro?: boolean;
   personalityType?: string | null;
+  attribution?: UserAttribution | null;
   ticketWizard?: TicketWizardProgress;
 }
 

@@ -15,7 +15,7 @@ interface TicketCardProps {
   vip: TicketType | null;
   checkoutConfigured: boolean;
   purchased?: boolean;
-  onBuy?: () => void;
+  onBuy?: (ticket: TicketType) => void;
 }
 
 export default function TicketCard({
@@ -80,7 +80,7 @@ export default function TicketCard({
         type="button"
         className="cta-btn ticket-card-buy"
         disabled={disabled}
-        onClick={onBuy}
+        onClick={() => onBuy?.(ticket)}
       >
         {buttonLabel}
       </button>

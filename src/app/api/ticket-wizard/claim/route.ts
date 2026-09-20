@@ -31,7 +31,10 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Invalid JSON" }, { status: 400 });
   }
 
-  const purchaseEmail = String(body.email ?? "").trim().toLowerCase().slice(0, 320);
+  const purchaseEmail = String(body.email ?? "")
+    .trim()
+    .toLowerCase()
+    .slice(0, 320);
   if (!EMAIL_RE.test(purchaseEmail)) {
     return NextResponse.json({ error: "invalid-email" }, { status: 400 });
   }
@@ -56,7 +59,8 @@ export async function POST(request: Request) {
     purchaseEmail,
     session.user.name || user.name || "Attendee",
     ticket,
-    accountEmail
+    accountEmail,
+    "claim",
   );
 
   if (!result.linked) {

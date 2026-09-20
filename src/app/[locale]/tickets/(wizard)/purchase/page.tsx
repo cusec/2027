@@ -23,6 +23,7 @@ export default async function PurchasePage() {
   const user = await findOrCreateUser({
     email,
     name: session?.user?.name || "Attendee",
+    entryPoint: "tickets",
   });
 
   let status = await getWizardStatus(email);

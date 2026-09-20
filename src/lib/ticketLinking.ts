@@ -1,6 +1,11 @@
 import connectMongoDB from "./mongodb";
 import { RegisteredUser, User, DemographicInfo } from "./models";
-import { findCompletedOrderByEmail, type PurchasedTicket } from "./ticketTailor";
+import {
+  findCompletedOrderByEmail,
+  type PurchasedTicket,
+} from "./ticketTailor";
+import { trackServerEvent } from "./analytics/server";
+import { ticketCategoryFromName } from "./analytics/events";
 
 export interface LinkResult {
   linked: boolean;
@@ -24,11 +29,19 @@ export interface LinkResult {
 // on the explicit claim flow, where a signed-in delegate says "I bought with
 // this other address"; the caller is responsible for having authenticated
 // that account first.
+//
+// `completionPath` says which path delivered the purchase (webhook,
+// reconciliation, or manual claim) and feeds the `ticket_purchase_completed`
+// event - the purchase conversion. It is emitted here, after both records are
+// saved, so every path shares one source of truth and webhook retries or
+// reconciliation polls cannot duplicate it (the already-linked early return
+// below never emits).
 export async function linkTicketPurchase(
   email: string,
   name: string,
   ticket: PurchasedTicket,
-  accountEmail: string = email
+  accountEmail: string = email,
+  completionPath: "webhook" | "reconciliation" | "claim" = "reconciliation",
 ): Promise<LinkResult> {
   await connectMongoDB();
 
@@ -49,13 +62,17 @@ export async function linkTicketPurchase(
       // Duplicate key from a concurrent/retried delivery for the same email
       // is not an error here - the record already exists, which is the goal.
       const isDuplicateKey =
-        typeof err === "object" && err !== null && "code" in err && err.code === 11000;
+        typeof err === "object" &&
+        err !== null &&
+        "code" in err &&
+        err.code === 11000;
       if (!isDuplicateKey) throw err;
       registeredUser = await RegisteredUser.findOne({ linkedEmail: email });
     }
   }
 
-  if (!registeredUser) return { linked: false, purchasedTicketName: ticket.name };
+  if (!registeredUser)
+    return { linked: false, purchasedTicketName: ticket.name };
 
   const matchedUser = await User.findOne({ email: accountEmail });
   if (!matchedUser) return { linked: false, purchasedTicketName: ticket.name };
@@ -65,7 +82,8 @@ export async function linkTicketPurchase(
   if (matchedUser.linked_email === email && registeredUser.isLinked) {
     return {
       linked: true,
-      purchasedTicketName: matchedUser.ticketWizard?.purchasedTicketName ?? ticket.name,
+      purchasedTicketName:
+        matchedUser.ticketWizard?.purchasedTicketName ?? ticket.name,
     };
   }
 
@@ -79,12 +97,14 @@ export async function linkTicketPurchase(
     linked_email: email,
     _id: { $ne: matchedUser._id },
   });
-  if (alreadyLinkedElsewhere) return { linked: false, purchasedTicketName: ticket.name };
+  if (alreadyLinkedElsewhere)
+    return { linked: false, purchasedTicketName: ticket.name };
 
   // A RegisteredUser already marked linked belongs to some account (possibly
   // matched through its student/personal address by /api/users/link-email,
   // which the User.linked_email lookup above wouldn't catch). Never move it.
-  if (registeredUser.isLinked) return { linked: false, purchasedTicketName: ticket.name };
+  if (registeredUser.isLinked)
+    return { linked: false, purchasedTicketName: ticket.name };
 
   matchedUser.linked_email = email;
   matchedUser.ticketWizard.currentStep = "completed";
@@ -107,6 +127,13 @@ export async function linkTicketPurchase(
   }
   await registeredUser.save();
 
+  // The purchase conversion. Only in this branch: the already-linked early
+  // return above must not re-emit it.
+  void trackServerEvent("ticket_purchase_completed", {
+    ticket_type: ticketCategoryFromName(ticket.name ?? ""),
+    completion_path: completionPath,
+  });
+
   return { linked: true, purchasedTicketName: ticket.name };
 }
 
@@ -116,7 +143,7 @@ export async function linkTicketPurchase(
 // ticket bought in a new tab show up without any manual step.
 export async function reconcileTicketPurchase(
   email: string,
-  name: string
+  name: string,
 ): Promise<LinkResult> {
   const ticket = await findCompletedOrderByEmail(email);
   if (!ticket) return { linked: false, purchasedTicketName: null };

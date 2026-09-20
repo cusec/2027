@@ -1,5 +1,6 @@
 import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
+import { analyticsAttributes } from "@/lib/analytics/events";
 
 /**
  * `route` marks a link that leaves the current page, so it renders through the
@@ -90,7 +91,16 @@ export default function V2Footer() {
 						<nav className="v2-footer__col">
 							<h2 className="v2-footer__col-head v2-pixel">{t("col-social")}</h2>
 							{SOCIALS.map(({ key, href }) => (
-								<a key={key} href={href} target="_blank" rel="noreferrer noopener">
+								<a
+									key={key}
+									href={href}
+									target="_blank"
+									rel="noreferrer noopener"
+									{...analyticsAttributes("social_clicked", {
+										platform: key,
+										location: "footer",
+									})}
+								>
 									{t(key)}
 								</a>
 							))}

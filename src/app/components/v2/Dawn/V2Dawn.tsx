@@ -1,4 +1,5 @@
 import { useTranslations } from "next-intl";
+import { analyticsAttributes } from "@/lib/analytics/events";
 import V2CdPlayer from "./V2CdPlayer";
 import V2Polaroid from "./V2Polaroid";
 
@@ -34,7 +35,11 @@ export default function V2Dawn() {
 							))}
 						</ul>
 
-						<a className="v2-btn v2-btn--primary" href="#passes">
+						<a
+							className="v2-btn v2-btn--primary"
+							href="#passes"
+							{...analyticsAttributes("ticket_cta_clicked", { location: "dawn", destination: "passes" })}
+						>
 							{t("stats-cta")}
 						</a>
 					</div>

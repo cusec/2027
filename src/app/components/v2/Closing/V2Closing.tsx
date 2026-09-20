@@ -1,4 +1,5 @@
 import { useTranslations } from "next-intl";
+import { analyticsAttributes } from "@/lib/analytics/events";
 
 export default function V2Closing() {
 	const t = useTranslations("V2.closing");
@@ -7,7 +8,11 @@ export default function V2Closing() {
 		<section className="v2-section v2-closing v2-reveal">
 			<div className="v2-container">
 				<h2 className="v2-closing__title v2-pixel">{t("heading")}</h2>
-				<a className="v2-btn v2-btn--primary v2-closing__cta" href="#passes">
+				<a
+					className="v2-btn v2-btn--primary v2-closing__cta"
+					href="#passes"
+					{...analyticsAttributes("ticket_cta_clicked", { location: "closing", destination: "passes" })}
+				>
 					{t("cta")}
 				</a>
 			</div>

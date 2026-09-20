@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { analyticsAttributes } from "@/lib/analytics/events";
 import { Link } from "@/i18n/navigation";
 
 export const metadata: Metadata = {
@@ -64,7 +65,7 @@ export default function TicketTermsPage() {
         </p>
         <p>
           If you cannot attend, email{" "}
-          <a href="mailto:info@cusec.net">info@cusec.net</a> - and copy your
+          <a href="mailto:info@cusec.net" {...analyticsAttributes("contact_clicked", { purpose: "tickets", location: "ticket_terms" })}>info@cusec.net</a> - and copy your
           Head Delegate if you have one - as early as you can. We will do what
           we can to help.
         </p>
@@ -77,7 +78,7 @@ export default function TicketTermsPage() {
         <h2>Transfers</h2>
         <p>
           Tickets are issued to a named delegate. To pass yours to someone else,
-          contact <a href="mailto:info@cusec.net">info@cusec.net</a> rather than
+          contact <a href="mailto:info@cusec.net" {...analyticsAttributes("contact_clicked", { purpose: "tickets", location: "ticket_terms" })}>info@cusec.net</a> rather than
           handing the ticket over directly, so we can re-issue it and keep the
           attendee list accurate.
         </p>
@@ -108,7 +109,7 @@ export default function TicketTermsPage() {
         <h2>Contact</h2>
         <p>
           Anything about your order:{" "}
-          <a href="mailto:info@cusec.net">info@cusec.net</a>.
+          <a href="mailto:info@cusec.net" {...analyticsAttributes("contact_clicked", { purpose: "tickets", location: "ticket_terms" })}>info@cusec.net</a>.
         </p>
       </article>
     </>

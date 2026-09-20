@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 import { auth0 } from "@/lib/auth0";
 import { findOrCreateUser } from "@/lib/userService";
+import { analyticsAttributes } from "@/lib/analytics/events";
 import { RegisteredUser } from "@/lib/models";
 import ProfileCard from "@/components/scavenger/profile/ProfileCard";
 import { getScavengerAccess } from "@/lib/scavengerAccess";
@@ -23,7 +24,14 @@ export default async function ProfilePage() {
           <h1 className="aero-title">Your profile</h1>
           <p>Sign in to see your hunt profile.</p>
           {/* eslint-disable-next-line @next/next/no-html-link-for-pages */}
-          <a href="/auth/login?returnTo=/scavenger/profile" className="aero-btn">
+          <a
+            href="/auth/login?returnTo=/scavenger/profile"
+            className="aero-btn"
+            {...analyticsAttributes("login_started", {
+              location: "scavenger_profile",
+              return_to: "/scavenger/profile",
+            })}
+          >
             <UserRound className="h-4 w-4" />
             Sign in
           </a>
@@ -35,6 +43,7 @@ export default async function ProfilePage() {
   const mongoUser = await findOrCreateUser({
     email: user.email,
     name: user.name || "Hunter",
+    entryPoint: "scavenger",
   });
   const plain = mongoUser?.toObject();
   const dbUser = JSON.parse(

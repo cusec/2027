@@ -18,7 +18,7 @@ interface TicketsSectionProps {
   tickets: TicketType[];
   widgetConfig: TicketWidgetConfig;
   purchasedTicketName?: string | null;
-  onBuy?: () => void;
+  onBuy?: (ticket: TicketType) => void;
 }
 
 export default function TicketsSection({

@@ -1,23 +1,43 @@
 import { auth0 } from "@/lib/auth0";
-import { findOrCreateUser } from "@/lib/userService";
-import connectMongoDB from "@/lib/mongodb";
-import { DemographicInfo } from "@/lib/models";
-import { getWizardStatus } from "@/lib/ticketWizard";
+import { headers } from "next/headers";
 import { getBaseUrl } from "@/lib/siteUrl";
 import type { DemographicInfo as SavedProfile } from "@/lib/interface";
+import { isLocalTicketPreview, LOCAL_TICKET_PREVIEW_EMAIL } from "@/lib/localTicketPreview";
 import ProfileForm from "@/app/components/TicketWizard/ProfileForm";
 import AlreadyTicketedModal from "@/app/components/TicketWizard/AlreadyTicketedModal";
 import SignInCard from "@/app/components/TicketWizard/SignInCard";
-import { answersFrom } from "@/app/components/TicketWizard/profileAnswers";
+import { answersFrom, EMPTY_ANSWERS } from "@/app/components/TicketWizard/profileAnswers";
 
 export default async function ProfilePage() {
+  const requestHeaders = await headers();
+  const localPreview = isLocalTicketPreview(requestHeaders.get("host"));
+  if (localPreview) {
+    return (
+      <div className="tickets-wrapper">
+        <ProfileForm
+          initial={{ ...EMPTY_ANSWERS, primaryEmail: LOCAL_TICKET_PREVIEW_EMAIL }}
+          startIndex={0}
+        />
+      </div>
+    );
+  }
+
   const session = await auth0.getSession();
   const email = session?.user?.email;
   if (!email) return <SignInCard returnTo="/tickets/profile" />;
 
+  const [{ findOrCreateUser }, { default: connectMongoDB }, { DemographicInfo }, { getWizardStatus }] =
+    await Promise.all([
+      import("@/lib/userService"),
+      import("@/lib/mongodb"),
+      import("@/lib/models"),
+      import("@/lib/ticketWizard"),
+    ]);
+
   const user = await findOrCreateUser({
     email,
     name: session?.user?.name || "Attendee",
+    entryPoint: "tickets",
   });
 
   const status = await getWizardStatus(email);

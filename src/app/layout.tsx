@@ -1,6 +1,9 @@
 import type { Metadata, Viewport } from "next";
+import { Analytics } from "@vercel/analytics/next";
 import { GeistPixelSquare } from "geist/font/pixel";
 import { Nunito } from "next/font/google";
+import AnalyticsClickTracking from "./components/Analytics/AnalyticsClickTracking";
+import AttributionCapture from "./components/Analytics/AttributionCapture";
 import "./globals.css";
 import "./styles/Tickets/TicketCard.css";
 import "./styles/TicketWizard/TicketWizard.css";
@@ -140,7 +143,12 @@ export default function RootLayout({
       className={`${bodyFont.variable} ${GeistPixelSquare.variable}`}
       suppressHydrationWarning
     >
-      <body>{children}</body>
+      <body>
+        {children}
+        <AnalyticsClickTracking />
+        <AttributionCapture />
+        <Analytics />
+      </body>
     </html>
   );
 }
