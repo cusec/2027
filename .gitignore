@@ -45,5 +45,5 @@ certificates
 /.omo/
 
 # internal planning docs (local only)
-docs/analytics-plan.md
+docs/
 DESIGN.md
