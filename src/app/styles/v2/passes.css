@@ -124,3 +124,18 @@
         transform: none;
     }
 }
+
+/* The purchase step renders this same card from live data (TicketCard), where
+   the button can be disabled: sold out, already bought, checkout unset. */
+.v2-pass__cta:disabled {
+    opacity: 0.55;
+    filter: saturate(0.6);
+    cursor: var(--cursor-arrow);
+    transform: none;
+    box-shadow: none;
+}
+
+.v2-pass.is-purchased {
+    outline: 3px solid var(--v2-lime);
+    outline-offset: 4px;
+}

@@ -74,7 +74,7 @@ export const metadata: Metadata = {
         url: "/cusec-logo.png",
         width: 1200,
         height: 630,
-        alt: "CUSEC 2027 - Canadian University Software Engineering Conference, Montréal · January 2027",
+        alt: "CUSEC 2027 - Canadian University Software Engineering Conference, Montréal, January 2027",
         type: "image/png",
       },
     ],
@@ -84,7 +84,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "CUSEC 2027 - Canadian University Software Engineering Conference",
     description:
-      "Canada's longest-running student-led software engineering conference. 26th edition - Montréal, QC · January 2027.",
+      "Canada's longest-running student-led software engineering conference. 26th edition - Montréal, QC, January 2027.",
     images: ["/cusec-logo.png"],
     site: "@cusec", 
     creator: "@cusec",

@@ -16,13 +16,6 @@ import V2Footer from "@/app/components/v2/Footer/V2Footer";
 export default function HomePage() {
 	return (
 		<div className="v2">
-			<link
-				rel="preload"
-				as="image"
-				href="/assets/v2/background-unified.webp"
-				type="image/webp"
-				fetchPriority="high"
-			/>
 			<V2Nav />
 			<V2Scrollbar />
 			<V2ScrollReveal />

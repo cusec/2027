@@ -4,7 +4,7 @@ import { useState, type FormEvent } from "react";
 import { useTranslations } from "next-intl";
 import { useRouter } from "@/i18n/navigation";
 import type { ProfileAnswers } from "@/lib/interface";
-import { INSTITUTIONS, findInstitution } from "@/lib/institutions";
+import { INSTITUTIONS, findInstitution, institutionCity } from "@/lib/institutions";
 import {
   ATTENDEE_TYPE_OPTIONS,
   CREDENTIAL_OPTIONS,
@@ -69,6 +69,23 @@ export default function ProfileForm({ initial, startIndex }: ProfileFormProps) {
   const asksStudies = STUDIES_TYPES.includes(type);
   const asksWork = WORK_TYPES.includes(type);
   const institution = findInstitution(answers.school);
+
+  // Choosing a school pre-fills "travelling from" with that school's city. A
+  // city the delegate chose themselves is never overwritten: only an empty
+  // field, or one still holding the previous school's city, is replaced.
+  const cityFromSchool = (school: string): Partial<ProfileAnswers> => {
+    const next = institutionCity(school);
+    if (!next) return {};
+    const previous = institutionCity(answers.school);
+    const untouched =
+      !answers.travelCity ||
+      (previous !== null &&
+        answers.travelCity === previous.city &&
+        answers.travelRegion === previous.region &&
+        answers.travelCountry === previous.country);
+    if (!untouched) return {};
+    return { travelCity: next.city, travelRegion: next.region, travelCountry: next.country };
+  };
   const section = STEPS[index];
 
   const go = (next: number) => {
@@ -211,7 +228,7 @@ export default function ProfileForm({ initial, startIndex }: ProfileFormProps) {
                   value={answers.school}
                   otherLabel={t("q-school-other")}
                   required
-                  onChange={(v) => update({ school: v, campus: "" })}
+                  onChange={(v) => update({ school: v, campus: "", ...cityFromSchool(v) })}
                 />
                 <OtherInput
                   id="schoolOther"
@@ -355,7 +372,12 @@ export default function ProfileForm({ initial, startIndex }: ProfileFormProps) {
           </div>
 
           <Question label={t("q-travel-from")} htmlFor="travel-city" required wide>
-            <CityPicker id="travel-city" value={answers} onChange={(next) => update(next)} />
+            <CityPicker
+              id="travel-city"
+              value={answers}
+              suggested={asksSchool ? institutionCity(answers.school) : null}
+              onChange={(next) => update(next)}
+            />
           </Question>
         </WizardCard>
       )}

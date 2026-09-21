@@ -136,7 +136,7 @@ since its sections are not reused anywhere else.
 | `V2SdCard` | One CUSEC-SD card, rebuilt in CSS so its inserted/idle state can follow the loaded year. |
 | `archiveData.ts` | Per-edition photos, counts and card gradients. |
 | `V2Hunt` | Scavenger hunt card + 2026 leaderboard + map pins. |
-| `V2Passes` | Student / Professional toggle over one ticket card, with a `+$15 VIP` chip (`Tickets/VipChip`) whose perks show on hover, focus or tap. The perks are the ticket strategy doc's exact wording and are shared with the `/tickets` purchase cards. |
+| `V2Passes` | Student / Professional toggle over one ticket card, with a `+$15 VIP` chip (`Tickets/VipChip`) whose perks show on hover, focus or tap. The perks are the ticket strategy doc's exact wording. `Tickets/TicketCard` on the purchase step renders this same `.v2-pass` card from live Ticket Tailor data, so restyle it in `passes.css` only. |
 | `V2Scene` | `.v2-scene` + the painted backdrop `<img>`. Every page renders one; `screens` opts into the full-viewport rhythm. |
 | `V2Sponsors` | Landing-page teaser: heading pill + `V2SponsorHexes`. |
 | `V2SponsorHexes` | The honeycomb itself, shared by the teaser and `/sponsors`. |
@@ -238,7 +238,11 @@ component, not in `messages/`.
 The hero animates on load and everything below it animates on scroll, and the
 two are deliberately different mechanisms. The hero is on screen by definition,
 so it is pure CSS: `v2-rise-in` with staggered `animation-delay`s down the
-stack. `animation-fill-mode: both` is what holds each element hidden through its
+stack. **The entrance is motion only, never opacity**: a fade from 0 meant the
+first paint had no text in it, which Search Console flagged. For the same
+reason the backdrop painting loads at `fetchPriority="low"` with no preload,
+and below-the-fold images are `loading="lazy"` so React doesn't preload them
+ahead of the hero. `animation-fill-mode: both` is what holds each element hidden through its
 delay instead of flashing at full opacity first.
 
 Everything else carries a `.v2-reveal` class and is faded in by
@@ -512,7 +516,13 @@ create `src/middleware.ts`**. Contract:
   next-intl middleware and **copy Auth0's Set-Cookie headers onto the intl
   response** before returning. Dropping that cookie-merge step silently logs users
   out on navigation.
-- Matcher excludes `api`, `trpc`, `_next`, `_vercel`, and files with a dot.
+- `/api/*` → **rate limited only** (`src/lib/rateLimit.ts`), then passed straight
+  through: no Auth0 middleware, no next-intl. Per-IP, one-minute windows, with
+  buckets sized to what the UI really does (the purchase step polls status every
+  1.5s after checkout). Counted in memory per instance, so it is the app's own
+  floor; a Vercel Firewall rate-limit rule is the place for a hard global cap.
+- Page matcher excludes `api`, `trpc`, `_next`, `_vercel`, and files with a dot;
+  `/api/:path*` is a second matcher entry for the rate limit.
 
 ## Backend lib (`src/lib/`)
 

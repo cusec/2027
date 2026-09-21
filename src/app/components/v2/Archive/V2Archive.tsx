@@ -97,6 +97,8 @@ export default function V2Archive() {
 								<img
 									className="v2-cam__photo"
 									src={photo.src}
+									loading="lazy"
+									decoding="async"
 									alt=""
 									aria-hidden="true"
 								/>
@@ -121,7 +123,7 @@ export default function V2Archive() {
 								{photo?.caption ?? t("empty-card")}
 							</span>
 							<span className="v2-cam__meta v2-pixel">
-								SD:{edition.year}_MTL · {photo ? `PHOTO ${shotIndex + 1}/${edition.photos.length}` : "NO PHOTOS"}
+								SD:{edition.year}_MTL / {photo ? `PHOTO ${shotIndex + 1}/${edition.photos.length}` : "NO PHOTOS"}
 							</span>
 							{photo?.stamp ? (
 								<span className="v2-cam__stamp v2-pixel">{photo.stamp}</span>
@@ -162,7 +164,7 @@ export default function V2Archive() {
 									onClick={() => setShotIndex(i)}
 									aria-current={i === shotIndex}
 								>
-									<img src={p.thumb} alt="" aria-hidden="true" decoding="async" />
+									<img src={p.thumb} alt="" aria-hidden="true" loading="lazy" decoding="async" />
 									<span className="v2-sr">{p.caption}</span>
 								</button>
 							))}

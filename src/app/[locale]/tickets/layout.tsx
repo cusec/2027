@@ -1,4 +1,5 @@
 import { auth0 } from "@/lib/auth0";
+import V2Footer from "@/app/components/v2/Footer/V2Footer";
 
 /**
  * The ticket wizard sits on the same painting as /scavenger, so a delegate
@@ -24,14 +25,6 @@ export default async function TicketsLayout({
 
   return (
     <div className="v2 v2-aero">
-      <link
-        rel="preload"
-        as="image"
-        href="/assets/v2/background-unified.webp"
-        type="image/webp"
-        fetchPriority="high"
-      />
-
       <div className="v2-scene aero-scene">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
@@ -40,7 +33,8 @@ export default async function TicketsLayout({
           alt=""
           width={2560}
           height={12360}
-          fetchPriority="high"
+          fetchPriority="low"
+          decoding="async"
           aria-hidden="true"
         />
 
@@ -64,6 +58,8 @@ export default async function TicketsLayout({
           </div>
         )}
       </div>
+
+      <V2Footer />
     </div>
   );
 }

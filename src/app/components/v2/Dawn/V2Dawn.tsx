@@ -1,4 +1,5 @@
 import { useTranslations } from "next-intl";
+import { Link } from "@/i18n/navigation";
 import V2CdPlayer from "./V2CdPlayer";
 import V2Polaroid from "./V2Polaroid";
 
@@ -34,9 +35,9 @@ export default function V2Dawn() {
 							))}
 						</ul>
 
-						<a className="v2-btn v2-btn--primary" href="#passes">
+						<Link className="v2-btn v2-btn--primary" href="/tickets">
 							{t("stats-cta")}
-						</a>
+						</Link>
 					</div>
 
 					<V2CdPlayer />

@@ -87,7 +87,7 @@ export default function V2Nav() {
 
 				<div className="v2-nav__end">
 					<V2LocaleSwitcher label={t("language")} />
-					<Link className="v2-btn v2-btn--primary v2-nav__cta" href="/#passes">
+					<Link className="v2-btn v2-btn--primary v2-nav__cta" href="/tickets">
 						{t("cta")}
 					</Link>
 				</div>
@@ -116,7 +116,7 @@ export default function V2Nav() {
 					<V2LocaleSwitcher label={t("language")} />
 					<Link
 						className="v2-btn v2-btn--primary"
-						href="/#passes"
+						href="/tickets"
 						onClick={() => setOpen(false)}
 					>
 						{t("cta")}

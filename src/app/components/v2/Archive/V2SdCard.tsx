@@ -55,7 +55,7 @@ export default function V2SdCard({
 				</span>
 
 				<span className="v2-sd__brand v2-pixel" aria-hidden="true">
-					CUSEC·SD
+					CUSEC-SD
 				</span>
 			</span>
 		</button>

@@ -1,4 +1,5 @@
 import { useTranslations } from "next-intl";
+import { Link } from "@/i18n/navigation";
 import V2Wordmark from "@/app/components/v2/Hero/V2Wordmark";
 
 export default function V2Hero() {
@@ -27,9 +28,9 @@ export default function V2Hero() {
 				<p className="v2-hero__dates">{t("dates")}</p>
 
 				<div className="v2-hero__actions">
-					<a className="v2-btn v2-btn--primary" href="#passes">
+					<Link className="v2-btn v2-btn--primary" href="/tickets">
 						{t("cta-primary")}
-					</a>
+					</Link>
 					<a className="v2-btn v2-btn--ghost" href="#about">
 						{t("cta-secondary")}
 					</a>

@@ -67,8 +67,10 @@
     height: 30px;
 }
 
+/* line-height 1 keeps the line box to the glyphs, so flex centring centres the
+   ink. The old translateY(0.12em) nudge left the wordmark ~2.5px low. */
 .v2-nav__brand span {
-    transform: translateY(0.120em);
+    line-height: 1;
 }
 
 .v2-nav__links {
