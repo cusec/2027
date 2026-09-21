@@ -9,7 +9,7 @@ import { analyticsAttributes } from "@/lib/analytics/events";
 type FooterLink = { key: string; route?: string };
 
 const SITE_LINKS: FooterLink[] = [
-	{ key: "about" },
+	// { key: "about" }, - restore once there is an About page to link to.
 	{ key: "speakers", route: "/speakers" },
 	// Hidden for the first v2 release: landing, speakers, sponsors and
 	// policy & terms only. `#schedule` has no section yet and `#team` only

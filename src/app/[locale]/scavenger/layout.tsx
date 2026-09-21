@@ -35,14 +35,6 @@ export default async function ScavengerLayout({
 
   return (
     <div className="v2 v2-aero">
-      <link
-        rel="preload"
-        as="image"
-        href="/assets/v2/background-unified.webp"
-        type="image/webp"
-        fetchPriority="high"
-      />
-
       {publicShell && (
         <>
           <V2Nav />
@@ -58,7 +50,8 @@ export default async function ScavengerLayout({
           alt=""
           width={2560}
           height={12360}
-          fetchPriority="high"
+          fetchPriority="low"
+          decoding="async"
           aria-hidden="true"
         />
 

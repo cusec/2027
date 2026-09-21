@@ -1,8 +1,9 @@
 import createIntlMiddleware from "next-intl/middleware";
-import type { NextRequest } from "next/server";
+import { NextResponse, type NextRequest } from "next/server";
 import { routing } from "./i18n/routing";
 import { auth0 } from "./lib/auth0";
 import { isLocalTicketPreview } from "./lib/localTicketPreview";
+import { bucketFor, clientIp, takeToken } from "./lib/rateLimit";
 
 const intlMiddleware = createIntlMiddleware(routing);
 
@@ -23,6 +24,27 @@ const intlMiddleware = createIntlMiddleware(routing);
  */
 export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
+
+  // API routes: rate limit, then straight through. They read the Auth0 session
+  // themselves, and next-intl has no business rewriting them, so neither of
+  // the page concerns below runs for /api.
+  if (pathname.startsWith("/api/")) {
+    const result = takeToken(clientIp(request.headers), bucketFor(pathname, request.method));
+    if (!result.ok) {
+      return NextResponse.json(
+        { error: "Too many requests. Please slow down and try again shortly." },
+        {
+          status: 429,
+          headers: {
+            "Retry-After": String(result.retryAfter),
+            "X-RateLimit-Limit": String(result.limit),
+            "X-RateLimit-Remaining": "0",
+          },
+        }
+      );
+    }
+    return NextResponse.next();
+  }
 
   if (
     isLocalTicketPreview(request.nextUrl.hostname) &&
@@ -62,5 +84,6 @@ export const config = {
   //   next-intl must not locale-rewrite it)
   // - files containing a dot (e.g. favicon.ico)
   // `/auth/*` is intentionally NOT excluded so Auth0 can handle it.
-  matcher: "/((?!api|trpc|_next|_vercel|ingest|.*\\..*).*)",
+  // /api is matched separately, for the rate limit only - see the top of proxy().
+  matcher: ["/((?!api|trpc|_next|_vercel|ingest|.*\\..*).*)", "/api/:path*"],
 };

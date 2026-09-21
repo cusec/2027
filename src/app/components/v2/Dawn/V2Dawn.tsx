@@ -1,5 +1,6 @@
 import { useTranslations } from "next-intl";
 import { analyticsAttributes } from "@/lib/analytics/events";
+import { Link } from "@/i18n/navigation";
 import V2CdPlayer from "./V2CdPlayer";
 import V2Polaroid from "./V2Polaroid";
 
@@ -35,13 +36,13 @@ export default function V2Dawn() {
 							))}
 						</ul>
 
-						<a
+						<Link
 							className="v2-btn v2-btn--primary"
-							href="#passes"
-							{...analyticsAttributes("ticket_cta_clicked", { location: "dawn", destination: "passes" })}
+							href="/tickets"
+							{...analyticsAttributes("ticket_cta_clicked", { location: "dawn", destination: "tickets" })}
 						>
 							{t("stats-cta")}
-						</a>
+						</Link>
 					</div>
 
 					<V2CdPlayer />

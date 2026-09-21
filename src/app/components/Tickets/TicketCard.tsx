@@ -6,21 +6,31 @@ import VipChip from "./VipChip";
 
 const PERKS = 4;
 
-function formatPrice(cents: number): string {
-  return `$${(cents / 100).toFixed(2)} CAD`;
-}
+export type Audience = "student" | "professional";
 
 interface TicketCardProps {
   ticket: TicketType;
   vip: TicketType | null;
+  audience: Audience;
   checkoutConfigured: boolean;
   purchased?: boolean;
   onBuy?: (ticket: TicketType) => void;
 }
 
+/**
+ * The purchase step's ticket card. It is the landing page's pass card
+ * (`V2Passes`) rendered from live Ticket Tailor data: the same `.v2-pass`
+ * markup and classes, so the two stay 1:1 - restyle `.v2-pass` in passes.css,
+ * not this component.
+ *
+ * The VIP chip always shows, as it does on the landing page. When the VIP
+ * ticket type is visible in Ticket Tailor its real price difference is used;
+ * while it is hidden there, the chip falls back to the landing page's copy.
+ */
 export default function TicketCard({
   ticket,
   vip,
+  audience,
   checkoutConfigured,
   purchased = false,
   onBuy,
@@ -32,14 +42,18 @@ export default function TicketCard({
   const list = (prefix: string) =>
     Array.from({ length: PERKS }, (_, i) => passes(`${prefix}-${i + 1}`));
 
+  const money = (cents: number) =>
+    new Intl.NumberFormat(locale, {
+      style: "currency",
+      currency: "CAD",
+      currencyDisplay: "narrowSymbol",
+      minimumFractionDigits: 0,
+      maximumFractionDigits: cents % 100 === 0 ? 0 : 2,
+    }).format(cents / 100);
+
   const vipExtra = vip ? vip.priceCents - ticket.priceCents : 0;
-  const vipPrice = new Intl.NumberFormat(locale, {
-    style: "currency",
-    currency: "CAD",
-    currencyDisplay: "narrowSymbol",
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 0,
-  }).format(vipExtra / 100);
+  const vipLabel =
+    vipExtra > 0 ? t("vip-chip", { price: money(vipExtra) }) : passes("vip-chip");
 
   let buttonLabel = t("buy-button");
   let disabled = false;
@@ -59,31 +73,37 @@ export default function TicketCard({
   }
 
   return (
-    <div className={`ticket-card${purchased ? " ticket-card--purchased" : ""}`}>
-      <h2 className="ticket-card-name">{ticket.name}</h2>
-      <div className="ticket-card-price-row">
-        <p className="ticket-card-price">{formatPrice(ticket.priceCents)}</p>
-        {vip && vipExtra > 0 && (
-          <VipChip
-            label={t("vip-chip", { price: vipPrice })}
-            heading={passes("vip-heading")}
-            perks={list("vip-perk")}
-          />
-        )}
+    <article className={`v2-pass${purchased ? " is-purchased" : ""}`}>
+      <h2 className="v2-pass__name v2-pixel">{ticket.name}</h2>
+
+      <div className="v2-pass__price">
+        <span className="v2-pass__amount v2-pixel">{money(ticket.priceCents)}</span>
+        <span className="v2-pass__unit">{passes(`${audience}-unit`)}</span>
+        <VipChip
+          className="v2-pass__vip"
+          label={vipLabel}
+          heading={passes("vip-heading")}
+          perks={list("vip-perk")}
+        />
       </div>
-      <ul className="ticket-card-features">
+
+      <ul className="v2-pass__perks">
         {list("perk").map((perk) => (
-          <li key={perk}>{perk}</li>
+          <li key={perk}>
+            <i aria-hidden="true" />
+            {perk}
+          </li>
         ))}
       </ul>
+
       <button
         type="button"
-        className="cta-btn ticket-card-buy"
+        className="v2-btn v2-btn--primary v2-pass__cta"
         disabled={disabled}
         onClick={() => onBuy?.(ticket)}
       >
         {buttonLabel}
       </button>
-    </div>
+    </article>
   );
 }

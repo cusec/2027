@@ -14,7 +14,7 @@ import V2MiniPlayer from "./V2MiniPlayer";
 // Of the rest, Main Menu goes last because it opens on a beat of silence,
 // which read as the player being broken.
 export const TRACKS = [
-	{ title: "splash · DreamWeaver", file: "dreamweaver - blue garden - 10 splash.mp3" },
+	{ title: "splash by DreamWeaver", file: "dreamweaver - blue garden - 10 splash.mp3" },
 	{ title: "Mii Plaza", file: "Mii Plaza - Nintendo Wii Music Collection - Nintend'OST.mp3" },
 	{ title: "Shop Channel", file: "Shop Channel - Nintendo Wii Music Collection - Nintend'OST.mp3" },
 	{ title: "Main Menu", file: "Main Menu - Nintendo Wii Music Collection - Nintend'OST.mp3" },

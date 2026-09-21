@@ -63,13 +63,6 @@ export default function HomePage() {
 				// biome-ignore lint/security/noDangerouslySetInnerHtml: JSON-LD has to be emitted as a script tag.
 				dangerouslySetInnerHTML={{ __html: JSON.stringify(eventJsonLd) }}
 			/>
-			<link
-				rel="preload"
-				as="image"
-				href="/assets/v2/background-unified.webp"
-				type="image/webp"
-				fetchPriority="high"
-			/>
 			<V2Nav />
 			<V2Scrollbar />
 			<V2ScrollReveal />

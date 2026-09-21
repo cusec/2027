@@ -5,7 +5,7 @@ export default function manifest(): MetadataRoute.Manifest {
     name: "CUSEC 2027 - Canadian University Software Engineering Conference",
     short_name: "CUSEC 2027",
     description:
-      "Canada's longest-running student-led software engineering conference. 26th edition - Montréal, QC · January 2027.",
+      "Canada's longest-running student-led software engineering conference. 26th edition - Montréal, QC, January 2027.",
     start_url: "/",
     display: "standalone",
     background_color: "#103436",

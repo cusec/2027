@@ -11,7 +11,7 @@ export default function V2Polaroid({ src, caption, tilt = -3, className }: Props
 			className={`v2-polaroid${className ? ` ${className}` : ""}`}
 			style={{ "--v2-tilt": `${tilt}deg` } as React.CSSProperties}
 		>
-			<img src={src} alt="" aria-hidden="true" />
+			<img src={src} alt="" aria-hidden="true" loading="lazy" decoding="async" />
 			<figcaption className="v2-pixel">{caption}</figcaption>
 		</figure>
 	);

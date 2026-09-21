@@ -90,10 +90,10 @@ export default function V2Nav() {
 					<V2LocaleSwitcher label={t("language")} />
 					<Link
 						className="v2-btn v2-btn--primary v2-nav__cta"
-						href="/#passes"
+						href="/tickets"
 						{...analyticsAttributes("ticket_cta_clicked", {
 							location: "nav_desktop",
-							destination: "passes",
+							destination: "tickets",
 						})}
 					>
 						{t("cta")}
@@ -124,11 +124,11 @@ export default function V2Nav() {
 					<V2LocaleSwitcher label={t("language")} />
 					<Link
 						className="v2-btn v2-btn--primary"
-						href="/#passes"
+						href="/tickets"
 						onClick={() => setOpen(false)}
 						{...analyticsAttributes("ticket_cta_clicked", {
 							location: "nav_mobile",
-							destination: "passes",
+							destination: "tickets",
 						})}
 					>
 						{t("cta")}

@@ -20,7 +20,10 @@ export default function V2Scene({
 				alt=""
 				width={2560}
 				height={12360}
-				fetchPriority="high"
+				// Low on purpose: the hero text is the first paint, the painting
+				// follows. The scene's own sky colour stands in until it lands.
+				fetchPriority="low"
+				decoding="async"
 				aria-hidden="true"
 			/>
 			{children}

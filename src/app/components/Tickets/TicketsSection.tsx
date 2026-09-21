@@ -2,10 +2,8 @@
 
 import { useMemo, useState } from "react";
 import { useTranslations } from "next-intl";
-import TicketCard from "./TicketCard";
+import TicketCard, { type Audience } from "./TicketCard";
 import type { TicketType, TicketWidgetConfig } from "@/lib/ticketTailor";
-
-type Audience = "student" | "professional";
 
 const AUDIENCES: Audience[] = ["student", "professional"];
 
@@ -69,11 +67,12 @@ export default function TicketsSection({
         </div>
       )}
 
-      <div className="tickets-grid tickets-grid--single">
+      <div className="v2-passes__grid">
         <TicketCard
           key={group.base.id}
           ticket={group.base}
           vip={group.vip}
+          audience={group.audience}
           checkoutConfigured={checkoutConfigured}
           purchased={owns(group.base) || owns(group.vip)}
           onBuy={onBuy}

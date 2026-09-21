@@ -2,6 +2,7 @@
 
 import { useEffect, useId, useRef, useState } from "react";
 import { useTranslations } from "next-intl";
+import type { InstitutionCity } from "@/lib/institutions";
 import { OriginFields, type Origin } from "./WizardFields";
 
 interface CityResult {
@@ -11,14 +12,52 @@ interface CityResult {
   country: string;
 }
 
+// Labels are built the same way /api/locations builds them, from the names
+// country-state-city uses, so a preset and a search result read identically.
+const COUNTRY_NAMES: Record<string, string> = { CA: "Canada", US: "United States" };
+const REGION_NAMES: Record<string, string> = {
+  "CA:QC": "Quebec", "CA:ON": "Ontario", "CA:BC": "British Columbia", "CA:AB": "Alberta",
+  "CA:MB": "Manitoba", "CA:NS": "Nova Scotia", "CA:NB": "New Brunswick",
+  "CA:NL": "Newfoundland and Labrador", "CA:PE": "Prince Edward Island",
+  "CA:SK": "Saskatchewan", "CA:YT": "Yukon",
+  "US:MA": "Massachusetts", "US:PA": "Pennsylvania", "US:NY": "New York", "US:VT": "Vermont",
+};
+
+const labelOf = ({ city, region, country }: InstitutionCity) =>
+  `${city}, ${REGION_NAMES[`${country}:${region}`] ?? region}, ${COUNTRY_NAMES[country] ?? country}`;
+
+/** Shown before the delegate types anything: where most delegates travel from. */
+const POPULAR: InstitutionCity[] = [
+  { city: "Montréal", region: "QC", country: "CA" },
+  { city: "Toronto", region: "ON", country: "CA" },
+  { city: "Ottawa", region: "ON", country: "CA" },
+  { city: "Québec", region: "QC", country: "CA" },
+  { city: "Waterloo", region: "ON", country: "CA" },
+  { city: "Kingston", region: "ON", country: "CA" },
+  { city: "Hamilton", region: "ON", country: "CA" },
+  { city: "London", region: "ON", country: "CA" },
+  { city: "Sherbrooke", region: "QC", country: "CA" },
+  { city: "Gatineau", region: "QC", country: "CA" },
+  { city: "Vancouver", region: "BC", country: "CA" },
+  { city: "Calgary", region: "AB", country: "CA" },
+  { city: "Edmonton", region: "AB", country: "CA" },
+  { city: "Winnipeg", region: "MB", country: "CA" },
+  { city: "Halifax", region: "NS", country: "CA" },
+];
+
+const toResult = (c: InstitutionCity): CityResult => ({ ...c, label: labelOf(c) });
+
 export default function CityPicker({
   id,
   value,
   onChange,
+  suggested = null,
 }: {
   id: string;
   value: Origin;
   onChange: (next: Partial<Origin>) => void;
+  /** The delegate's school's city, listed first among the presets. */
+  suggested?: InstitutionCity | null;
 }) {
   const t = useTranslations("TicketWizard");
   const listId = useId();
@@ -112,8 +151,21 @@ export default function CityPicker({
   };
 
   const typing = (query ?? "").trim().length >= 2;
-  const optionCount = results.length + 1;
-  const shown = query ?? (picked ? label || value.travelCity : "");
+  const presets = [suggested, ...POPULAR]
+    .filter((c): c is InstitutionCity => c !== null)
+    .filter((c, i, all) => all.findIndex((o) => labelOf(o) === labelOf(c)) === i)
+    .map(toResult);
+  const items = typing ? results : presets;
+  const optionCount = items.length + 1;
+  // `label` can belong to an earlier pick once the school pre-fill has swapped
+  // the city, so only trust it while it still names the current city.
+  const current = picked && label.startsWith(`${value.travelCity},`) ? label : "";
+  const shown =
+    query ??
+    (picked
+      ? current ||
+        labelOf({ city: value.travelCity, region: value.travelRegion, country: value.travelCountry })
+      : "");
 
   return (
     <div className={`wizard-combo${open ? " is-open" : ""}`}>
@@ -154,7 +206,7 @@ export default function CityPicker({
             setActive((i) => Math.max(i - 1, 0));
           } else if (e.key === "Enter" && open) {
             e.preventDefault();
-            if (active < results.length) pick(results[active]);
+            if (active < items.length) pick(items[active]);
             else chooseManual();
           } else if (e.key === "Escape") {
             setOpen(false);
@@ -170,12 +222,12 @@ export default function CityPicker({
           {typing && !loading && results.length === 0 && (
             <li className="wizard-combo__empty">{t("city-empty")}</li>
           )}
-          {results.map((result, index) => (
+          {items.map((result, index) => (
             <li
               key={result.label}
               id={`${listId}-${index}`}
               role="option"
-              aria-selected={picked && result.label === label}
+              aria-selected={picked && result.label === shown}
               className={`wizard-combo__option${index === active ? " is-active" : ""}`}
               onMouseDown={(e) => e.preventDefault()}
               onMouseEnter={() => setActive(index)}
@@ -185,14 +237,14 @@ export default function CityPicker({
             </li>
           ))}
           <li
-            id={`${listId}-${results.length}`}
+            id={`${listId}-${items.length}`}
             role="option"
             aria-selected={false}
             className={`wizard-combo__option wizard-combo__option--other${
-              active === results.length ? " is-active" : ""
+              active === items.length ? " is-active" : ""
             }`}
             onMouseDown={(e) => e.preventDefault()}
-            onMouseEnter={() => setActive(results.length)}
+            onMouseEnter={() => setActive(items.length)}
             onClick={chooseManual}
           >
             {t("city-other")}
