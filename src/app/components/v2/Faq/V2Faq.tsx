@@ -10,7 +10,6 @@ const PADS = [1, 2, 3, 4, 5] as const;
 /* Retained FAQ slots and ticket/hotel link wiring for future announcements.
 const DISABLED_PADS = [1, 2, 3, 4, 5, 6, 7, 8] as const;
 const DISABLED_TICKETS_URL = "https://www.tickettailor.com/events/cusec";
-const DISABLED_HOTEL_URL = "https://bookings.omnihotels.com/event/montreal-mont-royal/cusec-main-block";
 */
 export default function V2Faq() {
 	const t = useTranslations("V2.faq");
