@@ -591,6 +591,19 @@ const Challenge =
 const Submission =
   mongoose.models.Submission || mongoose.model("Submission", submissionSchema);
 
+const eventSignupSchema = new Schema(
+  {
+    event: { type: String, required: true },
+    email: { type: String, required: true },
+    name: { type: String, default: "" },
+    consentedAt: { type: Date, required: true },
+  },
+  { timestamps: true },
+);
+eventSignupSchema.index({ event: 1, email: 1 }, { unique: true });
+const EventSignup =
+  mongoose.models.EventSignup || mongoose.model("EventSignup", eventSignupSchema);
+
 export {
   User,
   HuntItem,
@@ -604,4 +617,5 @@ export {
   Challenge,
   Submission,
   Team,
+  EventSignup,
 };
