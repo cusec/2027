@@ -145,10 +145,23 @@
     padding-bottom: 150px;
 }
 
+/* While V2SpeakerGrid is commented out, V2SpeakersSoon renders only the head
+   pill - no card grid to leave room under. 150px + the head's margin below
+   was sized for that grid, so it reads as a big empty gap with just the pill
+   in it. Restore .v2-spk-grid's own padding-bottom once the grid comes back;
+   this modifier only touches the placeholder state. */
+.v2-spk-grid--soon {
+    padding-bottom: 64px;
+}
+
 .v2-spk-grid__head {
     display: flex;
     justify-content: center;
     margin-bottom: 52px;
+}
+
+.v2-spk-grid--soon .v2-spk-grid__head {
+    margin-bottom: 0;
 }
 
 .v2-spk-grid__head .v2-heading-pill {
@@ -304,6 +317,13 @@
     .v2-spk-grid,
     .v2-pitch {
         padding-bottom: 100px;
+    }
+
+    /* Same source order as .v2-spk-grid above, so without this the mobile
+       rule would win the specificity tie and undo the tighter placeholder
+       spacing set outside this media query. */
+    .v2-spk-grid--soon {
+        padding-bottom: 48px;
     }
 
     .v2-spk-grid__list {
