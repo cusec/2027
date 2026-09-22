@@ -1,5 +1,41 @@
 {
     "V2": {
+        "adminDashboard": {
+            "eyebrow": "CUSEC team",
+            "title": "Team dashboard",
+            "sign-in-body": "Sign in with your CUSEC account to open the team tools.",
+            "sign-in": "Sign in",
+            "intro": "Choose a tool to get started.",
+            "links-title": "Event links",
+            "links-body": "Create a signup link for a meetup QR code.",
+            "export-title": "Signup export",
+            "export-body": "Download all meetup signups as a CSV file.",
+            "hunt-title": "Scavenger admin",
+            "hunt-body": "Open the scavenger dashboard, then choose Admin in the dock.",
+            "open": "Open tool →",
+            "download": "Download CSV →"
+        },
+        "eventLinks": {
+            "eyebrow": "Organizer tool",
+            "title": "Make an event link.",
+            "sign-in-body": "Sign in with your CUSEC account to make links for meetup signups.",
+            "sign-in": "Sign in",
+            "dashboard": "← Team dashboard",
+            "intro": "Enter the event name and date. The link works as soon as you generate it; no site change is needed.",
+            "name": "Event name",
+            "name-placeholder": "Montréal meetup",
+            "date": "Event date",
+            "generate": "Generate link",
+            "invalid": "Use a valid date and an event name with letters or numbers.",
+            "ready": "Your link is ready",
+            "event-id": "Event ID",
+            "link": "Signup URL",
+            "copy": "Copy link",
+            "copied": "Copied",
+            "open": "Open signup page",
+            "export": "Download signups CSV",
+            "hint": "Use a different name or date for a separate list. The same name and date produce the same link."
+        },
         "meet": {
             "eyebrow": "Nice to meet you",
             "title": "Stay in the loop.",

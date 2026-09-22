@@ -1,0 +1,82 @@
+.v2-admin .v2-scene {
+    min-height: 100svh;
+    display: grid;
+    place-items: center;
+}
+
+.v2-admin__wrap {
+    position: relative;
+    z-index: 1;
+    width: min(100%, 1020px);
+    padding: 40px 20px 64px;
+}
+
+.v2-admin__panel {
+    border-radius: 30px;
+    padding: clamp(28px, 5vw, 56px);
+}
+
+.v2-admin__panel > .v2-meet__eyebrow { text-align: center; }
+
+.v2-admin__title {
+    margin: 0;
+    color: var(--v2-ink-glass-deep);
+    font-size: clamp(30px, 5vw, 48px);
+    line-height: 1.15;
+    text-align: center;
+}
+
+.v2-admin__intro {
+    margin: 16px 0 28px;
+    color: var(--v2-ink-glass);
+    font-size: 17px;
+    text-align: center;
+}
+
+.v2-admin__panel > .v2-btn { display: table; margin: 0 auto; }
+
+.v2-admin__grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 240px), 1fr));
+    gap: 16px;
+}
+
+.v2-admin__tool {
+    display: flex;
+    flex-direction: column;
+    min-height: 194px;
+    width: 100%;
+    padding: 24px;
+    border: 1.5px solid rgba(14, 102, 77, .3);
+    border-radius: 20px;
+    background: rgba(253, 255, 254, .7);
+    color: var(--v2-ink-glass);
+    font: inherit;
+    text-align: left;
+    text-decoration: none;
+    transition: background .2s ease, transform .2s ease;
+}
+
+.v2-admin__tool:hover { background: var(--v2-white-pure); transform: translateY(-3px); }
+.v2-admin__tool:focus-visible { outline: 3px solid var(--v2-blue); outline-offset: 3px; }
+.v2-admin__tool h2 { margin: 0 0 10px; color: var(--v2-ink-glass-deep); font: 700 20px var(--v2-font-pixel); }
+.v2-admin__tool p { margin: 0 0 20px; line-height: 1.45; }
+.v2-admin__tool span,
+.v2-admin__tool-action { margin-top: auto; color: var(--v2-teal-deep); font-weight: 800; }
+.v2-admin__tool-action { width: max-content; padding: 0; border: 0; background: none; font: inherit; font-weight: 800; cursor: var(--cursor-hand); }
+.v2-admin__tool-action:focus-visible { outline: 3px solid var(--v2-blue); outline-offset: 3px; }
+
+.v2-event-links__back {
+    align-self: flex-start;
+    margin: 0 0 20px;
+    color: var(--v2-teal-deep);
+    font-weight: 800;
+    text-decoration: none;
+}
+
+.v2-event-links__back:focus-visible { outline: 3px solid var(--v2-blue); outline-offset: 3px; }
+
+@media (prefers-reduced-motion: reduce) {
+    .v2-admin__tool { transition: none; }
+    .v2-admin__tool:hover { transform: none; }
+}

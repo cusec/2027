@@ -9,6 +9,7 @@ import "./styles/Tickets/TicketCard.css";
 import "./styles/TicketWizard/TicketWizard.css";
 import "./styles/v2/index.css";
 import "./styles/v2/meet.css";
+import "./styles/v2/admin.css";
 import { SITE_URL } from "@/lib/seo";
 
 // Body copy face for the main site. Exposed as a CSS variable so swapping it
@@ -152,4 +153,3 @@ export default function RootLayout({
     </html>
   );
 }
-
