@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { usePathname } from "@/i18n/navigation";
 
 /**
  * Cubear, the mascot, dropping in now and then. Visits alternate:
@@ -58,7 +59,18 @@ async function decoded(src: string) {
 	await img.decode();
 }
 
+/**
+ * Kept out of the ticket flow: a bear drifting past every few seconds pulls
+ * attention away from a form someone is trying to finish. Unmounting (rather
+ * than pausing) means leaving the flow starts the visits over cleanly.
+ */
 export default function V2Cubear() {
+	const pathname = usePathname();
+	if (pathname === "/tickets" || pathname.startsWith("/tickets/")) return null;
+	return <CubearVisits />;
+}
+
+function CubearVisits() {
 	const [visit, setVisit] = useState<Visit | null>(null);
 	const [up, setUp] = useState(false);
 	const timer = useRef<number | undefined>(undefined);
