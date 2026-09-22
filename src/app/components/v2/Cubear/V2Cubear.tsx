@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { usePathname } from "@/i18n/navigation";
+import { V2CubearBubble } from "./V2CubearBubble";
 
 /**
  * Cubear, the mascot, dropping in now and then. Two kinds of visit:
@@ -18,11 +19,9 @@ import { usePathname } from "@/i18n/navigation";
  * peek, and the flow is where that attention matters most. Everywhere else
  * the two kinds keep alternating as before.
  *
- * Purely decorative - aria-hidden and pointer-events: none, below the navbar,
- * the CUSEC.FM dock and every dialog - so it can never sit between a visitor
- * and a button or form field. Side peeks stay in the middle band of the
- * screen, and bottom peeks and bubbles keep off the bottom-left, where the
- * dock lives. Only one visit is ever on screen at a time.
+ * Peeks are purely decorative. The bubble is a pointer-draggable Easter egg,
+ * while the full mascot layer stays below the CUSEC.FM dock, navbar and every
+ * dialog. Only one visit is ever on screen at a time.
  *
  * The poses are Blender renders of the mascot's STL models (see
  * public/assets/v2/cubear/). Each is decoded before it appears, so it never
@@ -133,7 +132,7 @@ function CubearVisits({ bubbleEnabled }: { bubbleEnabled: boolean }) {
 			count.current += 1;
 			if (next.kind === "peek") lastPeekSrc.current = next.pose.src;
 			setVisit(next);
-			if (next.kind === "bubble") return; // its CSS animation ends the visit
+			if (next.kind === "bubble") return;
 			// Paint the hidden position first so the slide actually transitions.
 			requestAnimationFrame(() => requestAnimationFrame(() => setUp(true)));
 			later(() => {
@@ -152,22 +151,7 @@ function CubearVisits({ bubbleEnabled }: { bubbleEnabled: boolean }) {
 	if (!visit) return null;
 
 	if (visit.kind === "bubble") {
-		return (
-			<div
-				className="v2-cubear-bubble"
-				style={{ left: `${visit.left}%` }}
-				aria-hidden="true"
-				onAnimationEnd={(e) => {
-					if (e.target === e.currentTarget) finish.current();
-				}}
-			>
-				<div className="v2-cubear-bubble__sway">
-					{/* eslint-disable-next-line @next/next/no-img-element */}
-					<img src={ERM} alt="" width={120} height={187} />
-					<span className="v2-cubear-bubble__film" />
-				</div>
-			</div>
-		);
+		return <V2CubearBubble left={visit.left} onFinished={() => finish.current()} />;
 	}
 
 	return (

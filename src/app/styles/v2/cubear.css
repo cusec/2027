@@ -4,7 +4,8 @@
    Two kinds, alternating (see V2Cubear): a peek from an edge, and a float up
    the screen inside a soap bubble. Both are fixed to the viewport, below the
    CUSEC.FM dock (50), the navbar (60) and every dialog (100+), and take no
-   pointer events, so neither can get in the way of the page.
+   pointer events outside the bubble itself. The bubble is a draggable Easter
+   egg; peeks remain fully decorative.
    ========================================================================== */
 
 /* Peek ---------------------------------------------------------------------
@@ -67,21 +68,34 @@
    two glints, drawn over the bear so it reads as inside. */
 .v2-cubear-bubble {
     --bubble: clamp(150px, 17vw, 210px);
+    --bubble-stretch: 0;
+    --bubble-lean: 0deg;
+    --bubble-sway: 0px;
+    --bear-x: 0px;
+    --bear-y: 0px;
     position: fixed;
     z-index: 45;
-    bottom: calc(var(--bubble) * -1.1);
+    top: 0;
+    left: 0;
     width: var(--bubble);
     aspect-ratio: 1;
-    translate: -50% 0;
-    pointer-events: none;
-    animation: v2-cubear-rise 10s cubic-bezier(0.35, 0.1, 0.55, 1) forwards;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    cursor: var(--cursor-hand);
+    touch-action: none;
+    user-select: none;
+    will-change: transform;
 }
 
 .v2-cubear-bubble__sway {
     position: relative;
     width: 100%;
     height: 100%;
-    animation: v2-cubear-sway 2.6s ease-in-out infinite alternate;
+    transform: translate3d(var(--bubble-sway), 0, 0) rotate(var(--bubble-lean))
+        scaleX(calc(1 + var(--bubble-stretch))) scaleY(calc(1 - var(--bubble-stretch)));
+    transform-origin: center;
+    will-change: transform;
 }
 
 .v2-cubear-bubble__sway img {
@@ -90,9 +104,10 @@
     top: 50%;
     width: 50%;
     height: auto;
-    translate: -50% -47%;
-    rotate: -6deg;
-    animation: v2-cubear-tumble 3.4s ease-in-out infinite alternate;
+    transform: translate(calc(-50% + var(--bear-x)), calc(-47% + var(--bear-y))) rotate(-6deg);
+    transform-origin: center;
+    pointer-events: none;
+    will-change: transform;
 }
 
 .v2-cubear-bubble__film {
@@ -107,6 +122,26 @@
             rgba(255, 255, 255, 0.25) 99%, transparent 100%);
     box-shadow: inset 0 0 18px rgba(255, 255, 255, 0.35),
         0 8px 22px rgba(11, 26, 58, 0.14);
+    pointer-events: none;
+    transition: filter 140ms ease, box-shadow 140ms ease;
+}
+
+.v2-cubear-bubble.is-dragging .v2-cubear-bubble__film {
+    filter: brightness(1.08) saturate(1.08);
+    box-shadow: inset 0 0 22px rgba(255, 255, 255, 0.48),
+        0 12px 28px rgba(11, 26, 58, 0.18);
+}
+
+@media (hover: hover) and (pointer: fine) {
+    .v2-cubear-bubble:hover .v2-cubear-bubble__film {
+        filter: brightness(1.08) saturate(1.08);
+        box-shadow: inset 0 0 22px rgba(255, 255, 255, 0.48),
+            0 12px 28px rgba(11, 26, 58, 0.18);
+    }
+}
+
+.v2-cubear-bubble.is-dragging {
+    z-index: 46;
 }
 
 /* The oil-slick colours soap film picks up, kept to the edge. */
@@ -121,55 +156,23 @@
     mask: radial-gradient(circle, transparent 70%, #000 90%, #000 100%);
 }
 
-@keyframes v2-cubear-rise {
-    0% {
-        translate: -50% 0;
-        scale: 0.9;
-        opacity: 0;
-    }
+.v2-cubear-bubble.is-popping {
+    pointer-events: none;
+}
 
-    8% {
-        scale: 1;
-        opacity: 1;
-    }
+.v2-cubear-bubble.is-popping .v2-cubear-bubble__sway {
+    animation: v2-cubear-pop 440ms cubic-bezier(0.23, 1, 0.32, 1) forwards;
+}
 
-    86% {
-        translate: -50% calc(-78vh - var(--bubble));
-        scale: 1;
-        opacity: 1;
-    }
-
-    /* pop */
-    92% {
-        translate: -50% calc(-80vh - var(--bubble));
-        scale: 1.14;
-        opacity: 0.85;
+@keyframes v2-cubear-pop {
+    55% {
+        transform: scale(1.16);
+        opacity: 0.82;
     }
 
     100% {
-        translate: -50% calc(-80vh - var(--bubble));
-        scale: 1.35;
+        transform: scale(1.38);
         opacity: 0;
-    }
-}
-
-@keyframes v2-cubear-sway {
-    from {
-        translate: -14px 0;
-    }
-
-    to {
-        translate: 14px 0;
-    }
-}
-
-@keyframes v2-cubear-tumble {
-    from {
-        rotate: -8deg;
-    }
-
-    to {
-        rotate: 7deg;
     }
 }
 
@@ -201,24 +204,26 @@
     }
 
     .v2-cubear-bubble {
-        bottom: 18vh;
-        animation: v2-cubear-fade 6s ease forwards;
+        will-change: auto;
     }
 
-    .v2-cubear-bubble__sway,
+    .v2-cubear-bubble__sway {
+        transform: none;
+        will-change: auto;
+    }
+
     .v2-cubear-bubble__sway img {
-        animation: none;
+        transform: translate(-50%, -47%) rotate(-6deg);
+        will-change: auto;
+    }
+
+    .v2-cubear-bubble.is-popping .v2-cubear-bubble__sway {
+        animation: v2-cubear-fade-out 440ms ease forwards;
     }
 }
 
-@keyframes v2-cubear-fade {
-    0%,
-    100% {
+@keyframes v2-cubear-fade-out {
+    to {
         opacity: 0;
-    }
-
-    12%,
-    85% {
-        opacity: 1;
     }
 }
