@@ -222,7 +222,20 @@
             "coming-soon": "À venir...."
         },
         "cubear": {
-            "phrases": ["salut ! enchanté !", "CUSEC, ça t’intéresse ?", "pourquoi je flotte", "euh, en fait…"]
+            "phrases": [
+                "salut ! enchanté !",
+                "CUSEC, ça t’intéresse ?",
+                "pourquoi je flotte",
+                "euh, en fait…",
+                "boop",
+                "youpi",
+                "tu m’as trouvé !",
+                "je vis dans le ciel",
+                "il fait beau là-haut",
+                "attrape-moi si tu peux !",
+                "t’as vu les archives ?",
+                "parle de nous à tes amis"
+            ]
         }
     },
     "TicketsPage": {

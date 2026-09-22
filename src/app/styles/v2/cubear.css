@@ -68,6 +68,7 @@
    two glints, drawn over the bear so it reads as inside. */
 .v2-cubear-bubble {
     --bubble: clamp(150px, 17vw, 210px);
+    --bubble-heading: 0deg;
     --bubble-stretch: 0;
     --bubble-lean: 0deg;
     --bubble-sway: 0px;
@@ -92,8 +93,13 @@
     position: relative;
     width: 100%;
     height: 100%;
-    transform: translate3d(var(--bubble-sway), 0, 0) rotate(var(--bubble-lean))
-        scaleX(calc(1 + var(--bubble-stretch))) scaleY(calc(1 - var(--bubble-stretch)));
+    /* The rotate sandwich aims the squash at the motion heading, so the film
+       deforms along the direction of travel instead of the screen axes. */
+    transform: translate3d(var(--bubble-sway), 0, 0)
+        rotate(calc(var(--bubble-heading) + var(--bubble-lean)))
+        scaleX(calc(1 + var(--bubble-stretch)))
+        scaleY(calc(1 - var(--bubble-stretch) * 0.55))
+        rotate(calc(-1 * var(--bubble-heading)));
     transform-origin: center;
     will-change: transform;
 }
@@ -156,15 +162,16 @@
     translate: -50% 0;
     width: max-content;
     max-width: 46vw;
-    padding: 7px 12px;
+    padding: 8px 13px;
+    border: 1.5px solid rgba(31, 59, 44, 0.1);
     border-radius: 14px 14px 14px 4px;
-    background: var(--v2-white);
+    background: #ffffff;
     color: var(--v2-ink);
-    font-size: 13px;
-    font-weight: 700;
+    font-size: 14px;
+    font-weight: 800;
     line-height: 1.25;
     text-align: center;
-    box-shadow: 0 6px 16px rgba(11, 26, 58, 0.22);
+    box-shadow: 0 8px 20px rgba(11, 26, 58, 0.26);
     pointer-events: none;
     opacity: 0;
     transition: opacity 160ms ease;
