@@ -72,9 +72,11 @@
     height: 86px;
     padding-inline: 15px;
     border-radius: 16px;
-    background: rgba(14, 35, 24, 0.66);
+    /* Near-solid, no backdrop blur. At 66% over a 6px blur the painted cloud
+       edges behind showed through as light streaks that slid about while
+       scrolling - it read as a rendering glitch. */
+    background: rgba(14, 35, 24, 0.88);
     border: 1px solid rgba(195, 233, 86, 0.45);
-    backdrop-filter: blur(6px);
 }
 
 .v2-stat__value {

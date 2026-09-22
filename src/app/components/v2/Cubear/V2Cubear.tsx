@@ -4,25 +4,42 @@ import { useEffect, useRef, useState } from "react";
 import { usePathname } from "@/i18n/navigation";
 
 /**
- * Cubear, the mascot, dropping in now and then. Visits alternate:
+ * Cubear, the mascot, dropping in now and then. Two kinds of visit:
  *
- *   - Shock peeks in from a random edge (bottom, left or right), holds for a
- *     few seconds and ducks back out.
- *   - Erm floats up the screen trapped in a soap bubble, which pops.
+ *   - A peek: one of five poses slides in from a random edge (bottom, left
+ *     or right), holds for a few seconds and ducks back out. A different
+ *     pose from the last one every time, so it reads as "the mascot", not
+ *     one repeating sticker.
+ *   - A bubble: Erm floats up the screen trapped in a soap bubble, which
+ *     pops near the top.
+ *
+ * The ticket flow only gets peeks - no bubble. A soap bubble drifting up the
+ * screen for ten seconds is a bigger ask on someone's attention than a quick
+ * peek, and the flow is where that attention matters most. Everywhere else
+ * the two kinds keep alternating as before.
  *
  * Purely decorative - aria-hidden and pointer-events: none, below the navbar,
  * the CUSEC.FM dock and every dialog - so it can never sit between a visitor
  * and a button or form field. Side peeks stay in the middle band of the
  * screen, and bottom peeks and bubbles keep off the bottom-left, where the
- * dock lives.
+ * dock lives. Only one visit is ever on screen at a time.
  *
  * The poses are Blender renders of the mascot's STL models (see
  * public/assets/v2/cubear/). Each is decoded before it appears, so it never
  * slides in half-loaded, and nothing is fetched until the first visit - well
  * after the hero has painted.
  */
-const SHOCK = "/assets/v2/cubear/cubear-shock.webp";
 const ERM = "/assets/v2/cubear/cubear-erm.webp";
+
+const PEEK_POSES = [
+	{ src: "/assets/v2/cubear/cubear-shock.webp", w: 360, h: 473 },
+	{ src: "/assets/v2/cubear/cubear-book.webp", w: 360, h: 514 },
+	{ src: "/assets/v2/cubear/cubear-default.webp", w: 360, h: 628 },
+	{ src: "/assets/v2/cubear/cubear-speaker.webp", w: 360, h: 606 },
+	{ src: "/assets/v2/cubear/cubear-laptop.webp", w: 360, h: 423 },
+] as const;
+
+type Pose = (typeof PEEK_POSES)[number];
 
 const FIRST_VISIT_MS = [3_000, 5_000] as const;
 const BETWEEN_VISITS_MS = [4_000, 7_000] as const;
@@ -32,18 +49,23 @@ const PEEK_MOVE_MS = 700;
 
 type Side = "bottom" | "left" | "right";
 type Visit =
-	| { kind: "peek"; side: Side; pos: number; tilt: number }
+	| { kind: "peek"; side: Side; pos: number; tilt: number; pose: Pose }
 	| { kind: "bubble"; left: number };
 
 const between = (min: number, max: number) => min + Math.random() * (max - min);
 
-function nextPeek(): Visit {
-	const side = (["bottom", "left", "right"] as const)[Math.floor(Math.random() * 3)];
+function nextPeek(excludeSrc: string | null): Visit {
+	const choices = excludeSrc ? PEEK_POSES.filter((p) => p.src !== excludeSrc) : PEEK_POSES;
+	const pose = choices[Math.floor(Math.random() * choices.length)];
+	// The laptop pose is wide and low rather than tall - rotating it 90deg to
+	// peek sideways reads oddly, so it only ever peeks from the bottom.
+	const wide = pose.h / pose.w < 1.3;
+	const side = wide ? "bottom" : (["bottom", "left", "right"] as const)[Math.floor(Math.random() * 3)];
 	// bottom: % from the left, clear of the dock; sides: % from the top, clear
 	// of the navbar above and the dock below.
 	const pos =
 		side === "bottom" ? between(45, 85) : side === "left" ? between(28, 55) : between(25, 68);
-	return { kind: "peek", side, pos, tilt: between(-8, 8) };
+	return { kind: "peek", side, pos, tilt: between(-8, 8), pose };
 }
 
 function nextBubble(): Visit {
@@ -60,22 +82,28 @@ async function decoded(src: string) {
 }
 
 /**
- * Kept out of the ticket flow: a bear drifting past every few seconds pulls
- * attention away from a form someone is trying to finish. Unmounting (rather
- * than pausing) means leaving the flow starts the visits over cleanly.
+ * Reads the route so the ticket flow can turn the bubble off (see the module
+ * doc comment) without ever unmounting the mascot - a peek should carry on
+ * smoothly across navigation, not restart because the route changed.
  */
 export default function V2Cubear() {
 	const pathname = usePathname();
-	if (pathname === "/tickets" || pathname.startsWith("/tickets/")) return null;
-	return <CubearVisits />;
+	const onTicketFlow = pathname === "/tickets" || pathname.startsWith("/tickets/");
+	return <CubearVisits bubbleEnabled={!onTicketFlow} />;
 }
 
-function CubearVisits() {
+function CubearVisits({ bubbleEnabled }: { bubbleEnabled: boolean }) {
 	const [visit, setVisit] = useState<Visit | null>(null);
 	const [up, setUp] = useState(false);
 	const timer = useRef<number | undefined>(undefined);
 	const count = useRef(0);
+	const lastPeekSrc = useRef<string | null>(null);
 	const finish = useRef<() => void>(() => {});
+	// Read fresh inside the scheduling loop below, which is set up once.
+	const bubbleEnabledRef = useRef(bubbleEnabled);
+	useEffect(() => {
+		bubbleEnabledRef.current = bubbleEnabled;
+	}, [bubbleEnabled]);
 
 	useEffect(() => {
 		let cancelled = false;
@@ -94,14 +122,16 @@ function CubearVisits() {
 		async function show() {
 			// A hidden tab has no one to visit; try again later.
 			if (document.hidden) return schedule(BETWEEN_VISITS_MS);
-			const next = count.current % 2 === 0 ? nextPeek() : nextBubble();
+			const useBubble = bubbleEnabledRef.current && count.current % 2 === 1;
+			const next = useBubble ? nextBubble() : nextPeek(lastPeekSrc.current);
 			try {
-				await decoded(next.kind === "peek" ? SHOCK : ERM);
+				await decoded(next.kind === "peek" ? next.pose.src : ERM);
 			} catch {
 				return schedule(BETWEEN_VISITS_MS);
 			}
 			if (cancelled) return;
 			count.current += 1;
+			if (next.kind === "peek") lastPeekSrc.current = next.pose.src;
 			setVisit(next);
 			if (next.kind === "bubble") return; // its CSS animation ends the visit
 			// Paint the hidden position first so the slide actually transitions.
@@ -149,7 +179,7 @@ function CubearVisits() {
 			aria-hidden="true"
 		>
 			{/* eslint-disable-next-line @next/next/no-img-element */}
-			<img src={SHOCK} alt="" width={180} height={236} />
+			<img src={visit.pose.src} alt="" width={visit.pose.w / 2} height={visit.pose.h / 2} />
 		</div>
 	);
 }
