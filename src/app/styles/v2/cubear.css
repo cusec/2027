@@ -152,9 +152,9 @@
 
 /* Speech ---------------------------------------------------------------------
    A word bubble above the bear. It lives inside the visit element, so on
-   sideways peeks it inherits the ±90deg rotation: the small bottom-left
-   corner is the tail pointing at the bear in every orientation, and the
-   counter-rotate keeps the words level. */
+   sideways peeks it inherits the ±90deg rotation: the tail is placed per
+   side so it points at the bear's face on screen, and the counter-rotate
+   keeps the words level. */
 .v2-cubear-speech {
     position: absolute;
     left: 50%;
@@ -164,7 +164,7 @@
     max-width: 46vw;
     padding: 8px 13px;
     border: 1.5px solid rgba(31, 59, 44, 0.1);
-    border-radius: 14px 14px 14px 4px;
+    border-radius: 14px;
     background: #ffffff;
     color: var(--v2-ink);
     font-size: 14px;
@@ -175,6 +175,48 @@
     pointer-events: none;
     opacity: 0;
     transition: opacity 160ms ease;
+}
+
+/* The tail: a rotated square poking out of the pill, bordered on its outer
+   faces so it reads as part of the bubble. */
+.v2-cubear-speech::after {
+    content: "";
+    position: absolute;
+    bottom: -5px;
+    width: 10px;
+    height: 10px;
+    background: inherit;
+    border-right: inherit;
+    border-bottom: inherit;
+    border-bottom-right-radius: 2px;
+    rotate: 45deg;
+}
+
+.v2-cubear-bubble .v2-cubear-speech::after,
+.v2-cubear--bottom .v2-cubear-speech::after {
+    left: 50%;
+    translate: -50% 0;
+}
+
+/* Sideways: slide the pill over the bear's head and point the tail at the
+   face below it. The pill's counter-rotation cancels the peek's ±90deg, so
+   the tail's corner is chosen directly in screen space. */
+.v2-cubear--right .v2-cubear-speech {
+    left: 85%;
+    border-radius: 14px 14px 4px 14px;
+}
+
+.v2-cubear--right .v2-cubear-speech::after {
+    right: 3px;
+}
+
+.v2-cubear--left .v2-cubear-speech {
+    left: 15%;
+    border-radius: 14px 14px 14px 4px;
+}
+
+.v2-cubear--left .v2-cubear-speech::after {
+    left: 3px;
 }
 
 .v2-cubear--right .v2-cubear-speech {

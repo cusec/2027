@@ -78,6 +78,13 @@ export function V2CubearBubble({ left, phrase, onFinished }: BubbleProps) {
 			popTimer = window.setTimeout(() => finishRef.current(), POP_MS);
 		};
 
+		// No burst here - only the timed pop below bursts in view.
+		const end = () => {
+			if (finished) return;
+			finished = true;
+			finishRef.current();
+		};
+
 		const setReducedMotion = () => {
 			reducedMotionRef.current = media.matches;
 		};
@@ -121,7 +128,7 @@ export function V2CubearBubble({ left, phrase, onFinished }: BubbleProps) {
 					);
 					motionRef.current = result.motion;
 					if (result.hitWall) impact = 1;
-					if (result.reachedCeiling) return beginPop();
+					if (result.motion.y < -radius - 60) return end();
 				}
 			}
 			impact *= 0.86;

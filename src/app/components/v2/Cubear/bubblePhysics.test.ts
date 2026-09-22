@@ -38,4 +38,16 @@ describe("stepBubblePhysics", () => {
 
 		expect(Math.hypot(result.motion.vx, result.motion.vy)).toBeLessThanOrEqual(1_400);
 	});
+
+	it("floats past the top edge instead of clamping or popping", () => {
+		const result = stepBubblePhysics(
+			{ x: 600, y: 20, vx: 0, vy: -1_300 },
+			bounds,
+			0.1,
+		);
+
+		expect(result.motion.y).toBeLessThan(-bounds.radius);
+		expect(result.motion.vy).toBeLessThan(0);
+		expect(result.hitWall).toBe(false);
+	});
 });

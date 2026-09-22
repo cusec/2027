@@ -14,7 +14,6 @@ export type BubbleBounds = Readonly<{
 type BubbleStep = Readonly<{
 	motion: BubbleMotion;
 	hitWall: boolean;
-	reachedCeiling: boolean;
 }>;
 
 const BUOYANCY = -48;
@@ -63,6 +62,5 @@ export function stepBubblePhysics(
 	return {
 		motion: { x, y, vx, vy },
 		hitWall,
-		reachedCeiling: y < bounds.radius * -0.35,
 	};
 }
