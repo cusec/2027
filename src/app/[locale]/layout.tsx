@@ -3,6 +3,7 @@ import {NextIntlClientProvider, hasLocale} from 'next-intl';
 import {setRequestLocale} from 'next-intl/server';
 import {notFound} from 'next/navigation';
 import MusicProvider from '@/app/components/v2/Music/MusicProvider';
+import V2Cubear from '@/app/components/v2/Cubear/V2Cubear';
 import V2ScrollToTop from '@/app/components/v2/Scroll/V2ScrollToTop';
 import {routing} from '@/i18n/routing';
 
@@ -68,6 +69,7 @@ export default async function LocaleLayout({children, params}: Props) {
       {/* Owns the CUSEC.FM audio, so a track survives navigation between the
           landing page and the ticket flow. */}
       <MusicProvider>{children}</MusicProvider>
+      <V2Cubear />
     </NextIntlClientProvider>
   );
 }
