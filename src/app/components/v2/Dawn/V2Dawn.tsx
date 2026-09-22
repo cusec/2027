@@ -80,9 +80,6 @@ export default function V2Dawn() {
 						<p className="v2-card__eyebrow">{t("who-eyebrow")}</p>
 						<h2 className="v2-card__title">{t("who-title")}</h2>
 						<p className="v2-card__body">{t("who-body")}</p>
-						<a className="v2-dawn__who-link" href="#team">
-							{t("who-link")} <span aria-hidden="true">→</span>
-						</a>
 					</article>
 
 					<V2Polaroid
