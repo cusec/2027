@@ -219,6 +219,22 @@
             "pitch-secondary": "Nominate a speaker",
             "keynote-announced-eyebrow": "Keynote announced",
             "coming-soon": "Coming soon...."
+        },
+        "cubear": {
+            "phrases": [
+                "hi! nice to meet you",
+                "interested in CUSEC?",
+                "why am i floating",
+                "erm actually",
+                "boop",
+                "wheee",
+                "you found me",
+                "i live in the sky now",
+                "nice weather up here",
+                "catch me if you can",
+                "have you seen the archive?",
+                "tell your friends"
+            ]
         }
     },
     "TicketsPage": {
