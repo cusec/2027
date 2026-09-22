@@ -102,6 +102,7 @@ components/v2/
   Sky/       V2Sky.tsx
   Dawn/      V2Dawn.tsx · V2CdPlayer.tsx · V2Polaroid.tsx
   Music/     MusicProvider.tsx · V2MiniPlayer.tsx
+  Cubear/    V2Cubear.tsx
   Archive/   V2Archive.tsx · V2SdCard.tsx · archiveData.ts
   Hunt/      V2Hunt.tsx
   Passes/    V2Passes.tsx
@@ -131,6 +132,7 @@ since its sections are not reused anywhere else.
 | `V2CdPlayer` | The CUSEC.FM widget on the landing page. Only a face for `MusicProvider` - it owns no audio of its own. |
 | `MusicProvider` | Owns the site's one `<audio>`. Mounted in `[locale]/layout.tsx` so a track survives navigation into the ticket flow. Starts itself on the visitor's first gesture (browsers block sound before that) and routes volume through a Web Audio gain node, because iOS ignores `audio.volume`. Build the graph only inside a gesture - a suspended context plays silently. |
 | `V2MiniPlayer` | The dock the player keeps on every page but the landing page, where `V2CdPlayer` already shows. Collapses to a disc so it never covers a form. |
+| `V2Cubear` | The mascot, mounted site-wide in `[locale]/layout.tsx`. First visit 3 to 5s after load, then one every 4 to 7s, alternating: Shock peeks in from a random edge (bottom, left or right) and ducks back out, and Erm floats up an outer edge inside a CSS soap bubble that pops. Decorative only (aria-hidden, no pointer events, below the dock, navbar and dialogs), and it stays off the bottom-left CUSEC.FM dock. The poses in `public/assets/v2/cubear/` are Blender renders of the mascot STL models, coloured white with near-black face details, pink hearts and an ice-blue cube. |
 | `V2Polaroid` | Tilted photo frame with a caption. |
 | `V2Archive` | CUSEC-CAM 2000 + swappable SD cards (see below). |
 | `V2SdCard` | One CUSEC-SD card, rebuilt in CSS so its inserted/idle state can follow the loaded year. |
@@ -158,6 +160,7 @@ Everything is namespaced under a `.v2` root class.
 | `sky.css` | `.v2-sky*` |
 | `dawn.css` | `.v2-polaroid`, `.v2-stat`, `.v2-cd*`, `.v2-dawn*` |
 | `music.css` | `.v2-mini*` - the CUSEC.FM dock |
+| `cubear.css` | `.v2-cubear` - the mascot popup |
 | `archive.css` | `.v2-cam*`, `.v2-sd*`, `.v2-archive*` |
 | `hunt.css` | `.v2-hunt*`, `.v2-board*` |
 | `passes.css` | `.v2-pass*`, `.v2-passes*` |
