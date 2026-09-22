@@ -5,6 +5,7 @@ import { auth0 } from "@/lib/auth0";
 import { eventIdFrom } from "@/lib/eventLinks";
 import { SITE_URL } from "@/lib/seo";
 import { hasVerifiedCusecEmail } from "@/lib/staffAccess";
+import { previewOrigins } from "@/lib/previewOrigins";
 import { getPathname, Link } from "@/i18n/navigation";
 import V2Scene from "@/app/components/v2/Scene/V2Scene";
 import CopyEventLink from "./CopyEventLink";
@@ -34,7 +35,7 @@ export default async function EventLinksPage({
   const eventDate = typeof date === "string" ? date : "";
   const eventId = eventName && eventDate ? eventIdFrom(eventName, eventDate) : null;
   const signupUrl = eventId
-    ? new URL(`/meet?event=${eventId}`, process.env.NEXT_PUBLIC_SITE_URL || SITE_URL).toString()
+    ? new URL(`/meet?event=${eventId}`, previewOrigins()[0] || process.env.NEXT_PUBLIC_SITE_URL || SITE_URL).toString()
     : null;
   const submitted = name !== undefined || date !== undefined;
 

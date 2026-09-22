@@ -8,7 +8,7 @@ For example, a September 24 Montréal event could use:
 
 The event ID is generated from the name and date using lowercase letters, numbers, and hyphens. It is stored with each signup; no event setup step is required. Email and opt-in are required, name is optional. The `EventSignup` MongoDB collection stores event ID, normalized email, name, consent time, and creation time. A repeated email at the same event appears once; the same email at different events creates a record for each event.
 
-The generator uses `NEXT_PUBLIC_SITE_URL` for its QR destination in preview deployments and falls back to `https://2027.cusec.net`. Set it to the dev deployment's origin before testing generated links there.
+On Vercel previews, the generator uses the branch URL for its QR destination and Auth0 uses that same host for its callback. Register the branch URL plus `/auth/callback` in Auth0's Allowed Callback URLs. Outside preview, the generator uses `NEXT_PUBLIC_SITE_URL` and falls back to `https://2027.cusec.net`.
 
 An Admin can download all signups at `/api/admin/event-signups` or one event at `/api/admin/event-signups?event=montreal-2026-09-24`. The response is a CSV with event, email, name, and consent time. Open the URL while signed in with the Admin role. The form does not send email; use the export for the later invitation campaign.
 
