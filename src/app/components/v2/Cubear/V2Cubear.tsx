@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { useTranslations } from "next-intl";
 import { usePathname } from "@/i18n/navigation";
 import { V2CubearBubble } from "./V2CubearBubble";
 
@@ -19,9 +20,11 @@ import { V2CubearBubble } from "./V2CubearBubble";
  * peek, and the flow is where that attention matters most. Everywhere else
  * the two kinds keep alternating as before.
  *
- * Peeks are purely decorative. The bubble is a pointer-draggable Easter egg,
- * while the full mascot layer stays below the CUSEC.FM dock, navbar and every
- * dialog. Only one visit is ever on screen at a time.
+ * Peeks are purely decorative except for one Easter egg: on a fine pointer,
+ * hovering a peek shows a small word bubble. The soap bubble does the same on
+ * hover and while dragged (so touch users see it too). The full mascot layer
+ * stays below the CUSEC.FM dock, navbar and every dialog, and the word
+ * bubbles take no pointer events. Only one visit is ever on screen at a time.
  *
  * The poses are Blender renders of the mascot's STL models (see
  * public/assets/v2/cubear/). Each is decoded before it appears, so it never
@@ -48,12 +51,12 @@ const PEEK_MOVE_MS = 700;
 
 type Side = "bottom" | "left" | "right";
 type Visit =
-	| { kind: "peek"; side: Side; pos: number; tilt: number; pose: Pose }
-	| { kind: "bubble"; left: number };
+	| { kind: "peek"; side: Side; pos: number; tilt: number; pose: Pose; phraseIndex: number }
+	| { kind: "bubble"; left: number; phraseIndex: number };
 
 const between = (min: number, max: number) => min + Math.random() * (max - min);
 
-function nextPeek(excludeSrc: string | null): Visit {
+function nextPeek(excludeSrc: string | null, phraseIndex: number): Visit {
 	const choices = excludeSrc ? PEEK_POSES.filter((p) => p.src !== excludeSrc) : PEEK_POSES;
 	const pose = choices[Math.floor(Math.random() * choices.length)];
 	// The laptop pose is wide and low rather than tall - rotating it 90deg to
@@ -64,14 +67,18 @@ function nextPeek(excludeSrc: string | null): Visit {
 	// of the navbar above and the dock below.
 	const pos =
 		side === "bottom" ? between(45, 85) : side === "left" ? between(28, 55) : between(25, 68);
-	return { kind: "peek", side, pos, tilt: between(-8, 8), pose };
+	return { kind: "peek", side, pos, tilt: between(-8, 8), pose, phraseIndex };
 }
 
-function nextBubble(): Visit {
+function nextBubble(phraseIndex: number): Visit {
 	// The outer edges, so the bubble drifts past the page's content - the hero
 	// wordmark reaches well past three quarters of the width - rather than
 	// across it.
-	return { kind: "bubble", left: Math.random() < 0.5 ? between(6, 13) : between(87, 94) };
+	return {
+		kind: "bubble",
+		left: Math.random() < 0.5 ? between(6, 13) : between(87, 94),
+		phraseIndex,
+	};
 }
 
 async function decoded(src: string) {
@@ -98,6 +105,12 @@ function CubearVisits({ bubbleEnabled }: { bubbleEnabled: boolean }) {
 	const count = useRef(0);
 	const lastPeekSrc = useRef<string | null>(null);
 	const finish = useRef<() => void>(() => {});
+	const t = useTranslations("V2.cubear");
+	const phrases = ((t.raw("phrases") as string[] | undefined) ?? []).filter(Boolean);
+	const phrasesRef = useRef(phrases);
+	useEffect(() => {
+		phrasesRef.current = phrases;
+	}, [phrases]);
 	// Read fresh inside the scheduling loop below, which is set up once.
 	const bubbleEnabledRef = useRef(bubbleEnabled);
 	useEffect(() => {
@@ -122,7 +135,9 @@ function CubearVisits({ bubbleEnabled }: { bubbleEnabled: boolean }) {
 			// A hidden tab has no one to visit; try again later.
 			if (document.hidden) return schedule(BETWEEN_VISITS_MS);
 			const useBubble = bubbleEnabledRef.current && count.current % 2 === 1;
-			const next = useBubble ? nextBubble() : nextPeek(lastPeekSrc.current);
+			const line = phrasesRef.current;
+			const phraseIndex = line.length ? Math.floor(Math.random() * line.length) : -1;
+			const next = useBubble ? nextBubble(phraseIndex) : nextPeek(lastPeekSrc.current, phraseIndex);
 			try {
 				await decoded(next.kind === "peek" ? next.pose.src : ERM);
 			} catch {
@@ -150,8 +165,10 @@ function CubearVisits({ bubbleEnabled }: { bubbleEnabled: boolean }) {
 
 	if (!visit) return null;
 
+	const phrase = visit.phraseIndex >= 0 ? phrases[visit.phraseIndex] : undefined;
+
 	if (visit.kind === "bubble") {
-		return <V2CubearBubble left={visit.left} onFinished={() => finish.current()} />;
+		return <V2CubearBubble left={visit.left} phrase={phrase} onFinished={() => finish.current()} />;
 	}
 
 	return (
@@ -164,6 +181,7 @@ function CubearVisits({ bubbleEnabled }: { bubbleEnabled: boolean }) {
 		>
 			{/* eslint-disable-next-line @next/next/no-img-element */}
 			<img src={visit.pose.src} alt="" width={visit.pose.w / 2} height={visit.pose.h / 2} />
+			{phrase && <span className="v2-cubear-speech">{phrase}</span>}
 		</div>
 	);
 }

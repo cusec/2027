@@ -220,6 +220,9 @@
             "pitch-secondary": "Nominate a speaker",
             "keynote-announced-eyebrow": "Keynote announced",
             "coming-soon": "Coming soon...."
+        },
+        "cubear": {
+            "phrases": ["hi! nice to meet you", "interested in CUSEC?", "why am i floating", "erm actually"]
         }
     },
     "TicketsPage": {

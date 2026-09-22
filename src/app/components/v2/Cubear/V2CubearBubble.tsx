@@ -20,13 +20,14 @@ type DragState = {
 
 type BubbleProps = Readonly<{
 	left: number;
+	phrase?: string;
 	onFinished: () => void;
 }>;
 
 const clamp = (value: number, min: number, max: number) =>
 	Math.min(max, Math.max(min, value));
 
-export function V2CubearBubble({ left, onFinished }: BubbleProps) {
+export function V2CubearBubble({ left, phrase, onFinished }: BubbleProps) {
 	const bubbleRef = useRef<HTMLDivElement>(null);
 	const motionRef = useRef<BubbleMotion>({ x: 0, y: 0, vx: 0, vy: -120 });
 	const dragRef = useRef<DragState | null>(null);
@@ -120,7 +121,11 @@ export function V2CubearBubble({ left, onFinished }: BubbleProps) {
 	const startDrag = (event: ReactPointerEvent<HTMLDivElement>) => {
 		const motion = motionRef.current;
 		event.preventDefault();
-		event.currentTarget.setPointerCapture(event.pointerId);
+		try {
+			event.currentTarget.setPointerCapture(event.pointerId);
+		} catch {
+			// No active pointer to capture; drag on without capture.
+		}
 		dragRef.current = {
 			pointerId: event.pointerId,
 			offsetX: event.clientX - motion.x,
@@ -176,6 +181,7 @@ export function V2CubearBubble({ left, onFinished }: BubbleProps) {
 			onPointerCancel={release}
 			onLostPointerCapture={release}
 		>
+			{phrase && <span className="v2-cubear-speech">{phrase}</span>}
 			<div className="v2-cubear-bubble__sway">
 				{/* eslint-disable-next-line @next/next/no-img-element */}
 				<img src={ERM} alt="" width={120} height={187} draggable="false" />

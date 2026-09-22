@@ -5,7 +5,7 @@
    the screen inside a soap bubble. Both are fixed to the viewport, below the
    CUSEC.FM dock (50), the navbar (60) and every dialog (100+), and take no
    pointer events outside the bubble itself. The bubble is a draggable Easter
-   egg; peeks remain fully decorative.
+   egg; on a fine pointer a hover shows a word bubble.
    ========================================================================== */
 
 /* Peek ---------------------------------------------------------------------
@@ -142,6 +142,55 @@
 
 .v2-cubear-bubble.is-dragging {
     z-index: 46;
+}
+
+/* Speech ---------------------------------------------------------------------
+   A word bubble above the bear. It lives inside the visit element, so on
+   sideways peeks it inherits the ±90deg rotation: the small bottom-left
+   corner is the tail pointing at the bear in every orientation, and the
+   counter-rotate keeps the words level. */
+.v2-cubear-speech {
+    position: absolute;
+    left: 50%;
+    bottom: calc(100% + 10px);
+    translate: -50% 0;
+    width: max-content;
+    max-width: 46vw;
+    padding: 7px 12px;
+    border-radius: 14px 14px 14px 4px;
+    background: var(--v2-white);
+    color: var(--v2-ink);
+    font-size: 13px;
+    font-weight: 700;
+    line-height: 1.25;
+    text-align: center;
+    box-shadow: 0 6px 16px rgba(11, 26, 58, 0.22);
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 160ms ease;
+}
+
+.v2-cubear--right .v2-cubear-speech {
+    rotate: calc(90deg - var(--cubear-tilt, 0deg));
+}
+
+.v2-cubear--left .v2-cubear-speech {
+    rotate: calc(-90deg - var(--cubear-tilt, 0deg));
+}
+
+@media (hover: hover) and (pointer: fine) {
+    .v2-cubear img {
+        pointer-events: auto;
+    }
+
+    .v2-cubear:has(img:hover) .v2-cubear-speech,
+    .v2-cubear-bubble:hover .v2-cubear-speech {
+        opacity: 1;
+    }
+}
+
+.v2-cubear-bubble.is-dragging .v2-cubear-speech {
+    opacity: 1;
 }
 
 /* The oil-slick colours soap film picks up, kept to the edge. */
