@@ -9,6 +9,7 @@ import {
 	type ReactNode,
 } from "react";
 import V2MiniPlayer from "./V2MiniPlayer";
+import { usePathname } from "@/i18n/navigation";
 
 // splash leads: it is the one on-theme track and it opens on the first beat.
 // Of the rest, Main Menu goes last because it opens on a beat of silence,
@@ -63,6 +64,12 @@ export function useMusic() {
  * that has not been resumed plays silently.
  */
 export default function MusicProvider({ children }: { children: ReactNode }) {
+	const pathname = usePathname();
+	if (pathname === "/meet" || pathname === "/admin" || pathname.startsWith("/admin/")) return <>{children}</>;
+	return <MusicPlayback>{children}</MusicPlayback>;
+}
+
+function MusicPlayback({ children }: { children: ReactNode }) {
 	const audioRef = useRef<HTMLAudioElement>(null);
 	const graphRef = useRef<Graph | null>(null);
 	const pausedByVisitor = useRef(false);

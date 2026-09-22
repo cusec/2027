@@ -1,5 +1,25 @@
 {
     "V2": {
+        "meet": {
+            "eyebrow": "Nice to meet you",
+            "title": "Stay in the loop.",
+            "intro": "Leave your email and we'll send you the CUSEC 2027 invite and sign-up details after this event.",
+            "email": "Email address",
+            "email-placeholder": "you@example.com",
+            "name": "Name (optional)",
+            "name-placeholder": "What should we call you?",
+            "consent": "Yes, email me the CUSEC 2027 invite and related event updates. I can unsubscribe anytime.",
+            "required": "(required)",
+            "submit": "Keep me posted",
+            "privacy": "Privacy policy",
+            "invalid": "Check your details and try again.",
+            "error": "We couldn't save that just now. Please try again.",
+            "done-eyebrow": "You're on the list",
+            "done-title": "See you soon!",
+            "done-body": "Thanks for stopping by. Watch your inbox for the CUSEC 2027 invite and sign-up details.",
+            "missing-title": "This link needs an event ID.",
+            "missing-body": "Please scan the QR code at the event again."
+        },
         "nav": {
             "aria-label": "Main",
             "menu": "Menu",

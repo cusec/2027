@@ -67,6 +67,14 @@ export default function PrivacyPolicyPage() {
           the ticket to your account, and the name of the ticket you bought.
         </p>
 
+        <h3>Event signups</h3>
+        <p>
+          If you leave your email at a CUSEC meetup, we store your email,
+          optional name, the meetup link you used, and when you opted in.
+          We use this to send the CUSEC 2027 invite, sign-up details, and
+          related event updates. Each email includes a way to unsubscribe.
+        </p>
+
         <h3>The delegate survey</h3>
         <p>
           After creating an account you are asked a short set of questions that
@@ -124,6 +132,7 @@ export default function PrivacyPolicyPage() {
           </li>
           <li>To run the scavenger hunt and its leaderboard.</li>
           <li>To email you about the conference you registered for.</li>
+          <li>To send meetup subscribers the invitation and updates they requested.</li>
         </ul>
 
         <h2>What we share</h2>

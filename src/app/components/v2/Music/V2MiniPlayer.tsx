@@ -19,7 +19,7 @@ export default function V2MiniPlayer() {
 	const [open, setOpen] = useState(true);
 
 	// The landing page has the real player; two of them would fight.
-	if (pathname === "/") return null;
+	if (pathname === "/" || pathname === "/meet") return null;
 
 	return (
 		<div

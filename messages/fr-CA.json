@@ -1,5 +1,25 @@
 {
     "V2": {
+        "meet": {
+            "eyebrow": "Ravi de vous rencontrer",
+            "title": "Restons en contact.",
+            "intro": "Laissez-nous votre courriel et nous vous enverrons l'invitation à CUSEC 2027 et les détails d'inscription après cet événement.",
+            "email": "Adresse courriel",
+            "email-placeholder": "vous@exemple.com",
+            "name": "Nom (facultatif)",
+            "name-placeholder": "Comment doit-on vous appeler?",
+            "consent": "Oui, je souhaite recevoir par courriel l'invitation à CUSEC 2027 et les nouvelles liées à l'événement. Je peux me désabonner en tout temps.",
+            "required": "(obligatoire)",
+            "submit": "Tenez-moi au courant",
+            "privacy": "Politique de confidentialité",
+            "invalid": "Vérifiez vos renseignements et réessayez.",
+            "error": "Nous n'avons pas pu enregistrer votre inscription. Réessayez.",
+            "done-eyebrow": "Vous êtes sur la liste",
+            "done-title": "À bientôt!",
+            "done-body": "Merci de votre visite. Surveillez votre boîte courriel pour l'invitation à CUSEC 2027 et les détails d'inscription.",
+            "missing-title": "Ce lien nécessite un identifiant d'événement.",
+            "missing-body": "Veuillez scanner de nouveau le code QR à l'événement."
+        },
         "nav": {
             "aria-label": "Principal",
             "menu": "Menu",

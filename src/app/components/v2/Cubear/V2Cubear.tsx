@@ -95,6 +95,7 @@ async function decoded(src: string) {
 export default function V2Cubear() {
 	const pathname = usePathname();
 	const onTicketFlow = pathname === "/tickets" || pathname.startsWith("/tickets/");
+	if (pathname === "/meet" || pathname === "/admin" || pathname.startsWith("/admin/")) return null;
 	return <CubearVisits bubbleEnabled={!onTicketFlow} />;
 }
 
