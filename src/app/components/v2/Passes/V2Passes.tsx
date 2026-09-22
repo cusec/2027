@@ -72,8 +72,6 @@ export default function V2Passes() {
 						</Link>
 					</article>
 				</div>
-
-				<p className="v2-passes__note">{t("note")}</p>
 			</div>
 		</section>
 	);
