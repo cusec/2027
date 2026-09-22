@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { EventSignup } from "@/lib/models";
+import { Campaign, EventSignup } from "@/lib/models";
 import connectMongoDB from "@/lib/mongodb";
 import { EVENT_ID_PATTERN } from "@/lib/eventLinks";
 
@@ -12,6 +12,7 @@ export async function POST(request: Request) {
   const email = String(form.get("email") ?? "").trim().toLowerCase();
   const name = String(form.get("name") ?? "").trim();
   const consent = form.get("consent") === "yes";
+  const campaignId = String(form.get("campaign") ?? "");
 
   const back = new URL(locale === "fr-CA" ? "/fr-CA/meet" : "/meet", request.url);
   if (EVENT_ID_PATTERN.test(event)) back.searchParams.set("event", event);
@@ -23,9 +24,15 @@ export async function POST(request: Request) {
 
   try {
     await connectMongoDB();
+    const campaign = /^[a-f0-9]{16}$/.test(campaignId)
+      ? await Campaign.findOne({ id: campaignId }).select("destination").lean<{ destination: string }>()
+      : null;
+    const campaignEvent = campaign
+      ? new URL(campaign.destination, request.url).searchParams.get("event")
+      : null;
     await EventSignup.updateOne(
       { event, email },
-      { $setOnInsert: { event, email, name, consentedAt: new Date() } },
+      { $setOnInsert: { event, email, name, campaignId: campaignEvent === event ? campaignId : null, consentedAt: new Date() } },
       { upsert: true },
     );
     back.searchParams.set("status", "saved");

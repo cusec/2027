@@ -14,10 +14,10 @@ export default async function MeetPage({
   searchParams,
 }: {
   params: Promise<{ locale: string }>;
-  searchParams: Promise<{ event?: string; status?: string }>;
+  searchParams: Promise<{ event?: string; status?: string; campaign?: string }>;
 }) {
   const { locale } = await params;
-  const { event, status } = await searchParams;
+  const { event, status, campaign } = await searchParams;
   const t = await getTranslations("V2.meet");
   const validEvent = typeof event === "string" && EVENT_ID_PATTERN.test(event);
 
@@ -56,6 +56,7 @@ export default async function MeetPage({
                 <form className="v2-meet__form" action="/api/event-signups" method="post">
                   <input type="hidden" name="event" value={event} />
                   <input type="hidden" name="locale" value={locale} />
+                  {typeof campaign === "string" && <input type="hidden" name="campaign" value={campaign} />}
                   <label htmlFor="meet-email">{t("email")}</label>
                   <input id="meet-email" name="email" type="email" autoComplete="email" inputMode="email" placeholder={t("email-placeholder")} maxLength={254} required autoFocus />
                   <label htmlFor="meet-name">{t("name")}</label>

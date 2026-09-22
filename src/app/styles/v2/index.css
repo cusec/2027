@@ -26,5 +26,8 @@
 @import "./scavenger.css";
 @import "./profile.css";
 
+/* admin dashboards */
+@import "./admin.css";
+
 /* /privacy-policy, /code-of-conduct, /ticket-terms and the 404 */
 @import "./policy.css";

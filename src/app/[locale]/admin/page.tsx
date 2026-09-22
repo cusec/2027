@@ -39,6 +39,11 @@ export default async function AdminPage({ params }: { params: Promise<{ locale: 
                 <p className="v2-admin__intro">{t("intro")}</p>
                 <div className="v2-admin__grid">
                   {(admin || hasVerifiedCusecEmail(user)) && (
+                    <Link className="v2-admin__tool" href="/admin/campaigns">
+                      <h2>{t("campaigns-title")}</h2><p>{t("campaigns-body")}</p><span>{t("open")}</span>
+                    </Link>
+                  )}
+                  {(admin || hasVerifiedCusecEmail(user)) && (
                     <Link className="v2-admin__tool" href="/admin/event-links">
                       <h2>{t("links-title")}</h2><p>{t("links-body")}</p><span>{t("open")}</span>
                     </Link>
