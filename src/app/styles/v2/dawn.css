@@ -385,19 +385,6 @@
     color: rgba(26, 56, 43, 0.72);
 }
 
-/* who card ---------------------------------------------------------------- */
-.v2-dawn__who-link {
-    display: inline-block;
-    margin-top: 18px;
-    color: var(--v2-teal-deep);
-    font-size: 14px;
-    text-decoration: none;
-}
-
-.v2-dawn__who-link:hover {
-    text-decoration: underline;
-}
-
 /* --------------------------------------------------------------------------
    Responsive
    -------------------------------------------------------------------------- */

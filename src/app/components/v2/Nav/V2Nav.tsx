@@ -84,6 +84,18 @@ export default function V2Nav() {
 							</Link>
 						);
 					})}
+
+					{/* Pure decoration, not a link - a peek of Cubear tucked beside the
+					    last nav item (Sponsors, today). Same Shock render the mascot
+					    popup uses, just tiny and idly bobbing in place. */}
+					<img
+						className="v2-nav__mascot"
+						src="/assets/v2/cubear/cubear-shock.webp"
+						alt=""
+						width={22}
+						height={29}
+						aria-hidden="true"
+					/>
 				</nav>
 
 				<div className="v2-nav__end">

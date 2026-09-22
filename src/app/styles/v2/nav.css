@@ -100,6 +100,28 @@
     border-radius: 999px;
 }
 
+/* A peek of Cubear beside the last link - decorative, not interactive, so it
+   carries no hover/focus state of its own. Nudged left to sit close rather
+   than stealing the row's 28px gap, and given its own gentle bob so it
+   reads as alive without competing with the wordmark's idle wave. */
+.v2-nav__mascot {
+    height: 26px;
+    width: auto;
+    margin-left: -14px;
+    filter: drop-shadow(0 2px 4px rgba(11, 26, 58, 0.22));
+    animation: v2-nav-mascot-bob 2.6s ease-in-out infinite;
+}
+
+@keyframes v2-nav-mascot-bob {
+    0%, 100% {
+        translate: 0 0;
+    }
+
+    50% {
+        translate: 0 -3px;
+    }
+}
+
 .v2-nav__end {
     display: flex;
     align-items: center;
