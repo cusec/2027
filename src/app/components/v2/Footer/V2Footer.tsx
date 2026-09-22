@@ -128,8 +128,6 @@ export default function V2Footer() {
 				<p className="v2-footer__wordmark v2-pixel" aria-hidden="true">
 					CUSEC 2027
 				</p>
-
-				<p className="v2-footer__legal">{t("legal")}</p>
 			</div>
 		</footer>
 	);
