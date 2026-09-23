@@ -11,6 +11,7 @@ import { hasVerifiedCusecEmail } from "@/lib/staffAccess";
 import { getPathname, Link } from "@/i18n/navigation";
 import V2Scene from "@/app/components/v2/Scene/V2Scene";
 import CampaignLink from "./CampaignLink";
+import CampaignForm from "./CampaignForm";
 
 export const metadata: Metadata = {
   title: "Campaign dashboard",
@@ -104,19 +105,14 @@ export default async function CampaignsPage({
               <>
                 <section className="v2-campaign__section" aria-labelledby="campaign-create-title">
                   <h2 id="campaign-create-title" className="v2-pixel">{t("create-title")}</h2>
-                  <form className="v2-campaign__form" action="/api/admin/campaigns" method="post">
-                    <input type="hidden" name="locale" value={locale} />
-                    <label>{t("name")}<input name="name" maxLength={100} required placeholder={t("name-placeholder")} /></label>
-                    <label>{t("channel")}<select name="channel" defaultValue="meetup">
-                      <option value="meetup">{t("meetup")}</option>
-                      <option value="school">{t("school")}</option>
-                      <option value="social">{t("social")}</option>
-                      <option value="partner">{t("partner")}</option>
-                    </select></label>
-                    <label className="v2-campaign__destination">{t("destination")}<input name="destination" required maxLength={512} placeholder="/meet?event=montreal-2026-10-01" /></label>
-                    <button className="v2-btn v2-btn--primary" type="submit">{t("create")}</button>
-                  </form>
-                  <p className="v2-campaign__note">{t("destination-hint")}</p>
+                  <CampaignForm
+                    locale={locale}
+                    namePlaceholder={t("name-placeholder")}
+                    channelLabel={t("channel")}
+                    destinationLabel={t("destination")}
+                    destinationHint={t("destination-hint")}
+                    createLabel={t("create")}
+                  />
                   {status === "invalid" && <p className="v2-campaign__error" role="alert">{t("invalid")}</p>}
                   {status === "error" && <p className="v2-campaign__error" role="alert">{t("error")}</p>}
                   {created && <p className="v2-campaign__success" role="status">{t("created")}</p>}
