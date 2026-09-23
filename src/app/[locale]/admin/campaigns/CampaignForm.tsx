@@ -10,17 +10,21 @@ const CHANNEL_DESTINATIONS: Record<CampaignChannel, string> = {
   partner: "/",
 };
 
-const CHANNEL_LABELS: Record<string, string> = {
-  meetup: "Meetup",
-  school: "School",
-  social: "Social",
-  partner: "Partner",
+const CHANNEL_PLACEHOLDERS: Record<CampaignChannel, string> = {
+  meetup: "/meet?event=",
+  school: "/tickets",
+  social: "/",
+  partner: "/",
 };
 
 export default function CampaignForm({
   locale,
   namePlaceholder,
   channelLabel,
+  meetupLabel,
+  schoolLabel,
+  socialLabel,
+  partnerLabel,
   destinationLabel,
   destinationHint,
   createLabel,
@@ -28,6 +32,10 @@ export default function CampaignForm({
   locale: string;
   namePlaceholder: string;
   channelLabel: string;
+  meetupLabel: string;
+  schoolLabel: string;
+  socialLabel: string;
+  partnerLabel: string;
   destinationLabel: string;
   destinationHint: string;
   createLabel: string;
@@ -43,6 +51,13 @@ export default function CampaignForm({
     setDestination(CHANNEL_DESTINATIONS[newChannel]);
   }, []);
 
+  const channelLabels = {
+    meetup: meetupLabel,
+    school: schoolLabel,
+    social: socialLabel,
+    partner: partnerLabel,
+  };
+
   return (
     <form className="v2-campaign__form" action="/api/admin/campaigns" method="post">
       <input type="hidden" name="locale" value={locale} />
@@ -57,10 +72,10 @@ export default function CampaignForm({
           value={channel}
           onChange={handleChannelChange}
         >
-          <option value="meetup">{CHANNEL_LABELS.meetup}</option>
-          <option value="school">{CHANNEL_LABELS.school}</option>
-          <option value="social">{CHANNEL_LABELS.social}</option>
-          <option value="partner">{CHANNEL_LABELS.partner}</option>
+          <option value="meetup">{meetupLabel}</option>
+          <option value="school">{schoolLabel}</option>
+          <option value="social">{socialLabel}</option>
+          <option value="partner">{partnerLabel}</option>
         </select>
       </label>
       <label className="v2-campaign__destination">
@@ -71,7 +86,7 @@ export default function CampaignForm({
           onChange={(e) => setDestination(e.target.value)}
           required
           maxLength={512}
-          placeholder={CHANNEL_DESTINATIONS.meetup}
+          placeholder={CHANNEL_PLACEHOLDERS[channel]}
         />
       </label>
       <button className="v2-btn v2-btn--primary" type="submit">

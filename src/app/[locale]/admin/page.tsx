@@ -43,11 +43,6 @@ export default async function AdminPage({ params }: { params: Promise<{ locale: 
                       <h2>{t("campaigns-title")}</h2><p>{t("campaigns-body")}</p><span>{t("open")}</span>
                     </Link>
                   )}
-                  {(admin || hasVerifiedCusecEmail(user)) && (
-                    <Link className="v2-admin__tool" href="/admin/event-links">
-                      <h2>{t("links-title")}</h2><p>{t("links-body")}</p><span>{t("open")}</span>
-                    </Link>
-                  )}
                   {admin && (
                     <form action="/api/admin/event-signups" method="get" className="v2-admin__tool">
                       <h2>{t("export-title")}</h2><p>{t("export-body")}</p>

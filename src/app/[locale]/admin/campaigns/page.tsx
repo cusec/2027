@@ -14,7 +14,7 @@ import CampaignLink from "./CampaignLink";
 import CampaignForm from "./CampaignForm";
 
 export const metadata: Metadata = {
-  title: "Campaign dashboard",
+  title: "Links & campaigns",
   robots: { index: false, follow: false },
 };
 
@@ -109,6 +109,10 @@ export default async function CampaignsPage({
                     locale={locale}
                     namePlaceholder={t("name-placeholder")}
                     channelLabel={t("channel")}
+                    meetupLabel={t("meetup")}
+                    schoolLabel={t("school")}
+                    socialLabel={t("social")}
+                    partnerLabel={t("partner")}
                     destinationLabel={t("destination")}
                     destinationHint={t("destination-hint")}
                     createLabel={t("create")}
