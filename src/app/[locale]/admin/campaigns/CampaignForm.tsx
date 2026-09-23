@@ -4,13 +4,6 @@ import { useState, useCallback } from "react";
 import type { CampaignChannel } from "@/lib/campaigns";
 
 const CHANNEL_DESTINATIONS: Record<CampaignChannel, string> = {
-  meetup: "/meet",
-  school: "/tickets",
-  social: "/",
-  partner: "/",
-};
-
-const CHANNEL_PLACEHOLDERS: Record<CampaignChannel, string> = {
   meetup: "/meet?event=",
   school: "/tickets",
   social: "/",
@@ -86,7 +79,7 @@ export default function CampaignForm({
           onChange={(e) => setDestination(e.target.value)}
           required
           maxLength={512}
-          placeholder={CHANNEL_PLACEHOLDERS[channel]}
+          placeholder={CHANNEL_DESTINATIONS[channel]}
         />
       </label>
       <button className="v2-btn v2-btn--primary" type="submit">

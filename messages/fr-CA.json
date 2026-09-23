@@ -53,27 +53,7 @@
             "signups": "inscriptions",
             "export": "Télécharger le CSV"
         },
-        "eventLinks": {
-            "eyebrow": "Outil pour l'équipe",
-            "title": "Créer un lien d'événement.",
-            "sign-in-body": "Connectez-vous avec votre compte CUSEC pour créer des liens d'inscription aux rencontres.",
-            "sign-in": "Se connecter",
-            "dashboard": "← Tableau de bord",
-            "intro": "Saisissez le nom et la date de l'événement. Le lien fonctionne dès sa création, sans modification du site.",
-            "name": "Nom de l'événement",
-            "name-placeholder": "Rencontre à Montréal",
-            "date": "Date de l'événement",
-            "generate": "Créer le lien",
-            "invalid": "Saisissez une date valide et un nom contenant des lettres ou des chiffres.",
-            "ready": "Votre lien est prêt",
-            "event-id": "Identifiant de l'événement",
-            "link": "URL d'inscription",
-            "copy": "Copier le lien",
-            "copied": "Copié",
-            "open": "Ouvrir la page d'inscription",
-            "export": "Télécharger les inscriptions CSV",
-            "hint": "Changez le nom ou la date pour obtenir une liste distincte. Un nom et une date identiques donnent le même lien."
-        },
+
         "meet": {
             "eyebrow": "Ravi de vous rencontrer",
             "title": "Restons en contact.",

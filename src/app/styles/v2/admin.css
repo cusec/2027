@@ -66,7 +66,7 @@
 .v2-admin__tool-action { width: max-content; padding: 0; border: 0; background: none; font: inherit; font-weight: 800; cursor: var(--cursor-hand); }
 .v2-admin__tool-action:focus-visible { outline: 3px solid var(--v2-blue); outline-offset: 3px; }
 
-.v2-event-links__back {
+.v2-admin__back {
     align-self: flex-start;
     margin: 0 0 20px;
     color: var(--v2-teal-deep);
@@ -74,7 +74,7 @@
     text-decoration: none;
 }
 
-.v2-event-links__back:focus-visible { outline: 3px solid var(--v2-blue); outline-offset: 3px; }
+.v2-admin__back:focus-visible { outline: 3px solid var(--v2-blue); outline-offset: 3px; }
 
 .v2-campaign__wrap { width: min(100%, 1160px); }
 .v2-campaign__panel { width: 100%; }

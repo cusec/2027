@@ -95,7 +95,7 @@ export default async function CampaignsPage({
         <div className="v2-admin__wrap v2-campaign__wrap">
           <Link className="v2-meet__brand v2-pixel" href="/">CUSEC <span>2027</span></Link>
           <section className="v2-glass v2-admin__panel">
-            {user && <Link className="v2-event-links__back" href="/admin">{t("back")}</Link>}
+            {user && <Link className="v2-admin__back" href="/admin">{t("back")}</Link>}
             <p className="v2-meet__eyebrow">{t("eyebrow")}</p>
             <h1 className="v2-pixel v2-admin__title">{t("title")}</h1>
             <p className="v2-admin__intro">{t("intro")}</p>
