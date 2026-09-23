@@ -591,6 +591,44 @@ const Challenge =
 const Submission =
   mongoose.models.Submission || mongoose.model("Submission", submissionSchema);
 
+const eventSignupSchema = new Schema(
+  {
+    event: { type: String, required: true },
+    email: { type: String, required: true },
+    name: { type: String, default: "" },
+    campaignId: { type: String, default: null },
+    consentedAt: { type: Date, required: true },
+  },
+  { timestamps: true },
+);
+eventSignupSchema.index({ event: 1, email: 1 }, { unique: true });
+eventSignupSchema.index({ campaignId: 1 });
+const EventSignup =
+  mongoose.models.EventSignup || mongoose.model("EventSignup", eventSignupSchema);
+
+const campaignSchema = new Schema(
+  {
+    id: { type: String, required: true, unique: true },
+    name: { type: String, required: true },
+    channel: { type: String, required: true, enum: ["meetup", "school", "social", "partner"] },
+    destination: { type: String, required: true },
+    createdBy: { type: String, required: true },
+    visits: { type: Number, default: 0 },
+  },
+  { timestamps: true },
+);
+const Campaign = mongoose.models.Campaign || mongoose.model("Campaign", campaignSchema);
+
+const campaignPurchaseSchema = new Schema(
+  {
+    orderId: { type: String, required: true, unique: true },
+    campaignId: { type: String, required: true, index: true },
+    purchasedAt: { type: Date, default: Date.now },
+  },
+  { timestamps: false },
+);
+const CampaignPurchase = mongoose.models.CampaignPurchase || mongoose.model("CampaignPurchase", campaignPurchaseSchema);
+
 export {
   User,
   HuntItem,
@@ -604,4 +642,7 @@ export {
   Challenge,
   Submission,
   Team,
+  EventSignup,
+  Campaign,
+  CampaignPurchase,
 };
