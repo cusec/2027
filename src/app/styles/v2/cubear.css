@@ -16,7 +16,10 @@
 .v2-cubear {
     position: fixed;
     z-index: 45;
-    width: clamp(110px, 13vw, 170px);
+    /* Small enough on a phone that a peek never sits over more than a line or
+       two of text - the viewport-width term barely moves this on any real
+       screen, so the 80/130px ends are what actually apply. */
+    width: clamp(80px, 9vw, 130px);
     pointer-events: none;
     transition: translate 700ms cubic-bezier(0.34, 1.4, 0.64, 1);
 }
@@ -67,7 +70,10 @@
    bubble itself is CSS: a clear body, a bright rim, an iridescent film and
    two glints, drawn over the bear so it reads as inside. */
 .v2-cubear-bubble {
-    --bubble: clamp(150px, 17vw, 210px);
+    /* Same idea as the peek's width above - shrunk from an earlier size that
+       covered a third of a phone screen and could sit over whatever text was
+       underneath. The floor (105px) is what applies on any real phone. */
+    --bubble: clamp(105px, 12vw, 150px);
     --bubble-heading: 0deg;
     --bubble-stretch: 0;
     --bubble-lean: 0deg;
