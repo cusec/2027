@@ -2,6 +2,12 @@ import type { NextConfig } from "next";
 import createNextIntlPlugin from "next-intl/plugin";
 
 const nextConfig: NextConfig = {
+  async headers() {
+    return ["photos/archive", "cubear", "audio"].map((path) => ({
+      source: `/assets/v2/${path}/:file*`,
+      headers: [{ key: "Cache-Control", value: "public, max-age=3600" }],
+    }));
+  },
   // Dev-only: Next serves /_next assets to `localhost` alone unless told
   // otherwise, so a cusec.net dev host would load with no CSS without this.
   // Kept as a standing allowance -- nothing in the repo actually sets such a
