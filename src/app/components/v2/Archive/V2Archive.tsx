@@ -1,24 +1,25 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import { useTranslations } from "next-intl";
 import { ChevronLeft, ChevronRight, Camera } from "lucide-react";
 import { EDITIONS } from "./archiveData";
 import V2SdCard from "./V2SdCard";
 
-const warmed = new Set<string>();
+const warmed = new Map<string, Promise<void>>();
 
-/** Fetch and decode a card's photos ahead of time so a swap shows them at once. */
 function preload(yearIndex: number) {
-	for (const p of EDITIONS[yearIndex]?.photos ?? []) {
-		for (const src of [p.thumb, p.src]) {
-			if (warmed.has(src)) continue;
-			warmed.add(src);
-			const img = new Image();
-			img.src = src;
-			img.decode().catch(() => {});
-		}
-	}
+	const src = EDITIONS[yearIndex]?.photos[0]?.src;
+	if (!src) return Promise.resolve();
+	const pending = warmed.get(src);
+	if (pending) return pending;
+	const img = new Image();
+	img.src = src;
+	const ready = img.decode().catch(() => {
+		warmed.delete(src);
+	});
+	warmed.set(src, ready);
+	return ready;
 }
 
 export default function V2Archive() {
@@ -27,41 +28,23 @@ export default function V2Archive() {
 	const [shotIndex, setShotIndex] = useState(0);
 	// drives the insert/eject animation and the LCD glitch
 	const [swapping, setSwapping] = useState(false);
-	const sectionRef = useRef<HTMLElement>(null);
+	const swapId = useRef(0);
 
 	const edition = EDITIONS[yearIndex];
 	const photo = edition.photos[shotIndex];
 
-	// Warm every card once the camera is close to the viewport, not on page load.
-	useEffect(() => {
-		const el = sectionRef.current;
-		const warmAll = () => EDITIONS.forEach((_, i) => preload(i));
-		if (!el || typeof IntersectionObserver === "undefined") {
-			warmAll();
-			return;
-		}
-		const io = new IntersectionObserver(
-			(entries) => {
-				if (entries.some((e) => e.isIntersecting)) {
-					io.disconnect();
-					warmAll();
-				}
-			},
-			{ rootMargin: "800px 0px" },
-		);
-		io.observe(el);
-		return () => io.disconnect();
-	}, []);
-
-	function loadCard(index: number) {
+	async function loadCard(index: number) {
 		if (index === yearIndex) return;
+		const id = ++swapId.current;
+		const ready = preload(index);
 		setSwapping(true);
-		// let the card travel into the slot before the screen changes over
+		await Promise.all([ready, new Promise<void>((resolve) => window.setTimeout(resolve, 260))]);
+		if (id !== swapId.current) return;
+		setYearIndex(index);
+		setShotIndex(0);
 		window.setTimeout(() => {
-			setYearIndex(index);
-			setShotIndex(0);
-		}, 260);
-		window.setTimeout(() => setSwapping(false), 620);
+			if (id === swapId.current) setSwapping(false);
+		}, 360);
 	}
 
 	function step(delta: number) {
@@ -71,7 +54,7 @@ export default function V2Archive() {
 	}
 
 	return (
-		<section ref={sectionRef} className="v2-section v2-archive v2-reveal" id="archive">
+		<section className="v2-section v2-archive v2-reveal" id="archive">
 			<div className="v2-container">
 				<div className="v2-archive__head">
 					<h2 className="v2-heading-pill">
@@ -203,7 +186,6 @@ export default function V2Archive() {
 												i < yearIndex ? i : i - 1
 											}`
 								}
-								// backstop in case the viewport warm-up hasn't run yet
 								onPointerEnter={() => preload(i)}
 								onFocus={() => preload(i)}
 							>

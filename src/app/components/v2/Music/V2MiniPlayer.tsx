@@ -22,10 +22,7 @@ export default function V2MiniPlayer() {
 	if (pathname === "/" || pathname === "/meet") return null;
 
 	return (
-		<div
-			className={`v2-mini${open ? " is-open" : ""}${playing ? " is-playing" : ""}`}
-			data-music-controls
-		>
+		<div className={`v2-mini${open ? " is-open" : ""}${playing ? " is-playing" : ""}`}>
 			<button
 				type="button"
 				className="v2-mini__disc"

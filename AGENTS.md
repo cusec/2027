@@ -130,7 +130,7 @@ since its sections are not reused anywhere else.
 | `V2Sky` | Statement heading + three frosted info cards. |
 | `V2Dawn` | The collage: polaroids, stat tiles, CUSEC.FM, about / who / good-to-know cards. |
 | `V2CdPlayer` | The CUSEC.FM widget on the landing page. Only a face for `MusicProvider` - it owns no audio of its own. |
-| `MusicProvider` | Owns the site's one `<audio>`. Mounted in `[locale]/layout.tsx` so a track survives navigation into the ticket flow. Starts itself on the visitor's first gesture (browsers block sound before that) and routes volume through a Web Audio gain node, because iOS ignores `audio.volume`. Build the graph only inside a gesture - a suspended context plays silently. |
+| `MusicProvider` | Owns the site's one `<audio>`. Mounted in `[locale]/layout.tsx` so a track survives navigation into the ticket flow. Loads and plays audio only when the visitor presses a player control; routes volume through a Web Audio gain node because iOS ignores `audio.volume`. Build the graph only inside that gesture - a suspended context plays silently. |
 | `V2MiniPlayer` | The dock the player keeps on every page but the landing page, where `V2CdPlayer` already shows. Collapses to a disc so it never covers a form. |
 | `V2Cubear` | The mascot, mounted in `[locale]/layout.tsx` on every page. First visit 3 to 5s after load, then one every 4 to 7s, alternating two kinds of visit: a peek from a random edge (bottom, left or right) and a float up an outer edge inside a CSS soap bubble that pops. A peek cycles through five poses (Shock, Book, Default, Speaker, Laptop), never the same one twice running; the bubble is always Erm. The ticket flow (`/tickets` and its steps) only gets peeks - no bubble, so it never asks ten seconds of attention from someone filling in a form; everywhere else both kinds keep alternating. Decorative only (aria-hidden, no pointer events, below the dock, navbar and dialogs), and it stays off the bottom-left CUSEC.FM dock. The poses in `public/assets/v2/cubear/` are Blender renders of the mascot STL models, coloured white with near-black face details, pink hearts and an ice-blue cube. |
 | `V2Polaroid` | Tilted photo frame with a caption. |
@@ -318,8 +318,9 @@ Links use the i18n `Link` (never a bare `<a>` to a route — that trips
 ### Archive interaction
 
 `V2Archive` holds `yearIndex` / `shotIndex`. Clicking an SD card sets a
-`swapping` flag (glitches the LCD), swaps the year after 260ms, and clears at
-620ms. Card positions are pure CSS: the loaded card gets `.is-inserted`
+`swapping` flag (glitches the LCD), waits at least 260ms and for the first photo
+to decode, then swaps the year and clears the flag 360ms later. Card positions
+are pure CSS: the loaded card gets `.is-inserted`
 (camera slot) and the rest get `.v2-archive__slot--rest-{0,1,2}` in order, so
 the flight in and out animates from the `transition` on `.v2-archive__slot`.
 

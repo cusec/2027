@@ -8,16 +8,14 @@ import { useMusic } from "@/app/components/v2/Music/MusicProvider";
  * CUSEC.FM - the CD widget from the Figma frame. The audio itself lives in
  * MusicProvider (mounted in the locale layout) so a track keeps playing when
  * the visitor leaves this page; this component is only its face on the
- * landing page. `data-music-controls` marks the widget as the player's own
- * controls, so the provider's start-on-first-gesture listener ignores clicks
- * in here.
+ * landing page.
  */
 export default function V2CdPlayer() {
 	const t = useTranslations("V2.dawn");
 	const { track, playing, progress, volume, toggle, step, changeVolume } = useMusic();
 
 	return (
-		<div className="v2-cd" data-music-controls>
+		<div className="v2-cd">
 			<div className="v2-cd__head">
 				<span className="v2-cd__title v2-pixel">{t("player-title")}</span>
 				<span className="v2-cd__bars" aria-hidden="true">

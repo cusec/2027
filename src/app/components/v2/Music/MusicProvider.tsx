@@ -54,9 +54,7 @@ export function useMusic() {
  * Two views render it: the CUSEC.FM widget in the collage (V2CdPlayer) and the
  * small dock on every other page (V2MiniPlayer).
  *
- * It starts the first track on its own: browsers refuse sound before the
- * visitor has interacted, so if the attempt on load is blocked it starts on
- * their first tap, click or key press anywhere on the page. Pausing sticks.
+ * Playback starts from the player's controls.
  *
  * Volume goes through a Web Audio gain node, because iOS Safari ignores
  * `audio.volume` entirely and would otherwise play at full device volume. The
@@ -72,7 +70,6 @@ export default function MusicProvider({ children }: { children: ReactNode }) {
 function MusicPlayback({ children }: { children: ReactNode }) {
 	const audioRef = useRef<HTMLAudioElement>(null);
 	const graphRef = useRef<Graph | null>(null);
-	const pausedByVisitor = useRef(false);
 	const [index, setIndex] = useState(0);
 	const [playing, setPlaying] = useState(false);
 	const [progress, setProgress] = useState(0);
@@ -125,27 +122,6 @@ function MusicPlayback({ children }: { children: ReactNode }) {
 		applyVolume(volume);
 	}, [volume]);
 
-	// Start by default: try straight away, then fall back to the first gesture.
-	useEffect(() => {
-		const events = ["pointerdown", "keydown", "touchend"] as const;
-		const detach = () => events.forEach((e) => window.removeEventListener(e, onGesture, true));
-		function onGesture(e: Event) {
-			// The player's own controls handle themselves; starting here too would
-			// have the same click immediately pause it again.
-			if ((e.target as Element | null)?.closest?.("[data-music-controls]")) return detach();
-			detach();
-			if (pausedByVisitor.current || !audioRef.current?.paused) return;
-			ensureGraph();
-			void play().catch(() => {});
-		}
-
-		play().then(detach, () => {
-			events.forEach((e) => window.addEventListener(e, onGesture, true));
-		});
-		return detach;
-		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, []);
-
 	useEffect(() => {
 		if (playing) void play().catch(() => setPlaying(false));
 		// Only a track change should restart playback here.
@@ -156,14 +132,12 @@ function MusicPlayback({ children }: { children: ReactNode }) {
 		const audio = audioRef.current;
 		if (!audio) return;
 		if (audio.paused) {
-			pausedByVisitor.current = false;
 			ensureGraph();
 			play().then(
 				() => setPlaying(true),
 				() => setPlaying(false)
 			);
 		} else {
-			pausedByVisitor.current = true;
 			audio.pause();
 			setPlaying(false);
 		}
@@ -187,7 +161,7 @@ function MusicPlayback({ children }: { children: ReactNode }) {
 			<audio
 				ref={audioRef}
 				src={src(TRACKS[index].file)}
-				preload="auto"
+				preload="none"
 				onTimeUpdate={(e) => {
 					const a = e.currentTarget;
 					setProgress(a.duration ? a.currentTime / a.duration : 0);
