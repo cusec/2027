@@ -318,8 +318,9 @@ Links use the i18n `Link` (never a bare `<a>` to a route — that trips
 ### Archive interaction
 
 `V2Archive` holds `yearIndex` / `shotIndex`. Clicking an SD card sets a
-`swapping` flag (glitches the LCD), swaps the year after 260ms, and clears at
-620ms. Card positions are pure CSS: the loaded card gets `.is-inserted`
+`swapping` flag (glitches the LCD), waits at least 260ms and for the first photo
+to decode, then swaps the year and clears the flag 360ms later. Card positions
+are pure CSS: the loaded card gets `.is-inserted`
 (camera slot) and the rest get `.v2-archive__slot--rest-{0,1,2}` in order, so
 the flight in and out animates from the `transition` on `.v2-archive__slot`.
 

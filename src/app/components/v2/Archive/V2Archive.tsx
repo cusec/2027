@@ -1,20 +1,25 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { useTranslations } from "next-intl";
 import { ChevronLeft, ChevronRight, Camera } from "lucide-react";
 import { EDITIONS } from "./archiveData";
 import V2SdCard from "./V2SdCard";
 
-const warmed = new Set<string>();
+const warmed = new Map<string, Promise<void>>();
 
 function preload(yearIndex: number) {
 	const src = EDITIONS[yearIndex]?.photos[0]?.src;
-	if (!src || warmed.has(src)) return;
-	warmed.add(src);
+	if (!src) return Promise.resolve();
+	const pending = warmed.get(src);
+	if (pending) return pending;
 	const img = new Image();
 	img.src = src;
-	img.decode().catch(() => {});
+	const ready = img.decode().catch(() => {
+		warmed.delete(src);
+	});
+	warmed.set(src, ready);
+	return ready;
 }
 
 export default function V2Archive() {
@@ -23,20 +28,23 @@ export default function V2Archive() {
 	const [shotIndex, setShotIndex] = useState(0);
 	// drives the insert/eject animation and the LCD glitch
 	const [swapping, setSwapping] = useState(false);
+	const swapId = useRef(0);
 
 	const edition = EDITIONS[yearIndex];
 	const photo = edition.photos[shotIndex];
 
-	function loadCard(index: number) {
+	async function loadCard(index: number) {
 		if (index === yearIndex) return;
-		preload(index);
+		const id = ++swapId.current;
+		const ready = preload(index);
 		setSwapping(true);
-		// let the card travel into the slot before the screen changes over
+		await Promise.all([ready, new Promise<void>((resolve) => window.setTimeout(resolve, 260))]);
+		if (id !== swapId.current) return;
+		setYearIndex(index);
+		setShotIndex(0);
 		window.setTimeout(() => {
-			setYearIndex(index);
-			setShotIndex(0);
-		}, 260);
-		window.setTimeout(() => setSwapping(false), 620);
+			if (id === swapId.current) setSwapping(false);
+		}, 360);
 	}
 
 	function step(delta: number) {
