@@ -114,8 +114,13 @@
     position: absolute;
     left: 50%;
     top: 50%;
-    width: 50%;
+    /* The bubble rotates through every pose, tall and wide. Capping both
+       sides keeps each one inside the circle at its own proportions: Erm and
+       the other tall poses stop at the height cap, Laptop at the width cap. */
+    width: auto;
     height: auto;
+    max-width: 52%;
+    max-height: 76%;
     transform: translate(calc(-50% + var(--bear-x)), calc(-47% + var(--bear-y))) rotate(-6deg);
     transform-origin: center;
     pointer-events: none;

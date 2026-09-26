@@ -146,6 +146,19 @@
     min-height: 100svh;
 }
 
+/* Portrait tablets are the one shape where the floor above backfires: an iPad
+   is ~1180px tall but wide enough that most sections lay out in ~500px, so
+   every screen was two thirds empty water - thousands of pixels of extra
+   scrolling, most obvious in the stretch above the footer. There the sections
+   size to their content plus their own --v2-section-pad, which is about the
+   breathing room a phone ends up with. The hero keeps its full screen so the
+   first view is still the whole landing. Phones and laptops are unchanged. */
+@media (min-width: 700px) and (orientation: portrait) {
+    .v2-scene--screens > .v2-section:not(.v2-closing):not(.v2-hero) {
+        min-height: 0;
+    }
+}
+
 /* --------------------------------------------------------------------------
    Shared primitives
    -------------------------------------------------------------------------- */

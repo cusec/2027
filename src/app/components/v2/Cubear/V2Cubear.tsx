@@ -31,8 +31,6 @@ import { V2CubearBubble } from "./V2CubearBubble";
  * slides in half-loaded, and nothing is fetched until the first visit - well
  * after the hero has painted.
  */
-const ERM = "/assets/v2/cubear/cubear-erm.webp";
-
 const PEEK_POSES = [
 	{ src: "/assets/v2/cubear/cubear-shock.webp", w: 360, h: 473 },
 	{ src: "/assets/v2/cubear/cubear-book.webp", w: 360, h: 514 },
@@ -41,7 +39,19 @@ const PEEK_POSES = [
 	{ src: "/assets/v2/cubear/cubear-laptop.webp", w: 360, h: 423 },
 ] as const;
 
-type Pose = (typeof PEEK_POSES)[number];
+type Pose = Readonly<{ src: string; w: number; h: number }>;
+
+/** Every pose takes a turn in the bubble, so a visitor meets the whole cast. */
+const BUBBLE_POSES: readonly Pose[] = [
+	{ src: "/assets/v2/cubear/cubear-erm.webp", w: 360, h: 562 },
+	...PEEK_POSES,
+];
+
+/** A random pose other than the one shown last time, so it never repeats back to back. */
+function pickPose(poses: readonly Pose[], excludeSrc: string | null): Pose {
+	const choices = excludeSrc ? poses.filter((p) => p.src !== excludeSrc) : poses;
+	return choices[Math.floor(Math.random() * choices.length)];
+}
 
 const FIRST_VISIT_MS = [3_000, 5_000] as const;
 const BETWEEN_VISITS_MS = [4_000, 7_000] as const;
@@ -52,13 +62,12 @@ const PEEK_MOVE_MS = 700;
 type Side = "bottom" | "left" | "right";
 type Visit =
 	| { kind: "peek"; side: Side; pos: number; tilt: number; pose: Pose; phraseIndex: number }
-	| { kind: "bubble"; left: number; phraseIndex: number };
+	| { kind: "bubble"; left: number; pose: Pose; phraseIndex: number };
 
 const between = (min: number, max: number) => min + Math.random() * (max - min);
 
 function nextPeek(excludeSrc: string | null, phraseIndex: number): Visit {
-	const choices = excludeSrc ? PEEK_POSES.filter((p) => p.src !== excludeSrc) : PEEK_POSES;
-	const pose = choices[Math.floor(Math.random() * choices.length)];
+	const pose = pickPose(PEEK_POSES, excludeSrc);
 	// The laptop pose is wide and low rather than tall - rotating it 90deg to
 	// peek sideways reads oddly, so it only ever peeks from the bottom.
 	const wide = pose.h / pose.w < 1.3;
@@ -70,13 +79,14 @@ function nextPeek(excludeSrc: string | null, phraseIndex: number): Visit {
 	return { kind: "peek", side, pos, tilt: between(-8, 8), pose, phraseIndex };
 }
 
-function nextBubble(phraseIndex: number): Visit {
+function nextBubble(excludeSrc: string | null, phraseIndex: number): Visit {
 	// The outer edges, so the bubble drifts past the page's content - the hero
 	// wordmark reaches well past three quarters of the width - rather than
 	// across it.
 	return {
 		kind: "bubble",
 		left: Math.random() < 0.5 ? between(6, 13) : between(87, 94),
+		pose: pickPose(BUBBLE_POSES, excludeSrc),
 		phraseIndex,
 	};
 }
@@ -105,6 +115,7 @@ function CubearVisits({ bubbleEnabled }: { bubbleEnabled: boolean }) {
 	const timer = useRef<number | undefined>(undefined);
 	const count = useRef(0);
 	const lastPeekSrc = useRef<string | null>(null);
+	const lastBubbleSrc = useRef<string | null>(null);
 	const finish = useRef<() => void>(() => {});
 	const t = useTranslations("V2.cubear");
 	const phrases = ((t.raw("phrases") as string[] | undefined) ?? []).filter(Boolean);
@@ -138,15 +149,18 @@ function CubearVisits({ bubbleEnabled }: { bubbleEnabled: boolean }) {
 			const useBubble = bubbleEnabledRef.current && count.current % 2 === 1;
 			const line = phrasesRef.current;
 			const phraseIndex = line.length ? Math.floor(Math.random() * line.length) : -1;
-			const next = useBubble ? nextBubble(phraseIndex) : nextPeek(lastPeekSrc.current, phraseIndex);
+			const next = useBubble
+				? nextBubble(lastBubbleSrc.current, phraseIndex)
+				: nextPeek(lastPeekSrc.current, phraseIndex);
 			try {
-				await decoded(next.kind === "peek" ? next.pose.src : ERM);
+				await decoded(next.pose.src);
 			} catch {
 				return schedule(BETWEEN_VISITS_MS);
 			}
 			if (cancelled) return;
 			count.current += 1;
 			if (next.kind === "peek") lastPeekSrc.current = next.pose.src;
+			else lastBubbleSrc.current = next.pose.src;
 			setVisit(next);
 			if (next.kind === "bubble") return;
 			// Paint the hidden position first so the slide actually transitions.
@@ -169,7 +183,14 @@ function CubearVisits({ bubbleEnabled }: { bubbleEnabled: boolean }) {
 	const phrase = visit.phraseIndex >= 0 ? phrases[visit.phraseIndex] : undefined;
 
 	if (visit.kind === "bubble") {
-		return <V2CubearBubble left={visit.left} phrase={phrase} onFinished={() => finish.current()} />;
+		return (
+			<V2CubearBubble
+				left={visit.left}
+				pose={visit.pose}
+				phrase={phrase}
+				onFinished={() => finish.current()}
+			/>
+		);
 	}
 
 	return (

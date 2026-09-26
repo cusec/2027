@@ -4,7 +4,6 @@ import type { PointerEvent as ReactPointerEvent } from "react";
 import { stepBubblePhysics } from "./bubblePhysics";
 import type { BubbleMotion } from "./bubblePhysics";
 
-const ERM = "/assets/v2/cubear/cubear-erm.webp";
 const MAX_VISIT_MS = 18_000;
 const REDUCED_VISIT_MS = 6_000;
 const POP_MS = 440;
@@ -23,6 +22,7 @@ const SPRING_DAMPING = 24;
 
 type BubbleProps = Readonly<{
 	left: number;
+	pose: Readonly<{ src: string; w: number; h: number }>;
 	phrase?: string;
 	onFinished: () => void;
 }>;
@@ -30,7 +30,7 @@ type BubbleProps = Readonly<{
 const clamp = (value: number, min: number, max: number) =>
 	Math.min(max, Math.max(min, value));
 
-export function V2CubearBubble({ left, phrase, onFinished }: BubbleProps) {
+export function V2CubearBubble({ left, pose, phrase, onFinished }: BubbleProps) {
 	const bubbleRef = useRef<HTMLDivElement>(null);
 	const motionRef = useRef<BubbleMotion>({ x: 0, y: 0, vx: 0, vy: -120 });
 	const dragRef = useRef<DragState | null>(null);
@@ -202,7 +202,7 @@ export function V2CubearBubble({ left, phrase, onFinished }: BubbleProps) {
 			{phrase && <span className="v2-cubear-speech">{phrase}</span>}
 			<div className="v2-cubear-bubble__sway">
 				{/* eslint-disable-next-line @next/next/no-img-element */}
-				<img src={ERM} alt="" width={120} height={187} draggable="false" />
+				<img src={pose.src} alt="" width={pose.w / 3} height={pose.h / 3} draggable="false" />
 				<span className="v2-cubear-bubble__film" />
 			</div>
 		</div>
