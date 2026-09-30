@@ -22,7 +22,7 @@
  * read on the tick they land on.
  */
 
-export type GameId = "rally" | "pong" | "breakout" | "match3";
+export type GameId = "rally" | "flappy" | "stack" | "whack";
 
 export type ArcadeInput = readonly number[];
 
@@ -75,6 +75,8 @@ export class Rng {
     this.s = s;
     return s;
   }
+  /** The raw state, for storing inside a sim's ArcadeState between steps. */
+  snapshot(): number { return this.s; }
 }
 
 /**

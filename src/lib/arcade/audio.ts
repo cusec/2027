@@ -33,9 +33,8 @@ const PATCHES: Record<Category, Patch> = {
 const CATEGORIES: Record<string, Category> = {
   serve: "whoosh", paddle: "hit", wall: "tap", point: "score", block: "hit",
   concede: "warn", win: "fanfare", lose: "fail", miss: "fail",
-  brick: "hit", locked: "warn", unlock: "reward", key: "reward",
-  "heart-up": "reward", multiball: "reward", level: "fanfare",
-  swap: "tap", nomatch: "warn", hint: "tap", pop: "score", score: "reward",
+  flap: "whoosh", plop: "score", perfect: "fanfare",
+  bonk: "hit", friend: "warn", whiff: "warn",
 };
 
 const STORAGE_KEY = "cusec-arcade-sfx";

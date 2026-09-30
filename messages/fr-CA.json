@@ -3,9 +3,9 @@
         "play": {
             "eyebrow": "Arcade CUSEC",
             "title": "Cubear Rally",
-            "subline": "Sept bornes, un seul Cubear. Choisis un jeu et vise un score vérifié.",
+            "subline": "Le mur d’arcade du CUSEC. Choisis une borne et vise un score vérifié.",
             "back": "Retour à l’arcade",
-            "tap-hint": "Touche deux tuiles pour échanger · H pour un indice",
+            "tap-hint": "Touche pour jouer · Espace marche aussi",
             "sfx-on": "Activer le son",
             "sfx-off": "Couper le son",
             "soon": "Bientôt",
@@ -39,22 +39,28 @@
             "leader-empty": "Le classement attend sa première partie. À toi de jouer !",
             "refresh": "Actualiser le classement",
             "stats": {
+                "returns": "Renvois",
                 "points": "Points",
-                "rival": "Rival",
-                "target": "Victoire à",
-                "level": "Niveau",
-                "lives": "Cœurs",
+                "hats": "Chapeaux",
+                "hits": "Coups",
+                "whiffs": "Coups ratés",
                 "time": "Chrono"
             },
             "modes": {
                 "rally": { "title": "Rallye à bulles", "tagline": "L’original : garde la bulle en jeu." },
-                "pong": { "title": "Pong à bulles", "tagline": "Un Cubear rival s’amène. Premier à sept." },
-                "breakout": { "title": "Rallye briques", "tagline": "Murs semés, bulles bonus, niveaux infinis." },
-                "match3": { "title": "Balayage de tuiles", "tagline": "Les cascades achètent du temps. Les étoiles noient une rangée." },
-                "mario": { "title": "Course à plateformes", "tagline": "Cartes, gouffres et mât de drapeau, en chantier." },
-                "zelda": { "title": "Explore-donjons", "tagline": "Salles, épées et pots, en chantier." },
-                "slingshot": { "title": "Propulse-bulles", "tagline": "Physique de fronde pour forts de briques, en chantier." },
-                "pokemon": { "title": "Tour de l’île", "tagline": "Monde ouvert et combats au tour, en chantier." }
+                "flappy": { "title": "Flappy Cubear", "tagline": "Touche pour voiler entre les tuyaux." },
+                "stack": { "title": "Empile-chapeaux", "tagline": "Lâche les chapeaux pile au centre et monte la tour." },
+                "whack": { "title": "Frappe-délégués", "tagline": "Sors les ours coiffés, épargne les visiteurs." },
+                "dash": { "title": "Course Cubear", "tagline": "Coureur infini, en chantier." },
+                "jumper": { "title": "Saute Cubear", "tagline": "Grimpe à la Doodle Jump, en chantier." },
+                "climber": { "title": "Grimpe Cubear", "tagline": "Murs d’Icy Tower, en chantier." },
+                "says": { "title": "Cubear dit", "tagline": "Mémoire façon Simon, en chantier." },
+                "memory": { "title": "Paires CUSEC", "tagline": "Retourne et associe, en chantier." },
+                "snake": { "title": "Cubear Serpent", "tagline": "Serpent rétro aux chapeaux, en chantier." },
+                "minesweeper": { "title": "Démineur", "tagline": "Logique de grille classique, en chantier." },
+                "merge": { "title": "Fusion CUSEC", "tagline": "2048 aux mascottes, en chantier." },
+                "dle": { "title": "CUSEC-dle", "tagline": "Wordle tech-congès, en chantier." },
+                "pet": { "title": "Cubear Tamagotchi", "tagline": "Nourris ton Cubear, en chantier." }
             },
             "games": {
                 "rally": {
@@ -66,32 +72,32 @@
                     "instructions": "Déplace Cubear avec ← → ou A / D. Sur téléphone, glisse dans l’arène ou maintiens les boutons fléchés. Échap met en pause.",
                     "rules": "Chaque renvoi vaut un point. La bulle accélère tous les cinq renvois. Un raté termine la partie; une partie parfaite dure trois minutes."
                 },
-                "pong": {
-                    "ready": "Devance le rival jusqu’à sept",
-                    "result": "{score, plural, one {# point. Le rival a gagné.} other {# points — et le match.}}",
-                    "arena": "Court de Pong à bulles. Utilise les flèches ou A et D pour bouger; Échap met en pause.",
-                    "how-eyebrow": "Sers et réponds",
-                    "how-title": "Renvoie. Marque. Recommence.",
-                    "instructions": "Déplace Cubear avec ← → ou A / D, ou glisse sur le court. Le Cubear rival patrouille en haut et dérape parfois. Échap met en pause.",
-                    "rules": "Chaque but rapporte un point ; gagner le match en banque sept de plus. Chaque service est un nouvel élan semé, garde l’œil ouvert."
+                "flappy": {
+                    "ready": "Voile entre les écarts",
+                    "result": "{score, plural, one {# tuyau. Les tuyaux ont eu ta peau.} other {# tuyaux franchis. Les tuyaux ont fini par l’emporter.}}",
+                    "arena": "Court Flappy Cubear. Touche n’importe où ou appuie sur Espace pour voiler; Échap met en pause.",
+                    "how-eyebrow": "Un appui = un voile",
+                    "how-title": "Voile. File. Recommence.",
+                    "instructions": "Touche le terrain, ou appuie sur Espace / ↑, pour monter. Les tuyaux défilent depuis la droite; chaque paire franchie banque un point. Échap met en pause.",
+                    "rules": "La gravité ne dort jamais : chaque appui monte, chaque instant sans appui descend. File entre les écarts verts; un tuyau ou le sol met fin à la partie. Chaque écart franchi banque un point."
                 },
-                "breakout": {
-                    "ready": "Casse le mur, garde tes cœurs",
-                    "result": "{score, plural, one {# point. Le mur a tenu plus longtemps.} other {# points. Le mur s’en souvient.}}",
-                    "arena": "Terrain Rallye briques. Utilise les flèches ou A et D pour bouger; Échap met en pause.",
-                    "how-eyebrow": "Le mur est semé",
-                    "how-title": "Rebondis. Éclate. Monte en niveau.",
-                    "instructions": "Déplace Cubear avec ← → ou A / D, ou glisse sur le terrain. Attrape les bulles qui tombent : cœurs, bulles en plus et la clé. Échap met en pause.",
-                    "rules": "Chaque brique vaut sa robustesse. Nettoyer toutes les briques ouvre le niveau suivant, semé, et offre un cœur. La brique verrouillée ne cède qu’à une bulle-clé ; la clé repart à chaque relance. Plus de cœurs, fin de partie."
+                "stack": {
+                    "ready": "Les lâchés pile au centre bâtissent le plus haut chapeau",
+                    "result": "{score, plural, one {# chapeau. La tour a penché trop loin.} other {# chapeaux. La tour se souvient de chaque écart.}}",
+                    "arena": "Plateau Empile-chapeaux. Touche n’importe où ou appuie sur Espace pour lâcher le chapeau; Échap met en pause.",
+                    "how-eyebrow": "Balanse, lâche, recommence",
+                    "how-title": "Empile. Dérive. Recommence.",
+                    "instructions": "Le chapeau balançoit dans le ciel; touche ou appuie sur Espace pour le lâcher sur la tour. Le surplus est tranché, chaque lâché nudge la plaque.",
+                    "rules": "Chaque chapeau banque un; les lâchés au centre en banquent deux et réparent un peu la plaque. Un chapeau qui rate complètement la plaque termine la partie; huit minutes de tour, c’est une vie."
                 },
-                "match3": {
-                    "ready": "Bats le chrono, pas le plateau",
-                    "result": "{score, plural, one {# point. Le chrono a eu le dernier mot.} other {# points. Le chrono a eu le dernier mot.}}",
-                    "arena": "Plateau Balayage de tuiles. Touche deux tuiles adjacentes pour échanger, ou H pour un indice; Échap met en pause.",
-                    "how-eyebrow": "Le chrono décide ici",
-                    "how-title": "Associe. Cascade. Achète du temps.",
-                    "instructions": "Touche deux tuiles adjacentes pour échanger. Seuls les échanges qui créent une association sont permis ; un essai sans suite revient. H pour un indice, Échap pour la pause.",
-                    "rules": "Deux minutes au départ. Chaque vague d’association achète deux secondes, les étoiles noient une rangée entière, et les tuiles plus dures se déverrouillent à chaque niveau."
+                "whack": {
+                    "ready": "Sors les ours, épargne les invités",
+                    "result": "{score, plural, one {# bonk en une minute.} other {# bonks en une minute.}}",
+                    "arena": "Kiosque Frappe-délégués. Touche le trou d’un Cubear surgissant; Échap met en pause.",
+                    "how-eyebrow": "Frappe les coiffés",
+                    "how-title": "Bonk. Souris. Recommence.",
+                    "instructions": "Touche un trou (ou les touches 1 à 9) quand le Cubear coiffé surgit. Les visiteurs sans chapeau coûtent un point : laisse-les rentrer. Échap met en pause.",
+                    "rules": "Une minute au chrono. Chaque ours coiffé banque un point; un visiteur frappé en coûte un; trois coups dans le vide terminent la partie plus tôt. Les ours surgissent plus vite quand ton score grimpe."
                 }
             }
         },

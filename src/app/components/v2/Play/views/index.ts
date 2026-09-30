@@ -3,14 +3,14 @@
 import type { GameId } from "@/lib/arcade/types";
 import type { GameView } from "../view";
 import { rallyView } from "./rally";
-import { pongView } from "./pong";
-import { breakoutView } from "./breakout";
-import { createMatch3View } from "./match3";
+import { flappyView } from "./flappy";
+import { stackView } from "./stack";
+import { whackView } from "./whack";
 
-/** One cabinet instance per mount; match3 carries per-instance selection. */
+/** One cabinet instance per mount; each mode owns its render + input. */
 export const views: Record<GameId, () => GameView> = {
   rally: () => rallyView,
-  pong: () => pongView,
-  breakout: () => breakoutView,
-  match3: createMatch3View,
+  flappy: () => flappyView,
+  stack: () => stackView,
+  whack: () => whackView,
 };

@@ -6,10 +6,9 @@ import { ArrowLeft, ArrowRight, Music2, Pause, Play, Volume2, VolumeX } from "lu
 import { useMusic } from "../Music/MusicProvider";
 import { GAMES } from "@/lib/arcade/registry";
 import { ArcadeAudio } from "@/lib/arcade/audio";
-import type { ArcadeState, GameId } from "@/lib/arcade/types";
+import type { ArcadeInput, ArcadeState, GameId } from "@/lib/arcade/types";
 import { views } from "./views";
 import type { AimControls, GameView, Images, Palette } from "./view";
-import { CELL as SWEEP_CELL, GAP as SWEEP_GAP, MARGIN as SWEEP_MARGIN, TOP as SWEEP_TOP } from "./views/match3";
 
 /** One audio instance lives across remounts; the context unlocks on gesture. */
 const audio = new ArcadeAudio();
@@ -17,6 +16,7 @@ const audio = new ArcadeAudio();
 type Phase = "ready" | "starting" | "playing" | "paused" | "ended";
 type Publication = "idle" | "saving" | "saved" | "failed" | "rejected";
 
+/** The tapes: the transcript format is shared with the server's verifier. */
 type RunTicket = {
   readonly id: string;
   readonly game: GameId;
@@ -31,11 +31,11 @@ async function requestJson(path: string, body?: object): Promise<unknown> {
   const response = await fetch(`/api/play/${path}`, { method: body ? "POST" : "GET",
     headers: body ? { "Content-Type": "application/json" } : undefined,
     body: body ? JSON.stringify(body) : undefined, signal: AbortSignal.timeout(8000), cache: "no-store" });
-  if (!response.ok) throw new ApiError(response.status);
+  if (!response.ok) throw new ArcadeError(response.status);
   return response.json();
 }
 
-class ApiError extends Error {
+class ArcadeError extends Error {
   constructor(readonly status: number) { super(`Arcade request failed: ${status}`); }
 }
 
@@ -53,13 +53,6 @@ function readPalette(element: Element): Palette {
   };
 }
 
-function parsedScore(value: unknown, expected: number): value is { best: number; nickname: string } {
-  return !!value && typeof value === "object" &&
-    typeof (value as { score?: unknown }).score === "number" &&
-    (value as { score: number }).score === expected &&
-    typeof (value as { best?: unknown }).best === "number";
-}
-
 function parseTicket(value: unknown): RunTicket | null {
   if (!value || typeof value !== "object") return null;
   const { id, game, seed, version, nickname, best } = value as Record<string, unknown>;
@@ -67,6 +60,13 @@ function parseTicket(value: unknown): RunTicket | null {
       typeof version !== "number" || typeof nickname !== "string" || typeof best !== "number") return null;
   if (!(game in GAMES) || GAMES[game as GameId].version !== version) return null;
   return { id, game: game as GameId, seed, version, nickname, best };
+}
+
+function parsedScore(value: unknown, expected: number): value is { best: number; nickname: string } {
+  return !!value && typeof value === "object" &&
+    typeof (value as { score?: unknown }).score === "number" &&
+    (value as { score: number }).score === expected &&
+    typeof (value as { best?: unknown }).best === "number";
 }
 
 function parseLeaderboard(value: unknown): LeaderEntry[] | null {
@@ -85,7 +85,7 @@ function parseLeaderboard(value: unknown): LeaderEntry[] | null {
 /**
  * The shared cabinet: one fixed-timestep loop, transcript recorder, ranked
  * publication flow and per-game leaderboard, reused by every mode. Each
- * mode's sim comes from src/lib/arcade; its view supplies render and input.
+ * mode's sim comes from src/lib/arcade; its view supplies render + input.
  */
 export default function Cabinet({ game, onExit }: { game: GameId; onExit: () => void }) {
   const t = useTranslations("V2.play");
@@ -95,6 +95,7 @@ export default function Cabinet({ game, onExit }: { game: GameId; onExit: () => 
   const stateRef = useRef<ArcadeState | null>(null);
   const controls = useRef<AimControls>({ aim: null, direction: 0 });
   const lastTuple = useRef<string>("");
+  const pending = useRef<ArcadeInput | null>(null);
   const inputs = useRef<[tick: number, ...rest: number[]][]>([]);
   const ticket = useRef<RunTicket | null>(null);
   const viewRef = useRef<GameView | null>(null);
@@ -120,6 +121,7 @@ export default function Cabinet({ game, onExit }: { game: GameId; onExit: () => 
   const transition = useCallback((next: Phase) => {
     phaseRef.current = next;
     controls.current = { aim: null, direction: 0 };
+    pending.current = null;
     setPhase(next);
   }, []);
 
@@ -136,27 +138,26 @@ export default function Cabinet({ game, onExit }: { game: GameId; onExit: () => 
 
   const publish = useCallback(async () => {
     const run = ticket.current;
-    if (!run || practiceRef.current) return;
     const runState = stateRef.current;
-    if (!runState) return;
+    if (!run || practiceRef.current || !runState) return;
     const currentGeneration = generation.current;
     const transcript = { inputs: inputs.current, finalTick: runState.tick };
     setPublication("saving");
     try {
       const result = await requestJson(`runs/${run.id}/finish`, transcript);
-      if (!parsedScore(result, runState.score)) throw new TypeError("Invalid score response");
+      if (!parsedScore(result, runState.score)) throw new ArcadeError(422);
       if (!mounted.current || currentGeneration !== generation.current) return;
       setBest(result.best);
       setPublication("saved");
       void refreshLeaderboard();
     } catch (error) {
       if (!mounted.current || currentGeneration !== generation.current) return;
-      const retry = error instanceof ApiError && [400, 401, 404, 409, 410, 422].includes(error.status);
+      const retry = error instanceof ArcadeError && [422, 401, 404, 409, 410, 413].includes(error.status);
       setPublication(retry ? "rejected" : "failed");
     }
   }, [refreshLeaderboard]);
 
-  // Asset loading + per-mode view instance mount.
+  // Assets + per-mode view mount.
   useEffect(() => {
     mounted.current = true;
     reduceMotion.current = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -197,7 +198,8 @@ export default function Cabinet({ game, onExit }: { game: GameId; onExit: () => 
       if (phaseRef.current === "playing" && runState) {
         accumulator += Math.min(100, now - previous);
         while (accumulator >= stepMs && !runState.ended) {
-          const tuple = view.input(controls.current);
+          const tuple = pending.current ?? (view.mode === "aim" ? view.input!(controls.current) : sim.defaultInput);
+          pending.current = null;
           const key = tuple.join(",");
           if (lastTuple.current !== key) {
             lastTuple.current = key;
@@ -206,7 +208,7 @@ export default function Cabinet({ game, onExit }: { game: GameId; onExit: () => 
           const before = runState.score;
           sim.step(runState, tuple);
           if (runState.sfx.length > 0) audio.play(game, runState.sfx);
-          if (runState.sfx.includes("concede") || runState.sfx.includes("lose")) shakeUntil = now + 260;
+          if (runState.sfx.includes("concede") || runState.sfx.includes("lose")) shakeUntil = now + 240;
           if (runState.score !== before || runState.tick % 30 === 0) setStats(view.stats(runState));
           accumulator -= stepMs;
         }
@@ -229,7 +231,7 @@ export default function Cabinet({ game, onExit }: { game: GameId; onExit: () => 
     return () => cancelAnimationFrame(frame);
   }, [engine, sim, game, publish, transition]);
 
-  // Auto-pause when focus or the tab go away — a ranked run must not idle.
+  // Auto-pause when focus or the tab go away — a ranked run must not idle on.
   useEffect(() => {
     const pause = () => { if (phaseRef.current === "playing") transition("paused"); };
     const onVisibility = () => { if (document.hidden) pause(); };
@@ -261,54 +263,53 @@ export default function Cabinet({ game, onExit }: { game: GameId; onExit: () => 
     const seed = run?.seed ?? crypto.getRandomValues(new Uint32Array(1))[0];
     stateRef.current = sim.create(seed);
     inputs.current = [];
-    lastTuple.current = "";
-    setStats(viewRef.current ? viewRef.current.stats(stateRef.current) : []);
+    lastTuple.current = "zzz"; // forces the first event push
+    pending.current = null;
+    setStats(viewRef.current ? viewRef.current.stats(stateRef.current as never) : []);
     transition("playing");
     canvas.current?.focus();
   };
 
   const onKeyDown = (event: ReactKeyboardEvent<HTMLDivElement>) => {
     if (phaseRef.current !== "playing") return;
-    if (["ArrowLeft", "a", "A", "ArrowRight", "d", "D"].includes(event.key)) {
-      event.preventDefault();
-      controls.current.direction = ["ArrowLeft", "a", "A"].includes(event.key) ? -1 : 1;
-    } else if (event.key === "Escape") { event.preventDefault(); transition("paused"); }
-    else if (event.key.length === 1) {
-      const runState = stateRef.current;
-      const tuple = viewRef.current?.key?.(event.nativeEvent, { state: runState, phase: phaseRef.current });
-      if (tuple) { event.preventDefault(); }
+    if (event.key === "Escape") { event.preventDefault(); transition("paused"); return; }
+    if (viewRef.current?.mode === "aim") {
+      if (["ArrowLeft", "a", "A", "ArrowRight", "d", "D"].includes(event.key)) {
+        event.preventDefault();
+        controls.current.direction = ["ArrowLeft", "a", "A"].includes(event.key) ? -1 : 1;
+      }
+      return;
     }
-  };
-
-  const aim = (clientX: number) => {
-    const rect = canvas.current?.getBoundingClientRect();
-    if (!rect) return;
-    controls.current.aim = Math.round(Math.max(0, Math.min(480, (clientX - rect.left) / rect.width * 480)));
+    const tuple = viewRef.current?.key?.(event.nativeEvent);
+    if (tuple) { event.preventDefault(); pending.current = tuple; }
   };
 
   const stagePointerDown = (event: ReactPointerEvent<HTMLCanvasElement>) => {
     if (phaseRef.current !== "playing") return;
+    audio.unlock();
     event.currentTarget.focus();
-    if (game === "match3") {
-      const rect = event.currentTarget.getBoundingClientRect();
-      const x = (event.clientX - rect.left) / rect.width * 480;
-      const y = (event.clientY - rect.top) / rect.height * 640;
-      const col = Math.floor((x - SWEEP_MARGIN) / (SWEEP_CELL + SWEEP_GAP));
-      const row = Math.floor((y - SWEEP_TOP) / (SWEEP_CELL + SWEEP_GAP));
-      if (col >= 0 && col < 8 && row >= 0 && row < 8) {
-        void viewRef.current?.tap?.(stateRef.current, row * 8 + col);
-      }
+    const rect = event.currentTarget.getBoundingClientRect();
+    const x = (event.clientX - rect.left) / rect.width * 480;
+    const y = (event.clientY - rect.top) / rect.height * 640;
+    if (viewRef.current?.mode === "aim") {
+      event.currentTarget.setPointerCapture(event.pointerId);
+      controls.current.aim = Math.round(x);
       return;
     }
-    event.currentTarget.setPointerCapture(event.pointerId);
-    aim(event.clientX);
+    const tuple = viewRef.current?.tap?.(x, y);
+    if (tuple) pending.current = tuple;
   };
 
   const stagePointerMove = (event: ReactPointerEvent<HTMLCanvasElement>) => {
-    if (event.currentTarget.hasPointerCapture(event.pointerId)) aim(event.clientX);
+    if (phaseRef.current !== "playing" || viewRef.current?.mode !== "aim" ||
+        !event.currentTarget.hasPointerCapture(event.pointerId)) return;
+    const rect = event.currentTarget.getBoundingClientRect();
+    controls.current.aim = Math.round(Math.max(0, Math.min(480,
+      (event.clientX - rect.left) / rect.width * 480)));
   };
 
   const active = phase === "playing" || phase === "paused";
+  const mode = viewRef.current?.mode ?? "aim";
   const message = startFailed ? t("start-failed") : phase === "starting" ? t("starting")
     : phase === "paused" ? t("paused")
       : phase === "ended" ? gt("result", { score: finalScore })
@@ -357,7 +358,7 @@ export default function Cabinet({ game, onExit }: { game: GameId; onExit: () => 
           </div>}
         </div>
         <div className="v2-rally__controls">
-          {game !== "match3" ? ([-1, 1] as const).map((value) => (
+          {mode === "aim" ? ([-1, 1] as const).map((value) => (
             <button key={value} type="button" className="v2-rally__direction" disabled={phase !== "playing"}
               aria-label={value < 0 ? t("left") : t("right")}
               onPointerDown={(event) => { event.currentTarget.setPointerCapture(event.pointerId); controls.current.direction = value; }}
@@ -365,7 +366,7 @@ export default function Cabinet({ game, onExit }: { game: GameId; onExit: () => 
               onPointerCancel={() => { controls.current.direction = 0; const runState = stateRef.current as unknown as { playerX: number } | null; if (runState) controls.current.aim = Math.round(runState.playerX); }}>
               {value < 0 ? <ArrowLeft aria-hidden="true" /> : <ArrowRight aria-hidden="true" />}
             </button>
-          )) : <span className="v2-rally__tap-hint">{t("tap-hint")}</span>}
+          )) : <span className="v2-rally__tap-hint">{gt("tap-hint")}</span>}
           <button type="button" className="v2-rally__pause" disabled={!active} onClick={() => {
             const paused = phase === "paused";
             transition(paused ? "playing" : "paused");
@@ -381,7 +382,7 @@ export default function Cabinet({ game, onExit }: { game: GameId; onExit: () => 
       </section>
       <aside className="v2-rally__sidebar">
         <section className="v2-rally__instructions v2-glass">
-          <p className="v2-rally__eyebrow">{gt("how-eyebrow" as Parameters<typeof gt>[0])}</p>
+          <p className="v2-rally__eyebrow">{gt("how-eyebrow")}</p>
           <h2 className="v2-pixel">{gt("how-title")}</h2>
           <p id="rally-instructions">{gt("instructions")}</p>
           <p>{gt("rules")}</p>
@@ -396,6 +397,7 @@ export default function Cabinet({ game, onExit }: { game: GameId; onExit: () => 
                 <span className="v2-rally__rank">{row.rank.toString().padStart(2, "0")}</span><span>{row.nickname}</span><strong>{row.score}</strong>
               </li>
             ))}</ol>}
+          <button type="button" className="v2-rally__text-button" onClick={() => void refreshLeaderboard()}>{t("refresh")}</button>
         </section>
       </aside>
     </div>
