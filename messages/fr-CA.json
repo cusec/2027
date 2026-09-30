@@ -1,5 +1,100 @@
 {
     "V2": {
+        "play": {
+            "eyebrow": "Arcade CUSEC",
+            "title": "Cubear Rally",
+            "subline": "Sept bornes, un seul Cubear. Choisis un jeu et vise un score vérifié.",
+            "back": "Retour à l’arcade",
+            "tap-hint": "Touche deux tuiles pour échanger · H pour un indice",
+            "sfx-on": "Activer le son",
+            "sfx-off": "Couper le son",
+            "soon": "Bientôt",
+            "score": "Échanges",
+            "best": "Ton record",
+            "music-on": "Activer la musique",
+            "music-off": "Couper la musique",
+            "loading": "Chargement…",
+            "starting": "Préparation de ta partie…",
+            "paused": "Une petite pause",
+            "resume": "Reprendre",
+            "again": "Rejouer",
+            "start": "Jouer",
+            "practice": "S’entraîner",
+            "practice-label": "Entraînement · sans classement",
+            "start-failed": "Le classement est indisponible. Réessaie ou joue en entraînement.",
+            "canvas-fallback": "Ton navigateur doit prendre en charge canvas pour jouer.",
+            "left": "Aller à gauche",
+            "right": "Aller à droite",
+            "pause": "Pause",
+            "publication-saving": "Vérification de ta partie…",
+            "publication-saved": "Partie vérifiée. Ton meilleur score est enregistré.",
+            "publication-failed": "Ton score n’a pas été enregistré. Réessaie avant de rejouer.",
+            "publication-rejected": "Cette partie n’a pas pu être vérifiée. Commence une nouvelle partie.",
+            "retry-score": "Réessayer l’enregistrement",
+            "how-label": "La borne",
+            "public-notice": "Une partie classée crée un pseudo Cubear aléatoire. Ton meilleur score vérifié apparaît publiquement. Aucune connexion requise.",
+            "leader-label": "Le club",
+            "leader-title": "Meilleurs scores",
+            "leader-failed": "Le classement est indisponible. Actualise pour réessayer.",
+            "leader-empty": "Le classement attend sa première partie. À toi de jouer !",
+            "refresh": "Actualiser le classement",
+            "stats": {
+                "points": "Points",
+                "rival": "Rival",
+                "target": "Victoire à",
+                "level": "Niveau",
+                "lives": "Cœurs",
+                "time": "Chrono"
+            },
+            "modes": {
+                "rally": { "title": "Rallye à bulles", "tagline": "L’original : garde la bulle en jeu." },
+                "pong": { "title": "Pong à bulles", "tagline": "Un Cubear rival s’amène. Premier à sept." },
+                "breakout": { "title": "Rallye briques", "tagline": "Murs semés, bulles bonus, niveaux infinis." },
+                "match3": { "title": "Balayage de tuiles", "tagline": "Les cascades achètent du temps. Les étoiles noient une rangée." },
+                "mario": { "title": "Course à plateformes", "tagline": "Cartes, gouffres et mât de drapeau, en chantier." },
+                "zelda": { "title": "Explore-donjons", "tagline": "Salles, épées et pots, en chantier." },
+                "slingshot": { "title": "Propulse-bulles", "tagline": "Physique de fronde pour forts de briques, en chantier." },
+                "pokemon": { "title": "Tour de l’île", "tagline": "Monde ouvert et combats au tour, en chantier." }
+            },
+            "games": {
+                "rally": {
+                    "ready": "Garde la bulle en jeu",
+                    "result": "{score, plural, one {# renvoi. Bien joué !} other {# renvois. Belle partie !}}",
+                    "arena": "Terrain Cubear Rally. Utilise les flèches ou A et D pour bouger; Échap met en pause.",
+                    "how-eyebrow": "Voici ta raquette",
+                    "how-title": "Attrape. Renvoie. Recommence.",
+                    "instructions": "Déplace Cubear avec ← → ou A / D. Sur téléphone, glisse dans l’arène ou maintiens les boutons fléchés. Échap met en pause.",
+                    "rules": "Chaque renvoi vaut un point. La bulle accélère tous les cinq renvois. Un raté termine la partie; une partie parfaite dure trois minutes."
+                },
+                "pong": {
+                    "ready": "Devance le rival jusqu’à sept",
+                    "result": "{score, plural, one {# point. Le rival a gagné.} other {# points — et le match.}}",
+                    "arena": "Court de Pong à bulles. Utilise les flèches ou A et D pour bouger; Échap met en pause.",
+                    "how-eyebrow": "Sers et réponds",
+                    "how-title": "Renvoie. Marque. Recommence.",
+                    "instructions": "Déplace Cubear avec ← → ou A / D, ou glisse sur le court. Le Cubear rival patrouille en haut et dérape parfois. Échap met en pause.",
+                    "rules": "Chaque but rapporte un point ; gagner le match en banque sept de plus. Chaque service est un nouvel élan semé, garde l’œil ouvert."
+                },
+                "breakout": {
+                    "ready": "Casse le mur, garde tes cœurs",
+                    "result": "{score, plural, one {# point. Le mur a tenu plus longtemps.} other {# points. Le mur s’en souvient.}}",
+                    "arena": "Terrain Rallye briques. Utilise les flèches ou A et D pour bouger; Échap met en pause.",
+                    "how-eyebrow": "Le mur est semé",
+                    "how-title": "Rebondis. Éclate. Monte en niveau.",
+                    "instructions": "Déplace Cubear avec ← → ou A / D, ou glisse sur le terrain. Attrape les bulles qui tombent : cœurs, bulles en plus et la clé. Échap met en pause.",
+                    "rules": "Chaque brique vaut sa robustesse. Nettoyer toutes les briques ouvre le niveau suivant, semé, et offre un cœur. La brique verrouillée ne cède qu’à une bulle-clé ; la clé repart à chaque relance. Plus de cœurs, fin de partie."
+                },
+                "match3": {
+                    "ready": "Bats le chrono, pas le plateau",
+                    "result": "{score, plural, one {# point. Le chrono a eu le dernier mot.} other {# points. Le chrono a eu le dernier mot.}}",
+                    "arena": "Plateau Balayage de tuiles. Touche deux tuiles adjacentes pour échanger, ou H pour un indice; Échap met en pause.",
+                    "how-eyebrow": "Le chrono décide ici",
+                    "how-title": "Associe. Cascade. Achète du temps.",
+                    "instructions": "Touche deux tuiles adjacentes pour échanger. Seuls les échanges qui créent une association sont permis ; un essai sans suite revient. H pour un indice, Échap pour la pause.",
+                    "rules": "Deux minutes au départ. Chaque vague d’association achète deux secondes, les étoiles noient une rangée entière, et les tuiles plus dures se déverrouillent à chaque niveau."
+                }
+            }
+        },
         "adminDashboard": {
             "eyebrow": "Équipe CUSEC",
             "title": "Tableau de bord",
@@ -75,6 +170,7 @@
             "missing-body": "Veuillez scanner de nouveau le code QR à l'événement."
         },
         "nav": {
+            "play": "Jouer",
             "aria-label": "Principal",
             "menu": "Menu",
             "language": "Langue",
@@ -244,6 +340,7 @@
             "cta": "Obtenir des billets"
         },
         "footer": {
+            "play": "Jouer",
             "about": "À propos",
             "speakers": "Conférenciers",
             "schedule": "Horaire",

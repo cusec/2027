@@ -10,6 +10,7 @@ const LINKS = [
 	// { key: "about", href: "/#about" },
 	{ key: "speakers", href: "/speakers" },
 	{ key: "sponsors", href: "/sponsors" },
+	{ key: "play", href: "/play" },
 	// { key: "conference", href: "/#conference" },
 	// { key: "hunt", href: "/scavenger" },
 	// Hidden for the first v2 release: landing, speakers, sponsors and

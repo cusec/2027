@@ -1,5 +1,101 @@
 {
     "V2": {
+        "play": {
+            "eyebrow": "CUSEC arcade",
+            "title": "Cubear Rally",
+            "subline": "Seven cabinets, one Cubear. Pick a game, chase a verified score.",
+            "back": "Back to the arcade",
+            "tap-hint": "Tap two tiles to swap · H for a hint",
+            "sfx-on": "Sound on",
+            "sfx-off": "Sound off",
+            "soon": "Coming this winter",
+            "tile-play": "Play",
+            "score": "Rally",
+            "best": "Your best",
+            "music-on": "Music on",
+            "music-off": "Music off",
+            "loading": "Loading…",
+            "starting": "Preparing your rally…",
+            "paused": "Take a breather",
+            "resume": "Resume",
+            "again": "Play again",
+            "start": "Start rally",
+            "practice": "Play practice",
+            "practice-label": "Practice · scores stay off the board",
+            "start-failed": "Ranking is unavailable. Retry or play practice.",
+            "canvas-fallback": "Your browser needs canvas support to play.",
+            "left": "Move left",
+            "right": "Move right",
+            "pause": "Pause",
+            "publication-saving": "Verifying your rally…",
+            "publication-saved": "Rally verified. Your best score is saved.",
+            "publication-failed": "Your score hasn’t saved. Retry before starting another rally.",
+            "publication-rejected": "This rally couldn’t be verified. Start a new one.",
+            "retry-score": "Retry saving score",
+            "how-label": "The cabinet",
+            "public-notice": "Starting a ranked game creates a random Cubear nickname. Your best verified score appears publicly. No sign-in needed.",
+            "leader-label": "The club",
+            "leader-title": "Top scores",
+            "leader-failed": "The leaderboard is unavailable. Refresh to try again.",
+            "leader-empty": "The board is waiting for its first game. Make it yours.",
+            "refresh": "Refresh leaderboard",
+            "stats": {
+                "points": "Points",
+                "rival": "Rival",
+                "target": "To win",
+                "level": "Level",
+                "lives": "Hearts",
+                "time": "Clock"
+            },
+            "modes": {
+                "rally": { "title": "Bubble Rally", "tagline": "The original keep-up. One miss ends it." },
+                "pong": { "title": "Bubble Pong", "tagline": "A rival Cubear serves. First to seven." },
+                "breakout": { "title": "Brick Rally", "tagline": "Seeded walls, bubble power-ups, endless levels." },
+                "match3": { "title": "Tile Sweep", "tagline": "Cascades buy clock. Stars drown a whole row." },
+                "mario": { "title": "Platform Run", "tagline": "Tilemaps, chasms and a flagpole, in the works." },
+                "zelda": { "title": "Dungeon Crawl", "tagline": "Rooms, swords and pots, in the works." },
+                "slingshot": { "title": "Bubble Loft", "tagline": "Slingshot physics for brick forts, in the works." },
+                "pokemon": { "title": "Island Tour", "tagline": "Overworld and turn battles, in the works." }
+            },
+            "games": {
+                "rally": {
+                    "ready": "Keep the bubble in play",
+                    "result": "{score, plural, one {# return. Nice catch!} other {# returns. Nice rally!}}",
+                    "arena": "Cubear Rally playfield. Use arrow keys or A and D to move; Escape pauses.",
+                    "how-eyebrow": "Meet your paddle",
+                    "how-title": "Catch. Bounce. Repeat.",
+                    "instructions": "Move Cubear with ← → or A / D. On a phone, drag across the arena or hold the arrow buttons. Press Escape to pause.",
+                    "rules": "Each return earns one point. The bubble speeds up every five returns. One miss ends your rally; a perfect run lasts three minutes."
+                },
+                "pong": {
+                    "ready": "Beat the rival to seven",
+                    "result": "{score, plural, one {# point. The rival took the win.} other {# points — and the match.}}",
+                    "arena": "Bubble Pong court. Use arrow keys or A and D to move; Escape pauses.",
+                    "how-eyebrow": "Serve and answer",
+                    "how-title": "Return. Point. Repeat.",
+                    "instructions": "Move Cubear with ← → or A / D, or drag across the court. The rival Cubear patrols the top and has wicked drifts. Escape pauses.",
+                    "rules": "Each goal you bank is one point; winning the match banks seven more. Every serve is a fresh seeded launch, so keep your eyes open."
+                },
+                "breakout": {
+                    "ready": "Break the wall, keep your hearts",
+                    "result": "{score, plural, one {# point. The wall held longer.} other {# points. The wall remembers.}}",
+                    "arena": "Brick Rally playfield. Use arrow keys or A and D to move; Escape pauses.",
+                    "how-eyebrow": "The wall is seeded",
+                    "how-title": "Bounce. Crack. Level up.",
+                    "instructions": "Move Cubear with ← → or A / D, or drag across the playfield. Catch falling bubbles for hearts, extra bubbles and the key. Escape pauses.",
+                    "rules": "Each brick pays its health. Clearing every brick opens the next, seeded level and grants a heart. The locked brick only yields to a key bubble; a key resets each fresh serve. Out of hearts ends the run."
+                },
+                "match3": {
+                    "ready": "Beat the clock, not the board",
+                    "result": "{score, plural, one {# point. The clock got you.} other {# points. The clock got you.}}",
+                    "arena": "Tile Sweep board. Tap two adjacent tiles to swap, or press H for a hint; Escape pauses.",
+                    "how-eyebrow": "Clock rules this board",
+                    "how-title": "Match. Cascade. Buy time.",
+                    "instructions": "Tap two adjacent tiles to swap. Only swaps that produce a match are allowed; a rejected tap reverts. Press H for a hint, Escape to pause.",
+                    "rules": "Starting with two minutes. Every matched wave buys two more seconds, star tiles drown a whole row, and harder tile patterns unlock as the level climbs."
+                }
+            }
+        },
         "adminDashboard": {
             "eyebrow": "CUSEC team",
             "title": "Team dashboard",
@@ -75,6 +171,7 @@
             "missing-body": "Please scan the QR code at the event again."
         },
         "nav": {
+            "play": "Play",
             "aria-label": "Main",
             "menu": "Menu",
             "language": "Language",
@@ -244,6 +341,7 @@
             "cta": "Get tickets"
         },
         "footer": {
+            "play": "Play",
             "about": "About",
             "speakers": "Speakers",
             "schedule": "Schedule",
