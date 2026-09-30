@@ -16,6 +16,7 @@ const SITE_LINKS: FooterLink[] = [
 	// lands on this footer. Restore both once those sections ship.
 	// { key: "schedule" },
 	{ key: "sponsors", route: "/sponsors" },
+	{ key: "play", route: "/play" },
 	// { key: "team" },
 	...(process.env.SCAVENGER_HUNT_ENABLED === "true"
 		? [{ key: "hunt", route: "/scavenger" }]
