@@ -40,6 +40,8 @@ export interface TicketWizardProgress {
   avatarCompletedAt?: string | null;
   purchasedTicketTypeId?: string | null;
   purchasedTicketName?: string | null;
+  purchasedOrderId?: string | null;
+  purchasedTicketId?: string | null;
 }
 
 /**
@@ -311,6 +313,7 @@ export interface DemographicInfo {
   travelCountry: string;
   travelRegion: string;
   travelCity: string;
+  postalCode: string;
 
   attendReasons: string[];
   attendReasonsOther: string;

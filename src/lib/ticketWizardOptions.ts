@@ -375,3 +375,45 @@ export type SectionId = (typeof SECTIONS)[number];
 export const REQUIRED_SECTIONS: SectionId[] = ["basics", "background"];
 export const PROFILE_SECTIONS: SectionId[] = ["basics", "background"];
 export const INTEREST_SECTIONS: SectionId[] = ["goals", "travel", "experience", "links"];
+
+/*
+ * Postal code, for the MTL Business Events participant report (city,
+ * province, country and postal code per attendee - see AGENTS.md). Required
+ * where the country has one well-defined format, Canada and the US; optional
+ * elsewhere, since some countries have no postal codes and the formats vary.
+ * Returns the normalised code, "" for a blank optional one, or null when the
+ * value is not a valid code for that country.
+ */
+export const POSTAL_REQUIRED_COUNTRIES = ["CA", "US"];
+
+const CA_POSTAL = /^([ABCEGHJ-NPRSTVXY]\d[ABCEGHJ-NPRSTV-Z])\s*-?\s*(\d[ABCEGHJ-NPRSTV-Z]\d)$/i;
+const US_POSTAL = /^(\d{5})(?:\s*-?\s*(\d{4}))?$/;
+const OTHER_POSTAL = /^[A-Z0-9][A-Z0-9 -]{0,10}[A-Z0-9]$|^[A-Z0-9]$/i;
+
+export function normalizePostalCode(country: string, value: string): string | null {
+  const raw = value.trim();
+  if (!raw) return POSTAL_REQUIRED_COUNTRIES.includes(country) ? null : "";
+  if (country === "CA") {
+    const m = CA_POSTAL.exec(raw);
+    return m ? `${m[1]} ${m[2]}`.toUpperCase() : null;
+  }
+  if (country === "US") {
+    const m = US_POSTAL.exec(raw);
+    return m ? (m[2] ? `${m[1]}-${m[2]}` : m[1]) : null;
+  }
+  return OTHER_POSTAL.test(raw) ? raw.toUpperCase().replace(/\s+/g, " ") : null;
+}
+
+/**
+ * Whether a delegate still owes the participant report their location: no
+ * city at all, or no postal code where one is required. Decides when the
+ * optional follow-up card shows - it never gates any step of the wizard.
+ */
+export function needsTravelLocation(location: {
+  travelCountry?: string;
+  travelCity?: string;
+  postalCode?: string;
+}): boolean {
+  if (!location.travelCity) return true;
+  return !location.postalCode && POSTAL_REQUIRED_COUNTRIES.includes(location.travelCountry ?? "");
+}

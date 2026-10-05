@@ -4,7 +4,7 @@ import connectMongoDB from "@/lib/mongodb";
 import { User } from "@/lib/models";
 import { getWizardStatus } from "@/lib/ticketWizard";
 import { linkTicketPurchase } from "@/lib/ticketLinking";
-import { findCompletedOrderByEmail } from "@/lib/ticketTailor";
+import { findTicketByEmail } from "@/lib/ticketTailor";
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[a-z]{2,}$/i;
 
@@ -17,7 +17,8 @@ const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[a-z]{2,}$/i;
 // caller must be signed in and unlinked, the address must have a *completed*
 // order against the configured event (asked of Ticket Tailor directly, not
 // taken on trust), and linkTicketPurchase still refuses an address another
-// account already owns.
+// account already owns. The address may also be the attendee email on a
+// ticket in someone else's group order (findTicketByEmail).
 export async function POST(request: Request) {
   const session = await auth0.getSession();
   if (!session?.user?.email) {
@@ -50,7 +51,7 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "already-linked" }, { status: 409 });
   }
 
-  const ticket = await findCompletedOrderByEmail(purchaseEmail);
+  const ticket = await findTicketByEmail(purchaseEmail);
   if (!ticket) {
     return NextResponse.json({ error: "no-order" }, { status: 404 });
   }

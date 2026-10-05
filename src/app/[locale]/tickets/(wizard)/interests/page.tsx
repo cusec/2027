@@ -4,7 +4,7 @@ import { redirect } from "@/i18n/navigation";
 import { findOrCreateUser, ensureAnalyticsId } from "@/lib/userService";
 import connectMongoDB from "@/lib/mongodb";
 import { DemographicInfo } from "@/lib/models";
-import { getWizardStatus } from "@/lib/ticketWizard";
+import { getWizardStatus, missingTravelLocation } from "@/lib/ticketWizard";
 import { getBaseUrl } from "@/lib/siteUrl";
 import type { DemographicInfo as SavedProfile } from "@/lib/interface";
 // INTEREST_SECTIONS comes from the plain options module on purpose: importing
@@ -37,6 +37,7 @@ export default async function InterestsPage() {
         ticketName={status.purchasedTicketName}
         baseURL={await getBaseUrl()}
         huntOpen={process.env.SCAVENGER_HUNT_ENABLED === "true"}
+        location={await missingTravelLocation(user._id)}
       />
     );
   }

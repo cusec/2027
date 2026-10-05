@@ -788,10 +788,17 @@
     padding: 1rem;
     background: rgba(6, 20, 14, 0.62);
     backdrop-filter: blur(6px);
+    /* A dialog can outgrow a phone screen (the location card adds a form).
+       The overlay scrolls, and the dialog's auto margins keep it centred
+       while it fits without ever pushing its top out of reach. The extra
+       bottom room lets its last button scroll clear of the CUSEC.FM dock. */
+    overflow-y: auto;
+    padding-bottom: 5.5rem;
 }
 
 .wizard-modal {
     position: relative;
+    margin: auto;
     max-width: 460px;
     padding: 28px 26px;
     text-align: center;
@@ -1889,4 +1896,98 @@ select.wizard-input {
     .wizard-form-submit:disabled::after {
         animation: wizard-loading-fade 800ms ease-in-out infinite;
     }
+}
+
+/* --------------------------------------------------------------------------
+   Location follow-up (TravelLocationCard) - city and postal code for the
+   MTL Business Events participant report. Sits inside the confirmation card
+   and the already-ticketed dialog, both centred, so it re-aligns its own
+   fields to the left.
+   -------------------------------------------------------------------------- */
+.wizard-location {
+    display: flex;
+    flex-direction: column;
+    gap: 0.85rem;
+    width: 100%;
+    margin-top: 0.5rem;
+    padding: 18px 18px 20px;
+    border: 1px dashed rgba(14, 102, 77, 0.35);
+    border-radius: 18px;
+    background: rgba(255, 255, 255, 0.55);
+    text-align: left;
+}
+
+.wizard-location__heading {
+    display: flex;
+    align-items: center;
+    gap: 0.45rem;
+    margin: 0;
+    font-size: 1rem;
+    color: var(--v2-ink-glass-deep);
+}
+
+.wizard-location__heading svg {
+    width: 18px;
+    height: 18px;
+    flex: none;
+    color: var(--v2-teal-deep);
+}
+
+.wizard-location .wizard-location__body {
+    margin: 0;
+    font-size: 0.86rem;
+    line-height: 1.55;
+    color: #3C5A4D;
+}
+
+.wizard-location__fields {
+    display: flex;
+    flex-direction: column;
+    gap: 0.85rem;
+}
+
+/* The confirmation card's own paragraph rule is larger; hints stay small. */
+.wizard-location .wizard-q__hint {
+    font-size: 0.8rem;
+    line-height: 1.45;
+    color: #3C5A4D;
+}
+
+.wizard-location .wizard-location__error {
+    margin: 0;
+    font-size: 0.86rem;
+    color: #B3261E;
+}
+
+.wizard-location__save {
+    align-self: flex-start;
+}
+
+.wizard-location--done {
+    flex-direction: row;
+    align-items: center;
+    gap: 0.5rem;
+    border-style: solid;
+    font-size: 0.92rem;
+    color: var(--v2-ink-glass-deep);
+}
+
+.wizard-location--done svg {
+    width: 20px;
+    height: 20px;
+    flex: none;
+    color: var(--v2-teal-deep);
+}
+
+.wizard-postal {
+    max-width: 14rem;
+    text-transform: uppercase;
+}
+
+.wizard-postal::placeholder {
+    text-transform: none;
+}
+
+.wizard-postal[aria-invalid="true"] {
+    border-color: #B3261E;
 }

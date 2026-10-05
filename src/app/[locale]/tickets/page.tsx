@@ -6,7 +6,7 @@ import { findOrCreateUser, ensureAnalyticsId } from "@/lib/userService";
 import { analyticsAttributes } from "@/lib/analytics/events";
 import connectMongoDB from "@/lib/mongodb";
 import { DemographicInfo } from "@/lib/models";
-import { getWizardStatus } from "@/lib/ticketWizard";
+import { getWizardStatus, missingTravelLocation } from "@/lib/ticketWizard";
 import { reconcileTicketPurchase } from "@/lib/ticketLinking";
 import { getBaseUrl } from "@/lib/siteUrl";
 import { redirect } from "@/i18n/navigation";
@@ -135,6 +135,7 @@ export default async function TicketsPage() {
         accountEmail={email}
         huntOpen={process.env.SCAVENGER_HUNT_ENABLED === "true"}
         baseURL={await getBaseUrl()}
+        location={await missingTravelLocation(user._id)}
       />
     </div>
   );

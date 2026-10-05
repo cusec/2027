@@ -49,6 +49,19 @@ export default async function AdminPage({ params }: { params: Promise<{ locale: 
                       <button className="v2-admin__tool-action" type="submit">{t("download")}</button>
                     </form>
                   )}
+                  {admin && (
+                    <div className="v2-admin__tool">
+                      <h2>{t("report-title")}</h2><p>{t("report-body")}</p>
+                      <form action="/api/admin/participant-report" method="get">
+                        <input type="hidden" name="view" value="report" />
+                        <button className="v2-admin__tool-action" type="submit">{t("report-download")}</button>
+                      </form>
+                      <form action="/api/admin/participant-report" method="get">
+                        <input type="hidden" name="view" value="working" />
+                        <button className="v2-admin__tool-action" type="submit">{t("report-working")}</button>
+                      </form>
+                    </div>
+                  )}
                   {(admin || volunteer) && (
                     <Link className="v2-admin__tool" href="/scavenger">
                       <h2>{t("hunt-title")}</h2><p>{t("hunt-body")}</p><span>{t("open")}</span>

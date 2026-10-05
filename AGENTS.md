@@ -624,7 +624,8 @@ setup checklist (DNS, webhook, env, Auth0 URLs) lives in
 /tickets                 Public entry. Logged out -> Auth0 signup (the Account step).
                          Logged in -> first incomplete step, or the confirmation.
 /tickets/profile         Required: Basics, then Education or Professional background
-                         with travel origin. Two sections, one save each.
+                         with travel origin and postal code (see "MTL Business
+                         Events participant report"). Two sections, one save each.
 /tickets/interests       Optional answers, but all four sections are saved (blank is
                          fine) before the ticket step: goals and career interests,
                          getting to CUSEC, discovery and community, then résumé,
@@ -672,23 +673,111 @@ Two independent paths do that linking, both via `linkTicketPurchase()` in
 `src/lib/ticketLinking.ts` (single implementation — keep it that way):
 1. The `order.created` webhook.
 2. **API reconciliation** — `reconcileTicketPurchase()` asks Ticket Tailor
-   directly whether an email has a completed order. Runs on `/scavenger` load
-   and on the purchase-step poll, so a purchase is picked up even with no
-   webhook registered, and even when checkout completed in a separate tab.
+   directly whether an email holds a ticket (`findTicketByEmail()`). Runs on
+   `/tickets`, the purchase step and its poll, and `/scavenger` load, so a
+   purchase is picked up even with no webhook registered, and even when
+   checkout completed in a separate tab. Every caller only runs it for an
+   account that is not linked yet.
+
+`findTicketByEmail()` checks two routes, in this order:
+1. **The buyer's order** (`findCompletedOrderByEmail()`), the original path.
+   It is checked first, so every account that linked before still matches
+   exactly the same way.
+2. **The attendee's own ticket** (`findIssuedAdmissionByEmail()`). A group
+   order (a head delegate buying for the delegation, the panelist batch)
+   issues one ticket per person, each with its own attendee email, but only
+   the buyer's email is on the order. Ticket Tailor honours an `email` filter on
+   `/v1/issued_tickets`, so a delegate who signs up with the email on their
+   ticket links automatically. The manual claim
+   (`/api/ticket-wizard/claim`) uses the same lookup.
 
 ## Key files
 
 | File | Purpose |
 |---|---|
-| `src/lib/ticketTailor.ts` | All Ticket Tailor API/config. `getTicketTypes()`, `getTicketWidgetConfig()`, webhook verification, `extractPurchaser()`, `extractPurchasedTicket()`, `findCompletedOrderByEmail()`. |
-| `src/lib/ticketLinking.ts` | `linkTicketPurchase()` + `reconcileTicketPurchase()`. |
-| `src/lib/ticketWizard.ts` | `getWizardStatus()` — server-only (imports Mongoose). |
+| `src/lib/ticketTailor.ts` | All Ticket Tailor API/config. `getTicketTypes()`, `getTicketWidgetConfig()`, webhook verification, `extractPurchaser()`, `extractPurchasedTicket()`, `findCompletedOrderByEmail()`, `findIssuedAdmissionByEmail()`, `findTicketByEmail()` (both, order first), `listIssuedAdmissions()` (every attendee ticket, for the MTL report). |
+| `src/lib/ticketLinking.ts` | `linkTicketPurchase()` + `reconcileTicketPurchase()`. A link also stores `ticketWizard.purchasedOrderId` and, when known, `purchasedTicketId`. |
+| `src/lib/ticketWizard.ts` | `getWizardStatus()`, `missingTravelLocation()` — server-only (imports Mongoose). |
+| `src/lib/travelLocation.ts` | `parseTravelLocation()`: country, province, city and postal code, validated one way for both the profile step and the location card. Server-only (country-state-city). |
+| `src/lib/participantReport.ts` | The MTL participant report's joining rules and CSVs. Pure, unit-tested. |
 | `src/lib/ticketWizardOptions.ts` | Client-safe option lists with English and French labels side by side, limits, link patterns and section ids. Imported by the forms and by `/api/demographics`, so both agree on valid answers. **Kept separate on purpose**: client components can't import `ticketWizard.ts`. |
 | `src/lib/institutions.ts` | Schools and campuses for the school and delegation pickers. Missing schools go under Other. |
 | `src/app/api/locations/route.ts` | Countries, provinces/states and cities from `country-state-city`, served per level so the dataset never ships to the browser. |
 | `src/lib/models.ts` | `DemographicInfo` model + `ticketWizard` subdoc on `userSchema`. |
 | `src/app/api/{demographics,ticket-wizard/*,ticket-tailor/webhook}/route.ts` | Wizard APIs. |
-| `src/app/components/TicketWizard/*` | `WizardStepNav`, `ProfileForm`, `InterestsForm`, `WizardFields` (chips, searchable dropdown, origin fields), `CityPicker` (one search box for city, province and country), `ResumeUpload`, `TicketConfirmation`, `PurchaseStepClient`. |
+| `src/app/components/TicketWizard/*` | `WizardStepNav`, `ProfileForm`, `InterestsForm`, `WizardFields` (chips, searchable dropdown, origin fields), `CityPicker` (one search box for city, province and country), `PostalCodeField`, `TravelLocationCard` (the optional location follow-up), `ResumeUpload`, `TicketConfirmation`, `PurchaseStepClient`. |
+| `src/app/api/demographics/location/route.ts` | `PUT` the four location fields only, for the follow-up card. Never touches progress or the link. |
+| `src/app/api/admin/participant-report/route.ts` | Admin-only CSV export of the MTL participant report (`?view=report` / `?view=working`). |
+
+## MTL Business Events participant report
+
+**The deal.** The contract with MTL Business Events (signature due Oct 31)
+pays CUSEC **$35 per delegate travelling from more than 100 km outside
+Montréal, for up to 350 delegates (at most $12,250)**. The money is paid 60 days
+after we submit a participant report with, for **each attendee**: an id (**no
+first or last name**; we use the Ticket Tailor ticket id), city, province,
+country and postal code. Two things follow: every ticket holder needs a CUSEC
+account (that's where the location lives), and we have to collect postal codes.
+
+**Collecting it.**
+- **Profile step:** the Professional/Education background card asks for a
+  postal code right under "Where are you travelling from?"
+  (`PostalCodeField`). It's required in Canada and the US (validated and
+  normalised to `A1A 1A1` / `12345[-6789]`) and optional elsewhere. One rule,
+  `normalizePostalCode()` in `ticketWizardOptions.ts`, serves the form and the
+  API. Stored as `DemographicInfo.postalCode`.
+- **Everyone already past that step:** current ticket holders included get
+  an optional **`TravelLocationCard`** (city + postal code) on the two screens
+  a ticket holder can reach: the confirmation at `/tickets` and the
+  already-ticketed dialog on the profile and interests steps. It shows only
+  when `missingTravelLocation()` says something is missing, and saves through
+  `PUT /api/demographics/location`.
+- **Why it can't disturb an existing account:** that endpoint writes only the
+  four location fields. It never touches the `sections` timestamps that
+  progress is derived from, the ticket link, or anything else on the profile.
+  Wizard progress is timestamp-based, so a profile saved before postal codes
+  existed stays complete; nobody is sent back through a step.
+
+**Getting every ticket holder an account.** Group orders were the gap. When
+the report was built (Oct 2026), 30 of the 36 attendee tickets had no CUSEC
+account: one order of 16 HD-delegate tickets, one of 8 panelist tickets and
+one of 4. Linking only matched the buyer's email, so those delegates could never
+link. `findIssuedAdmissionByEmail()` (see "How it connects" above) now links
+a delegate who signs up with the email on their own ticket. **The team still
+has to ask those delegates to create a CUSEC account with that email.** None
+of them had an account yet when this shipped, so nothing linked on its own.
+
+**The export.** On `/admin`, admins get an "MTL participant report" card
+(`GET /api/admin/participant-report`):
+- `?view=report` is **the file to submit**: `ticket_id, city, province,
+  country, postal_code`, one row per admission ticket, no names or emails.
+- `?view=working` is the team's copy: every ticket with its order, ticket type,
+  account email (to chase), location, `km_from_montreal`, `outside_100km` and
+  what is `missing` (`cusec-account`, `city`, `postal-code`).
+
+How the rows are built (`buildParticipantRows()`):
+- **Tickets:** every *valid* admission issued for the event series
+  (`/v1/issued_tickets?event_series_id=`). Add-on items (the VIP add-on is
+  issued as its own ticket) and test tickets (`isTestTicket()`, a "test" or
+  "testing" in the ticket name) are left out.
+- **Joining tickets to accounts:** an account goes to its own ticket
+  (`purchasedTicketId`) first. Otherwise the order's first unclaimed ticket
+  goes to its buyer (`purchasedOrderId`).
+- **Distance:** from the city's coordinates in country-state-city to
+  Montréal's centre.
+- **Accounts linked before ids were stored:** the export looks their order up
+  once and stores `purchasedOrderId` / `purchasedTicketId`. These are
+  additive fields nothing else reads, so the account itself is unaffected.
+
+Things to remember:
+- Ticket Tailor drops the `email` filter on `/v1/issued_tickets` for a
+  malformed address, exactly like orders, and returns *every* ticket on the
+  event (verified: 39). `findIssuedAdmissionByEmail()` validates the address
+  first and only trusts **exactly one** matching admission. Keep both guards.
+- The report includes every attendee. The working sheet's `outside_100km`
+  is our own estimate of who qualifies; the contract decides eligibility.
+- Never log report rows; they carry delegates' locations. The route logs
+  only the error message.
 
 ## Checkout rendering (hard-won — don't undo)
 
@@ -721,7 +810,14 @@ localhost.** Test in-page checkout on a deployed environment only.
 4. Available quantity is `quantity`, not `quantity_available`.
 5. Env vars use `||`, not `??` — an empty-string var must fall back to null.
 6. Order `line_items` include bundles (`bu_...`); prefer the `tt_...` item.
-7. Buyer PII is masked (`****`) on the current API key.
+7. Buyer PII is masked (`****`) on the current API key, and so is the
+   attendee email on issued tickets. Filtering by email still works
+   server-side; the value just can't be read back.
+8. `GET /v1/issued_tickets?event_series_id=es_...` lists every ticket for the
+   event, one per attendee (a group order issues several). `add_on_id` marks
+   add-on items, `status` is `valid` or `voided`, and `order_id` joins a
+   ticket back to its order. `event_id=es_...` on `/v1/orders` returns
+   nothing; use `event_series_id`.
 
 ## Don'ts (ticket-wizard-specific)
 
@@ -731,9 +827,11 @@ localhost.** Test in-page checkout on a deployed environment only.
 2. Don't import `ticketWizard.ts` (or anything importing `models.ts`) into a
    client component — use `ticketWizardOptions.ts`.
 3. Don't duplicate linking logic — extend `linkTicketPurchase()`.
-4. Don't drop the guards in `findCompletedOrderByEmail()`: a malformed address
-   makes Ticket Tailor silently ignore the `email=` filter and return unrelated
-   orders, which reads as a false "has a ticket".
+4. Don't drop the guards in `findCompletedOrderByEmail()` or
+   `findIssuedAdmissionByEmail()`: a malformed address makes Ticket Tailor
+   silently ignore the `email=` filter and return unrelated orders/tickets,
+   which reads as a false "has a ticket". The issued-ticket lookup also
+   insists on exactly one admission.
 5. Don't log demographic data — it's confidential PII, and the UI promises so.
 6. **One ticket per order is a Ticket Tailor setting**, not something the checkout
    URL can enforce: set the maximum per order to 1 on each ticket type.

@@ -118,6 +118,13 @@ const userSchema = new Schema(
           // confirmation screen, not for any access-control decision.
           purchasedTicketTypeId: { type: String, default: null },
           purchasedTicketName: { type: String, default: null },
+          // The Ticket Tailor order (or_...) behind the link. Joins an account
+          // to its issued tickets for the MTL participant report; set on link,
+          // and backfilled by that report for accounts linked before it existed.
+          purchasedOrderId: { type: String, default: null },
+          // The delegate's own issued ticket (it_...), when known: always for a
+          // delegate linked through a group order, and for one-ticket orders.
+          purchasedTicketId: { type: String, default: null },
         },
         { _id: false },
       ),
@@ -389,6 +396,8 @@ const demographicInfoSchema = new Schema(
     travelCountry: text(),
     travelRegion: text(),
     travelCity: text(),
+    // For the MTL Business Events participant report - see AGENTS.md.
+    postalCode: text(),
 
     attendReasons: list(),
     attendReasonsOther: text(),

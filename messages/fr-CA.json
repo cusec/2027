@@ -1,6 +1,10 @@
 {
     "V2": {
         "adminDashboard": {
+            "report-title": "Rapport des participants MTL",
+            "report-body": "Pour le contrat avec les événements d’affaires de Montréal : une ligne par billet avec ville, province, pays et code postal. Aucun nom ni courriel. La feuille de travail indique les billets à qui il manque encore un compte ou un code postal.",
+            "report-download": "Télécharger le rapport →",
+            "report-working": "Télécharger la feuille de travail →",
             "eyebrow": "Équipe CUSEC",
             "title": "Tableau de bord",
             "sign-in-body": "Connectez-vous avec votre compte CUSEC pour accéder aux outils de l'équipe.",
@@ -333,6 +337,14 @@
         "meta-description": "Les passes pour CUSEC 2027, du 7 au 9 janvier 2027 à Montréal. Ce que demande chaque étape de l'inscription et ce que comprend un billet."
     },
     "TicketWizard": {
+        "q-postal-code": "Code postal",
+        "postal-hint": "Transmis sans votre nom ni courriel au programme des événements d’affaires de Montréal, qui aide à financer CUCIL pour les délégués de l’extérieur.",
+        "error-postalCode": "Veuillez entrer un code postal valide pour ce pays.",
+        "location-card-heading": "Une petite chose",
+        "location-card-body": "D’où voyagez-vous? Le programme des événements d’affaires de Montréal aide à financer CUCIL pour les délégués de l’extérieur. Il ne reçoit que votre ville et votre code postal, jamais votre nom ni votre courriel.",
+        "location-card-save": "Enregistrer",
+        "location-card-saving": "Enregistrement…",
+        "location-card-saved": "Merci, c’est noté!",
         "nav-label": "Étapes d'achat de billet",
         "intro-heading": "Obtenez votre billet",
         "avatar-heading": "Personnalisez votre avatar",

@@ -1,6 +1,10 @@
 {
     "V2": {
         "adminDashboard": {
+            "report-title": "MTL participant report",
+            "report-body": "For the MTL Business Events contract: one row per ticket with city, province, country and postal code. No names or emails. The working sheet shows which tickets still need an account or a postal code.",
+            "report-download": "Download report →",
+            "report-working": "Download working sheet →",
             "eyebrow": "CUSEC team",
             "title": "Team dashboard",
             "sign-in-body": "Sign in with your CUSEC account to open the team tools.",
@@ -333,6 +337,14 @@
         "meta-description": "Passes for CUSEC 2027, January 7 to 9, 2027 in Montréal. What each step of registration asks for, and what a ticket includes."
     },
     "TicketWizard": {
+        "q-postal-code": "Postal code",
+        "postal-hint": "Shared without your name or email with Montréal's business events program, which helps fund CUSEC for out-of-town delegates.",
+        "error-postalCode": "Please enter a valid postal code for that country.",
+        "location-card-heading": "One quick thing",
+        "location-card-body": "Where are you travelling from? Montréal's business events program helps fund CUSEC for delegates coming from out of town. It only receives your city and postal code, never your name or email.",
+        "location-card-save": "Save",
+        "location-card-saving": "Saving…",
+        "location-card-saved": "Thanks, you're all set!",
         "nav-label": "Ticket purchase steps",
         "intro-heading": "Get Your Ticket",
         "avatar-heading": "Customize Your Avatar",

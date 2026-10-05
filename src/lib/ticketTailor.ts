@@ -411,6 +411,14 @@ export function extractPurchaser(payload: Record<string, unknown>): TicketPurcha
 export interface PurchasedTicket {
   ticketTypeId: string | null;
   name: string | null;
+  /** The order (or_...) itself - what joins an account to its issued tickets. */
+  orderId: string | null;
+  /**
+   * The attendee's own issued ticket (it_...), when known. Set only when the
+   * link came through the attendee's ticket (findIssuedAdmissionByEmail) rather
+   * than the buyer's order - i.e. a delegate on a group order.
+   */
+  ticketId?: string | null;
 }
 
 // Confirmed against a real Order via GET /v1/orders: `line_items[].item_id`
@@ -432,12 +440,97 @@ export function extractPurchasedTicket(payload: Record<string, unknown>): Purcha
       li => typeof li.item_id === "string" && li.item_id.startsWith("tt_")
     ) ?? lineItems[0];
 
-  if (!ticketItem) return { ticketTypeId: null, name: null };
+  const orderId =
+    typeof payload.id === "string" && payload.id.startsWith("or_") ? payload.id : null;
+
+  // A one-person order also says which issued ticket is theirs. A group order
+  // stays ambiguous (null) - each delegate is matched to their own ticket by
+  // findIssuedAdmissionByEmail instead.
+  const issued = (Array.isArray(payload.issued_tickets) ? payload.issued_tickets : []) as Record<string, unknown>[];
+  const admissions = issued.filter(
+    (t) => typeof t.id === "string" && t.status === "valid" && !t.add_on_id,
+  );
+  const ticketId = admissions.length === 1 ? (admissions[0].id as string) : null;
+
+  if (!ticketItem) return { ticketTypeId: null, name: null, orderId, ticketId };
 
   return {
     ticketTypeId: typeof ticketItem.item_id === "string" ? ticketItem.item_id : null,
     name: typeof ticketItem.description === "string" ? ticketItem.description : null,
+    orderId,
+    ticketId,
   };
+}
+
+export interface IssuedAdmission {
+  /** it_... - the per-attendee "ticket id" the MTL report uses. */
+  id: string;
+  orderId: string | null;
+  ticketTypeId: string | null;
+  description: string | null;
+}
+
+// One issued ticket, if it is a real admission for `series`: valid (not
+// voided) and not an add-on - the VIP add-on is issued as its own ticket with
+// an add_on_id, and is not a separate attendee.
+function toAdmission(t: Record<string, unknown>, series: string): IssuedAdmission | null {
+  if (typeof t.id !== "string") return null;
+  if (t.status !== "valid" || t.add_on_id) return null;
+  if (String(t.event_series_id ?? "") !== series) return null;
+  return {
+    id: t.id,
+    orderId: typeof t.order_id === "string" ? t.order_id : null,
+    ticketTypeId: typeof t.ticket_type_id === "string" ? t.ticket_type_id : null,
+    description: typeof t.description === "string" ? t.description : null,
+  };
+}
+
+// Every valid admission issued for the configured event, for the MTL
+// Business Events participant report. One per attendee: a group order issues
+// one ticket per person. Voided tickets and add-on items (the VIP add-on is
+// issued as its own ticket with an add_on_id) are not attendees and are left
+// out. Buyer PII is masked on this key, so only ids come back - which is all
+// the report needs. Paginates with starting_after; returns null if the API
+// is unconfigured or a page fails, so callers can tell "none" from "unknown".
+export async function listIssuedAdmissions(): Promise<IssuedAdmission[] | null> {
+  const apiKey = process.env.TICKET_TAILOR_API_KEY;
+  const eventId = process.env.TICKET_TAILOR_EVENT_ID;
+  if (!apiKey || !eventId) return null;
+
+  const auth = Buffer.from(`${apiKey}:`).toString("base64");
+  const series = `es_${eventId}`;
+  const admissions: IssuedAdmission[] = [];
+  let after: string | null = null;
+
+  // 100 per page; 50 pages is far beyond the 350-attendee cap and only
+  // guards against an endless loop.
+  for (let page = 0; page < 50; page++) {
+    const params = new URLSearchParams({ event_series_id: series, limit: "100" });
+    if (after) params.set("starting_after", after);
+    let body: { data?: unknown; links?: { next?: unknown } };
+    try {
+      const res = await fetch(`https://api.tickettailor.com/v1/issued_tickets?${params}`, {
+        headers: { Authorization: `Basic ${auth}` },
+        cache: "no-store",
+      });
+      if (!res.ok) return null;
+      body = await res.json();
+    } catch {
+      return null;
+    }
+
+    const rows = (Array.isArray(body?.data) ? body.data : []) as Record<string, unknown>[];
+    for (const t of rows) {
+      const admission = toAdmission(t, series);
+      if (admission) admissions.push(admission);
+    }
+
+    const last = rows.at(-1);
+    if (!body?.links?.next || !last || typeof last.id !== "string") break;
+    after = last.id;
+  }
+
+  return admissions;
 }
 
 // Looks up whether an email has a completed order, straight from the Ticket
@@ -487,4 +580,56 @@ export async function findCompletedOrderByEmail(
   } catch {
     return null;
   }
+}
+
+// A delegate's own ticket, found by the attendee email on the issued ticket
+// rather than the buyer email on the order. This is what lets someone whose
+// ticket was bought in a group order (a head delegate buying for the
+// delegation, or the panelist batch) be recognised as a ticket holder.
+//
+// Two guards, both load-bearing. Like the orders endpoint, Ticket Tailor
+// silently DROPS the email filter for a malformed address and returns every
+// ticket on the event (verified: 39 rows) - so the address is validated
+// first. And since the attendee email is masked on this key and can't be
+// read back, the answer is only trusted when it is exactly one admission:
+// one ticket per person, so anything else is treated as no match.
+export async function findIssuedAdmissionByEmail(email: string): Promise<PurchasedTicket | null> {
+  const apiKey = process.env.TICKET_TAILOR_API_KEY;
+  const eventId = process.env.TICKET_TAILOR_EVENT_ID;
+  if (!apiKey || !eventId) return null;
+
+  const normalized = email.trim().toLowerCase();
+  if (!/^[^\s@]+@[^\s@]+\.[a-z]{2,}$/i.test(normalized)) return null;
+
+  const series = `es_${eventId}`;
+  try {
+    const auth = Buffer.from(`${apiKey}:`).toString("base64");
+    const params = new URLSearchParams({ event_series_id: series, email: normalized, limit: "100" });
+    const res = await fetch(`https://api.tickettailor.com/v1/issued_tickets?${params}`, {
+      headers: { Authorization: `Basic ${auth}` },
+      cache: "no-store",
+    });
+    if (!res.ok) return null;
+    const body = await res.json();
+    const rows = (Array.isArray(body?.data) ? body.data : []) as Record<string, unknown>[];
+    const admissions = rows.map((t) => toAdmission(t, series)).filter((a) => a !== null);
+    if (admissions.length !== 1) return null;
+    const [ticket] = admissions;
+    return {
+      ticketTypeId: ticket.ticketTypeId,
+      name: ticket.description,
+      orderId: ticket.orderId,
+      ticketId: ticket.id,
+    };
+  } catch {
+    return null;
+  }
+}
+
+// Whether an email holds a ticket to this event, by either route: it bought
+// a completed order (the original path), or it is the attendee on an issued
+// ticket in someone else's order. The order is checked first, so every
+// account that linked before keeps exactly the same match.
+export async function findTicketByEmail(email: string): Promise<PurchasedTicket | null> {
+  return (await findCompletedOrderByEmail(email)) ?? (await findIssuedAdmissionByEmail(email));
 }

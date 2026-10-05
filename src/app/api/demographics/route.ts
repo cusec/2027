@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
-import { Country, State } from "country-state-city";
 import { auth0 } from "@/lib/auth0";
+import { parseTravelLocation } from "@/lib/travelLocation";
 import { User, DemographicInfo } from "@/lib/models";
 import { isLocalTicketPreview } from "@/lib/localTicketPreview";
 import { trackServerEvent } from "@/lib/analytics/server";
@@ -204,17 +204,10 @@ function background(answers: Answers, attendeeType: string): Update {
     update.experience = one(answers, "experience", EXPERIENCE_OPTIONS, true);
   }
 
-  const country = text(answers, "travelCountry", true).toUpperCase();
-  if (!Country.getCountryByCode(country))
-    throw new InvalidAnswer("travelCountry");
-  const hasRegions = State.getStatesOfCountry(country).length > 0;
-  const region = text(answers, "travelRegion", hasRegions).toUpperCase();
-  if (region && !State.getStateByCodeAndCountry(region, country)) {
-    throw new InvalidAnswer("travelRegion");
-  }
-  update.travelCountry = country;
-  update.travelRegion = region;
-  update.travelCity = text(answers, "travelCity", true);
+  // Same check as the follow-up location card - see src/lib/travelLocation.ts.
+  const where = parseTravelLocation(answers);
+  if (!where.ok) throw new InvalidAnswer(where.field);
+  Object.assign(update, where.location);
 
   return update;
 }

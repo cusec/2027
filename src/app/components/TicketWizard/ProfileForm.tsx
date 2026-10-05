@@ -31,6 +31,7 @@ import {
   WizardCard,
 } from "./WizardFields";
 import CityPicker from "./CityPicker";
+import PostalCodeField from "./PostalCodeField";
 import { StepActions, StepHeader } from "./WizardSection";
 import { focusField, saveSection } from "./profileAnswers";
 
@@ -379,6 +380,13 @@ export default function ProfileForm({ initial, startIndex }: ProfileFormProps) {
               onChange={(next) => update(next)}
             />
           </Question>
+
+          <PostalCodeField
+            country={answers.travelCountry}
+            value={answers.postalCode}
+            invalid={errorField === "postalCode"}
+            onChange={(postalCode) => update({ postalCode })}
+          />
         </WizardCard>
       )}
 

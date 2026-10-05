@@ -27,7 +27,7 @@ export default async function ProfilePage() {
   const email = session?.user?.email;
   if (!email) return <SignInCard returnTo="/tickets/profile" />;
 
-  const [{ findOrCreateUser, ensureAnalyticsId }, { default: connectMongoDB }, { DemographicInfo }, { getWizardStatus }] =
+  const [{ findOrCreateUser, ensureAnalyticsId }, { default: connectMongoDB }, { DemographicInfo }, { getWizardStatus, missingTravelLocation }] =
     await Promise.all([
       import("@/lib/userService"),
       import("@/lib/mongodb"),
@@ -49,6 +49,7 @@ export default async function ProfilePage() {
         ticketName={status.purchasedTicketName}
         baseURL={await getBaseUrl()}
         huntOpen={process.env.SCAVENGER_HUNT_ENABLED === "true"}
+        location={await missingTravelLocation(user._id)}
       />
     );
   }

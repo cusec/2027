@@ -1,7 +1,7 @@
 import connectMongoDB from "./mongodb";
 import { RegisteredUser, User, DemographicInfo } from "./models";
 import {
-  findCompletedOrderByEmail,
+  findTicketByEmail,
   type PurchasedTicket,
 } from "./ticketTailor";
 import { trackServerEvent } from "./analytics/server";
@@ -111,6 +111,8 @@ export async function linkTicketPurchase(
   matchedUser.ticketWizard.currentStep = "completed";
   matchedUser.ticketWizard.purchasedTicketTypeId = ticket.ticketTypeId;
   matchedUser.ticketWizard.purchasedTicketName = ticket.name;
+  matchedUser.ticketWizard.purchasedOrderId = ticket.orderId;
+  matchedUser.ticketWizard.purchasedTicketId = ticket.ticketId ?? null;
   await matchedUser.save();
 
   registeredUser.isLinked = true;
@@ -142,15 +144,18 @@ export async function linkTicketPurchase(
   return { linked: true, purchasedTicketName: ticket.name };
 }
 
-// Asks Ticket Tailor directly whether this email has a completed order and,
-// if so, links it. Lets a purchase be detected even when the webhook isn't
+// Asks Ticket Tailor directly whether this email holds a ticket and, if so,
+// links it. Lets a purchase be detected even when the webhook isn't
 // registered or couldn't reach us (e.g. local dev), and is what makes a
-// ticket bought in a new tab show up without any manual step.
+// ticket bought in a new tab show up without any manual step. It also finds
+// delegates whose ticket was bought in someone else's group order, through
+// the attendee email on their own ticket (findTicketByEmail checks the
+// buyer's order first, so earlier links match exactly as they always did).
 export async function reconcileTicketPurchase(
   email: string,
   name: string,
 ): Promise<LinkResult> {
-  const ticket = await findCompletedOrderByEmail(email);
+  const ticket = await findTicketByEmail(email);
   if (!ticket) return { linked: false, purchasedTicketName: null };
   return linkTicketPurchase(email, name, ticket);
 }

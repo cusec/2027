@@ -3,6 +3,7 @@ import { User, RegisteredUser, DemographicInfo } from "./models";
 import {
   INTEREST_SECTIONS,
   REQUIRED_SECTIONS,
+  needsTravelLocation,
   type SectionId,
 } from "./ticketWizardOptions";
 
@@ -63,4 +64,30 @@ export async function getWizardStatus(email: string): Promise<WizardStatus> {
       ? (user.ticketWizard?.purchasedTicketName ?? null)
       : null,
   };
+}
+
+export interface TravelLocation {
+  travelCountry: string;
+  travelRegion: string;
+  travelCity: string;
+  postalCode: string;
+}
+
+/**
+ * The delegate's saved location, but only when it is incomplete - the cue for
+ * the ticket-holder screens to show the optional TravelLocationCard. Null
+ * when nothing is missing, so callers can pass the result straight through.
+ */
+export async function missingTravelLocation(userId: unknown): Promise<TravelLocation | null> {
+  await connectMongoDB();
+  const doc = await DemographicInfo.findOne({ user: userId })
+    .select("travelCountry travelRegion travelCity postalCode")
+    .lean<Partial<TravelLocation>>();
+  const location: TravelLocation = {
+    travelCountry: doc?.travelCountry || "CA",
+    travelRegion: doc?.travelRegion || "",
+    travelCity: doc?.travelCity || "",
+    postalCode: doc?.postalCode || "",
+  };
+  return needsTravelLocation(location) ? location : null;
 }

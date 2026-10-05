@@ -2,6 +2,7 @@
 
 import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
+import TravelLocationCard, { type TravelLocationValue } from "./TravelLocationCard";
 
 interface AlreadyTicketedModalProps {
   /** The account the ticket is attached to, so the user knows which to leave. */
@@ -12,6 +13,8 @@ interface AlreadyTicketedModalProps {
   baseURL: string;
   /** The hunt dashboard link only shows while /scavenger is open. */
   huntOpen?: boolean;
+  /** Set only when the delegate's location is missing - see TravelLocationCard. */
+  location?: TravelLocationValue | null;
 }
 
 /**
@@ -28,6 +31,7 @@ export default function AlreadyTicketedModal({
   ticketName,
   baseURL,
   huntOpen = false,
+  location = null,
 }: AlreadyTicketedModalProps) {
   const t = useTranslations("TicketWizard");
 
@@ -60,6 +64,8 @@ export default function AlreadyTicketedModal({
         </p>
 
         <p className="wizard-modal-body">{t("already-ticketed-instruction")}</p>
+
+        {location && <TravelLocationCard initial={location} />}
 
         <div className="wizard-modal-actions">
           {/*

@@ -27,6 +27,7 @@ export const EMPTY_ANSWERS: ProfileAnswers = {
   travelCountry: "CA",
   travelRegion: "",
   travelCity: "",
+  postalCode: "",
   attendReasons: [],
   attendReasonsOther: "",
   successMeasures: [],

@@ -3,6 +3,7 @@
 import { useTranslations } from "next-intl";
 import { CircleCheck } from "lucide-react";
 import { Link } from "@/i18n/navigation";
+import TravelLocationCard, { type TravelLocationValue } from "./TravelLocationCard";
 
 interface TicketConfirmationProps {
   ticketName: string | null;
@@ -10,6 +11,8 @@ interface TicketConfirmationProps {
   accountEmail: string;
   huntOpen: boolean;
   baseURL: string;
+  /** Set only when the delegate's location is missing - see TravelLocationCard. */
+  location?: TravelLocationValue | null;
 }
 
 export default function TicketConfirmation({
@@ -18,6 +21,7 @@ export default function TicketConfirmation({
   accountEmail,
   huntOpen,
   baseURL,
+  location = null,
 }: TicketConfirmationProps) {
   const t = useTranslations("TicketWizard");
   const signOutHome = `/auth/logout?returnTo=${encodeURIComponent(`${baseURL}/`)}`;
@@ -51,6 +55,8 @@ export default function TicketConfirmation({
         </dl>
 
         <p className="wizard-confirm-card__note">{t("confirm-account-note")}</p>
+
+        {location && <TravelLocationCard initial={location} />}
 
         {huntOpen ? (
           <Link href="/scavenger" className="cta-btn wizard-intro-cta">
