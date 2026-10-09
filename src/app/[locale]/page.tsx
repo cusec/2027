@@ -15,11 +15,6 @@ import V2Faq from "@/app/components/v2/Faq/V2Faq";
 import V2Closing from "@/app/components/v2/Closing/V2Closing";
 import V2Footer from "@/app/components/v2/Footer/V2Footer";
 
-/**
- * `organizer` and `superEvent` are references, not definitions: both nodes live
- * once on cusec.net, and repeating their properties here would create a second
- * entity Google has to reconcile with the first.
- */
 const eventJsonLd = {
 	"@context": "https://schema.org",
 	"@type": "Event",
@@ -42,8 +37,13 @@ const eventJsonLd = {
 			addressCountry: "CA",
 		},
 	},
-	organizer: { "@id": "https://www.cusec.net/#organization" },
-	superEvent: { "@id": "https://www.cusec.net/#series" },
+	image: `${SITE_URL}/cusec-logo.png`,
+	organizer: {
+		"@type": "Organization",
+		"@id": "https://www.cusec.net/#organization",
+		name: "CUSEC",
+		url: "https://www.cusec.net/",
+	},
 };
 
 export async function generateMetadata({
