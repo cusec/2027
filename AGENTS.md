@@ -138,7 +138,7 @@ since its sections are not reused anywhere else.
 | `V2SdCard` | One CUSEC-SD card, rebuilt in CSS so its inserted/idle state can follow the loaded year. |
 | `archiveData.ts` | Per-edition photos, counts and card gradients. |
 | `V2Hunt` | Scavenger hunt card + 2026 leaderboard + map pins. |
-| `V2Passes` | Student / Professional toggle over one ticket card, with a `+$15 VIP` chip (`Tickets/VipChip`) whose perks show on hover, focus or tap. The perks are the ticket strategy doc's exact wording. `Tickets/TicketCard` on the purchase step renders this same `.v2-pass` card from live Ticket Tailor data, so restyle it in `passes.css` only. |
+| `V2Passes` | Student / Professional toggle over one ticket card, with a `+$15 VIP` chip (`Tickets/VipChip`) whose perks show on hover, focus or tap. The perks are the ticket strategy doc's wording, except three VIP perks the co-chairs changed (Oct 2026): the speaker Meet & Greet is no longer "daily" (not promised in the schedule), the sponsor event is a "mixer", not a cocktail reception (no food), and the keychains are just "Exclusive VIP goodies" until the merch budget is set. `Tickets/TicketCard` on the purchase step renders this same `.v2-pass` card from live Ticket Tailor data, so restyle it in `passes.css` only. |
 | `V2Scene` | `.v2-scene` + the painted backdrop `<img>`. Every page renders one; `screens` opts into the full-viewport rhythm, except on portrait tablets, where every section but the hero sizes to its content (a full iPad screen per section left each one two thirds empty). |
 | `V2Sponsors` | Landing-page teaser: heading pill + `V2SponsorHexes`. |
 | `V2SponsorHexes` | The honeycomb itself, shared by the teaser and `/sponsors`. |
