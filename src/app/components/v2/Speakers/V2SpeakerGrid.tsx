@@ -1,51 +1,30 @@
-import { useTranslations } from "next-intl";
+import { useLocale } from "next-intl";
+import { pick } from "@/lib/localized";
+import V2SpeakerLinks from "./V2SpeakerLinks";
+import V2SpeakerPortrait from "./V2SpeakerPortrait";
 import { SPEAKERS } from "./speakersData";
-import V2SpeakerAvatar from "./V2SpeakerAvatar";
 
 export default function V2SpeakerGrid() {
-	const t = useTranslations("V2.speakers");
+	const locale = useLocale();
+	if (SPEAKERS.length === 0) return null;
 
 	return (
 		<section className="v2-section v2-spk-grid" id="grid">
 			<div className="v2-container">
-				<div className="v2-spk-grid__head">
-					<h2 className="v2-heading-pill">{t("grid-heading")}</h2>
-				</div>
-
 				<ul className="v2-spk-grid__list">
 					{SPEAKERS.map((speaker, i) => (
-						<li key={i} className="v2-spk-card">
-							<V2SpeakerAvatar
-								from={speaker.from}
-								to={speaker.to}
-								photo={speaker.announced?.photo}
-								focus={speaker.announced?.focus}
+						<li key={`${speaker.name}-${i}`} className="v2-spk-card">
+							<V2SpeakerPortrait
+								photo={speaker.photo}
+								focus={speaker.focus}
+								className="v2-spk-card__portrait"
 							/>
-
-							{speaker.announced ? (
-								<>
-									<p className="v2-spk-card__name v2-pixel">
-										{speaker.announced.name}
-									</p>
-									<p className="v2-spk-card__role">{speaker.announced.role}</p>
-									{speaker.announced.talk ? (
-										<p className="v2-spk-card__talk">
-											{speaker.announced.talk}
-										</p>
-									) : null}
-									{speaker.announced.abstract ? (
-										<p className="v2-spk-card__abstract">
-											{speaker.announced.abstract}
-										</p>
-									) : null}
-								</>
-							) : (
-								<p className="v2-spk-card__name v2-pixel">{t("announcing")}</p>
-							)}
-
-							<span className="v2-spk-chip v2-pixel">
-								{t(`topic-${speaker.topic}`)}
-							</span>
+							<h2 className="v2-spk-card__name">{speaker.name}</h2>
+							<p className="v2-spk-card__role">{speaker.role}</p>
+							{speaker.bio ? (
+								<p className="v2-spk-card__bio">{pick(speaker.bio, locale)}</p>
+							) : null}
+							<V2SpeakerLinks speaker={speaker} />
 						</li>
 					))}
 				</ul>

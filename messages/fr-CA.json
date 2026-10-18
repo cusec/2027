@@ -57,7 +57,6 @@
             "signups": "inscriptions",
             "export": "Télécharger le CSV"
         },
-
         "meet": {
             "eyebrow": "Ravi de vous rencontrer",
             "title": "Restons en contact.",
@@ -88,7 +87,8 @@
             "conference": "Conférence",
             "hunt": "Chasse au trésor",
             "team": "Équipe",
-            "cta": "Obtenir des billets"
+            "cta": "Obtenir des billets",
+            "schedule": "Horaire"
         },
         "hero": {
             "tagline": "La plus ancienne conférence étudiante canadienne en génie logiciel.",
@@ -212,7 +212,7 @@
             "tier-partner": "partenaire",
             "meta-title": "Commanditaires",
             "badge": "Commanditaires de CUSEC 2027",
-            "page-heading": "Commanditaires à venir.",
+            "page-heading": "Commanditaires",
             "subline": "Nous annoncerons les entreprises qui soutiennent CUSEC 2027 au fil des confirmations. Vous souhaitez commanditer? Écrivez-nous.",
             "cta-primary": "Devenir commanditaire",
             "cta-secondary": "Voir les niveaux",
@@ -228,7 +228,11 @@
             "tier-name-silver": "Argent",
             "tier-name-partner": "Partenaire",
             "closing-title": "Bâtissons 2027 ensemble.",
-            "closing-cta": "Parler à notre équipe"
+            "closing-cta": "Parler à notre équipe",
+            "package": "Voir le plan de commandite",
+            "tier-name-community": "Communauté et contributions en nature",
+            "logo-placeholder": "Logo du commanditaire",
+            "coming-soon": "Commanditaires à venir...."
         },
         "faq": {
             "heading": "Vos questions, nos réponses",
@@ -272,7 +276,7 @@
         "speakers": {
             "meta-title": "Conférenciers",
             "badge": "Conférenciers dévoilés au fil de l’automne",
-            "heading": "Les conférenciers",
+            "heading": "Conférenciers",
             "subline": "La programmation 2027 sera dévoilée à mesure que les conférenciers seront confirmés - les conférences d’ouverture d’abord, puis le programme complet.",
             "keynote-eyebrow": "Conférence d’ouverture, à annoncer",
             "keynote-title": "Le premier nom sera dévoilé cet automne.",
@@ -296,7 +300,10 @@
             "pitch-cta": "Proposer une conférence",
             "pitch-secondary": "Proposer quelqu’un",
             "keynote-announced-eyebrow": "Conférence d’ouverture annoncée",
-            "coming-soon": "À venir...."
+            "coming-soon": "À venir....",
+            "keynote-label": "Conférence principale",
+            "linkedin": "LinkedIn",
+            "website": "Site de l’entreprise"
         },
         "cubear": {
             "phrases": [
@@ -313,6 +320,39 @@
                 "t’as vu les archives ?",
                 "parle de nous à tes amis"
             ]
+        },
+        "team": {
+            "meta-title": "Équipe",
+            "heading": "Notre équipe",
+            "subline": "Les étudiants qui organisent CUSEC 2027.",
+            "group-co-chairs": "Coprésidence",
+            "group-head-delegates": "Chefs de délégation",
+            "group-events": "Événements",
+            "group-speakers": "Conférenciers",
+            "group-sponsorship": "Commandites",
+            "group-logistics": "Logistique",
+            "group-technology": "Technologie",
+            "linkedin": "LinkedIn",
+            "coming-soon": "À venir...."
+        },
+        "schedule": {
+            "meta-title": "Horaire",
+            "heading": "Horaire",
+            "subline": "Du 7 au 9 janvier 2027 à Montréal, QC. Toutes les heures sont à l’heure de l’Est.",
+            "days-label": "Jour de la conférence",
+            "legend-label": "Types de séances",
+            "category-keynote": "Conférences principales",
+            "category-talk": "Présentations",
+            "category-workshop": "Ateliers",
+            "category-career": "Salon de l’emploi",
+            "category-community": "Communauté",
+            "category-break": "Pauses",
+            "add-to-calendar": "Ajouter au calendrier",
+            "calendar-title": "CUSEC 2027, jour {n}",
+            "now": "Heure actuelle",
+            "after-hours": "En soirée",
+            "after-hours-window": "{day}, de {from} à minuit",
+            "coming-soon": "À venir...."
         }
     },
     "TicketsPage": {

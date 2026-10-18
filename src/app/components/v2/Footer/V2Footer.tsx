@@ -11,12 +11,9 @@ type FooterLink = { key: string; route?: string };
 const SITE_LINKS: FooterLink[] = [
 	// { key: "about" }, - restore once there is an About page to link to.
 	{ key: "speakers", route: "/speakers" },
-	// Hidden for the first v2 release: landing, speakers, sponsors and
-	// policy & terms only. `#schedule` has no section yet and `#team` only
-	// lands on this footer. Restore both once those sections ship.
-	// { key: "schedule" },
+	{ key: "schedule", route: "/schedule" },
 	{ key: "sponsors", route: "/sponsors" },
-	// { key: "team" },
+	{ key: "team", route: "/team" },
 	...(process.env.SCAVENGER_HUNT_ENABLED === "true"
 		? [{ key: "hunt", route: "/scavenger" }]
 		: []),
@@ -70,7 +67,7 @@ export default function V2Footer() {
 	const t = useTranslations("V2.footer");
 
 	return (
-		<footer className="v2-footer" id="team">
+		<footer className="v2-footer">
 			<div className="v2-container v2-footer__inner">
 				<div className="v2-footer__top">
 					<div className="v2-footer__intro">

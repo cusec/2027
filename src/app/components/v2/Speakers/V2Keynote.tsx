@@ -1,90 +1,39 @@
-import { useTranslations } from "next-intl";
-import V2Polaroid from "../Dawn/V2Polaroid";
-import V2SpeakerAvatar from "./V2SpeakerAvatar";
-import { ANNOUNCED_KEYNOTES } from "./speakersData";
-
-const TEASER_CHIPS = [1, 2, 3] as const;
+import { useLocale, useTranslations } from "next-intl";
+import { pick } from "@/lib/localized";
+import V2SpeakerLinks from "./V2SpeakerLinks";
+import V2SpeakerPortrait from "./V2SpeakerPortrait";
+import { KEYNOTES } from "./speakersData";
 
 export default function V2Keynote() {
 	const t = useTranslations("V2.speakers");
+	const locale = useLocale();
+	if (KEYNOTES.length === 0) return null;
 
 	return (
 		<section className="v2-section v2-keynote">
-			<div className="v2-container v2-keynote__inner">
-				<div className="v2-keynote__stack">
-					{/* still-unannounced opening keynote */}
-					<article className="v2-keynote__card v2-glass">
-						<V2SpeakerAvatar
-							from="#B5E054"
-							to="#89C24C"
-							className="v2-spk-avatar--lg"
+			<div className="v2-container v2-keynote__stack">
+				{KEYNOTES.map((keynote) => (
+					<article key={keynote.name} className="v2-keynote__card v2-glass v2-glass--blue">
+						<V2SpeakerPortrait
+							photo={keynote.photo}
+							focus={keynote.focus}
+							className="v2-keynote__portrait"
 						/>
 
 						<div className="v2-keynote__body">
-							<p className="v2-keynote__eyebrow v2-pixel">
-								{t("keynote-eyebrow")}
-							</p>
-							<h2 className="v2-keynote__title v2-pixel">
-								{t("keynote-title")}
-							</h2>
-							<p className="v2-keynote__text">{t("keynote-body")}</p>
-
-							<ul className="v2-keynote__chips">
-								{TEASER_CHIPS.map((n) => (
-									<li
-										key={n}
-										className="v2-spk-chip v2-spk-chip--dark v2-pixel"
-									>
-										{t(`keynote-chip-${n}`)}
-									</li>
-								))}
-							</ul>
+							<p className="v2-keynote__eyebrow">{t("keynote-label")}</p>
+							<h2 className="v2-keynote__name v2-pixel">{keynote.name}</h2>
+							<p className="v2-keynote__role">{keynote.role}</p>
+							{keynote.talk ? (
+								<p className="v2-keynote__talk v2-pixel">{keynote.talk}</p>
+							) : null}
+							{keynote.bio ? (
+								<p className="v2-keynote__bio">{pick(keynote.bio, locale)}</p>
+							) : null}
+							<V2SpeakerLinks speaker={keynote} />
 						</div>
 					</article>
-
-					{/* keynotes that have been revealed */}
-					{ANNOUNCED_KEYNOTES.map((keynote) => (
-						<article key={keynote.name} className="v2-keynote__card v2-glass">
-							<V2SpeakerAvatar
-								from={keynote.from}
-								to={keynote.to}
-								photo={keynote.photo}
-								focus={keynote.focus}
-								className="v2-spk-avatar--lg"
-							/>
-
-							<div className="v2-keynote__body">
-								<p className="v2-keynote__eyebrow v2-pixel">
-									{t("keynote-announced-eyebrow")}
-								</p>
-								<h2 className="v2-keynote__title v2-pixel">{keynote.talk}</h2>
-								<p className="v2-keynote__speaker v2-pixel">{keynote.name}</p>
-								<p className="v2-keynote__text">{keynote.role}</p>
-								{keynote.abstract ? (
-									<p className="v2-keynote__text v2-keynote__abstract">
-										{keynote.abstract}
-									</p>
-								) : null}
-
-								<ul className="v2-keynote__chips">
-									<li className="v2-spk-chip v2-spk-chip--dark v2-pixel">
-										{t("keynote-chip-1")}
-									</li>
-									<li className="v2-spk-chip v2-spk-chip--dark v2-pixel">
-										{t("keynote-chip-3")}
-									</li>
-								</ul>
-							</div>
-						</article>
-					))}
-				</div>
-
-				<V2Polaroid
-					src="/assets/v2/photos/cam_3.webp"
-					caption={t("photo-caption")}
-					tilt={2}
-					className="v2-keynote__photo"
-				/>
+				))}
 			</div>
 		</section>
 	);

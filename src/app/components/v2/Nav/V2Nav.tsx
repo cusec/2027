@@ -12,9 +12,8 @@ const LINKS = [
 	{ key: "sponsors", href: "/sponsors" },
 	// { key: "conference", href: "/#conference" },
 	// { key: "hunt", href: "/scavenger" },
-	// Hidden for the first v2 release: landing, speakers, sponsors and
-	// policy & terms only. Restore once the team section exists.
-	// { key: "team", href: "/#team" },
+	{ key: "team", href: "/team" },
+	{ key: "schedule", href: "/schedule" },
 ] as const;
 
 /** ignore sub-pixel/momentum jitter so the bar doesn't flicker */
@@ -86,7 +85,7 @@ export default function V2Nav() {
 					})}
 
 					{/* Pure decoration, not a link - a peek of Cubear tucked beside the
-					    last nav item (Sponsors, today). Same Shock render the mascot
+					    last nav item (Schedule, today). Same Shock render the mascot
 					    popup uses, just tiny and idly bobbing in place. */}
 					<img
 						className="v2-nav__mascot"

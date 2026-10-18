@@ -18,8 +18,10 @@
 @import "./closing.css";
 @import "./footer.css";
 
-/* /speakers */
+/* /speakers, /team, /schedule */
 @import "./speakers.css";
+@import "./team.css";
+@import "./schedule.css";
 
 @import "./aero.css";
 @import "./submissions.css";

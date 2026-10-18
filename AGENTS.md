@@ -1,6 +1,6 @@
 <!-- BEGIN:nextjs-agent-rules -->
 
-# This is NOT the Next.js you know
+## This is NOT the Next.js you know
 
 This version has breaking changes — APIs, conventions, and file structure may all differ from your training data. Read the relevant guide in `node_modules/next/dist/docs/` (resolved from this file's directory; in monorepos the `next` package may not be visible from the repo root) before writing any code. Heed deprecation notices.
 
@@ -72,6 +72,8 @@ src/app/
     page.tsx            ← the whole main site
     speakers/page.tsx   ← /speakers
     sponsors/page.tsx   ← /sponsors
+    team/page.tsx       ← /team
+    schedule/page.tsx   ← /schedule
     (policy)/           ← /privacy-policy, /code-of-conduct, /ticket-terms
     scavenger/          ← /scavenger, /scavenger/profile, /scavenger/submissions
     tickets/            ← ticket wizard (see Ticket Wizard section)
@@ -107,13 +109,17 @@ components/v2/
   Hunt/      V2Hunt.tsx
   Passes/    V2Passes.tsx
   Sponsors/  V2Sponsors.tsx · V2SponsorHexes.tsx · V2SponsorsHero.tsx
-             V2SponsorWhy.tsx · V2SponsorTiers.tsx · V2SponsorCta.tsx
+             V2SponsorBoard.tsx · sponsorsData.ts
+             V2SponsorWhy.tsx · V2SponsorTiers.tsx · V2SponsorCta.tsx (parked, unused)
   Faq/       V2Faq.tsx
   Closing/   V2Closing.tsx
   Footer/    V2Footer.tsx
 
   Speakers/  V2SpeakersHero.tsx · V2Keynote.tsx · V2SpeakerGrid.tsx
-             V2SpeakerAvatar.tsx · V2SpeakerPitch.tsx · speakersData.ts
+             V2SpeakerPortrait.tsx · V2SpeakerLinks.tsx · V2SpeakersSoon.tsx
+             V2SpeakerPitch.tsx · speakersData.ts
+  Team/      V2Team.tsx · teamData.ts
+  Schedule/  V2Schedule.tsx (client) · scheduleData.ts · scheduleTime.ts (+ test)
 ```
 
 `Nav/` and `Footer/` are shared by every page, and `Reveal/` is page-agnostic;
@@ -169,6 +175,8 @@ Everything is namespaced under a `.v2` root class.
 | `closing.css` | `.v2-closing*` |
 | `footer.css` | `.v2-footer*` - brand and dates left, three link columns right, oversized wordmark as the sign-off |
 | `speakers.css` | everything on `/speakers` — `.v2-spk-*`, `.v2-keynote*`, `.v2-pitch*`, `.v2-btn--outline` |
+| `team.css` | `.v2-team__*` - the member grid on `/team` |
+| `schedule.css` | `.v2-sched*` - day tabs, legend, time grid and after hours on `/schedule` |
 
 **Design tokens** live on `.v2` in `base.css`. The palette values were lifted
 verbatim from the Figma SVG exports rather than sampled by eye — do not
@@ -331,16 +339,12 @@ cards become a normal wrapped row.
 
 ### Speakers page
 
-Everything is driven by `speakersData.ts`. `SPEAKERS` feeds the grid: an entry
-with no `announced` block renders the gradient disc, a pixel `?` and
-"Announcing this Fall"; adding `announced` swaps in their photo, name and
-role. `ANNOUNCED_KEYNOTES` feeds the cards under the unannounced keynote
-teaser — talk titles and names live in that file rather than in messages,
-since they aren't translated. `focus` sets `object-position` for headshots
-that aren't centred on the face.
-
-**Both files currently hold placeholders using a team member's photo — replace
-them before launch.**
+Everything is driven by `speakersData.ts`: `KEYNOTES` feeds the wide blue
+glass cards, `SPEAKERS` the three-column card grid. Names, roles and talk
+titles live there rather than in messages since they aren't translated; bios
+are `Localized` (see "Data-file pages" below). A speaker with no `photo` gets
+a mint tile with a faint icosahedron. With both lists empty the page falls back
+to the "Coming soon" pill (`V2SpeakersSoon`).
 
 `/speakers` is far shorter than the painting, so it only ever shows the top of
 the scene — sky into cloud — not the full sky → hills → water journey the
@@ -406,23 +410,54 @@ position against the card. The resting slots in `archive.css` are spaced and
 z-ordered for the sleeve's extra 24×26px; shrinking the sleeve without
 re-checking those will overlap the cards' brand strips.
 
-### Sub-pages: /speakers and /sponsors
+### Sub-pages: /speakers, /sponsors, /team, /schedule
 
-Both render `V2Scene` **without** `screens`, and neither mounts
+All four render `V2Scene` **without** `screens`, and none mounts
 `V2ScrollReveal` — so their sections must not carry `.v2-reveal`, or they stay
-invisible. Both open with `.v2-page-hero` (badge · title · subline · optional
-actions), which lives in `base.css` because two pages share it.
+invisible. All open with `.v2-page-hero--tight` (title · optional subline or
+link), which lives in `base.css` with the shared `.v2-subpage*` glass panel and
+group headings that `/team`, `/sponsors` and `/schedule` sit on. The designs
+are `public/assets/reference/*.png` (and the matching SVGs).
 
-The cards on both pages are `.v2-glass`, matching the landing page rather than
-the dark panels in the Figma frames for these two pages. That was a deliberate
-instruction, not an oversight — don't "restore" the green cards from the SVGs.
+The ring beside "Meet the team" in the team frame is the bubble painted into
+the backdrop, not a logo — don't add one.
 
-`/sponsors` has no confirmed sponsors, so the honeycomb slots are blank plates,
-exactly as the frame draws them. Its audience figures are read out of
-`V2.dawn` at render time rather than restated in `V2.sponsors`, so the sponsor
-pitch cannot drift from the numbers the landing page shows. The tier card
-deliberately describes only logo placement — no packages, benefits or prices
-are confirmed.
+### Data-file pages
+
+Each of the four pages is driven by one TypeScript file next to its
+components: `speakersData.ts`, `sponsorsData.ts`, `teamData.ts`,
+`scheduleData.ts`. Copy that needs both languages (roles, bios, session
+titles, room names) is a `Localized` from `src/lib/localized.ts` — a plain
+string, or `{ "en-CA", "fr-CA" }` — read with `pick(value, locale)`. Names,
+company names and talk titles stay plain strings.
+
+**All four files currently hold the Figma placeholders ("Name", "Speaker
+name", "Company name", "Keynote title"). Replace them before launch.** Emptying
+a list is safe: an empty team group or sponsor tier is skipped, and an empty
+file drops the page to a "Coming soon" pill.
+
+`/sponsors` has no confirmed sponsors. The link under its title points at the
+sponsor interest form until `SPONSORSHIP_PACKAGE_URL` is set, then at the PDF.
+
+### Schedule
+
+`V2Schedule` is a client component: day tabs, a legend, a time grid, the
+after-hours card and an "Add to calendar" `.ics` download (one event per
+conference day, not per session, so importing it doesn't flood a calendar).
+
+- **Times are Montréal wall-clock `"HH:MM"` strings**, never `Date`s. The grid
+  is CSS grid with one row per five minutes; `V2Schedule` writes each
+  session's `grid-row` from its start and end. `room: "all"` spans every
+  column (registration, breaks). Pure helpers live in `scheduleTime.ts` and
+  are unit-tested; the `.ics` writes UTC assuming EST (UTC-5), which holds
+  because the conference is in January.
+- **"Now"** (the red line, fading finished sessions, opening on today's tab)
+  comes from `useSyncExternalStore` with a `null` server snapshot, so the
+  server render and hydration never disagree and nothing sets state in an
+  effect. It only shows on the conference day being viewed.
+- **Below 760px** the grid collapses to one list. The DOM is already sorted by
+  start time, and each block shows its room name there (visually hidden but
+  still read on desktop).
 
 ### The Figma frames are placeholder copy
 

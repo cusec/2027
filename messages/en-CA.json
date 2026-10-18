@@ -57,7 +57,6 @@
             "signups": "signups",
             "export": "Download CSV"
         },
-
         "meet": {
             "eyebrow": "Nice to meet you",
             "title": "Stay in the loop.",
@@ -88,7 +87,8 @@
             "conference": "Conference",
             "hunt": "Scavenger Hunt",
             "team": "Team",
-            "cta": "Get tickets"
+            "cta": "Get tickets",
+            "schedule": "Schedule"
         },
         "hero": {
             "tagline": "Canada's longest-running student software engineering conference.",
@@ -212,7 +212,7 @@
             "tier-partner": "partner",
             "meta-title": "Sponsors",
             "badge": "CUSEC 2027 Sponsors",
-            "page-heading": "Sponsors coming soon.",
+            "page-heading": "Sponsors",
             "subline": "We will announce the companies backing CUSEC 2027 as they are confirmed. Interested in sponsoring? We would love to hear from you.",
             "cta-primary": "Become a sponsor",
             "cta-secondary": "See the tiers",
@@ -228,7 +228,11 @@
             "tier-name-silver": "Silver",
             "tier-name-partner": "Partner",
             "closing-title": "Let’s build 2027 together.",
-            "closing-cta": "Talk to our team"
+            "closing-cta": "Talk to our team",
+            "package": "View sponsorship package",
+            "tier-name-community": "Community & in-kind",
+            "logo-placeholder": "Sponsor logo",
+            "coming-soon": "Sponsors coming soon...."
         },
         "faq": {
             "heading": "Questions, answered",
@@ -272,7 +276,7 @@
         "speakers": {
             "meta-title": "Speakers",
             "badge": "Speakers revealed through the fall",
-            "heading": "The Speakers",
+            "heading": "Speakers",
             "subline": "We will reveal the 2027 lineup as speakers are confirmed - keynotes first, then the full program.",
             "keynote-eyebrow": "Opening keynote, to be announced",
             "keynote-title": "The first name drops this fall.",
@@ -296,7 +300,10 @@
             "pitch-cta": "Pitch a talk",
             "pitch-secondary": "Nominate a speaker",
             "keynote-announced-eyebrow": "Keynote announced",
-            "coming-soon": "Coming soon...."
+            "coming-soon": "Coming soon....",
+            "keynote-label": "Keynote",
+            "linkedin": "LinkedIn",
+            "website": "Company website"
         },
         "cubear": {
             "phrases": [
@@ -313,6 +320,39 @@
                 "have you seen the archive?",
                 "tell your friends"
             ]
+        },
+        "team": {
+            "meta-title": "Team",
+            "heading": "Meet the team",
+            "subline": "The students organizing CUSEC 2027.",
+            "group-co-chairs": "Co-chairs",
+            "group-head-delegates": "Head Delegates",
+            "group-events": "Events",
+            "group-speakers": "Speakers",
+            "group-sponsorship": "Sponsorship",
+            "group-logistics": "Logistics",
+            "group-technology": "Technology",
+            "linkedin": "LinkedIn",
+            "coming-soon": "Coming soon...."
+        },
+        "schedule": {
+            "meta-title": "Schedule",
+            "heading": "Schedule",
+            "subline": "January 7 to 9, 2027 in Montréal, QC. All times are Eastern Time.",
+            "days-label": "Conference day",
+            "legend-label": "Session types",
+            "category-keynote": "Keynotes",
+            "category-talk": "Talks",
+            "category-workshop": "Workshops",
+            "category-career": "Career fair",
+            "category-community": "Community",
+            "category-break": "Breaks",
+            "add-to-calendar": "Add to calendar",
+            "calendar-title": "CUSEC 2027, day {n}",
+            "now": "Current time",
+            "after-hours": "After hours",
+            "after-hours-window": "{day}, {from} to midnight",
+            "coming-soon": "Coming soon...."
         }
     },
     "TicketsPage": {

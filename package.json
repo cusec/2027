@@ -19,7 +19,7 @@
     "geist": "^1.7.2",
     "lucide-react": "^1.16.0",
     "mongoose": "^8.24.0",
-    "next": "16.2.6",
+    "next": "16.4.2",
     "next-intl": "^4.9.0",
     "posthog-js": "^1.434.2",
     "posthog-node": "^5.52.4",
@@ -32,13 +32,13 @@
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
-    "@types/node": "^20",
+    "@types/node": "^22",
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "eslint": "^9",
-    "eslint-config-next": "16.2.2",
+    "eslint-config-next": "16.4.2",
     "tailwindcss": "^4",
     "typescript": "^5",
-    "vitest": "^3.2.7"
+    "vitest": "^5.0.5"
   }
 }

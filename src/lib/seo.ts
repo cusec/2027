@@ -10,7 +10,9 @@ export const SITE_URL = "https://2027.cusec.net";
 export const PUBLIC_PATHS = [
 	"/",
 	"/speakers",
+	"/schedule",
 	"/sponsors",
+	"/team",
 	"/tickets",
 	"/code-of-conduct",
 	"/privacy-policy",

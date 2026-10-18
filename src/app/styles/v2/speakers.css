@@ -3,153 +3,126 @@
    ========================================================================== */
 
 /* --------------------------------------------------------------------------
-   Gradient avatar disc - shared by the keynote card and the grid
+   Portrait tile - shared by the keynote card and the grid
    -------------------------------------------------------------------------- */
-.v2-spk-avatar {
+.v2-spk-portrait {
     display: grid;
     place-items: center;
-    flex: 0 0 auto;
-    width: 76px;
-    height: 76px;
-    border-radius: 50%;
     overflow: hidden;
-    background: linear-gradient(
-        160deg,
-        var(--avatar-from) 0%,
-        var(--avatar-to) 100%
-    );
+    border-radius: 10px;
+    background: var(--v2-mint);
 }
 
-.v2-spk-avatar--lg {
-    width: 168px;
-    height: 168px;
-}
-
-.v2-spk-avatar img {
+.v2-spk-portrait img {
     width: 100%;
     height: 100%;
     object-fit: cover;
-    object-position: var(--avatar-focus, 50% 50%);
 }
 
-.v2-spk-avatar__mark {
-    font-size: 30px;
-    color: var(--v2-ink-deep);
+/* the stand-in while a speaker has no photo */
+.v2-spk-portrait .v2-spk-portrait__mark {
+    width: 22%;
+    height: auto;
+    opacity: 0.35;
 }
 
-.v2-spk-avatar--lg .v2-spk-avatar__mark {
-    font-size: 62px;
+/* LinkedIn / Company website ---------------------------------------------- */
+.v2-spk-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px 30px;
+    margin: 14px 0 0;
+    font-size: 12.5px;
 }
 
-/* --------------------------------------------------------------------------
-   Topic / meta chips
-   -------------------------------------------------------------------------- */
-.v2-spk-chip {
-    display: inline-flex;
-    align-items: center;
-    padding: 5px 13px;
-    border-radius: 999px;
-    border: 1px solid var(--v2-teal);
-    background: rgba(255, 255, 255, 0.7);
-    color: var(--v2-ink);
-    font-size: 10.5px;
-    letter-spacing: 0.06em;
-    white-space: nowrap;
+.v2-spk-links a {
+    color: var(--v2-ink-glass-deep);
+    text-underline-offset: 2px;
 }
 
-.v2-spk-chip--dark {
-    border-color: transparent;
-    background: var(--v2-lime);
-    color: var(--v2-ink);
+.v2-spk-links a:hover {
+    color: var(--v2-teal-deep);
 }
 
 /* --------------------------------------------------------------------------
-   Keynote teaser
+   Keynote card
    -------------------------------------------------------------------------- */
 .v2-keynote {
-    padding-bottom: 150px;
+    padding-bottom: 32px;
 }
 
-.v2-keynote__inner {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) minmax(0, 0.52fr);
-    align-items: center;
-    gap: 44px;
-}
-
-/* the keynote cards stack; the polaroid sits alongside the whole stack */
 .v2-keynote__stack {
     display: flex;
     flex-direction: column;
-    gap: 26px;
+    gap: 24px;
 }
 
 .v2-keynote__card {
     display: flex;
     align-items: center;
-    gap: 34px;
-    padding: 34px 38px;
-    border-radius: 24px;
+    gap: clamp(22px, 3vw, 40px);
+    padding: clamp(18px, 2vw, 28px);
+}
+
+.v2-keynote__portrait {
+    flex: 0 0 auto;
+    width: clamp(180px, 26vw, 296px);
+    aspect-ratio: 1;
+}
+
+.v2-keynote__body {
+    min-width: 0;
 }
 
 .v2-keynote__eyebrow {
     margin: 0 0 12px;
     font-size: 11px;
-    letter-spacing: 0.18em;
+    font-weight: 800;
+    letter-spacing: 0.08em;
     text-transform: uppercase;
-    color: var(--v2-teal-deep);
+    color: var(--v2-ink-glass-deep);
 }
 
-.v2-keynote__title {
-    margin: 0 0 14px;
-    font-size: clamp(1.35rem, 2.4vw, 1.95rem);
+.v2-keynote__name {
+    margin: 0;
+    font-size: clamp(1.5rem, 2.6vw, 2.1rem);
+    line-height: 1.25;
+    color: var(--v2-ink-glass-deep);
+}
+
+.v2-keynote__role {
+    margin: 10px 0 0;
+    font-size: 15px;
+    color: var(--v2-ink-glass);
+}
+
+.v2-keynote__talk {
+    margin: 20px 0 0;
+    font-size: clamp(1.15rem, 1.8vw, 1.45rem);
     line-height: 1.3;
     color: var(--v2-ink-glass-deep);
 }
 
-.v2-keynote__speaker {
-    margin: 0 0 4px;
-    font-size: 15px;
-    color: var(--v2-teal-deep);
-}
-
-.v2-keynote__text {
-    margin: 0;
+.v2-keynote__bio {
+    margin: 12px 0 0;
     font-size: 15px;
     line-height: 1.6;
     color: var(--v2-ink-glass);
 }
 
-.v2-keynote__abstract {
-    margin-top: 10px;
-}
-
-.v2-keynote__chips {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
-    margin: 20px 0 0;
-    padding: 0;
-    list-style: none;
-}
-
-.v2-keynote__photo {
-    width: min(340px, 100%);
-    justify-self: end;
+.v2-keynote .v2-spk-links {
+    margin-top: 22px;
 }
 
 /* --------------------------------------------------------------------------
-   The grid
+   Speaker grid
    -------------------------------------------------------------------------- */
 .v2-spk-grid {
-    padding-bottom: 150px;
+    padding-bottom: 120px;
 }
 
-/* While V2SpeakerGrid is commented out, V2SpeakersSoon renders only the head
-   pill - no card grid to leave room under. 150px + the head's margin below
-   was sized for that grid, so it reads as a big empty gap with just the pill
-   in it. Restore .v2-spk-grid's own padding-bottom once the grid comes back;
-   this modifier only touches the placeholder state. */
+/* While the lineup is unannounced V2SpeakersSoon renders only the head pill,
+   so it needs far less room under it than the grid does. */
 .v2-spk-grid--soon {
     padding-bottom: 64px;
 }
@@ -157,11 +130,6 @@
 .v2-spk-grid__head {
     display: flex;
     justify-content: center;
-    margin-bottom: 52px;
-}
-
-.v2-spk-grid--soon .v2-spk-grid__head {
-    margin-bottom: 0;
 }
 
 .v2-spk-grid__head .v2-heading-pill {
@@ -173,71 +141,62 @@
 
 .v2-spk-grid__list {
     display: grid;
-    grid-template-columns: repeat(4, minmax(0, 1fr));
-    gap: 26px;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 24px;
     margin: 0;
     padding: 0;
     list-style: none;
 }
 
-.v2-spk-grid__list > li:nth-child(even) {
-    margin-top: 30px;
-}
-
 .v2-spk-card {
     display: flex;
     flex-direction: column;
-    align-items: center;
-    gap: 12px;
-    padding: 24px 20px 20px;
+    min-width: 0;
+    padding: 24px;
     border-radius: 14px;
-    background: rgba(253, 255, 254, 0.92);
-    box-shadow: 0 14px 30px rgba(11, 26, 58, 0.22);
+    background: rgba(244, 255, 252, 0.92);
+    box-shadow: 0 14px 30px -6px rgba(11, 26, 58, 0.24);
+    color: var(--v2-ink-glass);
     transition: transform 200ms ease, box-shadow 200ms ease;
 }
 
 .v2-spk-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 20px 38px rgba(11, 26, 58, 0.3);
+    transform: translateY(-4px);
+    box-shadow: 0 20px 38px -6px rgba(11, 26, 58, 0.3);
+}
+
+.v2-spk-card__portrait {
+    width: 100%;
+    aspect-ratio: 330 / 232;
+    margin-bottom: 20px;
 }
 
 .v2-spk-card__name {
     margin: 0;
     font-size: 15px;
+    font-weight: 800;
     line-height: 1.3;
-    text-align: center;
-    color: var(--v2-ink-deep);
+    color: var(--v2-ink-glass-deep);
 }
 
 .v2-spk-card__role {
-    margin: -6px 0 0;
+    margin: 8px 0 0;
     font-size: 12px;
     line-height: 1.4;
-    text-align: center;
-    color: var(--v2-slate);
 }
 
-/*
- * Talk title and description. Neither is clamped, so a long abstract simply
- * makes its card taller and the grid row stretches to match. Keep abstracts to
- * roughly two sentences (see the speakers checklist) rather than truncating
- * copy the speaker approved.
- */
-.v2-spk-card__talk {
-    margin: 2px 0 0;
+/* Not clamped, so a long bio makes its card taller and the row stretches to
+   match. Keep bios to about two sentences rather than truncating copy the
+   speaker approved. */
+.v2-spk-card__bio {
+    margin: 10px 0 0;
     font-size: 12.5px;
-    font-weight: 700;
-    line-height: 1.4;
-    text-align: center;
-    color: var(--v2-teal-deep);
+    line-height: 1.55;
 }
 
-.v2-spk-card__abstract {
-    margin: -4px 0 0;
-    font-size: 12px;
-    line-height: 1.55;
-    text-align: center;
-    color: var(--v2-slate);
+.v2-spk-card .v2-spk-links {
+    margin-top: auto;
+    padding-top: 14px;
 }
 
 /* --------------------------------------------------------------------------
@@ -290,40 +249,14 @@
 /* --------------------------------------------------------------------------
    Responsive
    -------------------------------------------------------------------------- */
-@media (max-width: 1080px) {
-    .v2-spk-grid__list {
-        grid-template-columns: repeat(3, minmax(0, 1fr));
-    }
-}
-
 @media (max-width: 900px) {
-    .v2-keynote__inner {
-        grid-template-columns: 1fr;
-        gap: 30px;
-    }
-
     .v2-keynote__card {
         flex-direction: column;
-        align-items: flex-start;
-        gap: 22px;
-        padding: 26px;
+        align-items: stretch;
     }
 
-    .v2-keynote__photo {
-        justify-self: center;
-    }
-
-    .v2-keynote,
-    .v2-spk-grid,
-    .v2-pitch {
-        padding-bottom: 100px;
-    }
-
-    /* Same source order as .v2-spk-grid above, so without this the mobile
-       rule would win the specificity tie and undo the tighter placeholder
-       spacing set outside this media query. */
-    .v2-spk-grid--soon {
-        padding-bottom: 48px;
+    .v2-keynote__portrait {
+        width: min(100%, 296px);
     }
 
     .v2-spk-grid__list {
@@ -331,8 +264,15 @@
         gap: 16px;
     }
 
-    .v2-spk-grid__list > li:nth-child(even) {
-        margin-top: 0;
+    .v2-spk-grid,
+    .v2-pitch {
+        padding-bottom: 100px;
+    }
+
+    /* same source order as .v2-spk-grid above, so restate it or the mobile
+       rule wins the specificity tie */
+    .v2-spk-grid--soon {
+        padding-bottom: 48px;
     }
 
     .v2-pitch__card {
@@ -340,17 +280,8 @@
     }
 }
 
-@media (max-width: 520px) {
+@media (max-width: 560px) {
     .v2-spk-grid__list {
         grid-template-columns: 1fr;
-    }
-
-    .v2-spk-avatar--lg {
-        width: 120px;
-        height: 120px;
-    }
-
-    .v2-spk-avatar--lg .v2-spk-avatar__mark {
-        font-size: 44px;
     }
 }

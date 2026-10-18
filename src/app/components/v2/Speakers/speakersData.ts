@@ -1,54 +1,55 @@
-export type Speaker = {
-	/** message key under V2.speakers for the topic chip */
-	topic: string;
-	/** avatar circle gradient, sampled from the Figma frame */
-	from: string;
-	to: string;
-	/**
-	 * Set once a speaker is announced. While undefined the card shows the
-	 * "?" placeholder and "Announcing this Fall", which is the state the whole
-	 * grid is in until the lineup drops.
-	 */
-	announced?: {
-		name: string;
-		role: string;
-		/**
-		 * Talk title and description. Both optional because names are usually
-		 * confirmed before the talk is, so a speaker can go live with just a
-		 * name and role and gain their talk later.
-		 */
-		talk?: string;
-		/** one or two sentences on what the talk covers */
-		abstract?: string;
-		photo: string;
-		/** object-position for the photo, when the face isn't dead centre */
-		focus?: string;
-	};
-};
+import type { Localized } from "@/lib/localized";
 
-export type AnnouncedKeynote = {
+export type Speaker = {
 	name: string;
+	/** "Role · Company". Job titles and company names stay in their own language */
 	role: string;
-	/** talk title. A proper noun, so it lives here rather than in messages */
-	talk: string;
-	/** a short paragraph on what the talk covers */
-	abstract?: string;
-	photo: string;
+	/** one or two sentences on who they are and what they will share */
+	bio?: Localized;
+	/** path under public/. Portrait crops sit best in the cards */
+	photo?: string;
 	/** object-position for the photo, when the face isn't dead centre */
 	focus?: string;
-	from: string;
-	to: string;
+	linkedin?: string;
+	website?: string;
 };
 
-export const ANNOUNCED_KEYNOTES: AnnouncedKeynote[] = [];
+export type Keynote = Speaker & {
+	/** talk title. A proper noun, so it lives here rather than in messages */
+	talk?: string;
+};
 
-export const SPEAKERS: Speaker[] = [
-	{ topic: "ai-ml", from: "#B5E054", to: "#89C24C" },
-	{ topic: "systems", from: "#9FF4DB", to: "#60D3B3" },
-	{ topic: "web", from: "#94BBEA", to: "#78ADF3" },
-	{ topic: "career", from: "#F6E280", to: "#EBCA56" },
-	{ topic: "security", from: "#A5F2E8", to: "#7CCCEE" },
-	{ topic: "design", from: "#ADE366", to: "#64CF99" },
-	{ topic: "oss", from: "#A1CBE8", to: "#AEF2E7" },
-	{ topic: "grad", from: "#EEE981", to: "#CDE960" },
+/*
+ * PLACEHOLDER - both lists mirror the Figma frame ("Keynote speaker",
+ * "Speaker name") so the page has its real shape. Replace them with the
+ * confirmed lineup before launch.
+ *
+ * Set KEYNOTES to [] to drop the keynote card, and SPEAKERS to [] to drop the
+ * grid. With both empty the page falls back to "Coming soon".
+ */
+export const KEYNOTES: Keynote[] = [
+	{
+		name: "Keynote speaker",
+		role: "Role · Company",
+		talk: "Keynote talk title",
+		bio: {
+			"en-CA":
+				"A short introduction to the keynote speaker, their work, and what they will share at CUSEC.",
+			"fr-CA":
+				"Une courte présentation de la personne conférencière, de son travail et de ce qu’elle partagera à CUSEC.",
+		},
+		linkedin: "https://www.linkedin.com/company/cusec/",
+		website: "https://www.cusec.net",
+	},
 ];
+
+export const SPEAKERS: Speaker[] = Array.from({ length: 9 }, () => ({
+	name: "Speaker name",
+	role: "Role · Company",
+	bio: {
+		"en-CA": "A short introduction to the speaker and their work.",
+		"fr-CA": "Une courte présentation de la personne conférencière et de son travail.",
+	},
+	linkedin: "https://www.linkedin.com/company/cusec/",
+	website: "https://www.cusec.net",
+}));

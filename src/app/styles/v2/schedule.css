@@ -1,0 +1,454 @@
+/* ==========================================================================
+   v2 - /schedule
+   Day tabs, legend, then a time grid: column 1 is the hour axis, one column
+   per room after it, and one grid row per five minutes, so a session's
+   grid-row is its start and end time (written inline by V2Schedule).
+   ========================================================================== */
+
+.v2-sched {
+    --sched-axis: 46px;
+    --sched-gap: 10px;
+    /* one five-minute row; an hour is twelve of these */
+    --sched-slot: 10px;
+}
+
+.v2-sched__panel {
+    padding: clamp(16px, 2vw, 24px);
+}
+
+/* --------------------------------------------------------------------------
+   Day tabs
+   -------------------------------------------------------------------------- */
+.v2-sched__days {
+    display: grid;
+    grid-auto-columns: minmax(0, 1fr);
+    grid-auto-flow: column;
+    gap: 12px;
+}
+
+.v2-sched__day {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 16px;
+    border: 0;
+    border-radius: 12px;
+    background: rgba(253, 255, 254, 0.92);
+    box-shadow: 0 8px 18px -10px rgba(10, 36, 23, 0.4);
+    color: var(--v2-ink-glass-deep);
+    font: inherit;
+    text-align: left;
+    cursor: var(--cursor-hand);
+    transition: background-color 160ms ease, transform 160ms ease;
+}
+
+.v2-sched__day:hover {
+    transform: translateY(-2px);
+}
+
+.v2-sched__day.is-active {
+    background: var(--v2-lime);
+}
+
+.v2-sched__day:focus-visible,
+.v2-sched__calendar:focus-visible {
+    outline: 3px solid var(--v2-blue);
+    outline-offset: 2px;
+}
+
+.v2-sched__day-num {
+    font-size: 30px;
+    line-height: 1;
+    color: var(--v2-blue);
+}
+
+.v2-sched__day.is-active .v2-sched__day-num {
+    color: var(--v2-ink-glass-deep);
+}
+
+.v2-sched__day-name {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+}
+
+.v2-sched__day-name .v2-pixel {
+    font-size: 17px;
+    line-height: 1.2;
+}
+
+.v2-sched__day-name small {
+    font-size: 11px;
+    color: var(--v2-ink-glass);
+}
+
+.v2-sched__day-hours {
+    margin-left: auto;
+    font-size: 11.5px;
+    white-space: nowrap;
+}
+
+/* --------------------------------------------------------------------------
+   Legend + add to calendar
+   -------------------------------------------------------------------------- */
+.v2-sched__toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px 20px;
+    margin: 16px 0 20px;
+}
+
+.v2-sched__legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px 16px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    font-size: 12px;
+    color: var(--v2-ink-glass-deep);
+}
+
+.v2-sched__legend li {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.v2-sched__swatch {
+    width: 11px;
+    height: 11px;
+    border-radius: 3px;
+}
+
+.v2-sched__calendar {
+    padding: 12px 22px;
+    border: 0;
+    border-radius: 999px;
+    background: rgba(253, 255, 254, 0.94);
+    box-shadow: 0 8px 18px -10px rgba(10, 36, 23, 0.45);
+    color: var(--v2-ink-glass-deep);
+    font-size: 14px;
+    cursor: var(--cursor-hand);
+    transition: transform 160ms ease;
+}
+
+.v2-sched__calendar:hover {
+    transform: translateY(-2px);
+}
+
+/* --------------------------------------------------------------------------
+   Category colours - shared by the legend swatches and the session blocks
+   -------------------------------------------------------------------------- */
+.v2-sched__swatch--keynote,
+.v2-sched__session--keynote {
+    background: var(--v2-lime);
+}
+
+.v2-sched__swatch--talk,
+.v2-sched__session--talk {
+    background: rgba(253, 255, 254, 0.94);
+}
+
+.v2-sched__swatch--workshop,
+.v2-sched__session--workshop {
+    background: var(--v2-teal);
+}
+
+.v2-sched__swatch--career,
+.v2-sched__session--career {
+    background: var(--v2-blue);
+    color: var(--v2-white);
+}
+
+.v2-sched__swatch--community,
+.v2-sched__session--community {
+    background: var(--v2-gold);
+}
+
+.v2-sched__swatch--break,
+.v2-sched__session--break {
+    background: rgba(255, 255, 255, 0.14);
+    border: 1px dashed rgba(31, 59, 44, 0.4);
+    box-shadow: none;
+}
+
+.v2-sched__swatch--talk {
+    box-shadow: inset 0 0 0 1px rgba(31, 59, 44, 0.18);
+}
+
+/* --------------------------------------------------------------------------
+   The grid
+   -------------------------------------------------------------------------- */
+.v2-sched__grid {
+    position: relative;
+    display: grid;
+    grid-template-columns: var(--sched-axis) repeat(var(--rooms), minmax(0, 1fr));
+    grid-template-rows: auto repeat(var(--rows), var(--sched-slot));
+    column-gap: var(--sched-gap);
+}
+
+.v2-sched__room {
+    margin-bottom: 14px;
+    padding: 10px 12px;
+    border-radius: 10px;
+    background: rgba(253, 255, 254, 0.94);
+    box-shadow: 0 6px 14px -10px rgba(10, 36, 23, 0.4);
+    font-size: 13px;
+    font-weight: 800;
+    color: var(--v2-ink-glass-deep);
+}
+
+.v2-sched__track {
+    border-radius: 10px;
+    background: rgba(255, 255, 255, 0.22);
+    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.35);
+}
+
+.v2-sched__hour {
+    align-self: start;
+    transform: translateY(-50%);
+    font-size: 10.5px;
+    text-align: right;
+    white-space: nowrap;
+    color: var(--v2-ink-glass);
+}
+
+/* The first label sits at the top edge of the tracks, not across it. The hour
+   labels are the grid's first spans, so first-of-type is the earliest hour. */
+.v2-sched__hour:first-of-type {
+    transform: none;
+}
+
+.v2-sched__line {
+    align-self: start;
+    z-index: 0;
+    border-top: 1px solid rgba(31, 59, 44, 0.09);
+}
+
+.v2-sched__session {
+    z-index: 1;
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    min-width: 0;
+    min-height: 0;
+    margin: 3px;
+    padding: 8px 10px;
+    overflow: hidden;
+    border-radius: 8px;
+    box-shadow: 0 6px 14px -8px rgba(10, 36, 23, 0.35);
+    color: var(--v2-ink-glass-deep);
+    transition: opacity 300ms ease;
+}
+
+.v2-sched__session.is-compact {
+    padding-block: 6px;
+}
+
+/* a session that spans every room sits under the per-room ones */
+.v2-sched__session--break {
+    z-index: 0;
+}
+
+.v2-sched__session.is-past {
+    opacity: 0.55;
+}
+
+.v2-sched__session-text {
+    flex: 1 1 auto;
+    min-width: 0;
+}
+
+.v2-sched__session h3 {
+    margin: 0 0 2px;
+    font-size: 13px;
+    font-weight: 800;
+    line-height: 1.25;
+}
+
+.v2-sched__session p {
+    margin: 0;
+    font-size: 11px;
+    line-height: 1.35;
+    opacity: 0.85;
+}
+
+/* Only the stacked phone layout shows the room in each block; the grid's
+   column says it everywhere else. Kept readable to screen readers. */
+.v2-sched__session-room {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+}
+
+.v2-sched__portrait {
+    flex: 0 0 auto;
+    width: 40px;
+    height: 40px;
+    overflow: hidden;
+    border-radius: 8px;
+    background: var(--v2-mint);
+}
+
+.v2-sched__portrait img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+/* The current-time marker, only on the conference day being viewed. It sits
+   on the five-minute row it falls in, nudged down by the minutes past it. */
+.v2-sched__now {
+    z-index: 2;
+    position: relative;
+    align-self: start;
+    height: 0;
+    margin-top: calc(var(--now-offset) * var(--sched-slot));
+    border-top: 2px solid var(--v2-red);
+    margin-left: calc(var(--sched-axis) + var(--sched-gap) - 6px);
+    pointer-events: none;
+}
+
+.v2-sched__now::before {
+    position: absolute;
+    top: -6px;
+    left: 0;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: var(--v2-red);
+    box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.9);
+    content: "";
+}
+
+.v2-sched__now-label {
+    position: absolute;
+    top: -10px;
+    right: calc(100% + 8px);
+    padding: 2px 7px;
+    border-radius: 999px;
+    background: var(--v2-red);
+    color: var(--v2-white-pure);
+    font-size: 10.5px;
+    font-weight: 800;
+    white-space: nowrap;
+}
+
+/* --------------------------------------------------------------------------
+   After hours
+   -------------------------------------------------------------------------- */
+.v2-sched__after {
+    margin-top: 16px;
+    padding: clamp(18px, 2vw, 24px);
+    border-radius: 24px;
+    background: rgba(14, 35, 24, 0.92);
+    box-shadow: var(--v2-shadow-card);
+    color: var(--v2-white);
+}
+
+.v2-sched__after-head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 6px 20px;
+    padding-bottom: 14px;
+    border-bottom: 1px solid rgba(244, 255, 252, 0.12);
+}
+
+.v2-sched__after-head h2 {
+    margin: 0;
+    font-size: clamp(1.2rem, 2vw, 1.5rem);
+}
+
+.v2-sched__after-head p {
+    margin: 0;
+    font-size: 13px;
+    color: var(--v2-mint);
+}
+
+.v2-sched__after-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+    gap: 10px;
+    margin: 14px 0 0;
+    padding: 0 0 0 calc(var(--sched-axis) + var(--sched-gap));
+    list-style: none;
+}
+
+.v2-sched__after-list li {
+    padding: 12px 14px;
+    border-radius: 10px;
+    background: rgba(244, 255, 252, 0.07);
+}
+
+.v2-sched__after-list h3 {
+    margin: 0 0 4px;
+    font-size: 13px;
+    font-weight: 800;
+}
+
+.v2-sched__after-list p {
+    margin: 0;
+    font-size: 11.5px;
+    color: var(--v2-mint);
+}
+
+.v2-sched__after-time {
+    margin-right: 8px;
+    color: var(--v2-gold);
+}
+
+/* --------------------------------------------------------------------------
+   Phones: the timeline would leave each room a sliver, so it collapses into
+   one list in start order (the DOM is already sorted that way), each block
+   naming its own room.
+   -------------------------------------------------------------------------- */
+@media (max-width: 760px) {
+    .v2-sched__days {
+        grid-auto-flow: row;
+    }
+
+    .v2-sched__grid {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    .v2-sched__room,
+    .v2-sched__track,
+    .v2-sched__hour,
+    .v2-sched__line,
+    .v2-sched__now {
+        display: none;
+    }
+
+    .v2-sched__session {
+        margin: 0;
+        padding: 10px 12px;
+    }
+
+    .v2-sched__session.is-compact {
+        padding-block: 10px;
+    }
+
+    .v2-sched__session-room {
+        position: static;
+        width: auto;
+        height: auto;
+        overflow: visible;
+        clip: auto;
+        white-space: normal;
+        font-weight: 700;
+    }
+
+    .v2-sched__after-list {
+        padding-left: 0;
+    }
+}
