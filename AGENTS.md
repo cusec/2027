@@ -96,6 +96,8 @@ by `[locale]/page.tsx`. All components are prefixed `V2`; only `V2Nav`,
 ```
 components/v2/
   Nav/       V2Nav.tsx · V2LocaleSwitcher.tsx
+  Play/      V2Arcade.tsx · Cabinet.tsx · view.ts · modes.ts
+             views/{index,rally,pong,breakout,match3}.ts
   Scene/     V2Scene.tsx
   Reveal/    V2ScrollReveal.tsx
   Hero/      V2Hero.tsx · V2Wordmark.tsx
@@ -487,6 +489,33 @@ There is no in-app motion toggle. `base.css` honours
 - **French copy** is a first-pass translation and wants a native review.
 
 ---
+
+# Arcade hub (/play)
+
+The old single-game Cubear Rally grew into an **arcade hub**: a wall of cabinets
+where each mode adapts one of the team's old course-game repos, restyled with
+Cubear art. Modes live or die by one constraint:
+
+- **Every mode is a pure deterministic sim.** At publish time the server replays
+  the run's recorded inputs from the seed and must land on the exact ending the
+  browser reported. Sims may only use seed-driven integer RNG and plain
+  arithmetic. `src/lib/arcade/types.ts` holds the contract, the xorshift32 RNG
+  and `replayTranscript()` — the shared core of the browser loop and the
+  server verifier. Breaking determinism = breaking ranked scores.
+- **Bump `version` on any sim change** that alters endings; outstanding ranked
+  runs of the old version then 409 on publish instead of misverifying.
+- Files: sims live in `src/lib/arcade/games/{rally,pong,breakout,match3}.ts`
+  (the rally sim is the untouched original math, wrapped — do not port it);
+  the shared server-verify + score docs live in `src/lib/arcade/server.ts`
+  (`src/lib/rally/server.ts` is a facade, keep importing there for tests);
+  canvases render through `Play/views/*` and are driven by
+  `Play/Cabinet.tsx` (one fixed-timestep loop, transcript, publication flow).
+- The rally pre-arcade transcript format equals the arcade event format
+  (`[tick, ...tuple]`), so old runs still verify under `GAMES.rally`.
+- SFX are synthesized (WebAudio) in `src/lib/arcade/audio.ts`, queued from the
+  sim's per-step `state.sfx` events and cleared each step, hence replay-safe.
+- Modes not yet ported (platform run, dungeon crawl, bubble loft, island tour)
+  render as "coming soon" tiles from `modes.ts`; `isPlayable()` gates them.
 
 # Scavenger Hunt Subsystem
 

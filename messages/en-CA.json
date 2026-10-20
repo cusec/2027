@@ -1,5 +1,106 @@
 {
     "V2": {
+        "play": {
+            "eyebrow": "CUSEC arcade",
+            "title": "Cubear Rally",
+            "subline": "The CUSEC arcade wall. Pick a cabinet, chase a verified score.",
+            "back": "Back to the arcade",
+            "tap-hint": "Tap to play · Space works too",
+            "sfx-on": "Sound on",
+            "sfx-off": "Sound off",
+            "soon": "Coming this winter",
+            "score": "Rally",
+            "best": "Your best",
+            "music-on": "Music on",
+            "music-off": "Music off",
+            "loading": "Loading…",
+            "starting": "Preparing your game…",
+            "paused": "Take a breather",
+            "resume": "Resume",
+            "again": "Play again",
+            "start": "Start game",
+            "practice": "Play practice",
+            "practice-label": "Practice · scores stay off the board",
+            "start-failed": "Ranking is unavailable. Retry or play practice.",
+            "canvas-fallback": "Your browser needs canvas support to play.",
+            "left": "Move left",
+            "right": "Move right",
+            "pause": "Pause",
+            "publication-saving": "Verifying your game…",
+            "publication-saved": "Game verified. Your best score is saved.",
+            "publication-failed": "Your score hasn’t saved. Retry before starting another game.",
+            "publication-rejected": "This game couldn’t be verified. Start a new one.",
+            "retry-score": "Retry saving score",
+            "how-label": "The cabinet",
+            "public-notice": "Starting a ranked game creates a random Cubear nickname. Your best verified score appears publicly. No sign-in needed.",
+            "leader-label": "The club",
+            "leader-title": "Top scores",
+            "leader-failed": "The leaderboard is unavailable. Refresh to try again.",
+            "leader-empty": "The board is waiting for its first game. Make it yours.",
+            "refresh": "Refresh leaderboard",
+            "stats": {
+                "returns": "Returns",
+                "points": "Points",
+                "hats": "Hats",
+                "hits": "Hits",
+                "whiffs": "Swings miss",
+                "time": "Clock"
+            },
+            "modes": {
+                "rally": { "title": "Bubble Rally", "tagline": "The original keep-up. One miss ends it." },
+                "flappy": { "title": "Flappy Cubear", "tagline": "Tap to flap through the pipe gaps." },
+                "stack": { "title": "Stack the Hat", "tagline": "Drop hats dead-centre and grow the tower." },
+                "whack": { "title": "Whack-a-Delegate", "tagline": "Pop the hatted bears, spare the visitors." },
+                "dash": { "title": "Cubear Dash", "tagline": "Endless runner. Jump and slide, in the works." },
+                "jumper": { "title": "Cubear Jumper", "tagline": "Doodle-style climb, in the works." },
+                "climber": { "title": "Cubear Climber", "tagline": "Icy Tower wall-jumps, in the works." },
+                "says": { "title": "Cubear Says", "tagline": "Simon-style memory, in the works." },
+                "memory": { "title": "Memory Match", "tagline": "Flip and match CUSEC icons, in the works." },
+                "snake": { "title": "Cubear Snake", "tagline": "Retro snake with hat snacks, in the works." },
+                "minesweeper": { "title": "Minesweeper", "tagline": "Classic grid logic, in the works." },
+                "merge": { "title": "CUSEC Merge", "tagline": "2048 with mascot logos, in the works." },
+                "dle": { "title": "CUSEC-dle", "tagline": "Tech-conference Wordle, in the works." },
+                "pet": { "title": "Cubear Pet", "tagline": "A Tamagotchi Cubear, in the works." }
+            },
+            "games": {
+                "rally": {
+                    "ready": "Keep the bubble in play",
+                    "result": "{score, plural, one {# return. Nice catch!} other {# returns. Nice rally!}}",
+                    "arena": "Cubear Rally playfield. Use arrow keys or A and D to move; Escape pauses.",
+                    "how-eyebrow": "Meet your paddle",
+                    "how-title": "Catch. Bounce. Repeat.",
+                    "instructions": "Move Cubear with ← → or A / D. On a phone, drag across the arena or hold the arrow buttons. Press Escape to pause.",
+                    "rules": "Each return earns one point. The bubble speeds up every five returns. One miss ends your rally; a perfect run lasts three minutes."
+                },
+                "flappy": {
+                    "ready": "Flap through the gaps",
+                    "result": "{score, plural, one {# pipe. The pipes got you.} other {# pipes through. The pipes got you eventually.}}",
+                    "arena": "Flappy Cubear court. Tap anywhere or press Space to flap; Escape pauses.",
+                    "how-eyebrow": "One tap per flap",
+                    "how-title": "Flap. Thread. Repeat.",
+                    "instructions": "Tap the court, or press Space / ↑, to flap up. Pipes scroll in from the right; each pair you clear banks a point. Escape pauses.",
+                    "rules": "Gravity never sleeps: every flap lifts, every untapped tick falls. Flap through the green gaps; one pipe or the floor ends the run. The gap you clear banks one point."
+                },
+                "stack": {
+                    "ready": "Dead-centre drops build the tallest hat",
+                    "result": "{score, plural, one {# hat. The tower leaned too far.} other {# hats. The tower remembers every near-miss.}}",
+                    "arena": "Stack the Hat board. Tap anywhere or press Space to drop the hat; Escape pauses.",
+                    "how-eyebrow": "Sway, drop, repeat",
+                    "how-title": "Stack. Drift. Repeat.",
+                    "instructions": "The hat sways across the sky; tap or press Space to drop it onto the tower. Overhang is sliced away, so every drop nudges the plate.",
+                    "rules": "Each hat banks one, dead-centre drops bank two and heal the plate a touch. A drop that misses the plate entirely ends the run; eight minutes of tower is a lifetime."
+                },
+                "whack": {
+                    "ready": "Pop the bears, spare the guests",
+                    "result": "{score, plural, one {# bonk in a minute.} other {# bonks in a minute.}}",
+                    "arena": "Whack-a-Delegate booth. Tap a popping Cubear's hole; Escape pauses.",
+                    "how-eyebrow": "Swing at the hatted ones",
+                    "how-title": "Pop. Smile. Repeat.",
+                    "instructions": "Tap a hole (or the number keys 1-9) when the hatted Cubear pops. Visitors without a hat cost you a point: let them duck. Escape pauses.",
+                    "rules": "One minute on the clock. Each hatted bear banks a point; a tapped visitor costs one; three swings at empty holes end the run early. Bears pop faster as your score climbs."
+                }
+            }
+        },
         "adminDashboard": {
             "report-title": "MTL participant report",
             "report-body": "For the MTL Business Events contract: one row per ticket with city, province, country and postal code. No names or emails. The working sheet shows which tickets still need an account or a postal code.",
@@ -79,6 +180,7 @@
             "missing-body": "Please scan the QR code at the event again."
         },
         "nav": {
+            "play": "Play",
             "aria-label": "Main",
             "menu": "Menu",
             "language": "Language",
@@ -248,6 +350,7 @@
             "cta": "Get tickets"
         },
         "footer": {
+            "play": "Play",
             "about": "About",
             "speakers": "Speakers",
             "schedule": "Schedule",

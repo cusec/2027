@@ -1,5 +1,106 @@
 {
     "V2": {
+        "play": {
+            "eyebrow": "Arcade CUSEC",
+            "title": "Cubear Rally",
+            "subline": "Le mur d’arcade du CUSEC. Choisis une borne et vise un score vérifié.",
+            "back": "Retour à l’arcade",
+            "tap-hint": "Touche pour jouer · Espace marche aussi",
+            "sfx-on": "Activer le son",
+            "sfx-off": "Couper le son",
+            "soon": "Bientôt",
+            "score": "Échanges",
+            "best": "Ton record",
+            "music-on": "Activer la musique",
+            "music-off": "Couper la musique",
+            "loading": "Chargement…",
+            "starting": "Préparation de ta partie…",
+            "paused": "Une petite pause",
+            "resume": "Reprendre",
+            "again": "Rejouer",
+            "start": "Jouer",
+            "practice": "S’entraîner",
+            "practice-label": "Entraînement · sans classement",
+            "start-failed": "Le classement est indisponible. Réessaie ou joue en entraînement.",
+            "canvas-fallback": "Ton navigateur doit prendre en charge canvas pour jouer.",
+            "left": "Aller à gauche",
+            "right": "Aller à droite",
+            "pause": "Pause",
+            "publication-saving": "Vérification de ta partie…",
+            "publication-saved": "Partie vérifiée. Ton meilleur score est enregistré.",
+            "publication-failed": "Ton score n’a pas été enregistré. Réessaie avant de rejouer.",
+            "publication-rejected": "Cette partie n’a pas pu être vérifiée. Commence une nouvelle partie.",
+            "retry-score": "Réessayer l’enregistrement",
+            "how-label": "La borne",
+            "public-notice": "Une partie classée crée un pseudo Cubear aléatoire. Ton meilleur score vérifié apparaît publiquement. Aucune connexion requise.",
+            "leader-label": "Le club",
+            "leader-title": "Meilleurs scores",
+            "leader-failed": "Le classement est indisponible. Actualise pour réessayer.",
+            "leader-empty": "Le classement attend sa première partie. À toi de jouer !",
+            "refresh": "Actualiser le classement",
+            "stats": {
+                "returns": "Renvois",
+                "points": "Points",
+                "hats": "Chapeaux",
+                "hits": "Coups",
+                "whiffs": "Coups ratés",
+                "time": "Chrono"
+            },
+            "modes": {
+                "rally": { "title": "Rallye à bulles", "tagline": "L’original : garde la bulle en jeu." },
+                "flappy": { "title": "Flappy Cubear", "tagline": "Touche pour voiler entre les tuyaux." },
+                "stack": { "title": "Empile-chapeaux", "tagline": "Lâche les chapeaux pile au centre et monte la tour." },
+                "whack": { "title": "Frappe-délégués", "tagline": "Sors les ours coiffés, épargne les visiteurs." },
+                "dash": { "title": "Course Cubear", "tagline": "Coureur infini, en chantier." },
+                "jumper": { "title": "Saute Cubear", "tagline": "Grimpe à la Doodle Jump, en chantier." },
+                "climber": { "title": "Grimpe Cubear", "tagline": "Murs d’Icy Tower, en chantier." },
+                "says": { "title": "Cubear dit", "tagline": "Mémoire façon Simon, en chantier." },
+                "memory": { "title": "Paires CUSEC", "tagline": "Retourne et associe, en chantier." },
+                "snake": { "title": "Cubear Serpent", "tagline": "Serpent rétro aux chapeaux, en chantier." },
+                "minesweeper": { "title": "Démineur", "tagline": "Logique de grille classique, en chantier." },
+                "merge": { "title": "Fusion CUSEC", "tagline": "2048 aux mascottes, en chantier." },
+                "dle": { "title": "CUSEC-dle", "tagline": "Wordle tech-congès, en chantier." },
+                "pet": { "title": "Cubear Tamagotchi", "tagline": "Nourris ton Cubear, en chantier." }
+            },
+            "games": {
+                "rally": {
+                    "ready": "Garde la bulle en jeu",
+                    "result": "{score, plural, one {# renvoi. Bien joué !} other {# renvois. Belle partie !}}",
+                    "arena": "Terrain Cubear Rally. Utilise les flèches ou A et D pour bouger; Échap met en pause.",
+                    "how-eyebrow": "Voici ta raquette",
+                    "how-title": "Attrape. Renvoie. Recommence.",
+                    "instructions": "Déplace Cubear avec ← → ou A / D. Sur téléphone, glisse dans l’arène ou maintiens les boutons fléchés. Échap met en pause.",
+                    "rules": "Chaque renvoi vaut un point. La bulle accélère tous les cinq renvois. Un raté termine la partie; une partie parfaite dure trois minutes."
+                },
+                "flappy": {
+                    "ready": "Voile entre les écarts",
+                    "result": "{score, plural, one {# tuyau. Les tuyaux ont eu ta peau.} other {# tuyaux franchis. Les tuyaux ont fini par l’emporter.}}",
+                    "arena": "Court Flappy Cubear. Touche n’importe où ou appuie sur Espace pour voiler; Échap met en pause.",
+                    "how-eyebrow": "Un appui = un voile",
+                    "how-title": "Voile. File. Recommence.",
+                    "instructions": "Touche le terrain, ou appuie sur Espace / ↑, pour monter. Les tuyaux défilent depuis la droite; chaque paire franchie banque un point. Échap met en pause.",
+                    "rules": "La gravité ne dort jamais : chaque appui monte, chaque instant sans appui descend. File entre les écarts verts; un tuyau ou le sol met fin à la partie. Chaque écart franchi banque un point."
+                },
+                "stack": {
+                    "ready": "Les lâchés pile au centre bâtissent le plus haut chapeau",
+                    "result": "{score, plural, one {# chapeau. La tour a penché trop loin.} other {# chapeaux. La tour se souvient de chaque écart.}}",
+                    "arena": "Plateau Empile-chapeaux. Touche n’importe où ou appuie sur Espace pour lâcher le chapeau; Échap met en pause.",
+                    "how-eyebrow": "Balanse, lâche, recommence",
+                    "how-title": "Empile. Dérive. Recommence.",
+                    "instructions": "Le chapeau balançoit dans le ciel; touche ou appuie sur Espace pour le lâcher sur la tour. Le surplus est tranché, chaque lâché nudge la plaque.",
+                    "rules": "Chaque chapeau banque un; les lâchés au centre en banquent deux et réparent un peu la plaque. Un chapeau qui rate complètement la plaque termine la partie; huit minutes de tour, c’est une vie."
+                },
+                "whack": {
+                    "ready": "Sors les ours, épargne les invités",
+                    "result": "{score, plural, one {# bonk en une minute.} other {# bonks en une minute.}}",
+                    "arena": "Kiosque Frappe-délégués. Touche le trou d’un Cubear surgissant; Échap met en pause.",
+                    "how-eyebrow": "Frappe les coiffés",
+                    "how-title": "Bonk. Souris. Recommence.",
+                    "instructions": "Touche un trou (ou les touches 1 à 9) quand le Cubear coiffé surgit. Les visiteurs sans chapeau coûtent un point : laisse-les rentrer. Échap met en pause.",
+                    "rules": "Une minute au chrono. Chaque ours coiffé banque un point; un visiteur frappé en coûte un; trois coups dans le vide terminent la partie plus tôt. Les ours surgissent plus vite quand ton score grimpe."
+                }
+            }
+        },
         "adminDashboard": {
             "report-title": "Rapport des participants MTL",
             "report-body": "Pour le contrat avec les événements d’affaires de Montréal : une ligne par billet avec ville, province, pays et code postal. Aucun nom ni courriel. La feuille de travail indique les billets à qui il manque encore un compte ou un code postal.",
@@ -79,6 +180,7 @@
             "missing-body": "Veuillez scanner de nouveau le code QR à l'événement."
         },
         "nav": {
+            "play": "Jouer",
             "aria-label": "Principal",
             "menu": "Menu",
             "language": "Langue",
@@ -248,6 +350,7 @@
             "cta": "Obtenir des billets"
         },
         "footer": {
+            "play": "Jouer",
             "about": "À propos",
             "speakers": "Conférenciers",
             "schedule": "Horaire",
