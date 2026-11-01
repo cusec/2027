@@ -262,12 +262,25 @@ const ScheduleItemSchema = new Schema({
   location: { type: String },
   description: { type: String },
   detailedDescription: { type: String },
-  track: { type: String, enum: ["A", "B", "C", "AB", "BC"], required: true },
+  // "ABC" spans every room. The rest are the 2026 tracks, unchanged.
+  track: { type: String, enum: ["A", "B", "C", "AB", "BC", "ABC"], required: true },
+  // 2026 only; the 2027 schedule colours sessions by `category`.
   color: {
     type: String,
     enum: ["primary", "secondary", "accent", "sunset", "sea", "white"],
     default: "primary",
   },
+  // Added for 2027 (all optional, so 2026 documents still validate).
+  // See src/lib/schedule.ts for what each one means.
+  category: {
+    type: String,
+    enum: ["keynote", "talk", "workshop", "career", "community", "break"],
+    default: "talk",
+  },
+  titleFr: { type: String },
+  descriptionFr: { type: String },
+  photo: { type: String },
+  afterHours: { type: Boolean, default: false },
 });
 
 const DaySchema = new Schema({
@@ -275,6 +288,9 @@ const DaySchema = new Schema({
   date: { type: String, required: true },
   timestamp: { type: Number, required: true }, // Format: YYYYMMDD (e.g., 20260101)
   schedule: { type: [ScheduleItemSchema], required: true },
+  // 2027: column headers, rooms[0] is track A. When the evening card opens.
+  rooms: { type: [String], default: undefined },
+  afterHoursFrom: { type: String },
 });
 
 const shopItemSchema = new Schema(

@@ -8,8 +8,9 @@
 .v2-sched {
     --sched-axis: 46px;
     --sched-gap: 10px;
-    /* one five-minute row; an hour is twelve of these */
-    --sched-slot: 10px;
+    /* one five-minute row; an hour is twelve of these (84px), which keeps the
+       fixed 9 AM to 10 PM grid to about 1090px */
+    --sched-slot: 7px;
 }
 
 .v2-sched__panel {
@@ -245,7 +246,20 @@
 }
 
 .v2-sched__session.is-compact {
-    padding-block: 6px;
+    padding-block: 4px;
+}
+
+/* Under half an hour there's one line of room: title and time sit side by
+   side instead of stacked. */
+.v2-sched__session.is-tiny .v2-sched__session-text {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    column-gap: 8px;
+}
+
+.v2-sched__session.is-tiny h3 {
+    margin: 0;
 }
 
 /* a session that spans every room sits under the per-room ones */
@@ -450,5 +464,249 @@
 
     .v2-sched__after-list {
         padding-left: 0;
+    }
+}
+
+/* --------------------------------------------------------------------------
+   Admin editor - only rendered for a signed-in admin
+   -------------------------------------------------------------------------- */
+.v2-sched-admin {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px 16px;
+    margin-bottom: 14px;
+    padding: 12px 16px;
+    border-radius: 16px;
+    background: rgba(14, 35, 24, 0.9);
+    box-shadow: var(--v2-shadow-float);
+    color: var(--v2-mint);
+    font-size: 13px;
+}
+
+.v2-sched-admin[aria-busy="true"] {
+    opacity: 0.7;
+}
+
+.v2-sched-admin p {
+    margin: 0;
+}
+
+.v2-sched-admin strong {
+    margin-right: 6px;
+    padding: 2px 8px;
+    border-radius: 999px;
+    background: var(--v2-lime);
+    color: var(--v2-ink);
+    font-size: 11px;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+}
+
+.v2-sched-admin__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.v2-sched-admin__actions button {
+    padding: 8px 14px;
+    border: 1px solid rgba(244, 255, 252, 0.3);
+    border-radius: 999px;
+    background: transparent;
+    color: var(--v2-white);
+    font: inherit;
+    font-weight: 700;
+    cursor: var(--cursor-hand);
+}
+
+.v2-sched-admin__actions button:hover {
+    background: rgba(244, 255, 252, 0.12);
+}
+
+.v2-sched-admin__actions .v2-sched-admin__toggle {
+    border-color: transparent;
+    background: var(--v2-lime);
+    color: var(--v2-ink);
+}
+
+.v2-sched-admin__actions .v2-sched-admin__toggle:hover {
+    background: #cff063;
+}
+
+.v2-sched-admin__warn {
+    flex-basis: 100%;
+    color: var(--v2-gold);
+}
+
+.v2-sched__empty p {
+    margin: 0;
+    color: var(--v2-ink-glass);
+}
+
+/* In edit mode every block and evening tile is one big button. */
+.v2-sched__session,
+.v2-sched__after-list li {
+    position: relative;
+}
+
+.v2-sched__edit-hit {
+    position: absolute;
+    z-index: 3;
+    inset: 0;
+    border: 0;
+    border-radius: inherit;
+    background: transparent;
+    cursor: var(--cursor-hand);
+}
+
+.v2-sched__edit-hit:hover,
+.v2-sched__edit-hit:focus-visible {
+    outline: 2px solid var(--v2-blue);
+    outline-offset: -2px;
+    background: rgba(65, 108, 237, 0.08);
+}
+
+.v2-sched__panel.is-editing .v2-sched__session {
+    box-shadow: 0 0 0 1px rgba(65, 108, 237, 0.35), 0 6px 14px -8px rgba(10, 36, 23, 0.35);
+}
+
+/* The forms ------------------------------------------------------------- */
+.v2-sched-dialog {
+    /* Tailwind's reset zeroes the auto margin browsers centre a modal with */
+    margin: auto;
+    width: min(560px, calc(100vw - 32px));
+    max-height: calc(100dvh - 32px);
+    padding: 0;
+    border: 1.5px solid rgba(255, 255, 255, 0.85);
+    border-radius: 22px;
+    background: var(--v2-white);
+    box-shadow: var(--v2-shadow-card);
+    color: var(--v2-ink-glass-deep);
+}
+
+.v2-sched-dialog::backdrop {
+    background: rgba(11, 26, 58, 0.45);
+    backdrop-filter: blur(3px);
+}
+
+.v2-sched-form {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding: 22px;
+    font-size: 13px;
+}
+
+.v2-sched-form h2 {
+    margin: 0 0 4px;
+    font-size: 20px;
+}
+
+.v2-sched-form label,
+.v2-sched-form fieldset {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    font-weight: 700;
+}
+
+.v2-sched-form fieldset {
+    margin: 0;
+    padding: 0;
+    border: 0;
+}
+
+.v2-sched-form fieldset p {
+    margin: 0;
+    font-weight: 400;
+    color: var(--v2-slate);
+}
+
+.v2-sched-form input,
+.v2-sched-form select {
+    padding: 9px 11px;
+    border: 1px solid rgba(31, 59, 44, 0.22);
+    border-radius: 10px;
+    background: var(--v2-white-pure);
+    color: inherit;
+    font: inherit;
+    font-weight: 400;
+}
+
+.v2-sched-form input:focus-visible,
+.v2-sched-form select:focus-visible {
+    outline: 2px solid var(--v2-blue);
+    outline-offset: 1px;
+}
+
+.v2-sched-form__row {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+}
+
+.v2-sched-form .v2-sched-form__check {
+    flex-direction: row;
+    align-items: center;
+    gap: 8px;
+    font-weight: 400;
+}
+
+.v2-sched-form__error {
+    margin: 0;
+    padding: 9px 12px;
+    border-radius: 10px;
+    background: rgba(232, 86, 74, 0.12);
+    color: #9c2a20;
+}
+
+.v2-sched-form__actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 6px;
+}
+
+.v2-sched-form__actions .v2-btn {
+    padding: 11px 22px;
+    cursor: var(--cursor-hand);
+}
+
+.v2-sched-form__quiet,
+.v2-sched-form__danger {
+    padding: 10px 14px;
+    border: 0;
+    border-radius: 999px;
+    background: transparent;
+    font: inherit;
+    font-weight: 700;
+    cursor: var(--cursor-hand);
+}
+
+.v2-sched-form__quiet {
+    color: var(--v2-ink-glass);
+}
+
+.v2-sched-form__danger {
+    margin-right: auto;
+    color: #b3352a;
+}
+
+.v2-sched-form__quiet:hover,
+.v2-sched-form__danger:hover {
+    background: rgba(31, 59, 44, 0.07);
+}
+
+.v2-sched-form button:disabled {
+    opacity: 0.55;
+}
+
+@media (max-width: 520px) {
+    .v2-sched-form__row {
+        grid-template-columns: 1fr;
     }
 }

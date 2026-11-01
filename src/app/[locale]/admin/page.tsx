@@ -62,6 +62,11 @@ export default async function AdminPage({ params }: { params: Promise<{ locale: 
                       </form>
                     </div>
                   )}
+                  {admin && (
+                    <Link className="v2-admin__tool" href="/schedule">
+                      <h2>{t("schedule-title")}</h2><p>{t("schedule-body")}</p><span>{t("open")}</span>
+                    </Link>
+                  )}
                   {(admin || volunteer) && (
                     <Link className="v2-admin__tool" href="/scavenger">
                       <h2>{t("hunt-title")}</h2><p>{t("hunt-body")}</p><span>{t("open")}</span>

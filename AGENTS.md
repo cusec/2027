@@ -119,7 +119,8 @@ components/v2/
              V2SpeakerPortrait.tsx · V2SpeakerLinks.tsx · V2SpeakersSoon.tsx
              V2SpeakerPitch.tsx · speakersData.ts
   Team/      V2Team.tsx · teamData.ts
-  Schedule/  V2Schedule.tsx (client) · scheduleData.ts · scheduleTime.ts (+ test)
+  Schedule/  V2Schedule.tsx (client) · V2ScheduleAdmin.tsx (client, the editor forms)
+             scheduleTime.ts (+ test)
 ```
 
 `Nav/` and `Footer/` are shared by every page, and `Reveal/` is page-agnostic;
@@ -424,14 +425,15 @@ the backdrop, not a logo — don't add one.
 
 ### Data-file pages
 
-Each of the four pages is driven by one TypeScript file next to its
-components: `speakersData.ts`, `sponsorsData.ts`, `teamData.ts`,
-`scheduleData.ts`. Copy that needs both languages (roles, bios, session
-titles, room names) is a `Localized` from `src/lib/localized.ts` — a plain
-string, or `{ "en-CA", "fr-CA" }` — read with `pick(value, locale)`. Names,
-company names and talk titles stay plain strings.
+`/speakers`, `/sponsors` and `/team` are each driven by one TypeScript file
+next to their components: `speakersData.ts`, `sponsorsData.ts`,
+`teamData.ts`. (`/schedule` is the exception: it lives in the database, see
+"Schedule" below.) Copy that needs both languages (roles, bios) is a
+`Localized` from `src/lib/localized.ts` — a plain string, or
+`{ "en-CA", "fr-CA" }` — read with `pick(value, locale)`. Names, company names
+and talk titles stay plain strings.
 
-**All four files currently hold the Figma placeholders ("Name", "Speaker
+**All three files currently hold the Figma placeholders ("Name", "Speaker
 name", "Company name", "Keynote title"). Replace them before launch.** Emptying
 a list is safe: an empty team group or sponsor tier is skipped, and an empty
 file drops the page to a "Coming soon" pill.
@@ -441,16 +443,54 @@ sponsor interest form until `SPONSORSHIP_PACKAGE_URL` is set, then at the PDF.
 
 ### Schedule
 
-`V2Schedule` is a client component: day tabs, a legend, a time grid, the
-after-hours card and an "Add to calendar" `.ics` download (one event per
-conference day, not per session, so importing it doesn't flood a calendar).
+**The programme lives in MongoDB, not in code**: the `days` collection in
+`CUSEC2027`, the same collection (and `Day` model) 2026 used, so the team
+edits it without a deploy. While it is empty the public sees "Coming soon".
 
-- **Times are Montréal wall-clock `"HH:MM"` strings**, never `Date`s. The grid
-  is CSS grid with one row per five minutes; `V2Schedule` writes each
-  session's `grid-row` from its start and end. `room: "all"` spans every
-  column (registration, breaks). Pure helpers live in `scheduleTime.ts` and
-  are unit-tested; the `.ics` writes UTC assuming EST (UTC-5), which holds
-  because the conference is in January.
+**Editing happens on `/schedule` itself.** The page checks `isAdmin()` on the
+server; a signed-in admin gets an "Admin" bar with "Edit schedule". In edit
+mode every session and evening tile is a button that opens a form, and the bar
+can add a session, edit or delete the day, or add a day. The `/admin`
+dashboard links there. Admins sign in normally (`/admin` → Sign in), so this
+works on production with the scavenger hunt still off — unlike 2026, nobody
+has to enable the hunt locally to edit.
+
+- **One set of rules**: `src/lib/schedule.ts` (client-safe) holds the types and
+  `parseSession()` / `parseDay()` / `clashes()`, imported by both the forms and
+  the API. `src/lib/scheduleStore.ts` (server-only) loads and maps documents.
+- **API**: `/api/schedule` — `GET` (public), `POST`/`PUT`/`DELETE` a session
+  `{ dayId, sessionId?, session }`. `/api/schedule/days` — `POST`/`PUT`/`DELETE`
+  a day `{ dayId?, day: { date, rooms, afterHoursFrom } }`. Every write is
+  admin-only (403 otherwise), re-validated and audit-logged
+  (`resourceType: "scheduleItem"`). Overlaps in the same room are a 409, and
+  removing a room that still has sessions in it is refused.
+- **Columns are the 2026 tracks.** A day's `rooms` names them (`rooms[0]` is
+  track A, up to 3). A session's `track` is the run of columns it spans: `A`,
+  `B`, `C`, `AB`, `BC`, or `ABC` (every room — registration, breaks). 2027
+  added `category`, `titleFr`, `descriptionFr`, `photo`, `afterHours`,
+  `rooms` and `afterHoursFrom`, all optional, so 2026 documents still load
+  (verified against all 42 sessions in `CUSEC2026`). 2026's `color` is kept
+  but unused. `description` is the block's second line (speaker, host);
+  `location` is shown on phones and in the evening card.
+- **Don't seed test data from a dev machine**: `.env.local` points at the
+  production database, so anything written there is live.
+
+The page itself: day tabs, a legend, a time grid, the after-hours card and an
+"Add to calendar" `.ics` download (one event per conference day, not per
+session, so importing it doesn't flood a calendar).
+
+- **Times are Montréal wall-clock `"HH:MM"` strings**, never `Date`s
+  (`"24:00"` is allowed as an after-hours end; the form's time picker writes it
+  as 00:00). The grid is CSS grid with one row per five minutes; `V2Schedule`
+  writes each session's `grid-row` and `grid-column` from its times and track.
+- **The grid is always 9 AM to 10 PM** (`GRID_START` / `GRID_END` in
+  `schedule.ts`), never fitted to the day, so every tab is the same height
+  and nothing jumps as sessions are added. `parseSession()` rejects a grid
+  session outside that window (the error tells the admin to tick "After
+  hours"), and the page trims anything older that spills past it.
+  Pure helpers live in `scheduleTime.ts` and are unit-tested; the `.ics`
+  writes UTC assuming EST (UTC-5), which holds because the conference is in
+  January.
 - **"Now"** (the red line, fading finished sessions, opening on today's tab)
   comes from `useSyncExternalStore` with a `null` server snapshot, so the
   server render and hydration never disagree and nothing sets state in an
@@ -588,8 +628,8 @@ All are cookie-authenticated; admin routes additionally call `isAdmin`. Grouped:
 - **Public:** `leaderboard`, `notices`, `schedule`
 - **Admin suite:** `admin/audit-logs`, `admin/claim-attempts`, `admin/notices`, `admin/redeem-points`, `admin/registered-users`, `admin/shop`, `admin/users`, `admin/users/[userId]/collectibles`, `admin/users/[userId]/hunt-items`, `admin/users/[userId]/shop-prizes`
 
-> `api/schedule` shares the `Day` model and came along with the port; its frontend
-> was not ported. Harmless — leave it unless asked to remove it.
+> `api/schedule` shares the `Day` model and came along with the port. It now
+> backs the `/schedule` page and its admin editor — see "Schedule" above.
 
 ## Scavenger page (`src/app/[locale]/scavenger/page.tsx`)
 

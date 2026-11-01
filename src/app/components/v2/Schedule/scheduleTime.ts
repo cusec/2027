@@ -1,5 +1,5 @@
 /**
- * Pure time helpers for the schedule. Every time in scheduleData.ts is a
+ * Pure time helpers for the schedule. Every stored session time is a
  * 24-hour "HH:MM" wall-clock string in Montréal time; nothing here touches the
  * visitor's own time zone except `montrealNow`, which converts *to* Montréal.
  */
@@ -36,19 +36,6 @@ export function formatRange(start: number, end: number, locale: string): string 
 export function formatHour(minutes: number, locale: string): string {
 	const { h24, pm, h12 } = parts(minutes);
 	return locale === "fr-CA" ? `${h24} h` : `${h12} ${pm ? "PM" : "AM"}`;
-}
-
-/**
- * The span the timeline draws: from the hour at or before the first session
- * to half an hour past the last one (rounded to the half hour), so the final
- * block never sits flush on the bottom edge.
- */
-export function gridBounds(sessions: { start: string; end: string }[]) {
-	const starts = sessions.map((s) => toMinutes(s.start));
-	const ends = sessions.map((s) => toMinutes(s.end));
-	const start = Math.floor(Math.min(...starts) / 60) * 60;
-	const end = Math.ceil(Math.max(...ends) / 30) * 30 + 30;
-	return { start, end };
 }
 
 /** 1-based grid row a time falls on, given the grid's first minute. */

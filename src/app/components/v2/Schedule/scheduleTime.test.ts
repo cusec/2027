@@ -3,7 +3,6 @@ import {
 	buildIcs,
 	formatHour,
 	formatRange,
-	gridBounds,
 	icsStamp,
 	montrealNow,
 	rowFor,
@@ -31,21 +30,6 @@ describe("formatHour", () => {
 		expect(formatHour(12 * 60, "en-CA")).toBe("12 PM");
 		expect(formatHour(8 * 60, "en-CA")).toBe("8 AM");
 		expect(formatHour(17 * 60, "fr-CA")).toBe("17 h");
-	});
-});
-
-describe("gridBounds", () => {
-	it("starts on the hour and ends half an hour past the last session", () => {
-		expect(
-			gridBounds([
-				{ start: "08:30", end: "09:25" },
-				{ start: "16:30", end: "17:00" },
-			]),
-		).toEqual({ start: 8 * 60, end: 17 * 60 + 30 });
-	});
-
-	it("rounds a ragged last end up to the half hour first", () => {
-		expect(gridBounds([{ start: "10:00", end: "17:15" }]).end).toBe(18 * 60);
 	});
 });
 

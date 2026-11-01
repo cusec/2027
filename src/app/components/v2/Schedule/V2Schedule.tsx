@@ -1,24 +1,26 @@
 "use client";
 
-import { useMemo, useState, useSyncExternalStore } from "react";
+import { useMemo, useState, useSyncExternalStore, useTransition } from "react";
 import { useLocale, useTranslations } from "next-intl";
-import { pick } from "@/lib/localized";
+import { useRouter } from "@/i18n/navigation";
 import { SITE_URL } from "@/lib/seo";
-import { CATEGORIES, SCHEDULE, type ScheduleDay } from "./scheduleData";
+import { CATEGORIES, GRID_END, GRID_START, trackSpan, type ScheduleDay, type Session } from "@/lib/schedule";
 import {
 	buildIcs,
 	formatHour,
 	formatRange,
 	formatTime,
-	gridBounds,
 	montrealNow,
 	rowFor,
 	SLOT_MINUTES,
 	toMinutes,
 } from "./scheduleTime";
+import { DayDialog, SessionDialog, type DayDraft, type SessionDraft } from "./V2ScheduleAdmin";
 
 /** Sessions this short put their time and detail on one line. */
 const COMPACT_MINUTES = 35;
+/** ...and under this, title and time share a single line */
+const TINY_MINUTES = 30;
 const TICK_MS = 30_000;
 
 // The clock as an external store: the server snapshot is null, so the first
@@ -48,47 +50,76 @@ function dayLabels(date: string, locale: string) {
 
 /** First start to last end of the whole day, after hours included. */
 function daySpan(day: ScheduleDay) {
-	const all = [...day.sessions, ...(day.afterHours?.events ?? [])];
+	if (day.sessions.length === 0) return null;
 	return {
-		start: Math.min(...all.map((s) => toMinutes(s.start))),
-		end: Math.max(...all.map((s) => toMinutes(s.end))),
+		start: Math.min(...day.sessions.map((s) => toMinutes(s.start))),
+		end: Math.max(...day.sessions.map((s) => toMinutes(s.end))),
 	};
 }
 
-export default function V2Schedule() {
+/** The day after the last one, for the "add day" form. */
+function nextDate(days: ScheduleDay[]) {
+	if (days.length === 0) return "2027-01-07";
+	const last = new Date(`${days[days.length - 1].date}T12:00:00Z`);
+	last.setUTCDate(last.getUTCDate() + 1);
+	return last.toISOString().slice(0, 10);
+}
+
+export default function V2Schedule({
+	days,
+	canEdit,
+	loadFailed = false,
+}: {
+	days: ScheduleDay[];
+	/** the visitor is a signed-in admin; the server decides, the API re-checks */
+	canEdit: boolean;
+	loadFailed?: boolean;
+}) {
 	const t = useTranslations("V2.schedule");
 	const locale = useLocale();
+	const router = useRouter();
 	const now = useMontrealNow();
+	const [refreshing, startRefresh] = useTransition();
 
-	// Until a visitor picks a day, open on today's during the conference.
-	const [picked, setPicked] = useState<number | null>(null);
-	const todayIndex = now ? SCHEDULE.findIndex((d) => d.date === now.date) : -1;
-	const active = picked ?? Math.max(todayIndex, 0);
-	const day = SCHEDULE[active];
-	const isToday = now?.date === day.date;
+	const [editing, setEditing] = useState(false);
+	const [sessionDraft, setSessionDraft] = useState<SessionDraft | null>(null);
+	const [dayDraft, setDayDraft] = useState<DayDraft | null>(null);
 
-	const bounds = gridBounds(day.sessions);
-	const rows = (bounds.end - bounds.start) / SLOT_MINUTES;
-	// +1: grid row 1 is the room headers
-	const row = (minutes: number) => rowFor(minutes, bounds.start) + 1;
-	const roomIndex = new Map(day.rooms.map((room, i) => [room.id, i]));
-	const sessions = [...day.sessions].sort((a, b) => toMinutes(a.start) - toMinutes(b.start));
+	// Picked by date, not position, so adding or removing a day keeps the
+	// visitor on the same one. Until they pick, open on today's during the
+	// conference.
+	const [pickedDate, setPickedDate] = useState<string | null>(null);
+	const todayIndex = now ? days.findIndex((d) => d.date === now.date) : -1;
+	const pickedIndex = days.findIndex((d) => d.date === pickedDate);
+	const active = pickedIndex >= 0 ? pickedIndex : Math.max(todayIndex, 0);
+	const day: ScheduleDay | undefined = days[active];
 
-	const hours: number[] = [];
-	for (let h = Math.ceil(bounds.start / 60) * 60; h < bounds.end; h += 60) hours.push(h);
+	const text = (en: string, fr?: string) => (locale === "fr-CA" && fr ? fr : en);
 
-	const showNow = isToday && now !== null && now.minutes >= bounds.start && now.minutes <= bounds.end;
+	const refresh = (date?: string) => {
+		setSessionDraft(null);
+		setDayDraft(null);
+		if (date) setPickedDate(date);
+		startRefresh(() => router.refresh());
+	};
 
 	const downloadCalendar = () => {
 		const ics = buildIcs(
-			SCHEDULE.map((d, i) => ({
-				uid: `cusec-2027-day-${i + 1}@2027.cusec.net`,
-				date: d.date,
-				...daySpan(d),
-				title: t("calendar-title", { n: i + 1 }),
-				location: "Montréal, QC",
-				url: `${SITE_URL}/schedule`,
-			})),
+			days.flatMap((d, i) => {
+				const span = daySpan(d);
+				return span
+					? [
+							{
+								uid: `cusec-2027-${d.date}@2027.cusec.net`,
+								date: d.date,
+								...span,
+								title: t("calendar-title", { n: i + 1 }),
+								location: "Montréal, QC",
+								url: `${SITE_URL}/schedule`,
+							},
+						]
+					: [];
+			}),
 			new Date(),
 		);
 		const url = URL.createObjectURL(new Blob([ics], { type: "text/calendar;charset=utf-8" }));
@@ -99,21 +130,124 @@ export default function V2Schedule() {
 		URL.revokeObjectURL(url);
 	};
 
+	const adminBar = canEdit ? (
+		<div className="v2-sched-admin" aria-busy={refreshing}>
+			<p>
+				<strong>{t("admin.badge")}</strong> {editing ? t("admin.live-note") : t("admin.intro")}
+			</p>
+			<div className="v2-sched-admin__actions">
+				{editing && day ? (
+					<>
+						<button type="button" onClick={() => setSessionDraft({ day })}>
+							{t("admin.add-session")}
+						</button>
+						<button type="button" onClick={() => setDayDraft({ day })}>
+							{t("admin.edit-day")}
+						</button>
+					</>
+				) : null}
+				{editing ? (
+					<button type="button" onClick={() => setDayDraft({ day: "new", suggestedDate: nextDate(days) })}>
+						{t("admin.add-day")}
+					</button>
+				) : null}
+				<button
+					type="button"
+					className="v2-sched-admin__toggle"
+					aria-pressed={editing}
+					onClick={() => setEditing((v) => !v)}
+				>
+					{editing ? t("admin.done") : t("admin.edit")}
+				</button>
+			</div>
+			{loadFailed ? (
+				<p className="v2-sched-admin__warn" role="alert">
+					{t("admin.load-failed")}
+				</p>
+			) : null}
+		</div>
+	) : null;
+
+	const dialogs = canEdit ? (
+		<>
+			<SessionDialog draft={sessionDraft} onClose={() => setSessionDraft(null)} onSaved={() => refresh()} />
+			<DayDialog draft={dayDraft} onClose={() => setDayDraft(null)} onSaved={refresh} />
+		</>
+	) : null;
+
+	if (!day) {
+		// Only an admin reaches here with no days; the page shows the public
+		// "coming soon" itself.
+		return (
+			<section className="v2-section v2-subpage v2-sched">
+				<div className="v2-container">
+					{adminBar}
+					<div className="v2-glass v2-subpage__panel v2-sched__empty">
+						<p>{t("admin.no-days")}</p>
+					</div>
+				</div>
+				{dialogs}
+			</section>
+		);
+	}
+
+	const isToday = now?.date === day.date;
+	// The API keeps new sessions inside the grid; anything stored before that
+	// rule is trimmed to it below, and dropped if it misses the grid entirely.
+	const gridSessions = day.sessions
+		.filter((s) => !s.afterHours && toMinutes(s.end) > GRID_START && toMinutes(s.start) < GRID_END)
+		.sort((a, b) => toMinutes(a.start) - toMinutes(b.start));
+	const evening = day.sessions
+		.filter((s) => s.afterHours)
+		.sort((a, b) => toMinutes(a.start) - toMinutes(b.start));
+	const eveningFrom = day.afterHoursFrom ?? evening[0]?.start;
+
+	// Fixed, not fitted to the day's sessions: every tab draws the same grid.
+	const bounds = { start: GRID_START, end: GRID_END };
+	const rows = (bounds.end - bounds.start) / SLOT_MINUTES;
+	// +1: grid row 1 is the room headers
+	const row = (minutes: number) => rowFor(minutes, bounds.start) + 1;
+
+	const hours: number[] = [];
+	for (let h = Math.ceil(bounds.start / 60) * 60; h < bounds.end; h += 60) hours.push(h);
+
+	const showNow = isToday && now !== null && now.minutes >= bounds.start && now.minutes <= bounds.end;
+
+	/** The room(s) a session is in, for phones; nothing when it spans every room. */
+	const roomLabel = (session: Session) => {
+		if (session.location) return session.location;
+		const [first, last] = trackSpan(session.track);
+		if (day.rooms.length > 1 && first === 0 && last === day.rooms.length - 1) return null;
+		return day.rooms.slice(first, last + 1).join(" · ");
+	};
+
+	const editButton = (session: Session, title: string) =>
+		editing ? (
+			<button
+				type="button"
+				className="v2-sched__edit-hit"
+				aria-label={t("admin.edit-named", { title })}
+				onClick={() => setSessionDraft({ day, session })}
+			/>
+		) : null;
+
 	return (
 		<section className="v2-section v2-subpage v2-sched">
 			<div className="v2-container">
-				<div className="v2-glass v2-subpage__panel v2-sched__panel">
+				{adminBar}
+
+				<div className={`v2-glass v2-subpage__panel v2-sched__panel${editing ? " is-editing" : ""}`}>
 					<div className="v2-sched__days" role="group" aria-label={t("days-label")}>
-						{SCHEDULE.map((d, i) => {
+						{days.map((d, i) => {
 							const label = dayLabels(d.date, locale);
 							const span = daySpan(d);
 							return (
 								<button
-									key={d.date}
+									key={d.id}
 									type="button"
 									className={`v2-sched__day${i === active ? " is-active" : ""}`}
 									aria-pressed={i === active}
-									onClick={() => setPicked(i)}
+									onClick={() => setPickedDate(d.date)}
 								>
 									<span className="v2-sched__day-num v2-pixel" aria-hidden="true">
 										{label.number}
@@ -122,9 +256,9 @@ export default function V2Schedule() {
 										<span className="v2-pixel">{label.weekday}</span>
 										<small>{label.month}</small>
 									</span>
-									<span className="v2-sched__day-hours">
-										{formatRange(span.start, span.end, locale)}
-									</span>
+									{span ? (
+										<span className="v2-sched__day-hours">{formatRange(span.start, span.end, locale)}</span>
+									) : null}
 								</button>
 							);
 						})}
@@ -149,18 +283,14 @@ export default function V2Schedule() {
 						style={{ "--rooms": day.rooms.length, "--rows": rows } as React.CSSProperties}
 					>
 						{day.rooms.map((room, i) => (
-							<div
-								key={room.id}
-								className="v2-sched__room"
-								style={{ gridColumn: i + 2, gridRow: 1 }}
-							>
-								{pick(room.name, locale)}
+							<div key={`room-${i}`} className="v2-sched__room" style={{ gridColumn: i + 2, gridRow: 1 }}>
+								{room}
 							</div>
 						))}
 
 						{day.rooms.map((room, i) => (
 							<div
-								key={`track-${room.id}`}
+								key={`track-${i}`}
 								className="v2-sched__track"
 								style={{ gridColumn: i + 2, gridRow: `2 / ${rows + 2}` }}
 								aria-hidden="true"
@@ -188,28 +318,32 @@ export default function V2Schedule() {
 								/>
 							))}
 
-						{sessions.map((session, i) => {
+						{gridSessions.map((session) => {
 							const start = toMinutes(session.start);
 							const end = toMinutes(session.end);
 							const compact = end - start <= COMPACT_MINUTES;
+							const tiny = end - start < TINY_MINUTES;
 							const time = formatRange(start, end, locale);
-							const detail = session.detail ? pick(session.detail, locale) : null;
-							const room = day.rooms.find((r) => r.id === session.room);
-							const column =
-								session.room === "all" ? "2 / -1" : String((roomIndex.get(session.room) ?? 0) + 2);
+							const title = text(session.title, session.titleFr);
+							const detail = session.description ? text(session.description, session.descriptionFr) : null;
+							const room = roomLabel(session);
+							const [first, last] = trackSpan(session.track);
 							const past = isToday && now !== null && end <= now.minutes;
+							const top = Math.max(start, GRID_START);
+							const bottom = Math.min(end, GRID_END);
 
 							return (
 								<article
-									key={`${session.start}-${session.room}-${i}`}
+									key={session.id}
 									className={`v2-sched__session v2-sched__session--${session.category}${
 										compact ? " is-compact" : ""
+									}${tiny ? " is-tiny" : ""
 									}${past ? " is-past" : ""}`}
-									style={{ gridColumn: column, gridRow: `${row(start)} / ${row(end)}` }}
+									style={{ gridColumn: `${first + 2} / ${last + 3}`, gridRow: `${row(top)} / ${row(bottom)}` }}
 								>
 									<div className="v2-sched__session-text">
-										<h3>{pick(session.title, locale)}</h3>
-										{room ? <p className="v2-sched__session-room">{pick(room.name, locale)}</p> : null}
+										<h3>{title}</h3>
+										{room ? <p className="v2-sched__session-room">{room}</p> : null}
 										{compact ? (
 											<p>
 												{time}
@@ -222,11 +356,12 @@ export default function V2Schedule() {
 											</>
 										)}
 									</div>
-									{session.portrait ? (
+									{session.photo ? (
 										<span className="v2-sched__portrait" aria-hidden="true">
-											{session.portrait.src ? <img src={session.portrait.src} alt="" loading="lazy" /> : null}
+											<img src={session.photo} alt="" loading="lazy" />
 										</span>
 									) : null}
+									{editButton(session, title)}
 								</article>
 							);
 						})}
@@ -251,7 +386,7 @@ export default function V2Schedule() {
 					</div>
 				</div>
 
-				{day.afterHours ? (
+				{evening.length > 0 && eveningFrom ? (
 					<section className="v2-sched__after" aria-labelledby="after-hours">
 						<header className="v2-sched__after-head">
 							<h2 id="after-hours" className="v2-pixel">
@@ -260,26 +395,31 @@ export default function V2Schedule() {
 							<p>
 								{t("after-hours-window", {
 									day: dayLabels(day.date, locale).weekday,
-									from: formatHour(toMinutes(day.afterHours.from), locale),
+									from: formatHour(toMinutes(eveningFrom), locale),
 								})}
 							</p>
 						</header>
 						<ul className="v2-sched__after-list">
-							{day.afterHours.events.map((event, i) => (
-								<li key={`${event.start}-${i}`}>
-									<h3>{pick(event.title, locale)}</h3>
-									<p>
-										<span className="v2-sched__after-time">
-											{formatRange(toMinutes(event.start), toMinutes(event.end), locale)}
-										</span>
-										{pick(event.location, locale)}
-									</p>
-								</li>
-							))}
+							{evening.map((event) => {
+								const title = text(event.title, event.titleFr);
+								return (
+									<li key={event.id}>
+										<h3>{title}</h3>
+										<p>
+											<span className="v2-sched__after-time">
+												{formatRange(toMinutes(event.start), toMinutes(event.end), locale)}
+											</span>
+											{event.location ?? (event.description ? text(event.description, event.descriptionFr) : null)}
+										</p>
+										{editButton(event, title)}
+									</li>
+								);
+							})}
 						</ul>
 					</section>
 				) : null}
 			</div>
+			{dialogs}
 		</section>
 	);
 }
