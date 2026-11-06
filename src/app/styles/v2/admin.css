@@ -129,3 +129,31 @@
     .v2-admin__tool { transition: none; }
     .v2-admin__tool:hover { transform: none; }
 }
+
+/* /admin/ticket-assignments ------------------------------------------------ */
+.v2-assign { margin-top: 28px; }
+.v2-assign__input { display: grid; gap: 6px; color: var(--v2-ink-glass-deep); font-weight: 800; }
+.v2-assign__input small { font-weight: 400; color: var(--v2-ink-glass); }
+.v2-assign__input textarea { width: 100%; min-height: 180px; padding: 12px 14px; border: 1px solid var(--v2-teal-deep); border-radius: 12px; background: var(--v2-white-pure); color: var(--v2-ink-glass-deep); font: 13px/1.5 ui-monospace, SFMono-Regular, Menlo, monospace; resize: vertical; }
+.v2-assign__input textarea:focus-visible { outline: 3px solid var(--v2-blue); outline-offset: 2px; }
+.v2-assign__actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 16px; }
+.v2-assign__actions .v2-btn { margin: 0; cursor: var(--cursor-hand); }
+.v2-assign__actions .v2-btn:disabled { opacity: .55; cursor: var(--cursor-arrow); }
+.v2-assign__apply { background: var(--v2-ink); color: var(--v2-white); box-shadow: var(--v2-shadow-float); }
+.v2-assign__apply:hover { background: var(--v2-ink-deep); transform: translateY(-2px); }
+.v2-assign__results { margin-top: 28px; }
+.v2-assign__problems { margin: 0 0 16px; padding-left: 20px; color: var(--v2-red); }
+.v2-assign__problems code { color: var(--v2-ink-glass-deep); }
+.v2-assign__table-wrap { overflow-x: auto; border: 1px solid var(--v2-glass-edge); border-radius: 16px; background: var(--v2-white-pure); }
+.v2-assign__table { width: 100%; border-collapse: collapse; font-size: 14px; color: var(--v2-ink-glass-deep); }
+.v2-assign__table th { padding: 12px 14px; text-align: left; font-size: 12px; text-transform: uppercase; letter-spacing: .06em; color: var(--v2-ink-glass); border-bottom: 1px solid var(--v2-glass-edge); }
+.v2-assign__table td { padding: 12px 14px; vertical-align: top; border-bottom: 1px solid rgba(31, 59, 44, .08); }
+.v2-assign__table tr:last-child td { border-bottom: 0; }
+.v2-assign__table td strong, .v2-assign__table td span:not(.v2-assign__chip) { display: block; }
+.v2-assign__table td span:not(.v2-assign__chip) { color: var(--v2-ink-glass); font-size: 13px; overflow-wrap: anywhere; }
+.v2-assign__table td small { display: block; margin-top: 6px; color: var(--v2-teal-deep); font-weight: 800; }
+.v2-assign__chip { display: inline-block; padding: 4px 10px; border-radius: 999px; font-size: 12.5px; font-weight: 800; }
+.v2-assign__chip--go { background: var(--v2-lime); color: var(--v2-ink); }
+.v2-assign__chip--done { background: var(--v2-mint); color: var(--v2-teal-deep); }
+.v2-assign__chip--wait { background: rgba(232, 195, 74, .28); color: #6b5410; }
+.v2-assign__chip--stop { background: rgba(232, 86, 74, .14); color: #9c2a20; }

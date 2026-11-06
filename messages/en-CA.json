@@ -17,7 +17,9 @@
             "hunt-title": "Scavenger admin",
             "hunt-body": "Open the scavenger dashboard, then choose Admin in the dock.",
             "open": "Open tool →",
-            "download": "Download CSV →"
+            "download": "Download CSV →",
+            "assign-title": "Assign group tickets",
+            "assign-body": "Link delegates on a group order to their own ticket, from the list their head delegate sent."
         },
         "campaigns": {
             "back": "← Team dashboard",
@@ -57,7 +59,6 @@
             "signups": "signups",
             "export": "Download CSV"
         },
-
         "meet": {
             "eyebrow": "Nice to meet you",
             "title": "Stay in the loop.",
@@ -313,6 +314,45 @@
                 "have you seen the archive?",
                 "tell your friends"
             ]
+        },
+        "ticketAssignments": {
+            "back": "← Team dashboard",
+            "eyebrow": "Tickets",
+            "title": "Assign group tickets",
+            "intro": "For tickets bought in one order for a whole delegation. Paste the head delegate's list, preview what will happen, then apply. Delegates only need to sign up with the email on the list.",
+            "sign-in": "Sign in",
+            "list-label": "Delegate list",
+            "list-hint": "One person per line: Name - email - ticket code. Dashes, commas or tabs all work.",
+            "preview": "Preview",
+            "working": "Working…",
+            "apply": "{count, plural, one {Link # account} other {Link # accounts}}",
+            "confirm": "{count, plural, one {Link # account to its ticket?} other {Link # accounts to their tickets?}} This writes to the live database.",
+            "preview-note": "Preview only, nothing has changed. Checked against {tickets} tickets on the event.",
+            "applied-note": "Done. Run the same list again any time: anyone who has signed up since gets linked, and finished lines are left alone.",
+            "stale": "The list changed since this preview, so preview again before applying.",
+            "error-ticket-tailor": "Couldn't load the tickets from Ticket Tailor. Try again in a minute.",
+            "error-network": "Network error, check your connection and try again.",
+            "problem-no-email": "Line {line} has no email",
+            "problem-no-code": "Line {line} has no ticket code after the email",
+            "col-line": "Line",
+            "col-person": "Person",
+            "col-code": "Code",
+            "col-status": "What happens",
+            "status-ready": "Will link",
+            "status-add-ticket-id": "Will add ticket ID",
+            "status-done": "Already linked",
+            "status-waiting": "Waiting: no account with this email yet",
+            "status-code-not-found": "Code not found on this event",
+            "status-duplicate-code": "Code listed twice",
+            "status-duplicate-email": "Email listed twice",
+            "status-ticket-taken": "Ticket already linked to someone else",
+            "status-account-has-other-ticket": "This account already has a different ticket",
+            "status-email-taken": "Email already used by another account's ticket",
+            "outcome-linked": "Linked",
+            "outcome-ticket-id-added": "Ticket ID added",
+            "outcome-failed": "Not linked, preview again to see why",
+            "outcome-skipped": "Skipped",
+            "suggestion": "Did you mean {code}?"
         }
     },
     "TicketsPage": {

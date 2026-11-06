@@ -17,7 +17,9 @@
             "hunt-title": "Administration de la chasse",
             "hunt-body": "Ouvrez la chasse au trésor, puis choisissez Admin dans la barre d'outils.",
             "open": "Ouvrir l'outil →",
-            "download": "Télécharger le CSV →"
+            "download": "Télécharger le CSV →",
+            "assign-title": "Attribuer des billets de groupe",
+            "assign-body": "Associer chaque délégué d’une commande de groupe à son propre billet, à partir de la liste envoyée par le chef de délégation."
         },
         "campaigns": {
             "back": "← Tableau de bord",
@@ -57,7 +59,6 @@
             "signups": "inscriptions",
             "export": "Télécharger le CSV"
         },
-
         "meet": {
             "eyebrow": "Ravi de vous rencontrer",
             "title": "Restons en contact.",
@@ -313,6 +314,45 @@
                 "t’as vu les archives ?",
                 "parle de nous à tes amis"
             ]
+        },
+        "ticketAssignments": {
+            "back": "← Tableau de bord",
+            "eyebrow": "Billets",
+            "title": "Attribuer des billets de groupe",
+            "intro": "Pour les billets achetés en une seule commande pour toute une délégation. Collez la liste du chef de délégation, vérifiez l’aperçu, puis appliquez. Les délégués doivent seulement créer un compte avec le courriel de la liste.",
+            "sign-in": "Se connecter",
+            "list-label": "Liste des délégués",
+            "list-hint": "Une personne par ligne : Nom - courriel - code du billet. Tirets, virgules ou tabulations acceptés.",
+            "preview": "Aperçu",
+            "working": "En cours…",
+            "apply": "{count, plural, one {Associer # compte} other {Associer # comptes}}",
+            "confirm": "{count, plural, one {Associer # compte à son billet?} other {Associer # comptes à leurs billets?}} Ceci modifie la base de données en ligne.",
+            "preview-note": "Aperçu seulement, rien n’a changé. Vérifié parmi {tickets} billets de l’événement.",
+            "applied-note": "Terminé. Vous pouvez relancer la même liste en tout temps : les personnes inscrites depuis seront associées et les lignes terminées restent intactes.",
+            "stale": "La liste a changé depuis l’aperçu; refaites l’aperçu avant d’appliquer.",
+            "error-ticket-tailor": "Impossible de charger les billets de Ticket Tailor. Réessayez dans une minute.",
+            "error-network": "Erreur réseau, vérifiez votre connexion et réessayez.",
+            "problem-no-email": "La ligne {line} n’a pas de courriel",
+            "problem-no-code": "La ligne {line} n’a pas de code de billet après le courriel",
+            "col-line": "Ligne",
+            "col-person": "Personne",
+            "col-code": "Code",
+            "col-status": "Résultat",
+            "status-ready": "Sera associé",
+            "status-add-ticket-id": "Ajoutera l’ID du billet",
+            "status-done": "Déjà associé",
+            "status-waiting": "En attente : aucun compte avec ce courriel",
+            "status-code-not-found": "Code introuvable pour cet événement",
+            "status-duplicate-code": "Code en double",
+            "status-duplicate-email": "Courriel en double",
+            "status-ticket-taken": "Billet déjà associé à quelqu’un d’autre",
+            "status-account-has-other-ticket": "Ce compte a déjà un autre billet",
+            "status-email-taken": "Courriel déjà utilisé pour le billet d’un autre compte",
+            "outcome-linked": "Associé",
+            "outcome-ticket-id-added": "ID du billet ajouté",
+            "outcome-failed": "Non associé, refaites l’aperçu pour voir pourquoi",
+            "outcome-skipped": "Ignoré",
+            "suggestion": "Vouliez-vous dire {code}?"
         }
     },
     "TicketsPage": {

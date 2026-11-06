@@ -532,7 +532,7 @@ create `src/middleware.ts`**. Contract:
 
 | Module | Responsibility |
 |---|---|
-| `mongodb.ts` | Cached global Mongoose connection. **dbName is `CUSEC2027`.** Throws at import if `MONGODB_URI` is unset — so that var must be present even for `next build` (Vercel included). |
+| `mongodb.ts` | Cached global Mongoose connection. **dbName is `CUSEC2027`** (`MONGODB_DB_NAME` can point a local machine at a test database; production ignores it). Throws at import if `MONGODB_URI` is unset — so that var must be present even for `next build` (Vercel included). |
 | `models.ts` | All Mongoose schemas/models (User, HuntItem, Collectible, ShopItem, Notice, Day, audit logs, etc.). |
 | `auth0.ts` | The Auth0 client instance (`auth0.getSession()`, `auth0.middleware()`). |
 | `isAdmin.ts` / `isVolunteer.ts` | Role guards. Read `session.user["cusec/roles"]` and check for `"Admin"` / `"Volunteer"`. Roles arrive via a namespaced ID-token claim set by an Auth0 Login Action. |
@@ -690,6 +690,19 @@ Two independent paths do that linking, both via `linkTicketPurchase()` in
    `/v1/issued_tickets`, so a delegate who signs up with the email on their
    ticket links automatically. The manual claim
    (`/api/ticket-wizard/claim`) uses the same lookup.
+
+**Group orders whose emails can't be split** (one order's tickets all share
+the buyer's details, so attendee-email matching can't tell delegates apart):
+an admin pastes the head delegate's "Name - email - ticket code" list into
+**`/admin/ticket-assignments`** (`src/lib/ticketAssignment.ts` rules, pure and
+unit-tested; `ticketAssignmentRun.ts` loads data and links through
+`linkTicketPurchase()`). Preview never writes; Apply re-plans from fresh data,
+links only accounts that exist, stores the ticket id for the MTL report and
+audit-logs each link. It never moves a ticket another account holds or gives
+an account a second one, and flags likely code typos. Re-run the same list
+after more delegates sign up. To test locally without touching live data, set
+`MONGODB_DB_NAME=CUSEC2027_dev` and run `node scripts/ticket-assignment-test.mjs`
+(it refuses to run against `CUSEC2027` or a non-TEST event).
 
 ## Key files
 
