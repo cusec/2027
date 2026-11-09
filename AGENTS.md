@@ -429,7 +429,7 @@ are confirmed.
 `src/assets_for_reference/` and the exports carry invented numbers — 25
 editions, 500+ attendees, $115 / $160 tickets. **`messages/` is the source of
 truth for every string and figure.** Use the frames for geometry and colour
-only. Ticket prices and perks come from the ticket strategy doc (student $65,
+only. Ticket prices and perks come from the ticket strategy doc (student $80,
 professional $180, VIP add-on +$15), never from a mockup.
 
 The Good to know card is built from facts the site already states elsewhere
