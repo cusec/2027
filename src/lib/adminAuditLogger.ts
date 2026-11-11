@@ -16,7 +16,8 @@ interface LogAdminActionParams {
     | "challenge"
     | "submission"
     | "team"
-    | "demographics";
+    | "demographics"
+    | "speaker";
   targetUserEmail?: string;
   resourceId?: string;
   details?: LoggableData;

@@ -7,7 +7,6 @@ export default function V2SpeakersHero() {
 		<section className="v2-section v2-page-hero" id="top">
 			<div className="v2-container v2-page-hero__inner">
 				<h1 className="v2-page-hero__title v2-pixel">{t("heading")}</h1>
-				<p className="v2-page-hero__subline">{t("subline")}</p>
 			</div>
 		</section>
 	);

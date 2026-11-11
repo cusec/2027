@@ -1,55 +1,30 @@
 import { useTranslations } from "next-intl";
-import { SPEAKERS } from "./speakersData";
+import { SPEAKERS, type Speaker } from "./speakersData";
 import V2SpeakerAvatar from "./V2SpeakerAvatar";
+import V2SpeakerLinks from "./V2SpeakerLinks";
 
-export default function V2SpeakerGrid() {
-	const t = useTranslations("V2.speakers");
-
-	return (
-		<section className="v2-section v2-spk-grid" id="grid">
-			<div className="v2-container">
-				<div className="v2-spk-grid__head">
-					<h2 className="v2-heading-pill">{t("grid-heading")}</h2>
-				</div>
-
-				<ul className="v2-spk-grid__list">
-					{SPEAKERS.map((speaker, i) => (
-						<li key={i} className="v2-spk-card">
-							<V2SpeakerAvatar
-								from={speaker.from}
-								to={speaker.to}
-								photo={speaker.announced?.photo}
-								focus={speaker.announced?.focus}
-							/>
-
-							{speaker.announced ? (
-								<>
-									<p className="v2-spk-card__name v2-pixel">
-										{speaker.announced.name}
-									</p>
-									<p className="v2-spk-card__role">{speaker.announced.role}</p>
-									{speaker.announced.talk ? (
-										<p className="v2-spk-card__talk">
-											{speaker.announced.talk}
-										</p>
-									) : null}
-									{speaker.announced.abstract ? (
-										<p className="v2-spk-card__abstract">
-											{speaker.announced.abstract}
-										</p>
-									) : null}
-								</>
-							) : (
-								<p className="v2-spk-card__name v2-pixel">{t("announcing")}</p>
-							)}
-
-							<span className="v2-spk-chip v2-pixel">
-								{t(`topic-${speaker.topic}`)}
-							</span>
-						</li>
-					))}
-				</ul>
-			</div>
-		</section>
-	);
+export default function V2SpeakerGrid({ speakers = SPEAKERS }: { speakers?: Speaker[] }) {
+  const t = useTranslations("V2.speakers");
+  return (
+    <section className="v2-section v2-spk-grid" id="grid" aria-label={t("heading")}>
+      <div className="v2-container">
+        <ul className="v2-spk-grid__list">
+          {speakers.map((speaker, index) => (
+            <li key={speaker.announced?.name ?? index} className="v2-spk-card">
+              <V2SpeakerAvatar from={speaker.from} to={speaker.to}
+                photo={speaker.announced?.photo} focus={speaker.announced?.focus} />
+              {speaker.announced ? (
+                <>
+                  <h2 className="v2-spk-card__name">{speaker.announced.name}</h2>
+                  <p className="v2-spk-card__role">{speaker.announced.role}</p>
+                  {speaker.announced.abstract && <p className="v2-spk-card__abstract">{speaker.announced.abstract}</p>}
+                  <V2SpeakerLinks socials={speaker.announced.socials} />
+                </>
+              ) : <h2 className="v2-spk-card__name">{t("announcing")}</h2>}
+            </li>
+          ))}
+        </ul>
+      </div>
+    </section>
+  );
 }

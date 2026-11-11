@@ -8,6 +8,16 @@ This block is written and re-added by `next dev` — verify at `node_modules/nex
 
 <!-- END:nextjs-agent-rules -->
 
+## Local chat memory
+
+- Read `brain.md` in the repository root at the start of each chat, if it exists.
+- Update it whenever a major change is made or an important decision is agreed,
+  before finishing the task. Record the date, what changed and why, relevant
+  files, validation results, and any unfinished work or next steps.
+- Keep it concise and current; distinguish confirmed facts from assumptions and
+  do not invent context from previous chats. Never save secrets or personal data.
+- `brain.md` is local-only and must remain in `.gitignore`. Never force-add it.
+
 ---
 
 # CUSEC 2027 — Repository Guide

@@ -108,6 +108,7 @@ const userSchema = new Schema(
               "purchase",
               "completed",
               "demographics",
+        "speaker",
               "avatar",
             ],
             default: "profile",
@@ -214,6 +215,7 @@ const adminAuditLogSchema = new Schema(
         "submission",
         "team",
         "demographics",
+        "speaker",
       ],
       index: true,
     },
@@ -655,3 +657,28 @@ export {
   Campaign,
   CampaignPurchase,
 };
+
+const speakerSchema = new Schema({
+  name: { type: String, required: true, maxlength: 120 },
+  kind: { type: String, enum: ["speaker", "keynote"], required: true },
+  role: { type: String, required: true, maxlength: 240 },
+  bio: { type: String, default: "", maxlength: 12000 },
+  socials: { type: String, default: "", maxlength: 4000 },
+  sourceHeadshotUrl: { type: String, default: "", maxlength: 1000 },
+  talkFormat: { type: String, default: "", maxlength: 120 },
+  duration: { type: String, default: "", maxlength: 240 },
+  importNotes: { type: String, default: "", maxlength: 4000 },
+  roleFr: { type: String, default: "", maxlength: 240 },
+  talk: { type: String, default: "", maxlength: 240 },
+  talkFr: { type: String, default: "", maxlength: 240 },
+  abstract: { type: String, default: "", maxlength: 4000 },
+  abstractFr: { type: String, default: "", maxlength: 4000 },
+  photo: { type: String, default: "", maxlength: 1000 },
+  photoPublicId: { type: String, default: "" },
+  focus: { type: String, default: "50% 50%" },
+  topic: { type: String, enum: ["ai-ml", "systems", "web", "career", "security", "design", "oss", "grad"], required: true },
+  order: { type: Number, default: 0, min: 0, max: 9999 },
+  published: { type: Boolean, default: false },
+}, { timestamps: true });
+speakerSchema.index({ published: 1, order: 1 });
+export const SpeakerProfile = mongoose.models.SpeakerProfile || mongoose.model("SpeakerProfile", speakerSchema, "speakers");
