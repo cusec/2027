@@ -1,4 +1,5 @@
 import { useTranslations } from "next-intl";
+import { speakerPortrait } from "@/lib/speakerPortrait";
 
 type Props = {
 	from: string;
@@ -22,6 +23,7 @@ export default function V2SpeakerAvatar({
 	className,
 }: Props) {
 	const t = useTranslations("V2.speakers");
+	const portrait = photo ? speakerPortrait(photo, focus, className?.includes("--lg")) : undefined;
 	return (
 		<span
 			className={`v2-spk-avatar${className ? ` ${className}` : ""}`}
@@ -35,7 +37,7 @@ export default function V2SpeakerAvatar({
 			aria-hidden="true"
 		>
 			{photo ? (
-				<img src={photo} alt="" />
+				<img src={portrait} alt="" />
 			) : (
 				<span className="v2-spk-avatar__mark">{t("portrait")}</span>
 			)}

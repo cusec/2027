@@ -3,6 +3,7 @@
 import { useActionState, useEffect, useRef, useState, type ChangeEvent } from "react";
 import { useTranslations } from "next-intl";
 import type { SpeakerRecord } from "@/lib/speakers";
+import { speakerPortrait } from "@/lib/speakerPortrait";
 import { prepareSpeakerPhoto, saveSpeaker, type SaveState } from "./actions";
 
 import { SPEAKER_PHOTO_MAX_BYTES, SPEAKER_PHOTO_TYPES, uploadSpeakerPhotoDirect, type SpeakerPhotoReceipt } from "@/lib/speakerPhotoUpload";
@@ -101,8 +102,8 @@ export default function SpeakerForm({ speaker, id }: { speaker?: SpeakerRecord; 
       <input type="hidden" name="version" value={speaker?.__v ?? ""} />
       <fieldset className="v2-speaker-editor__fieldset" disabled={pending}>
         <div className="v2-speaker-editor__headshot">
-          {photo && <img className="v2-speaker-editor__preview" src={photo} alt={t("photo-preview")}
-            style={{ objectPosition: values.focus }} />}
+          {photo && <img className="v2-speaker-editor__preview" src={speakerPortrait(photo, values.focus, values.kind === "keynote")} alt={t("photo-preview")}
+            style={{ objectPosition: values.focus, aspectRatio: values.kind === "keynote" ? "1" : "1.4" }} />}
           <div className="v2-speaker-editor__photo-controls">
             <label>{t("upload-photo")}
               <input ref={fileInput} type="file" accept="image/jpeg,image/png,image/webp"
@@ -122,7 +123,9 @@ export default function SpeakerForm({ speaker, id }: { speaker?: SpeakerRecord; 
           {textFields.map(field => <label key={field}>{t(field)}
             <input name={field} value={values[field]} onChange={changeField}
               required={field === "name" || field === "role"}
-              maxLength={field === "focus" ? 30 : field === "name" ? 120 : 240} />
+              maxLength={field === "focus" ? 30 : field === "name" ? 120 : 240}
+              aria-describedby={field === "focus" ? `focus-hint-${id}` : undefined} />
+            {field === "focus" && <small id={`focus-hint-${id}`}>{t("focus-hint")}</small>}
           </label>)}
           <label>{t("kind")}<select name="kind" value={values.kind} onChange={changeField}>
             <option value="speaker">{t("speaker")}</option><option value="keynote">{t("keynote")}</option>

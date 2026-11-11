@@ -21,13 +21,14 @@
 .v2-keynote__card {
     display: grid;
     grid-template-columns: minmax(220px, .38fr) minmax(0, 1fr);
-    align-items: center;
+    align-items: start;
     gap: 36px;
     padding: 26px;
     border-radius: 28px;
 }
 
 .v2-keynote__body {
+    align-self: start;
     min-width: 0;
     padding-block: 12px;
 }
@@ -280,3 +281,60 @@
     background: var(--v2-white-pure);
     transform: translateY(-2px);
 }
+
+/* Talk details are opt-in for mouse, touch and keyboard visitors. */
+.v2-spk-talk { margin-block: 8px 18px; }
+.v2-spk-talk__toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: 16px;
+    padding: 10px 16px;
+    border: 1px solid currentColor;
+    border-radius: 24px;
+    background: transparent;
+    color: var(--v2-ink-deep);
+    font: inherit;
+    font-size: 13px;
+    cursor: var(--cursor-hand);
+}
+.v2-spk-talk__toggle:focus-visible {
+    outline: 2px solid var(--v2-blue);
+    outline-offset: 4px;
+}
+/* Keep the content mounted so both directions interpolate its natural height. */
+.v2-spk-talk__panel {
+    display: grid;
+    grid-template-rows: 0fr;
+    opacity: 0;
+    transition: grid-template-rows 500ms cubic-bezier(.4, 0, .2, 1),
+        opacity 500ms ease;
+    pointer-events: none;
+}
+.v2-spk-talk.is-open .v2-spk-talk__panel {
+    grid-template-rows: 1fr;
+    opacity: 1;
+    pointer-events: auto;
+}
+.v2-spk-talk__clip { min-height: 0; overflow: hidden; }
+.v2-spk-talk__content { padding-top: 16px; }
+.v2-spk-talk__toggle { min-width: 132px; justify-content: space-between; }
+.v2-spk-talk__icon { position: relative; width: 12px; height: 12px; flex: none; }
+.v2-spk-talk__icon::before, .v2-spk-talk__icon::after {
+    content: "";
+    position: absolute;
+    inset: 5px 0;
+    height: 2px;
+    border-radius: 1px;
+    background: currentColor;
+    transition: transform 500ms ease;
+}
+.v2-spk-talk__icon::after { transform: rotate(90deg); }
+.v2-spk-talk.is-open .v2-spk-talk__icon::after { transform: rotate(0); }
+@media (prefers-reduced-motion: reduce) {
+    .v2-spk-talk__panel, .v2-spk-talk__icon::before, .v2-spk-talk__icon::after {
+        transition: none;
+        transform: none;
+    }
+}
+.v2-spk-talk__content h3 { margin: 0 0 12px; font-size: 20px; line-height: 1.35; }
+.v2-spk-talk__content p { margin: 0; font-size: 15px; line-height: 1.6; white-space: pre-line; }

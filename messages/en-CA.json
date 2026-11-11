@@ -34,6 +34,7 @@
             "abstractFr": "Talk description (French)",
             "photo": "Headshot URL or local asset path",
             "focus": "Photo crop position",
+            "focus-hint": "Use two percentages, for example 50% 25%. The first moves horizontally, the second vertically. 50% 50% uses automatic face framing. Save the speaker to apply changes to the public page.",
             "kind": "Type",
             "speaker": "Speaker",
             "keynote": "Keynote",
@@ -326,6 +327,8 @@
             "all-editions": "All editions"
         },
         "speakers": {
+            "view-talk": "View talk",
+            "hide-talk": "Hide talk",
             "portrait": "Portrait",
             "website": "Website",
 

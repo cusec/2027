@@ -43,6 +43,6 @@ export const getPublishedSpeakers = unstable_cache(
       name, kind, role, roleFr, talk, talkFr, abstract, abstractFr, photo, focus, topic, socials,
     }));
   },
-  ["published-speakers", DB_NAME],
+  ["published-speakers-v2", DB_NAME],
   { tags: ["speakers"], revalidate: 3600 },
 );

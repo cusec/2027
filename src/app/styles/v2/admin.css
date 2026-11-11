@@ -171,7 +171,7 @@
 
 .v2-speaker-editor__fieldset { display: grid; gap: 16px; min-width: 0; margin: 0; padding: 0; border: 0; }
 .v2-speaker-editor__headshot { display: flex; flex-wrap: wrap; align-items: start; gap: 20px; }
-.v2-speaker-editor__preview { width: 160px; aspect-ratio: 1; border-radius: 14px; object-fit: cover; background: var(--v2-mint); }
+.v2-speaker-editor__preview { width: 160px; height: auto; aspect-ratio: 1; border-radius: 14px; object-fit: cover; background: var(--v2-mint); }
 .v2-speaker-editor__photo-controls { display: grid; gap: 12px; flex: 1 1 240px; min-width: 0; }
 .v2-speaker-editor__photo-controls p { margin: 0; }
 .v2-speaker-editor input[type="file"] { cursor: var(--cursor-hand); }

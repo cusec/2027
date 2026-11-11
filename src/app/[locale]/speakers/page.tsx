@@ -35,8 +35,8 @@ export default async function SpeakersPage({ params }: { params: Promise<{ local
     abstract: locale === "fr-CA" ? record.abstractFr || record.abstract : record.abstract,
     from: "#B5E054", to: "#89C24C",
   }));
-  const featured = lineup.find(record => record.kind === "keynote");
-  const speakers = lineup.filter(record => record !== featured).map(record => ({
+  const keynotes = lineup.filter(record => record.kind === "keynote");
+  const speakers = lineup.filter(record => record.kind !== "keynote").map(record => ({
     topic: record.topic, from: record.from, to: record.to, announced: record,
   }));
 	return (
@@ -45,7 +45,7 @@ export default async function SpeakersPage({ params }: { params: Promise<{ local
 			<V2Scrollbar />
 			<V2Scene>
 				<V2SpeakersHero />
-				{featured && <V2Keynote keynotes={[featured]} />}
+				{keynotes.length > 0 && <V2Keynote keynotes={keynotes} />}
 				{speakers.length > 0 && <V2SpeakerGrid speakers={speakers} />}
 				{lineup.length === 0 && <V2SpeakersSoon />}
 			</V2Scene>

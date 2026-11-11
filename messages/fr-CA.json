@@ -34,6 +34,7 @@
             "abstractFr": "Description de la conférence (français)",
             "photo": "URL du portrait ou chemin local",
             "focus": "Position du portrait",
+            "focus-hint": "Utilisez deux pourcentages, par exemple 50% 25%. Le premier règle la position horizontale, le second la position verticale. 50% 50% active le cadrage automatique du visage. Enregistrez pour appliquer les changements à la page publique.",
             "kind": "Type",
             "speaker": "Conférencier",
             "keynote": "Conférence d’ouverture",
@@ -326,6 +327,8 @@
             "all-editions": "Toutes les éditions"
         },
         "speakers": {
+            "view-talk": "Voir la présentation",
+            "hide-talk": "Masquer la présentation",
             "portrait": "Portrait",
             "website": "Site web",
 

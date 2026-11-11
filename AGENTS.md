@@ -341,16 +341,20 @@ cards become a normal wrapped row.
 
 ### Speakers page
 
-Everything is driven by `speakersData.ts`. `SPEAKERS` feeds the grid: an entry
-with no `announced` block renders the gradient disc, a pixel `?` and
-"Announcing this Fall"; adding `announced` swaps in their photo, name and
-role. `ANNOUNCED_KEYNOTES` feeds the cards under the unannounced keynote
-teaser — talk titles and names live in that file rather than in messages,
-since they aren't translated. `focus` sets `object-position` for headshots
-that aren't centred on the face.
+Published profiles come from MongoDB through `src/lib/speakers.ts`, cached by
+DB name and the `speakers` tag. Admin edits invalidate the tag. All published
+keynotes render as stacked large cards, ordered by the stored `order` field,
+followed by regular speakers in a grid. `speakersData.ts` supplies component
+types and fallback preview data, not the live lineup.
 
-**Both files currently hold placeholders using a team member's photo — replace
-them before launch.**
+`V2SpeakerTalk` reveals a confirmed title and abstract on hover or button
+interaction (click, touch, keyboard). Empty or placeholder titles and job roles
+mistakenly entered as titles have no disclosure. Clear the title in admin while
+a talk is unfinished. Labels are translated in both locale message files.
+
+Cloudinary portraits with the default focus use face-centred thumbnail delivery
+with extra headroom. Original stored image URLs remain intact. A custom `focus`
+uses the original image and CSS `object-position` as a manual override.
 
 `/speakers` is far shorter than the painting, so it only ever shows the top of
 the scene — sky into cloud — not the full sky → hills → water journey the
