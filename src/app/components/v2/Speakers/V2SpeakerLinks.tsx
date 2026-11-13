@@ -13,7 +13,13 @@ export default function V2SpeakerLinks({ socials = "" }: { socials?: string }) {
         "linkedin.com": "LinkedIn", "github.com": "GitHub", "instagram.com": "Instagram",
         "tiktok.com": "TikTok", "x.com": "X", "twitter.com": "X",
       };
-      return [{ href: url.href, label: labels[host] ?? t("website") }];
+      // Distinguish the two Instagram accounts supplied for Japnit.
+      const account = url.pathname.split("/").filter(Boolean)[0]?.toLowerCase();
+      const instagramLabel = host === "instagram.com"
+        ? account === "japnitahuja" ? t("instagram-personal")
+          : account === "gogirlorganisation" ? t("instagram-go-girl") : undefined
+        : undefined;
+      return [{ href: url.href, label: instagramLabel ?? labels[host] ?? t("website") }];
     } catch {
       return [];
     }
