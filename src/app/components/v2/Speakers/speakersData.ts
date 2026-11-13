@@ -13,6 +13,7 @@ export type Speaker = {
 		name: string;
 		role: string;
 		socials?: string;
+	bio?: string;
 		/**
 		 * Talk title and description. Both optional because names are usually
 		 * confirmed before the talk is, so a speaker can go live with just a
@@ -31,6 +32,7 @@ export type AnnouncedKeynote = {
 	name: string;
 	role: string;
 	socials?: string;
+	bio?: string;
 	/** talk title. A proper noun, so it lives here rather than in messages */
 	talk: string;
 	/** a short paragraph on what the talk covers */

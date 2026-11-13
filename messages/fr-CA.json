@@ -327,6 +327,8 @@
             "all-editions": "Toutes les éditions"
         },
         "speakers": {
+            "more-bio": "Lire la biographie",
+            "less-bio": "Réduire",
             "view-talk": "Voir la présentation",
             "hide-talk": "Masquer la présentation",
             "portrait": "Portrait",

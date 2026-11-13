@@ -347,6 +347,10 @@ keynotes render as stacked large cards, ordered by the stored `order` field,
 followed by regular speakers in a grid. `speakersData.ts` supplies component
 types and fallback preview data, not the live lineup.
 
+`V2SpeakerBio` sits below the role on every published card. It shows a three-line
+ellipsis preview, expands to measured text height on whole-card hover over 500ms,
+and has a button for touch/keyboard pinning. Empty bios render no block.
+
 `V2SpeakerTalk` reveals a confirmed title and abstract on hover or button
 interaction (click, touch, keyboard). Empty or placeholder titles and job roles
 mistakenly entered as titles have no disclosure. Clear the title in admin while

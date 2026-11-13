@@ -39,10 +39,10 @@ export async function listSpeakers(publishedOnly = false): Promise<SpeakerRecord
 export const getPublishedSpeakers = unstable_cache(
   async () => {
     const rows = await listSpeakers(true);
-    return rows.map(({ name, kind, role, roleFr, talk, talkFr, abstract, abstractFr, photo, focus, topic, socials }) => ({
-      name, kind, role, roleFr, talk, talkFr, abstract, abstractFr, photo, focus, topic, socials,
+    return rows.map(({ name, kind, role, roleFr, talk, talkFr, abstract, abstractFr, photo, focus, topic, socials, bio }) => ({
+      name, kind, role, roleFr, talk, talkFr, abstract, abstractFr, photo, focus, topic, socials, bio,
     }));
   },
-  ["published-speakers-v2", DB_NAME],
+  ["published-speakers-v3", DB_NAME],
   { tags: ["speakers"], revalidate: 3600 },
 );
