@@ -1,6 +1,10 @@
 import mongoose from "mongoose";
+import { databaseName } from "./databaseName";
 
 const MONGODB_URI = process.env.MONGODB_URI || "";
+
+/** Local/feature previews may opt into a test DB; staging and production cannot. */
+export const DB_NAME = databaseName(process.env);
 
 if (!MONGODB_URI) {
   throw new Error("Please define the MONGODB_URI environment variable");
@@ -28,7 +32,7 @@ const connectMongoDB = async () => {
 
   if (!cached.promise) {
     const opts = {
-      dbName: "CUSEC2027",
+      dbName: DB_NAME,
       bufferCommands: false,
       // Optimize connection pool for serverless functions
       maxPoolSize: 100, // Maintain up to 100 socket connections

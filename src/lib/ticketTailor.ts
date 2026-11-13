@@ -468,6 +468,8 @@ export interface IssuedAdmission {
   orderId: string | null;
   ticketTypeId: string | null;
   description: string | null;
+  /** The code printed on the ticket (7 characters), what a buyer hands out. */
+  barcode: string | null;
 }
 
 // One issued ticket, if it is a real admission for `series`: valid (not
@@ -482,6 +484,7 @@ function toAdmission(t: Record<string, unknown>, series: string): IssuedAdmissio
     orderId: typeof t.order_id === "string" ? t.order_id : null,
     ticketTypeId: typeof t.ticket_type_id === "string" ? t.ticket_type_id : null,
     description: typeof t.description === "string" ? t.description : null,
+    barcode: typeof t.barcode === "string" ? t.barcode : null,
   };
 }
 

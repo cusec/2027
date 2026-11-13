@@ -61,7 +61,7 @@ export interface AnalyticsEventProps {
   /** A purchase was linked to the account for the first time (server-side only). */
   ticket_purchase_completed: {
     ticket_type: TicketCategory;
-    completion_path: "webhook" | "reconciliation" | "claim";
+    completion_path: "webhook" | "reconciliation" | "claim" | "admin";
   };
   /** A sign-in CTA was clicked. */
   login_started: {

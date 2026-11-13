@@ -8,6 +8,16 @@ This block is written and re-added by `next dev` — verify at `node_modules/nex
 
 <!-- END:nextjs-agent-rules -->
 
+## Local chat memory
+
+- Read `brain.md` in the repository root at the start of each chat, if it exists.
+- Update it whenever a major change is made or an important decision is agreed,
+  before finishing the task. Record the date, what changed and why, relevant
+  files, validation results, and any unfinished work or next steps.
+- Keep it concise and current; distinguish confirmed facts from assumptions and
+  do not invent context from previous chats. Never save secrets or personal data.
+- `brain.md` is local-only and must remain in `.gitignore`. Never force-add it.
+
 ---
 
 # CUSEC 2027 — Repository Guide
@@ -331,16 +341,20 @@ cards become a normal wrapped row.
 
 ### Speakers page
 
-Everything is driven by `speakersData.ts`. `SPEAKERS` feeds the grid: an entry
-with no `announced` block renders the gradient disc, a pixel `?` and
-"Announcing this Fall"; adding `announced` swaps in their photo, name and
-role. `ANNOUNCED_KEYNOTES` feeds the cards under the unannounced keynote
-teaser — talk titles and names live in that file rather than in messages,
-since they aren't translated. `focus` sets `object-position` for headshots
-that aren't centred on the face.
+Published profiles come from MongoDB through `src/lib/speakers.ts`, cached by
+DB name and the `speakers` tag. Admin edits invalidate the tag. All published
+keynotes render as stacked large cards, ordered by the stored `order` field,
+followed by regular speakers in a grid. `speakersData.ts` supplies component
+types and fallback preview data, not the live lineup.
 
-**Both files currently hold placeholders using a team member's photo — replace
-them before launch.**
+`V2SpeakerTalk` reveals a confirmed title and abstract on hover or button
+interaction (click, touch, keyboard). Empty or placeholder titles and job roles
+mistakenly entered as titles have no disclosure. Clear the title in admin while
+a talk is unfinished. Labels are translated in both locale message files.
+
+Cloudinary portraits with the default focus use face-centred thumbnail delivery
+with extra headroom. Original stored image URLs remain intact. A custom `focus`
+uses the original image and CSS `object-position` as a manual override.
 
 `/speakers` is far shorter than the painting, so it only ever shows the top of
 the scene — sky into cloud — not the full sky → hills → water journey the
@@ -429,7 +443,7 @@ are confirmed.
 `src/assets_for_reference/` and the exports carry invented numbers — 25
 editions, 500+ attendees, $115 / $160 tickets. **`messages/` is the source of
 truth for every string and figure.** Use the frames for geometry and colour
-only. Ticket prices and perks come from the ticket strategy doc (student $65,
+only. Ticket prices and perks come from the ticket strategy doc (student $80,
 professional $180, VIP add-on +$15), never from a mockup.
 
 The Good to know card is built from facts the site already states elsewhere
@@ -532,7 +546,7 @@ create `src/middleware.ts`**. Contract:
 
 | Module | Responsibility |
 |---|---|
-| `mongodb.ts` | Cached global Mongoose connection. **dbName is `CUSEC2027`.** Throws at import if `MONGODB_URI` is unset — so that var must be present even for `next build` (Vercel included). |
+| `mongodb.ts` | Cached global Mongoose connection. **dbName is `CUSEC2027`** (`MONGODB_DB_NAME` can point a local machine at a test database; staging and production ignore it). Throws at import if `MONGODB_URI` is unset — so that var must be present even for `next build` (Vercel included). |
 | `models.ts` | All Mongoose schemas/models (User, HuntItem, Collectible, ShopItem, Notice, Day, audit logs, etc.). |
 | `auth0.ts` | The Auth0 client instance (`auth0.getSession()`, `auth0.middleware()`). |
 | `isAdmin.ts` / `isVolunteer.ts` | Role guards. Read `session.user["cusec/roles"]` and check for `"Admin"` / `"Volunteer"`. Roles arrive via a namespaced ID-token claim set by an Auth0 Login Action. |
@@ -690,6 +704,19 @@ Two independent paths do that linking, both via `linkTicketPurchase()` in
    `/v1/issued_tickets`, so a delegate who signs up with the email on their
    ticket links automatically. The manual claim
    (`/api/ticket-wizard/claim`) uses the same lookup.
+
+**Group orders whose emails can't be split** (one order's tickets all share
+the buyer's details, so attendee-email matching can't tell delegates apart):
+an admin pastes the head delegate's "Name - email - ticket code" list into
+**`/admin/ticket-assignments`** (`src/lib/ticketAssignment.ts` rules, pure and
+unit-tested; `ticketAssignmentRun.ts` loads data and links through
+`linkTicketPurchase()`). Preview never writes; Apply re-plans from fresh data,
+links only accounts that exist, stores the ticket id for the MTL report and
+audit-logs each link. It never moves a ticket another account holds or gives
+an account a second one, and flags likely code typos. Re-run the same list
+after more delegates sign up. To test locally without touching live data, set
+`MONGODB_DB_NAME=CUSEC2027_dev` and run `node scripts/ticket-assignment-test.mjs`
+(it refuses to run against `CUSEC2027` or a non-TEST event).
 
 ## Key files
 

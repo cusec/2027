@@ -47,3 +47,4 @@ certificates
 # internal planning docs (local only)
 docs/
 DESIGN.md
+/brain.md

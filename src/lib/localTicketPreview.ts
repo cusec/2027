@@ -2,6 +2,7 @@ export const LOCAL_TICKET_PREVIEW_EMAIL = "local-ticket-preview@cusec.dev";
 
 export function isLocalTicketPreview(hostname: string | null): boolean {
   if (process.env.NODE_ENV !== "development" || !hostname) return false;
+  if (process.env.LOCAL_TICKET_PREVIEW !== "true") return false;
   const host = hostname.toLowerCase();
   return (
     host === "localhost" ||

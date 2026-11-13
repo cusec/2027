@@ -42,7 +42,7 @@ export async function linkTicketPurchase(
   name: string,
   ticket: PurchasedTicket,
   accountEmail: string = email,
-  completionPath: "webhook" | "reconciliation" | "claim" = "reconciliation",
+  completionPath: "webhook" | "reconciliation" | "claim" | "admin" = "reconciliation",
 ): Promise<LinkResult> {
   await connectMongoDB();
 
