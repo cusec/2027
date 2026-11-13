@@ -1,17 +1,10 @@
 import mongoose from "mongoose";
+import { databaseName } from "./databaseName";
 
 const MONGODB_URI = process.env.MONGODB_URI || "";
 
-/**
- * The database is CUSEC2027. MONGODB_DB_NAME exists only so a local machine
- * can point at a separate test database (e.g. CUSEC2027_dev) and never write
- * test data into the live one. The production deployment ignores it, so a
- * stray value in Vercel can't move the live site off CUSEC2027.
- */
-export const DB_NAME =
-  process.env.VERCEL_ENV === "production"
-    ? "CUSEC2027"
-    : process.env.MONGODB_DB_NAME || "CUSEC2027";
+/** Local/feature previews may opt into a test DB; staging and production cannot. */
+export const DB_NAME = databaseName(process.env);
 
 if (!MONGODB_URI) {
   throw new Error("Please define the MONGODB_URI environment variable");

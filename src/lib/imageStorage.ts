@@ -61,7 +61,7 @@ async function uploadToCloudinary(
   dataUri: string,
   folder: string,
   { format, optimize }: UploadOptions,
-): Promise<string> {
+): Promise<{ url: string; publicId: string }> {
   const result = await cloudinary.uploader.upload(dataUri, {
     folder: `${CUSEC_2027_ROOT}/${folder}`,
     resource_type: "image",
@@ -77,7 +77,7 @@ async function uploadToCloudinary(
         ]
       : undefined,
   });
-  return result.secure_url;
+  return { url: result.secure_url, publicId: result.public_id };
 }
 
 /**
@@ -110,7 +110,7 @@ export async function storePhoto(
     : `data:${contentType || "image/png"};base64,${data}`;
 
   try {
-    const url = await uploadToCloudinary(dataUri, folder, {
+    const { url } = await uploadToCloudinary(dataUri, folder, {
       format: "webp",
       optimize: true,
     });
@@ -136,10 +136,11 @@ export async function storeQrCode(
   if (!isCloudinaryEnabled()) return dataUri;
 
   try {
-    return await uploadToCloudinary(dataUri, folder, {
+    const { url } = await uploadToCloudinary(dataUri, folder, {
       format: "png",
       optimize: false,
     });
+    return url;
   } catch (error) {
     console.error("[imageStorage] QR upload failed; storing inline:", error);
     return dataUri;

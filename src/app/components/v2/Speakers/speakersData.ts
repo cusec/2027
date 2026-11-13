@@ -12,6 +12,8 @@ export type Speaker = {
 	announced?: {
 		name: string;
 		role: string;
+		socials?: string;
+	bio?: string;
 		/**
 		 * Talk title and description. Both optional because names are usually
 		 * confirmed before the talk is, so a speaker can go live with just a
@@ -29,6 +31,8 @@ export type Speaker = {
 export type AnnouncedKeynote = {
 	name: string;
 	role: string;
+	socials?: string;
+	bio?: string;
 	/** talk title. A proper noun, so it lives here rather than in messages */
 	talk: string;
 	/** a short paragraph on what the talk covers */
@@ -43,7 +47,19 @@ export type AnnouncedKeynote = {
 export const ANNOUNCED_KEYNOTES: AnnouncedKeynote[] = [];
 
 export const SPEAKERS: Speaker[] = [
-	{ topic: "ai-ml", from: "#B5E054", to: "#89C24C" },
+	{
+		topic: "ai-ml",
+		from: "#B5E054",
+		to: "#89C24C",
+		// Fictional speaker for previewing the card layout.
+		announced: {
+			name: "Alex Morgan (Demo)",
+			role: "Software Engineer · Example Labs",
+			talk: "From Prototype to Production",
+			abstract: "A practical look at turning an experimental AI feature into a reliable product. This sample talk covers evaluation, deployment, and lessons from debugging real systems.",
+			photo: "/assets/v2/cubear/cubear-speaker.webp",
+		},
+	},
 	{ topic: "systems", from: "#9FF4DB", to: "#60D3B3" },
 	{ topic: "web", from: "#94BBEA", to: "#78ADF3" },
 	{ topic: "career", from: "#F6E280", to: "#EBCA56" },

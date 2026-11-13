@@ -157,3 +157,23 @@
 .v2-assign__chip--done { background: var(--v2-mint); color: var(--v2-teal-deep); }
 .v2-assign__chip--wait { background: rgba(232, 195, 74, .28); color: #6b5410; }
 .v2-assign__chip--stop { background: rgba(232, 86, 74, .14); color: #9c2a20; }
+
+.v2-speaker-editor { display: grid; gap: 16px; margin-top: 24px; }
+.v2-speaker-editor__fields { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 240px), 1fr)); gap: 16px; }
+.v2-speaker-editor label { display: grid; gap: 8px; color: var(--v2-ink-glass-deep); font-weight: 700; }
+.v2-speaker-editor input:not([type="checkbox"]), .v2-speaker-editor select, .v2-speaker-editor textarea { width: 100%; min-width: 0; padding: 12px; border: 1px solid var(--v2-teal-deep); border-radius: 10px; background: var(--v2-white); color: var(--v2-ink); font: inherit; }
+.v2-speaker-editor textarea { resize: vertical; }
+.v2-speaker-editor input:focus-visible, .v2-speaker-editor select:focus-visible, .v2-speaker-editor textarea:focus-visible { outline: 3px solid var(--v2-blue); outline-offset: 2px; }
+.v2-speaker-editor .v2-speaker-editor__publish { display: flex; align-items: center; }
+.v2-speaker-editor button { justify-self: start; }
+.v2-speaker-editor button:disabled { opacity: .6; }
+.v2-admin details summary { cursor: var(--cursor-hand); color: var(--v2-ink-glass-deep); font-weight: 800; }
+
+.v2-speaker-editor__fieldset { display: grid; gap: 16px; min-width: 0; margin: 0; padding: 0; border: 0; }
+.v2-speaker-editor__headshot { display: flex; flex-wrap: wrap; align-items: start; gap: 20px; }
+.v2-speaker-editor__preview { width: 160px; height: auto; aspect-ratio: 1; border-radius: 14px; object-fit: cover; background: var(--v2-mint); }
+.v2-speaker-editor__photo-controls { display: grid; gap: 12px; flex: 1 1 240px; min-width: 0; }
+.v2-speaker-editor__photo-controls p { margin: 0; }
+.v2-speaker-editor input[type="file"] { cursor: var(--cursor-hand); }
+.v2-speaker-editor input[type="file"]::file-selector-button { margin-right: 12px; padding: 8px 12px; border: 0; border-radius: 8px; background: var(--v2-lime); color: var(--v2-ink); font: inherit; cursor: var(--cursor-hand); }
+.v2-speaker-editor details > label { margin-top: 12px; }

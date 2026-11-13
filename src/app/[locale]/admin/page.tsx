@@ -72,6 +72,11 @@ export default async function AdminPage({ params }: { params: Promise<{ locale: 
                       <h2>{t("hunt-title")}</h2><p>{t("hunt-body")}</p><span>{t("open")}</span>
                     </Link>
                   )}
+                  {admin && (
+                    <Link className="v2-admin__tool" href="/admin/speakers">
+                      <h2>{t("speakers-title")}</h2><p>{t("speakers-body")}</p><span>{t("open")}</span>
+                    </Link>
+                  )}
                 </div>
               </>
             )}
