@@ -106,7 +106,7 @@
 .v2-spk-grid__list {
     display: grid;
     grid-template-columns: repeat(3, minmax(0, 1fr));
-    align-items: stretch;
+    align-items: start;
     gap: 22px;
     margin: 0;
     padding: 0;

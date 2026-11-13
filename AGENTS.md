@@ -348,11 +348,11 @@ followed by regular speakers in a grid. `speakersData.ts` supplies component
 types and fallback preview data, not the live lineup.
 
 `V2SpeakerBio` sits below the role on every published card. It shows a three-line
-ellipsis preview, expands to measured text height on whole-card hover over 500ms,
-and has a button for touch/keyboard pinning. Empty bios render no block.
+ellipsis preview and expands to measured text height over 500ms only when its
+button is activated by click, tap or keyboard. Hover does not expand content. Empty bios render no block.
 
-`V2SpeakerTalk` reveals a confirmed title and abstract on hover or button
-interaction (click, touch, keyboard). Empty or placeholder titles and job roles
+`V2SpeakerTalk` reveals a confirmed title and abstract only through button
+interaction (click, touch, keyboard), never hover. Empty or placeholder titles and job roles
 mistakenly entered as titles have no disclosure. Clear the title in admin while
 a talk is unfinished. Labels are translated in both locale message files.
 
