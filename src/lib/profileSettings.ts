@@ -17,7 +17,7 @@ export interface ProfileData {
   name: string; email: string; role: string; firstName: string; lastName: string;
   pronoun: string; school: string; fieldOfStudy: string; graduation: string; avatarPose: AvatarPose;
   isSponsor: boolean; isVip: boolean;
-  ticketName: string; orderId: string | null; ticketId: string | null;
+  ticketName: string; orderId: string | null; ticketId: string | null; ticketRomanNumeral: string | null;
   huntOpen: boolean; points: number; found: number; total: number; rank: number | null;
   travel: { travelCountry: string; travelRegion: string; travelCity: string; postalCode: string };
   travelPlans: TravelPlans;

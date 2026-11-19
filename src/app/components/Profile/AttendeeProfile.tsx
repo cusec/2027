@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { useCallback, useEffect, useRef, useState, type FormEvent, type ReactNode } from "react";
+import { useCallback, useEffect, useRef, useState, type CSSProperties, type FormEvent, type ReactNode } from "react";
 import { useLocale, useTranslations } from "next-intl";
 import { useRouter, Link } from "@/i18n/navigation";
 import { AVATAR_POSES, type AvatarPose, type ProfileData } from "@/lib/profileSettings";
@@ -11,7 +11,7 @@ import ResumeUpload from "@/app/components/TicketWizard/ResumeUpload";
 import CityPicker from "@/app/components/TicketWizard/CityPicker";
 import PostalCodeField from "@/app/components/TicketWizard/PostalCodeField";
 import { INSTITUTIONS } from "@/lib/institutions";
-import { X, MapPin, LockKeyhole, ArrowUpRight } from "lucide-react";
+import { X, MapPin, ArrowUpRight } from "lucide-react";
 
 type Panel = "sponsor" | "resume" | "travel" | "account" | "avatar" | "order" | "upgrade";
 function ProfileDialog({ title, close, children, wide = false }: { title: string; close: () => void; children: ReactNode; wide?: boolean }) {
@@ -103,7 +103,7 @@ export default function AttendeeProfile({ initial, baseURL }: { initial: Profile
   const pronoun = PRONOUN_OPTIONS.find(o => o.value === data.pronoun);
 
   return <main className="pass-profile">
-    <header className="pass-profile__heading"><h1>{t("heading")}</h1><p>{t("subheading")}</p></header>
+    <header className="pass-profile__heading"><h1>{t("heading")}</h1></header>
     <div className="pass-profile__grid">
       <section className="delegate-pass v2-glass" aria-label={t("delegate-card")}>
         <div className="delegate-pass__ribbon" aria-hidden="true">CUSEC 2027</div><div className="delegate-pass__clip" aria-hidden="true" />
@@ -118,7 +118,7 @@ export default function AttendeeProfile({ initial, baseURL }: { initial: Profile
           <div className="delegate-pass__education"><strong>{data.school}</strong>
             <p>{[data.fieldOfStudy, data.graduation ? t("class-of", { year: data.graduation }) : ""].filter(Boolean).join(" · ") || t("education-empty")}</p>
           </div>
-          <div className="delegate-pass__chips"><span>{data.role}</span><button type="button" disabled title={t("teams-soon")}>{t("teams-soon")}</button></div>
+          <div className="delegate-pass__chips"><span>{data.role}</span></div>
         </div>
       </section>
       <div className="pass-profile__details">
@@ -131,14 +131,15 @@ export default function AttendeeProfile({ initial, baseURL }: { initial: Profile
           {data.isVip && <span className="profile-ticket__vip">{t("vip-badge")}</span>}
           <div className="profile-ticket__main"><p className="profile-eyebrow">{t("your-ticket")}</p>
             <div className="profile-ticket__name"><h2>{data.ticketName}</h2>{/early|lève/i.test(data.ticketName) && <span>{t("early-bird")}</span>}</div>
+            <p className="profile-ticket__venue"><MapPin size={15} aria-hidden="true" /><span>{t("venue")}</span></p>
             <div className="profile-ticket__actions"><a href="/cusec-2027.ics" download className="pass-button pass-button--lime">{t("calendar")}</a><button className="pass-button pass-button--dark" onClick={() => open("order")}>{t("view-order")}</button>{!data.isVip && <button className="pass-button pass-button--dark" onClick={() => open("upgrade")}>{t("upgrade-vip")}</button>}</div>
-          </div><div className="profile-ticket__stub" aria-hidden="true"><span>{t("admit-one")}</span><strong>XXVI</strong><b>CUSEC 2027</b></div>
+          </div><div className="profile-ticket__stub" aria-hidden="true" style={{ "--ticket-numeral-length": data.ticketRomanNumeral?.length ?? 1 } as CSSProperties}><span>{t("admit-one")}</span><strong>{data.ticketRomanNumeral ?? "—"}</strong><b>CUSEC 2027</b></div>
         </section>
         </div>
-        <section className="profile-hunt v2-glass" aria-label={t("your-hunt")}>
-          <div><h2>{t("your-hunt")}</h2><p>{data.huntOpen ? t("found", { found: data.found, total: data.total }) : t("hunt-locked")}</p></div>
-          {data.huntOpen ? <><div className="profile-hunt__stat"><strong>{data.points.toLocaleString(locale)}</strong><span>{t("points")}</span></div><div className="profile-hunt__stat"><strong>{data.rank ? `#${data.rank}` : "—"}</strong><span>{t("rank")}</span></div><Link href="/scavenger" className="pass-button">{t("open-hunt")}</Link></> : <span className="profile-hunt__locked"><LockKeyhole size={18} />{t("locked")}</span>}
-        </section>
+        {data.huntOpen && <section className="profile-hunt v2-glass" aria-label={t("your-hunt")}>
+          <div><h2>{t("your-hunt")}</h2><p>{t("found", { found: data.found, total: data.total })}</p></div>
+          <div className="profile-hunt__stat"><strong>{data.points.toLocaleString(locale)}</strong><span>{t("points")}</span></div><div className="profile-hunt__stat"><strong>{data.rank ? `#${data.rank}` : "—"}</strong><span>{t("rank")}</span></div><Link href="/scavenger" className="pass-button">{t("open-hunt")}</Link>
+        </section>}
         <section className="profile-settings v2-glass" aria-label={t("settings")}>
           {data.isSponsor && <div className="profile-settings__row"><div><h2>{t("sponsor")}</h2><p>{data.sponsor.sponsorConsent ? t("sponsor-visible") : t("sponsor-private")}</p></div><button className="pass-button" onClick={() => open("sponsor")}>{t("edit")}</button></div>}
           <div className="profile-settings__row"><div><h2>{t("resume")}</h2><p>{data.resume?.fileName || t("resume-empty")}</p>{data.resumeRoast && <span className="profile-settings__tag">{t("roast-enabled")}</span>}</div><button className={`pass-button${!data.resume ? " pass-button--lime" : ""}`} onClick={() => open("resume")}>{t(data.resume ? "manage-resume" : "upload-resume")}</button></div>
@@ -185,7 +186,7 @@ export default function AttendeeProfile({ initial, baseURL }: { initial: Profile
         <button className="pass-button pass-button--lime" disabled={busy} onClick={async () => { if (await save("avatar", { avatarPose: pose })) { setData(d => ({ ...d, avatarPose: pose })); close(); } }}>{t(busy ? "saving" : "save")}</button></div>}
       {panel === "upgrade" && <VipUpgradeGuide checkout={upgrade} isVip={data.isVip} checking={checkingVip} message={vipMessage}
         purchased={() => { close(); setVipPhase("updating"); }} />}
-      {panel === "order" && <div className="pass-editor"><dl className="profile-order"><div><dt>{t("your-ticket")}</dt><dd>{data.ticketName}</dd></div><div><dt>{t("account")}</dt><dd>{data.email}</dd></div>{data.orderId && <div><dt>{t("order-reference")}</dt><dd>{data.orderId}</dd></div>}{data.ticketId && <div><dt>{t("ticket-reference")}</dt><dd>{data.ticketId}</dd></div>}<div><dt>{t("dates-label")}</dt><dd>{t("dates")}</dd></div></dl><p>{t("order-hint")}</p></div>}
+      {panel === "order" && <div className="pass-editor"><dl className="profile-order"><div><dt>{t("your-ticket")}</dt><dd>{data.ticketName}</dd></div><div><dt>{t("account")}</dt><dd>{data.email}</dd></div>{data.orderId && <div><dt>{t("order-reference")}</dt><dd>{data.orderId}</dd></div>}{data.ticketId && <div><dt>{t("ticket-reference")}</dt><dd>{data.ticketId}</dd></div>}<div><dt>{t("dates-label")}</dt><dd>{t("dates")}</dd></div><div><dt>{t("venue-label")}</dt><dd>{t("venue")}</dd></div></dl><p>{t("order-hint")}</p></div>}
       {error && <p className="profile-error" role="alert">{error}</p>}
     </ProfileDialog>}
     <Link href="/" className="pass-profile__home">CUSEC 2027 <MapPin size={13} /> Montréal</Link>

@@ -1,7 +1,6 @@
 "use client";
 
 import Image from "next/image";
-import { useState } from "react";
 import VipEmbeddedCheckout from "./VipEmbeddedCheckout";
 import { useTranslations } from "next-intl";
 
@@ -14,14 +13,12 @@ interface Props {
 }
 export default function VipUpgradeGuide({ checkout, isVip, checking, message, purchased }: Props) {
   const t = useTranslations("AttendeeProfile");
-  const [showTips, setShowTips] = useState(true);
   const available = !!checkout?.configured && !!checkout.checkoutEmbedUrl;
   if (isVip) return <p role="status">{t("vip-confirmed")}</p>;
-  return <div className={`vip-assistant${showTips ? "" : " vip-assistant--collapsed"}`}>
+  return <div className="vip-assistant">
     <div className="vip-assistant__email"><div><span>{t("vip-use-email")}</span><strong>{checkout?.checkoutEmail || t("vip-email-loading")}</strong></div>
-      <button className="pass-button" aria-expanded={showTips} aria-controls="vip-cubear-tips" onClick={() => setShowTips(value => !value)}>{t(showTips ? "vip-hide-tips" : "vip-show-tips")}</button>
     </div>
-    <aside id="vip-cubear-tips" className="vip-assistant__tips" hidden={!showTips} aria-label={t("vip-cubear-guide")}>
+    <aside className="vip-assistant__tips" aria-label={t("vip-cubear-guide")}>
       <Image src="/assets/v2/cubear/cubear-default.webp" alt="" width={180} height={180} />
       <ol className="vip-timeline">
         {[0, 1, 2].map(index => <li key={index}>

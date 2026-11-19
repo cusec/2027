@@ -59,20 +59,18 @@ const AeroDock = ({
     <>
       <nav className="aero-dock" aria-label={t("navigation")}>
         <div className="aero-dock__inner">
-          <button
+          {huntOpen && <button
             type="button"
             onClick={scan}
-            disabled={!huntOpen}
-            title={!huntOpen ? t("hunt-locked") : undefined}
             className="aero-dock__item aero-dock__item--hero"
           >
             <span className="aero-orb aero-orb--scan aero-orb--hero">
               <ScanIcon />
             </span>
             <span className="aero-dock__label">{t("scan")}</span>
-          </button>
+          </button>}
 
-          {huntOpen ? <Link
+          {huntOpen && <Link
             href="/scavenger"
             className={`aero-dock__item${
               pathname === "/scavenger" ? " is-active" : ""
@@ -82,7 +80,7 @@ const AeroDock = ({
               <HuntIcon />
             </span>
             <span className="aero-dock__label">{t("hunt")}</span>
-          </Link> : <button className="aero-dock__item" disabled title={t("hunt-locked")}><span className="aero-orb"><HuntIcon /></span><span className="aero-dock__label">{t("hunt")}</span></button>}
+          </Link>}
 
           <Link
             href="/profile"
@@ -97,7 +95,7 @@ const AeroDock = ({
             <span className="aero-dock__label">{t("profile")}</span>
           </Link>
 
-          {huntOpen && submissionsOpen ? <Link
+          {huntOpen && submissionsOpen && <Link
             href="/scavenger/submissions"
             className={`aero-dock__item${
               pathname === "/scavenger/submissions" ? " is-active" : ""
@@ -107,20 +105,18 @@ const AeroDock = ({
               <SubmitIcon />
             </span>
             <span className="aero-dock__label">{t("submit")}</span>
-          </Link> : <button className="aero-dock__item" disabled title={t("hunt-locked")}><span className="aero-orb"><SubmitIcon /></span><span className="aero-dock__label">{t("submit")}</span></button>}
+          </Link>}
 
-          <button
+          {huntOpen && <button
             type="button"
             onClick={() => setInventoryOpen(true)}
-            disabled={!huntOpen}
-            title={!huntOpen ? t("hunt-locked") : undefined}
             className="aero-dock__item"
           >
             <span className="aero-orb">
               <BagIcon />
             </span>
             <span className="aero-dock__label">{t("bag")}</span>
-          </button>
+          </button>}
 
           {(isAdmin || isVolunteer) && (
             <button

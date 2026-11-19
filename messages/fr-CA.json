@@ -5,13 +5,11 @@
         "vip-timeline-title-1": "Ajoutez le supplément VIP",
         "vip-timeline-body-1": "Ajoutez 1 « VIP Add-On » payant à votre panier.",
         "vip-timeline-title-2": "Passez à la caisse",
-        "vip-timeline-body-2": "Utilisez le courriel du billet affiché ci-dessus pour associer votre supplément.",
+        "vip-timeline-body-2": "Veuillez utiliser le courriel de votre billet original lorsque vous saisissez les renseignements de votre commande.",
 
 
         "vip-checkout-help": "Un problème avec la billetterie?",
         "vip-use-email": "Utilisez ce courriel à la caisse",
-        "vip-hide-tips": "Masquer les conseils",
-        "vip-show-tips": "Afficher Cubear",
         "vip-cubear-guide": "Guide de paiement Cubear",
         "vip-tip-count": "Conseil {current} sur {total}",
         "vip-next-tip": "Conseil suivant",
@@ -66,7 +64,6 @@
         "upgrade-vip": "Passer au billet VIP",
         "upgrade-soon": "La mise à niveau VIP sera offerte ici plus tard. Votre billet actuel reste inchangé.",
         "heading": "Votre profil",
-        "subheading": "Votre passe, votre progression et votre compte.",
         "delegate-card": "Votre passe de délégation",
         "profile": "Profil",
         "navigation": "Navigation de la conférence",
@@ -91,7 +88,6 @@
         "school-empty": "Votre passe de conférence",
         "education-empty": "CUSEC 2027 · Montréal",
         "class-of": "Promotion {year}",
-        "teams-soon": "Équipes · à venir",
         "your-hunt": "Votre chasse",
         "found": "{found} codes trouvés sur {total}",
         "points": "points",
@@ -151,6 +147,8 @@
         "order-reference": "Référence de commande",
         "ticket-reference": "Référence du billet",
         "dates-label": "Conférence",
+        "venue-label": "Lieu",
+        "venue": "Centre Mont Royal, Montréal, QC",
         "order-hint": "Votre reçu et votre billet d’entrée se trouvent dans votre courriel de confirmation Ticket Tailor. Pour modifier votre commande, contactez info@cusec.net."
     },
     "V2": {
@@ -597,7 +595,7 @@
     },
     "TicketWizard": {
         "q-postal-code": "Code postal",
-        "postal-hint": "Transmis sans votre nom ni courriel au programme des événements d’affaires de Montréal, qui aide à financer CUCIL pour les délégués de l’extérieur.",
+        "postal-hint": "Votre code postal est destiné au programme de tourisme d’affaires de Montréal pour financer la participation des délégations de l’extérieur à CUSEC.",
         "error-postalCode": "Veuillez entrer un code postal valide pour ce pays.",
         "location-card-heading": "Une petite chose",
         "location-card-body": "D’où voyagez-vous? Le programme des événements d’affaires de Montréal aide à financer CUCIL pour les délégués de l’extérieur. Il ne reçoit que votre ville et votre code postal, jamais votre nom ni votre courriel.",

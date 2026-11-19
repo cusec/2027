@@ -6,6 +6,7 @@ import { redirect } from "@/i18n/navigation";
 import { getAttendeeSession } from "@/lib/attendeeSession";
 import { findOrCreateUser } from "@/lib/userService";
 import { getWizardStatus } from "@/lib/ticketWizard";
+import { ensureTicketGraphicNumber, toTicketRomanNumeral } from "@/lib/ticketGraphicNumber";
 import { reconcileTicketPurchase } from "@/lib/ticketLinking";
 import { DemographicInfo, HuntItem, User } from "@/lib/models";
 
@@ -37,6 +38,7 @@ export default async function ProfilePage() {
   }
   if (!status.purchaseComplete) redirect({ href: "/tickets", locale });
   const user = await findOrCreateUser({ email, name: session.user.name, entryPoint: "tickets" });
+  const ticketGraphicNumber = await ensureTicketGraphicNumber(String(user._id));
   const saved = await DemographicInfo.findOne({ user: user._id }).lean<SavedProfile & { resumeRoast?: boolean }>();
   const d = saved ?? {} as Partial<SavedProfile> & { resumeRoast?: boolean };
   const roles: string[] = session.user["cusec/roles"] ?? [];
@@ -67,6 +69,7 @@ export default async function ProfilePage() {
     graduation: d.expectedGraduation || "",
     avatarPose: AVATAR_POSES.includes(user.avatarPose) ? user.avatarPose : "default",
     ticketName: status.purchasedTicketName || t("conference-pass"),
+    ticketRomanNumeral: ticketGraphicNumber === null ? null : toTicketRomanNumeral(ticketGraphicNumber),
     orderId: user.ticketWizard?.purchasedOrderId || null, ticketId: user.ticketWizard?.purchasedTicketId || null,
     huntOpen, points, found, total, rank,
     travel: { travelCountry: d.travelCountry || "CA", travelRegion: d.travelRegion || "", travelCity: d.travelCity || "", postalCode: d.postalCode || "" },

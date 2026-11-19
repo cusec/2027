@@ -71,6 +71,7 @@ export interface DbUser {
   claim_attempts?: ClaimAttempt[];
   hasSeenIntro?: boolean;
   personalityType?: string | null;
+  ticketGraphicNumber?: number;
   attribution?: UserAttribution | null;
   ticketWizard?: TicketWizardProgress;
 }

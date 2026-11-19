@@ -80,6 +80,7 @@ const userSchema = new Schema(
     hasSeenIntro: { type: Boolean, default: false },
     personalityType: { type: String, default: null },
     avatarPose: { type: String, enum: ["default", "book", "laptop", "speaker", "shock", "erm"], default: "default" },
+    ticketGraphicNumber: { type: Number, min: 10, max: 1500, validate: Number.isInteger, default: undefined },
     // Random UUID used as the PostHog distinct id for this account's client
     // and server events. Deliberately NOT the Mongo or Auth0 id: analytics
     // systems must never hold identifiers that can be joined back to PII.
@@ -144,6 +145,11 @@ const userSchema = new Schema(
     timestamps: true,
   },
 );
+
+userSchema.index({ ticketGraphicNumber: 1 }, {
+  name: "unique_ticket_graphic_number", unique: true,
+  partialFilterExpression: { ticketGraphicNumber: { $type: "number" } },
+});
 
 const huntItemSchema = new Schema(
   {
