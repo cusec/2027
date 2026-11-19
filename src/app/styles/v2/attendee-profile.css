@@ -80,6 +80,7 @@
 .pass-editor > p { margin: 0; }
 .pass-editor fieldset { border: 0; margin: 0; padding: 0; min-width: 0; display: grid; gap: 20px; }
 .pass-editor label:not(.pass-check) { display: grid; gap: 7px; font-size: 14px; font-weight: 700; }
+.pass-editor label.wizard-q__label { display: block; }
 .pass-editor input:not([type=checkbox]), .pass-editor select { width: 100%; min-height: 44px; padding: 10px 12px; border: 1px solid #a8c9bc; border-radius: 10px; background: white; color: var(--v2-ink-deep); font: inherit; }
 .pass-check { display: flex; align-items: start; gap: 12px; line-height: 1.5; }
 .pass-check input { width: 20px; height: 20px; flex: none; margin-top: 2px; accent-color: #467e2a; }
