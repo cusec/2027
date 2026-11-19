@@ -8,6 +8,12 @@ This block is written and re-added by `next dev` — verify at `node_modules/nex
 
 <!-- END:nextjs-agent-rules -->
 
+## User release restriction (2026-11-16)
+
+No GitHub pushes or remote merges. Make changes locally only. Do not deploy
+changes unless the user explicitly authorizes a specific release again. A request
+to check the live website is not authorization to publish.
+
 ## Local chat memory
 
 - Read `brain.md` in the repository root at the start of each chat, if it exists.
@@ -613,6 +619,16 @@ hunt, edit that one `@theme` block** — do not hunt through components.
 
 ## Feature flags & deploy
 
+Local purchased-ticket debugging uses `LOCAL_PURCHASED_TICKET_PREVIEW=true` in
+ignored `.env.local`. `getAttendeeSession()` supplies one non-staff fixture only
+in development on loopback hosts with `MONGODB_DB_NAME=CUSEC2027_dev` and no
+Vercel environment/staging branch override. It seeds the dedicated user, linked
+RegisteredUser and completed demographic sections only on insert. Ticket pages,
+hunt pages/access, purchase status API and the self Discord endpoint use it.
+Other authenticated APIs and admin routes retain Auth0. Disable
+`LOCAL_TICKET_PREVIEW` (blank registration preview) when using this mode.
+
+
 - `SCAVENGER_HUNT_ENABLED` (server) gates the dashboard; `NEXT_PUBLIC_SCAVENGER_HUNT_ENABLED`
   mirrors it for client checks.
 - Branch strategy: scavenger work lives on a long-lived `staging` branch (its own
@@ -850,6 +866,26 @@ localhost.** Test in-page checkout on a deployed environment only.
    ticket back to its order. `event_id=es_...` on `/v1/orders` returns
    nothing; use `event_series_id`.
 
+## Attendee portal
+
+- `/profile` is the purchased attendee landing page. Completed ticket flows and
+  the legacy `/scavenger/profile` URL redirect here, including when the hunt is closed.
+- `PATCH /api/profile` accepts whitelisted account, avatar, sponsor, travel and
+  résumé-roast settings. Scope every write to the authenticated attendee; never
+  accept ownership, roles, ticket status or hunt progress from the client.
+- Résumé sharing with sponsors and résumé-roast consent are separate choices.
+  Roast consent requires an uploaded résumé; deleting it clears roast consent.
+  The existing private PDF upload limit remains 2 MB. Downloads require ownership.
+- Sponsor editor visibility and its PATCH group require the authenticated Auth0
+  `Sponsor` role. VIP upgrade is currently a placeholder; VIP add-ons are checked
+  against completed, single-attendee linked Ticket Tailor orders.
+- Local `.env.local` enables scavenger options for development. Keep hosted
+  staging/production flags false until conference launch; do not copy local env.
+- The portal's hunt navigation requires `SCAVENGER_HUNT_ENABLED=true`; submissions
+  also require `SUBMISSIONS_ENABLED=true`. Teams remain disabled for now.
+- Local purchased preview uses the guarded development fixture in
+  `attendeeSession.ts`; never enable it against hosted or production databases.
+
 ## Don'ts (ticket-wizard-specific)
 
 1. Don't render third-party embed scripts as JSX `<script>` — React makes them
@@ -866,3 +902,81 @@ localhost.** Test in-page checkout on a deployed environment only.
 5. Don't log demographic data — it's confidential PII, and the UI promises so.
 6. **One ticket per order is a Ticket Tailor setting**, not something the checkout
    URL can enforce: set the maximum per order to 1 on each ticket type.
+
+## Verified VIP purchases (local implementation, 2026-11-19)
+- `User.vip` is optional for legacy accounts: absent means unknown/unverified,
+  never infer authorization from purchasedTicketName. `vip.status === active`
+  supplies profile VIP status. `VipPurchase` stores source evidence and owns an
+  issued product uniquely; transactions update the ledger and summary together.
+- `vipVerification.ts` requires the exact event and product IDs, completed order,
+  positive paid product line, `total_paid >= total > 0`, no refund, one valid
+  admission/upgrade placeholder and one valid VIP issued product. Group orders
+  stay ambiguous; refunds conservatively revoke until verified again.
+- `vipService.ts` fetches Ticket Tailor evidence server-side and matches the
+  existing linked ticket email. Unknown/network failures do not change status.
+  Original admissions are checked, never overwritten. Await the unique index
+  before writes. All source and summary writes commit in a transaction.
+- Configuration: VIP_UPGRADES_ENABLED, TICKET_TAILOR_API_KEY,
+  TICKET_TAILOR_EVENT_ID, TICKET_TAILOR_VIP_PRODUCT_ID and
+  TICKET_TAILOR_UPGRADE_TICKET_ID. Local IDs verified read-only: event 2415502,
+  paid product pr_81320, free placeholder tt_7073158. Never copy secrets to code.
+- GET /api/vip/status is private, own-account only; same-origin POST reconciles
+  using the session email, never caller-supplied email or VIP flags. The profile
+  verifies before showing checkout, explains the matching email requirement,
+  opens checkout in a new tab, then checks on focus/polls for up to two minutes.
+  The synthetic local admission cannot satisfy real purchase verification.
+- order.created/order.updated share VIP reconciliation; signed webhooks must
+  match the configured event, and only completed orders can link admissions.
+  Free placeholder tickets are excluded from linking and participant reports.
+- GET /api/admin/vip-audit is Admin-only, paginated five accounts, dry-run only;
+  it does not apply a backfill. No production VIP migration has run. Reconcile
+  existing real VIPs and review results before any deployment/backfill release.
+- Main/dev backups remain in ignored backups/2026-11-19T14-54-43-934Z.
+
+### VIP guide interaction
+`VipUpgradeGuide.tsx` has five sequential, bilingual instruction pages. The final
+page exposes checkout only after preflight; the new tab must leave the guide
+open. Confirmation closes the modal and starts delayed ticket-level verification
+with a two-minute timeout/retry. Clicking confirmation never grants VIP itself.
+
+VIP checkout now prefers the event-specific embedded widget in the guide modal.
+Keep a=VIPAddOn on widget navigation, validate message origin AND source, and
+never grant VIP from iframe close/ready events. Returning to instructions must
+preserve the frame session. Local cookie restrictions may require the delayed
+separate-tab fallback; never promise embedded payment on every browser.
+
+The current VIP UI is an optional Cubear assistant alongside immediate embedded
+checkout, not a forced paginated walkthrough. Tips are manual and never track or
+inspect cross-origin checkout fields. Hiding tips must retain the iframe session;
+linked email stays visible. Backend VIP verification rules are unchanged.
+
+Checkout-step synchronization investigation is in docs/vip-checkout-progress.md.
+No reliable supported step-change bridge has been established. Keep tips manual
+until Ticket Tailor confirms a supported event or approved script. A provider
+close event may indicate abandonment and must not advance the guide or grant VIP.
+
+User approved approximate iframe-load syncing on 2026-11-19: ignore the first
+load, advance one tip per later load, cap at the final tip. Preserve Back/Next
+and the automatic-tips checkbox, plus explicit approximation copy. It cannot
+identify backwards navigation or validation reloads. It must never confirm or
+grant VIP; only the existing backend verifier can do that.
+
+Latest requirement supersedes the approved load heuristic: only successful Next
+navigation should advance tips. Removed raw load advancement and its checkbox;
+error/success cannot be distinguished from load events. Manual controls remain
+until a reliable provider step signal is available. Never re-add load counting
+as success detection.
+
+Current Cubear presentation: mascot above a static three-step vertical timeline
+(add free upgrade ticket → add paid VIP product → check out with linked email).
+All steps stay visible. This supersedes paginated tips/manual step controls and
+load-based progression; it never indicates that a checkout step was completed.
+
+### Local test account login
+With the guarded purchased-preview mode enabled, /local-login selects basic or
+VIP. LOCAL_TEST_PASSWORD and LOCAL_TEST_SESSION_SECRET live only in ignored env.
+Use signed expiring cookies via localTestAccounts.ts, never trust an unsigned
+account selector. attendeeSession requires login; /profile redirects locally when
+missing it. /auth/logout clears only this guarded local session. Seed dedicated
+fixtures in localTestAccountSeed.ts, dev database only, with insert-only writes
+and random analytics IDs. Do not create Auth0 users or production fixtures.

@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { getTranslations, getLocale } from "next-intl/server";
 import { alternatesFor } from "@/lib/seo";
-import { auth0 } from "@/lib/auth0";
+import { getAttendeeSession } from "@/lib/attendeeSession";
 import { findOrCreateUser, ensureAnalyticsId } from "@/lib/userService";
 import { analyticsAttributes } from "@/lib/analytics/events";
 import connectMongoDB from "@/lib/mongodb";
@@ -40,7 +40,7 @@ export default async function TicketsPage() {
   const t = await getTranslations("TicketWizard");
   const tp = await getTranslations("TicketsPage");
   const locale = await getLocale();
-  const session = await auth0.getSession();
+  const session = await getAttendeeSession();
   const email = session?.user?.email;
 
   if (!email) {
@@ -109,6 +109,7 @@ export default async function TicketsPage() {
     const reconciled = await reconcileTicketPurchase(email, session?.user?.name || "Attendee");
     if (reconciled.linked) status = await getWizardStatus(email);
   }
+  if (status.purchaseComplete) redirect({ href: "/profile", locale });
   if (!status.profileComplete) {
     redirect({ href: "/tickets/profile", locale });
   }

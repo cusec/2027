@@ -48,3 +48,6 @@ certificates
 docs/
 DESIGN.md
 /brain.md
+
+# Local database backups (private; never commit)
+/backups/

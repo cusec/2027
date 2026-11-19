@@ -125,6 +125,7 @@ export default function PurchaseStepClient({
       setVerifying(false);
       setVerifyFailed(false);
 
+      router.replace("/profile");
       router.refresh();
     },
     [router]

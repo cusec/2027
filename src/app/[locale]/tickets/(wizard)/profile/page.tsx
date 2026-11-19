@@ -1,11 +1,12 @@
-import { auth0 } from "@/lib/auth0";
+import { getLocale } from "next-intl/server";
+import { redirect } from "@/i18n/navigation";
+import { getAttendeeSession } from "@/lib/attendeeSession";
 import { headers } from "next/headers";
-import { getBaseUrl } from "@/lib/siteUrl";
 import type { DemographicInfo as SavedProfile } from "@/lib/interface";
 import { isLocalTicketPreview, LOCAL_TICKET_PREVIEW_EMAIL } from "@/lib/localTicketPreview";
 import ProfileForm from "@/app/components/TicketWizard/ProfileForm";
 import PostHogIdentify from "@/app/components/Analytics/PostHogIdentify";
-import AlreadyTicketedModal from "@/app/components/TicketWizard/AlreadyTicketedModal";
+
 import SignInCard from "@/app/components/TicketWizard/SignInCard";
 import { answersFrom, EMPTY_ANSWERS } from "@/app/components/TicketWizard/profileAnswers";
 
@@ -23,11 +24,11 @@ export default async function ProfilePage() {
     );
   }
 
-  const session = await auth0.getSession();
+  const session = await getAttendeeSession();
   const email = session?.user?.email;
   if (!email) return <SignInCard returnTo="/tickets/profile" />;
 
-  const [{ findOrCreateUser, ensureAnalyticsId }, { default: connectMongoDB }, { DemographicInfo }, { getWizardStatus, missingTravelLocation }] =
+  const [{ findOrCreateUser, ensureAnalyticsId }, { default: connectMongoDB }, { DemographicInfo }, { getWizardStatus }] =
     await Promise.all([
       import("@/lib/userService"),
       import("@/lib/mongodb"),
@@ -42,17 +43,7 @@ export default async function ProfilePage() {
   });
 
   const status = await getWizardStatus(email);
-  if (status.purchaseComplete) {
-    return (
-      <AlreadyTicketedModal
-        email={email}
-        ticketName={status.purchasedTicketName}
-        baseURL={await getBaseUrl()}
-        huntOpen={process.env.SCAVENGER_HUNT_ENABLED === "true"}
-        location={await missingTravelLocation(user._id)}
-      />
-    );
-  }
+  if (status.purchaseComplete) redirect({ href: "/profile", locale: await getLocale() });
 
   await connectMongoDB();
   const doc = await DemographicInfo.findOne({ user: user._id }).lean();

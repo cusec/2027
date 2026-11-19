@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { auth0 } from "@/lib/auth0";
+import { getAttendeeSession } from "@/lib/attendeeSession";
 import connectMongoDB from "@/lib/mongodb";
 import { User, DemographicInfo } from "@/lib/models";
 import { parseTravelLocation } from "@/lib/travelLocation";
@@ -16,7 +16,7 @@ import { parseTravelLocation } from "@/lib/travelLocation";
 // the profile. A delegate who has never saved a profile gets a document with
 // just these fields, which still reads as "profile not started" to the wizard.
 export async function PUT(request: Request) {
-	const session = await auth0.getSession();
+	const session = await getAttendeeSession();
 	const email = session?.user?.email;
 	if (!email) {
 		return NextResponse.json({ error: "Unauthorized" }, { status: 401 });

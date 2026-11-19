@@ -1,5 +1,5 @@
 import { notFound } from "next/navigation";
-import { auth0 } from "@/lib/auth0";
+import { getAttendeeSession } from "@/lib/attendeeSession";
 import { findOrCreateUser } from "@/lib/userService";
 import { reconcileTicketPurchase } from "@/lib/ticketLinking";
 import { RegisteredUser } from "@/lib/models";
@@ -9,7 +9,7 @@ import type { Auth0User } from "@/lib/interface";
 import { getBaseUrl } from "@/lib/siteUrl";
 
 export default async function ScavengerPage() {
-  const session = await auth0.getSession();
+  const session = await getAttendeeSession();
   const user = session?.user;
   const scavengerEnabled = process.env.SCAVENGER_HUNT_ENABLED === "true";
   const isUserAdmin = user?.["cusec/roles"]?.includes("Admin") || false;

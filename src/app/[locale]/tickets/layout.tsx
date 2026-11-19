@@ -1,5 +1,5 @@
 import { auth0 } from "@/lib/auth0";
-import { isLocalTicketPreview } from "@/lib/localTicketPreview";
+import { isLocalTicketPreview, isLocalPurchasedTicketPreview } from "@/lib/localTicketPreview";
 import { headers } from "next/headers";
 import V2Footer from "@/app/components/v2/Footer/V2Footer";
 
@@ -25,7 +25,7 @@ export default async function TicketsLayout({
   const session = localPreview ? null : await auth0.getSession();
   const roles = session?.user?.["cusec/roles"] as string[] | undefined;
   const canPreview = !!roles?.includes("Admin") || !!roles?.includes("Volunteer");
-  const open = localPreview || process.env.TICKETS_ENABLED === "true" || canPreview;
+  const open = localPreview || isLocalPurchasedTicketPreview(requestHeaders.get("host")) || process.env.TICKETS_ENABLED === "true" || canPreview;
 
   return (
     <div className="v2 v2-aero">

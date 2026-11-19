@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { auth0 } from "@/lib/auth0";
+import { getAttendeeSession } from "@/lib/attendeeSession";
 import { User, Collectible } from "@/lib/models";
 import connectMongoDB from "@/lib/mongodb";
 
@@ -9,7 +9,7 @@ export async function GET(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const session = await auth0.getSession();
+    const session = await getAttendeeSession();
 
     if (!session?.user) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });

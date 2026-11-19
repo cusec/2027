@@ -15,9 +15,11 @@ export interface ResumeMeta {
 export default function ResumeUpload({
   id,
   initialResume,
+  onChange,
 }: {
   id: string;
   initialResume: ResumeMeta | null;
+  onChange?: (resume: ResumeMeta | null) => void;
 }) {
   const t = useTranslations("TicketWizard");
   const locale = useLocale();
@@ -45,6 +47,7 @@ export default function ResumeUpload({
       const data = await res.json().catch(() => null);
       if (res.ok && data?.resume) {
         setResume(data.resume);
+        onChange?.(data.resume);
       } else {
         setError(
           data?.error === "too-large"
@@ -67,7 +70,7 @@ export default function ResumeUpload({
     setBusy(true);
     try {
       const res = await fetch("/api/demographics/resume", { method: "DELETE" });
-      if (res.ok) setResume(null);
+      if (res.ok) { setResume(null); onChange?.(null); }
       else setError(t("resume-error-generic"));
     } catch {
       setError(t("resume-error-generic"));

@@ -1,14 +1,14 @@
-import { auth0 } from "@/lib/auth0";
+import { getAttendeeSession } from "./attendeeSession";
 
 export async function getScavengerAccess() {
-  const session = await auth0.getSession();
+  const session = await getAttendeeSession();
   const user = session?.user ?? null;
   const roles = (user?.["cusec/roles"] as string[] | undefined) ?? [];
   const isStaff = roles.includes("Admin") || roles.includes("Volunteer");
 
   const huntOpen = process.env.SCAVENGER_HUNT_ENABLED === "true" || isStaff;
   const submissionsOpen =
-    process.env.SUBMISSIONS_ENABLED === "true" || isStaff;
+    huntOpen && (process.env.SUBMISSIONS_ENABLED === "true" || isStaff);
 
   return {
     user,

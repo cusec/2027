@@ -1,5 +1,5 @@
 import { getTranslations, getLocale } from "next-intl/server";
-import { auth0 } from "@/lib/auth0";
+import { getAttendeeSession } from "@/lib/attendeeSession";
 import { redirect } from "@/i18n/navigation";
 import { findOrCreateUser, ensureAnalyticsId } from "@/lib/userService";
 import connectMongoDB from "@/lib/mongodb";
@@ -17,7 +17,7 @@ import { answersFrom } from "@/app/components/TicketWizard/profileAnswers";
 export default async function PurchasePage() {
   const t = await getTranslations("TicketWizard");
   const locale = await getLocale();
-  const session = await auth0.getSession();
+  const session = await getAttendeeSession();
   const email = session?.user?.email;
   if (!email) return <SignInCard returnTo="/tickets/purchase" />;
 
@@ -32,6 +32,7 @@ export default async function PurchasePage() {
     const reconciled = await reconcileTicketPurchase(email, session?.user?.name || "Attendee");
     if (reconciled.linked) status = await getWizardStatus(email);
   }
+  if (status.purchaseComplete) redirect({ href: "/profile", locale });
   if (!status.purchaseComplete) {
     if (!status.profileComplete) {
       redirect({ href: "/tickets/profile", locale });

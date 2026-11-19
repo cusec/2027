@@ -4,6 +4,8 @@ import {
   extractPurchasedTicket,
   verifyTicketTailorWebhook,
 } from "@/lib/ticketTailor";
+import { belongsToEvent } from "@/lib/vipVerification";
+import { reconcileVip } from "@/lib/vipService";
 import { linkTicketPurchase } from "@/lib/ticketLinking";
 import { Campaign, CampaignPurchase, User } from "@/lib/models";
 import connectMongoDB from "@/lib/mongodb";
@@ -36,32 +38,33 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "bad-json" }, { status: 400 });
   }
 
-  if (envelope.event === "order.updated" && envelope.payload?.status === "cancelled") {
-    const orderId = envelope.payload.id;
-    if (typeof orderId === "string") {
-      await connectMongoDB();
-      await CampaignPurchase.deleteOne({ orderId });
+  if (!["order.created", "order.updated"].includes(envelope.event ?? "")) return NextResponse.json({ ok: true, skipped: "event" });
+  const eventId = process.env.TICKET_TAILOR_EVENT_ID;
+  if (!eventId || !belongsToEvent(envelope.payload ?? {}, eventId)) return NextResponse.json({ ok: true, skipped: "event-mismatch" });
+  const orderIdForVip = envelope.payload?.id;
+  if (typeof orderIdForVip === "string") {
+    await connectMongoDB();
+    const { VipPurchase } = await import("@/lib/models");
+    const owners = await VipPurchase.find({ orderId: orderIdForVip }).select("user").lean();
+    for (const owner of owners) {
+      const account = await User.findById(owner.user).select("email");
+      if (account?.email) await reconcileVip(account.email, orderIdForVip);
     }
-    return NextResponse.json({ ok: true });
+    if (envelope.payload?.status === "cancelled") await CampaignPurchase.deleteOne({ orderId: orderIdForVip });
   }
-
-  if (envelope.event !== "order.created") {
-    return NextResponse.json({
-      ok: true,
-      skipped: envelope.event ?? "unknown-event",
-    });
-  }
-
+  if (envelope.payload?.status !== "completed") return NextResponse.json({ ok: true, skipped: "not-completed" });
   const purchaser = extractPurchaser(envelope.payload ?? {});
   if (!purchaser) {
     console.error(
       "Ticket Tailor order.created webhook had no parseable buyer email:",
-      JSON.stringify(envelope.payload),
+      "[payload omitted]",
     );
     return NextResponse.json({ ok: true, skipped: "no-email" });
   }
 
-  await linkTicketPurchase(
+  // Upgrade-only orders never create admission allowlist records.
+  const ticket = extractPurchasedTicket(envelope.payload ?? {});
+  if (ticket.ticketTypeId) await linkTicketPurchase(
     purchaser.email,
     purchaser.name,
     extractPurchasedTicket(envelope.payload ?? {}),
@@ -69,6 +72,9 @@ export async function POST(request: NextRequest) {
     "webhook",
   );
 
+  await connectMongoDB();
+  const account = await User.findOne({ linked_email: purchaser.email }).select("email");
+  if (account?.email) await reconcileVip(account.email, typeof envelope.payload?.id === "string" ? envelope.payload.id : undefined);
   const orderId = envelope.payload?.id;
   if (envelope.payload?.status === "completed" && typeof orderId === "string") {
     await connectMongoDB();

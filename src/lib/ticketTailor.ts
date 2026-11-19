@@ -1,3 +1,4 @@
+import { isUpgradeTicket } from "./vipVerification";
 import crypto from "node:crypto";
 
 export interface TicketType {
@@ -437,8 +438,8 @@ export function extractPurchasedTicket(payload: Record<string, unknown>): Purcha
 
   const ticketItem =
     lineItems.find(
-      li => typeof li.item_id === "string" && li.item_id.startsWith("tt_")
-    ) ?? lineItems[0];
+      li => typeof li.item_id === "string" && li.item_id.startsWith("tt_") && !isUpgradeTicket(li.item_id, li.description)
+    );
 
   const orderId =
     typeof payload.id === "string" && payload.id.startsWith("or_") ? payload.id : null;
@@ -448,7 +449,7 @@ export function extractPurchasedTicket(payload: Record<string, unknown>): Purcha
   // findIssuedAdmissionByEmail instead.
   const issued = (Array.isArray(payload.issued_tickets) ? payload.issued_tickets : []) as Record<string, unknown>[];
   const admissions = issued.filter(
-    (t) => typeof t.id === "string" && t.status === "valid" && !t.add_on_id,
+    (t) => typeof t.id === "string" && t.status === "valid" && !t.add_on_id && !isUpgradeTicket(t.ticket_type_id, t.description),
   );
   const ticketId = admissions.length === 1 ? (admissions[0].id as string) : null;
 
@@ -477,7 +478,7 @@ export interface IssuedAdmission {
 // an add_on_id, and is not a separate attendee.
 function toAdmission(t: Record<string, unknown>, series: string): IssuedAdmission | null {
   if (typeof t.id !== "string") return null;
-  if (t.status !== "valid" || t.add_on_id) return null;
+  if (t.status !== "valid" || t.add_on_id || isUpgradeTicket(t.ticket_type_id, t.description)) return null;
   if (String(t.event_series_id ?? "") !== series) return null;
   return {
     id: t.id,
@@ -572,6 +573,7 @@ export async function findCompletedOrderByEmail(
     const eventId = process.env.TICKET_TAILOR_EVENT_ID;
     const match = orders.find(order => {
       if (order.status !== "completed") return false;
+      if (!extractPurchasedTicket(order).ticketTypeId) return false;
       if (!eventId) return true;
       const summary = (order.event_summary ?? {}) as Record<string, unknown>;
       const seriesId = String(summary.event_series_id ?? "");

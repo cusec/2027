@@ -79,6 +79,7 @@ const userSchema = new Schema(
     },
     hasSeenIntro: { type: Boolean, default: false },
     personalityType: { type: String, default: null },
+    avatarPose: { type: String, enum: ["default", "book", "laptop", "speaker", "shock", "erm"], default: "default" },
     // Random UUID used as the PostHog distinct id for this account's client
     // and server events. Deliberately NOT the Mongo or Auth0 id: analytics
     // systems must never hold identifiers that can be joined back to PII.
@@ -97,6 +98,13 @@ const userSchema = new Schema(
       ),
       default: null,
     },
+    // Absent on legacy users until verified; never infer VIP from a display name.
+    vip: { type: new Schema({
+      status: { type: String, enum: ["none", "active", "revoked"], required: true },
+      purchaseSource: { type: String, enum: ["initial-checkout", "upgrade"], default: null },
+      purchasedAt: { type: Date, default: null }, verifiedAt: { type: Date, default: null },
+      orderId: { type: String, default: null }, addOnId: { type: String, default: null },
+    }, { _id: false }), default: undefined },
     ticketWizard: {
       type: new Schema(
         {
@@ -437,6 +445,8 @@ const demographicInfoSchema = new Schema(
     sponsorConsent: { type: Boolean, default: false },
     sponsorConsentAt: { type: Date, default: null },
 
+    resumeRoast: { type: Boolean, default: false },
+    resumeRoastConsentAt: { type: Date, default: null },
     resumePublicId: text(),
     resumeFileName: text(),
     resumeSize: { type: Number, default: 0 },
@@ -682,3 +692,15 @@ const speakerSchema = new Schema({
 }, { timestamps: true });
 speakerSchema.index({ published: 1, order: 1 });
 export const SpeakerProfile = mongoose.models.SpeakerProfile || mongoose.model("SpeakerProfile", speakerSchema, "speakers");
+
+// One issued VIP product can belong to exactly one attendee. Never upsert by user alone.
+const vipPurchaseSchema = new Schema({
+  user: { type: Schema.Types.ObjectId, ref: "User", required: true, index: true },
+  orderId: { type: String, required: true, index: true },
+  issuedTicketId: { type: String, required: true, unique: true },
+  addOnId: { type: String, required: true },
+  source: { type: String, enum: ["initial-checkout", "upgrade"], required: true },
+  status: { type: String, enum: ["active", "revoked"], required: true },
+  purchasedAt: { type: Date, default: null }, verifiedAt: { type: Date, required: true },
+}, { timestamps: true });
+export const VipPurchase = mongoose.models.VipPurchase || mongoose.model("VipPurchase", vipPurchaseSchema);

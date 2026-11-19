@@ -1,11 +1,10 @@
 import { getLocale } from "next-intl/server";
-import { auth0 } from "@/lib/auth0";
+import { getAttendeeSession } from "@/lib/attendeeSession";
 import { redirect } from "@/i18n/navigation";
 import { findOrCreateUser, ensureAnalyticsId } from "@/lib/userService";
 import connectMongoDB from "@/lib/mongodb";
 import { DemographicInfo } from "@/lib/models";
-import { getWizardStatus, missingTravelLocation } from "@/lib/ticketWizard";
-import { getBaseUrl } from "@/lib/siteUrl";
+import { getWizardStatus } from "@/lib/ticketWizard";
 import type { DemographicInfo as SavedProfile } from "@/lib/interface";
 // INTEREST_SECTIONS comes from the plain options module on purpose: importing
 // a value from InterestsForm (a "use client" file) hands a server component a
@@ -13,13 +12,12 @@ import type { DemographicInfo as SavedProfile } from "@/lib/interface";
 import { INTEREST_SECTIONS } from "@/lib/ticketWizardOptions";
 import InterestsForm from "@/app/components/TicketWizard/InterestsForm";
 import PostHogIdentify from "@/app/components/Analytics/PostHogIdentify";
-import AlreadyTicketedModal from "@/app/components/TicketWizard/AlreadyTicketedModal";
+
 import SignInCard from "@/app/components/TicketWizard/SignInCard";
 import { answersFrom } from "@/app/components/TicketWizard/profileAnswers";
 
 export default async function InterestsPage() {
-  const locale = await getLocale();
-  const session = await auth0.getSession();
+  const session = await getAttendeeSession();
   const email = session?.user?.email;
   if (!email) return <SignInCard returnTo="/tickets/interests" />;
 
@@ -30,20 +28,7 @@ export default async function InterestsPage() {
   });
 
   const status = await getWizardStatus(email);
-  if (status.purchaseComplete) {
-    return (
-      <AlreadyTicketedModal
-        email={email}
-        ticketName={status.purchasedTicketName}
-        baseURL={await getBaseUrl()}
-        huntOpen={process.env.SCAVENGER_HUNT_ENABLED === "true"}
-        location={await missingTravelLocation(user._id)}
-      />
-    );
-  }
-  if (!status.profileComplete) {
-    redirect({ href: "/tickets/profile", locale });
-  }
+  if (status.purchaseComplete) redirect({ href: "/profile", locale: await getLocale() });
 
   await connectMongoDB();
   const doc = await DemographicInfo.findOne({ user: user._id }).select("-resumePublicId").lean();

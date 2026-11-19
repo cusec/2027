@@ -44,6 +44,7 @@ export async function linkTicketPurchase(
   accountEmail: string = email,
   completionPath: "webhook" | "reconciliation" | "claim" | "admin" = "reconciliation",
 ): Promise<LinkResult> {
+  if (!ticket.ticketTypeId) return { linked: false, purchasedTicketName: null };
   await connectMongoDB();
 
   let registeredUser = await RegisteredUser.findOne({ linkedEmail: email });

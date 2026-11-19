@@ -2,7 +2,8 @@ import createIntlMiddleware from "next-intl/middleware";
 import { NextResponse, type NextRequest } from "next/server";
 import { routing } from "./i18n/routing";
 import { auth0 } from "./lib/auth0";
-import { isLocalTicketPreview } from "./lib/localTicketPreview";
+import { isLocalTicketPreview, isLocalPurchasedTicketPreview } from "./lib/localTicketPreview";
+import { LOCAL_LOGIN_COOKIE } from "./lib/localTestAccounts";
 import { bucketFor, clientIp, takeToken } from "./lib/rateLimit";
 
 const intlMiddleware = createIntlMiddleware(routing);
@@ -24,6 +25,21 @@ const intlMiddleware = createIntlMiddleware(routing);
  */
 export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
+  if (/^\/(?:fr-CA\/)?local-login\/?$/.test(pathname)) {
+    if (!isLocalPurchasedTicketPreview(request.nextUrl.hostname)) return new NextResponse(null, { status: 404 });
+    return pathname === "/local-login" ? NextResponse.next() : NextResponse.redirect(new URL("/local-login", request.url));
+  }
+  if (pathname === "/auth/logout" && isLocalPurchasedTicketPreview(request.nextUrl.hostname)) {
+    const response = NextResponse.redirect(new URL("/local-login", request.url));
+    response.cookies.delete(LOCAL_LOGIN_COOKIE);
+    return response;
+  }
+  // The attendee portal stays available when the hunt layout is closed.
+  if (/^\/(?:fr-CA\/)?scavenger\/profile\/?$/.test(pathname)) {
+    const target = request.nextUrl.clone();
+    target.pathname = pathname.replace("/scavenger/profile", "/profile");
+    return NextResponse.redirect(target);
+  }
 
   // API routes: rate limit, then straight through. They read the Auth0 session
   // themselves, and next-intl has no business rewriting them, so neither of
@@ -47,8 +63,9 @@ export async function proxy(request: NextRequest) {
   }
 
   if (
-    isLocalTicketPreview(request.nextUrl.hostname) &&
-    pathname.startsWith("/tickets")
+    (isLocalTicketPreview(request.nextUrl.hostname) && pathname.startsWith("/tickets")) ||
+    (isLocalPurchasedTicketPreview(request.nextUrl.hostname) &&
+      /^\/(?:fr-CA\/)?(?:tickets|scavenger|profile)(?:\/|$)/.test(pathname))
   ) {
     return intlMiddleware(request);
   }

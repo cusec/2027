@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { AlertCircle } from "lucide-react";
 import { useSearchParams } from "next/navigation";
@@ -24,6 +25,8 @@ interface AeroDockProps {
   dbUser: DbUser;
   linkedEmail?: string | null;
   baseURL: string;
+  huntOpen?: boolean;
+  submissionsOpen?: boolean;
 }
 
 /** The hunt's navigation: a left rail on desktop, a bottom bar on phones. */
@@ -32,12 +35,15 @@ const AeroDock = ({
   dbUser,
   linkedEmail,
   baseURL,
+  huntOpen = true,
+  submissionsOpen = true,
 }: AeroDockProps) => {
+  const t = useTranslations("AttendeeProfile");
   const pathname = usePathname();
   const router = useRouter();
   const isAdmin = user?.["cusec/roles"]?.includes("Admin") ?? false;
   const isVolunteer = user?.["cusec/roles"]?.includes("Volunteer") ?? false;
-  const canScan = Boolean(linkedEmail) && dbUser.active;
+  const canScan = huntOpen && Boolean(linkedEmail) && dbUser.active;
 
   // Resolved during render so the claim is open on first paint.
   const hasCode = Boolean(useSearchParams().get("identifier"));
@@ -45,26 +51,28 @@ const AeroDock = ({
   const [claimOpen, setClaimOpen] = useState(hasCode && canScan);
   const [inventoryOpen, setInventoryOpen] = useState(false);
   const [adminOpen, setAdminOpen] = useState(false);
-  const [needsEmail, setNeedsEmail] = useState(hasCode && !canScan);
+  const [needsEmail, setNeedsEmail] = useState(huntOpen && hasCode && !canScan);
 
   const scan = () => (canScan ? setClaimOpen(true) : setNeedsEmail(true));
 
   return (
     <>
-      <nav className="aero-dock" aria-label="Scavenger hunt">
+      <nav className="aero-dock" aria-label={t("navigation")}>
         <div className="aero-dock__inner">
           <button
             type="button"
             onClick={scan}
+            disabled={!huntOpen}
+            title={!huntOpen ? t("hunt-locked") : undefined}
             className="aero-dock__item aero-dock__item--hero"
           >
             <span className="aero-orb aero-orb--scan aero-orb--hero">
               <ScanIcon />
             </span>
-            <span className="aero-dock__label">Scan</span>
+            <span className="aero-dock__label">{t("scan")}</span>
           </button>
 
-          <Link
+          {huntOpen ? <Link
             href="/scavenger"
             className={`aero-dock__item${
               pathname === "/scavenger" ? " is-active" : ""
@@ -73,22 +81,23 @@ const AeroDock = ({
             <span className="aero-orb">
               <HuntIcon />
             </span>
-            <span className="aero-dock__label">Hunt</span>
-          </Link>
+            <span className="aero-dock__label">{t("hunt")}</span>
+          </Link> : <button className="aero-dock__item" disabled title={t("hunt-locked")}><span className="aero-orb"><HuntIcon /></span><span className="aero-dock__label">{t("hunt")}</span></button>}
 
           <Link
-            href="/scavenger/profile"
+            href="/profile"
+            aria-current={pathname === "/profile" ? "page" : undefined}
             className={`aero-dock__item${
-              pathname === "/scavenger/profile" ? " is-active" : ""
+              pathname === "/profile" ? " is-active" : ""
             }`}
           >
             <span className="aero-orb">
               <ProfileIcon />
             </span>
-            <span className="aero-dock__label">Profile</span>
+            <span className="aero-dock__label">{t("profile")}</span>
           </Link>
 
-          <Link
+          {huntOpen && submissionsOpen ? <Link
             href="/scavenger/submissions"
             className={`aero-dock__item${
               pathname === "/scavenger/submissions" ? " is-active" : ""
@@ -97,18 +106,20 @@ const AeroDock = ({
             <span className="aero-orb">
               <SubmitIcon />
             </span>
-            <span className="aero-dock__label">Submit</span>
-          </Link>
+            <span className="aero-dock__label">{t("submit")}</span>
+          </Link> : <button className="aero-dock__item" disabled title={t("hunt-locked")}><span className="aero-orb"><SubmitIcon /></span><span className="aero-dock__label">{t("submit")}</span></button>}
 
           <button
             type="button"
             onClick={() => setInventoryOpen(true)}
+            disabled={!huntOpen}
+            title={!huntOpen ? t("hunt-locked") : undefined}
             className="aero-dock__item"
           >
             <span className="aero-orb">
               <BagIcon />
             </span>
-            <span className="aero-dock__label">Bag</span>
+            <span className="aero-dock__label">{t("bag")}</span>
           </button>
 
           {(isAdmin || isVolunteer) && (
@@ -125,13 +136,13 @@ const AeroDock = ({
           )}
 
           <a
-            href={`/auth/logout?returnTo=${baseURL}/scavenger`}
+            href={`/auth/logout?returnTo=${encodeURIComponent(`${baseURL}/`)}`}
             className="aero-dock__item aero-dock__item--end"
           >
             <span className="aero-orb aero-orb--ghost">
               <OutIcon />
             </span>
-            <span className="aero-dock__label">Out</span>
+            <span className="aero-dock__label">{t("out")}</span>
           </a>
         </div>
       </nav>
@@ -173,7 +184,7 @@ const AeroDock = ({
           </p>
           {dbUser.active && (
             <Link
-              href="/scavenger/profile"
+              href="/profile"
               onClick={() => setNeedsEmail(false)}
               className="aero-btn"
             >

@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { auth0 } from "@/lib/auth0";
+import { getAttendeeSession } from "@/lib/attendeeSession";
 import connectMongoDB from "@/lib/mongodb";
 import { User, DemographicInfo } from "@/lib/models";
 import {
@@ -8,10 +8,11 @@ import {
   looksLikePdf,
   resumeStorageEnabled,
   uploadResume,
+  resumeDownloadUrl,
 } from "@/lib/resumeStorage";
 
 async function currentUser() {
-  const session = await auth0.getSession();
+  const session = await getAttendeeSession();
   if (!session?.user?.email) return null;
   await connectMongoDB();
   return User.findOne({ email: session.user.email }).select("_id");
@@ -106,8 +107,19 @@ export async function DELETE() {
 
   await DemographicInfo.updateOne(
     { user: user._id },
-    { $set: { resumePublicId: "", resumeFileName: "", resumeSize: 0, resumeUploadedAt: null } }
+    { $set: { resumePublicId: "", resumeFileName: "", resumeSize: 0, resumeUploadedAt: null, resumeRoast: false, resumeRoastConsentAt: null } }
   );
 
   return NextResponse.json({ success: true });
+}
+
+export async function GET() {
+  const user = await currentUser();
+  if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  if (!resumeStorageEnabled()) return NextResponse.json({ error: "unavailable" }, { status: 503 });
+  const doc = await DemographicInfo.findOne({ user: user._id }).select("resumePublicId");
+  if (!doc?.resumePublicId) return NextResponse.json({ error: "not-found" }, { status: 404 });
+  const response = NextResponse.redirect(resumeDownloadUrl(doc.resumePublicId), 302);
+  response.headers.set("Cache-Control", "private, no-store");
+  return response;
 }
