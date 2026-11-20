@@ -7,12 +7,48 @@
 .pass-profile__heading p { margin: 0; font-size: 18px; }
 .pass-profile__grid { display: grid; grid-template-columns: minmax(290px, 400px) minmax(0, 1fr); gap: 32px; align-items: start; }
 .pass-profile button, .pass-profile a { -webkit-tap-highlight-color: transparent; }
-.pass-button { display: inline-flex; flex: none; align-items: center; justify-content: center; min-height: 43px; padding: 10px 21px; border: 1px solid rgba(255,255,255,.7); border-radius: 28px; background: rgba(255,255,255,.82); color: var(--v2-ink-deep); font-family: inherit; font-size: 13px; font-weight: 800; line-height: 1.3; text-decoration: none; cursor: var(--cursor-hand); transition: background 160ms, box-shadow 160ms; }
-.pass-button:hover { background: white; box-shadow: 0 4px 12px #0e231814; }
-.pass-button--lime { background: var(--v2-lime); border-color: var(--v2-lime); }
-.pass-button--lime:hover { background: var(--v2-mint-bright); }
-.pass-button--dark { color: var(--v2-white); background: rgba(255,255,255,.1); border-color: rgba(255,255,255,.3); }
-.pass-button--dark:hover { color: var(--v2-white); background: rgba(255,255,255,.2); }
+/* Match the main site's borderless pills and short hover/press movement.
+   Light actions brighten their text; actions on the dark ticket brighten their face. */
+.pass-button,
+.pass-dialog :is(.wizard-file__pick, .wizard-file__action, .wizard-verify-link) {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  min-height: 43px;
+  padding: 10px 21px;
+  border: 0;
+  border-radius: 999px;
+  background: rgba(255,255,255,.82);
+  color: var(--v2-ink-deep);
+  font-family: var(--v2-font-pixel);
+  font-size: 13px;
+  font-weight: var(--v2-font-pixel-weight);
+  line-height: 1.3;
+  letter-spacing: .04em;
+  text-decoration: none;
+  cursor: var(--cursor-hand);
+  transition: background-color 160ms ease, color 160ms ease, box-shadow 160ms ease, transform 160ms ease;
+}
+.pass-button:hover:not(:disabled),
+.pass-dialog :is(.wizard-file__pick, .wizard-file__action, .wizard-verify-link):hover:not(:disabled) {
+  background: var(--v2-ink);
+  color: var(--v2-white);
+  box-shadow: 0 6px 16px rgba(31,59,44,.28);
+  transform: translateY(-2px);
+}
+.pass-button--lime, .pass-dialog .wizard-file__pick { background: var(--v2-lime); }
+.pass-button--lime:hover:not(:disabled), .pass-dialog .wizard-file__pick:hover:not(:disabled) { background: var(--v2-white-pure); color: var(--v2-ink-deep); }
+.pass-button--dark { color: var(--v2-white); background: rgba(255,255,255,.1); }
+.pass-button--dark:hover:not(:disabled) { color: var(--v2-ink-deep); background: var(--v2-white); }
+.pass-button:active:not(:disabled),
+.pass-dialog :is(.wizard-file__pick, .wizard-file__action, .wizard-verify-link):active:not(:disabled) {
+  transform: translateY(2px) scale(.985);
+  box-shadow: 0 2px 6px rgba(31,59,44,.3);
+}
+.pass-dialog .wizard-file__pick svg { color: inherit; }
+.pass-dialog .wizard-file__action { padding-inline: 16px; background: var(--v2-mint); }
+.pass-dialog .wizard-verify-link { margin-top: 8px; text-transform: none; }
 .pass-profile :is(button,a,input,select):focus-visible, .pass-dialog :is(button,a,input,select):focus-visible { outline: 3px solid var(--v2-blue); outline-offset: 4px; }
 .pass-profile button:disabled, .pass-dialog button:disabled { cursor: var(--cursor-arrow); opacity: .55; }
 .delegate-pass { position: relative; border: 1.5px solid rgba(255,255,255,.95); border-radius: 25px; box-shadow: 0 15px 32px -16px #174a6966; }
@@ -74,7 +110,9 @@
 .pass-dialog::backdrop { background: #0b243b66; backdrop-filter: blur(6px); }
 .pass-dialog__head { position: sticky; top: 0; z-index: 5; display: flex; align-items: center; justify-content: space-between; gap: 20px; background: #e6f7f0; padding: 20px 26px; border-bottom: 1px solid #1f3b2c22; }
 .pass-dialog__head h2 { margin: 0; font-size: 22px; font-weight: 800; }
-.pass-dialog__head button { display: grid; place-items: center; width: 44px; height: 44px; border: 0; border-radius: 50%; background: white; cursor: var(--cursor-hand); }
+.pass-dialog__head button { display: grid; place-items: center; flex: none; width: 44px; height: 44px; border: 0; border-radius: 50%; color: var(--v2-ink-deep); background: white; cursor: var(--cursor-hand); transition: background-color 160ms ease, color 160ms ease, transform 160ms ease; }
+.pass-dialog__head button:hover:not(:disabled) { background: var(--v2-ink); color: var(--v2-white); transform: translateY(-2px); }
+.pass-dialog__head button:active:not(:disabled) { transform: translateY(2px) scale(.985); }
 .pass-dialog__body { padding: 25px 26px; }
 .pass-editor { display: grid; gap: 22px; font-size: 14px; }
 .pass-editor > p { margin: 0; }
@@ -95,9 +133,21 @@
 .pass-editor__hint { font-size: 12px; color: #45665e; }
 .profile-error { padding: 12px; margin-top: 18px; color: #8b2424; background: #ffeded; border-radius: 10px; font-size: 14px; }
 .pass-avatar-options { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
-.pass-avatar-options button { min-width: 0; display: grid; gap: 6px; justify-items: center; padding: 12px 5px; border-radius: 15px; border: 2px solid transparent; background: #dcf2ec; color: #123b2b; cursor: var(--cursor-hand); font: inherit; font-size: 12px; }
-.pass-avatar-options button[aria-pressed=true] { border-color: #3c8750; background: #d9f59d; }
+.pass-avatar-options button { min-width: 0; display: grid; gap: 6px; justify-items: center; padding: 14px 7px; border-radius: 15px; border: 0; background: var(--v2-mint); color: var(--v2-ink-deep); cursor: var(--cursor-hand); font: inherit; font-size: 12px; transition: background-color 160ms ease, color 160ms ease, box-shadow 160ms ease, transform 160ms ease; }
+.pass-avatar-options button[aria-pressed=true] { background: var(--v2-lime); font-weight: 800; }
+.pass-avatar-options button:hover:not(:disabled) { background: var(--v2-ink); color: var(--v2-white); box-shadow: 0 6px 16px rgba(31,59,44,.28); transform: translateY(-2px); }
+.pass-avatar-options button:active:not(:disabled) { transform: translateY(2px) scale(.985); }
 .pass-avatar-options img { width: 100%; height: 100px; object-fit: contain; }
+@media (prefers-reduced-motion: reduce) {
+  .pass-button,
+  .pass-dialog :is(.wizard-file__pick, .wizard-file__action, .wizard-verify-link),
+  .pass-dialog__head button,
+  .pass-avatar-options button { transition: none; }
+  .pass-button:is(:hover, :active):not(:disabled),
+  .pass-dialog :is(.wizard-file__pick, .wizard-file__action, .wizard-verify-link):is(:hover, :active):not(:disabled),
+  .pass-dialog__head button:is(:hover, :active):not(:disabled),
+  .pass-avatar-options button:is(:hover, :active):not(:disabled) { transform: none; }
+}
 .profile-order { display: grid; gap: 16px; margin: 0; }
 .profile-order div { border-bottom: 1px solid #1f3b2c22; padding-bottom: 12px; }
 .profile-order dt { font-size: 12px; color: #45665e; }

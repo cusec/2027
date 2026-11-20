@@ -19,7 +19,7 @@ export async function GET() {
 
   return NextResponse.json({ isVip: user?.vip?.status === "active", state: user?.vip ? "verified" : "unknown",
     configured, checkoutEmbedUrl: embed?.toString() ?? null, checkoutUrl: "https://tickets.cusec.net/events/cusec/2415502?a=VIPAddOn#ticket_selection",
-    checkoutEmail: user?.linked_email }, { headers });
+    checkoutEmail: user?.linked_email || status.linkedEmail }, { headers });
 }
 export async function POST(request: Request) {
   if (request.headers.get("origin") !== new URL(request.url).origin) return NextResponse.json({ error: "forbidden" }, { status: 403, headers });

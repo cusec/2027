@@ -972,3 +972,9 @@ load-based progression; it never indicates that a checkout step was completed.
 Local test logins and seeded purchased fixtures were removed on 2026-11-19.
 Use regular Auth0 accounts and verified ticket linking for local testing. The
 normal TICKETS_ENABLED flag opens registration; it does not grant admission or VIP.
+
+An optional `LOCAL_TICKET_PREVIEW_EMAILS` comma-separated allowlist in ignored
+`.env.local` can show purchased status for specific real Auth0 accounts. It is
+restricted to development, loopback Host, and resolved `CUSEC2027_dev`, with no
+hosted/staging override. It creates no login, purchase evidence or persistent
+ticket link, and never grants VIP or staff roles. Leave it unset in hosted envs.

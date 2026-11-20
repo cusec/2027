@@ -33,6 +33,7 @@ const LEGAL_LINKS: FooterLink[] = [
 const PAST_EDITIONS = ["2026", "2025", "2024", "2022", "2021", "2020"] as const;
 
 const SOCIALS = [
+	{ key: "discord", href: "https://discord.gg/fRutPE4Fgu" },
 	{ key: "instagram", href: "https://www.instagram.com/cusecofficial/" },
 	{ key: "linkedin", href: "https://www.linkedin.com/company/cusec/" },
 	{ key: "youtube", href: "https://www.youtube.com/@cusec_cucgl" },

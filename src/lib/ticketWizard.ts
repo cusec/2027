@@ -1,4 +1,6 @@
-import connectMongoDB from "./mongodb";
+import { headers } from "next/headers";
+import connectMongoDB, { DB_NAME } from "./mongodb";
+import { localTicketPreviewAllowed } from "./localTicketPreview";
 import { User, RegisteredUser, DemographicInfo } from "./models";
 import {
   INTEREST_SECTIONS,
@@ -30,13 +32,19 @@ type SavedSections = Partial<Record<SectionId, Date | string | null>>;
 export async function getWizardStatus(email: string): Promise<WizardStatus> {
   await connectMongoDB();
 
+  // Opt-in, localhost-only preview. Does not create purchase evidence or change
+  // authentication, account records, ticket linking, roles or VIP verification.
+  const localPreview = !!process.env.LOCAL_TICKET_PREVIEW_EMAILS && localTicketPreviewAllowed(
+    email, (await headers()).get("host"), process.env, DB_NAME,
+  );
+
   const user = await User.findOne({ email }).lean<LeanWizardUser>();
   if (!user) {
     return {
       profileComplete: false,
       interestsComplete: false,
-      purchaseComplete: false,
-      linkedEmail: null,
+      purchaseComplete: localPreview,
+      linkedEmail: localPreview ? email : null,
       purchasedTicketName: null,
     };
   }
@@ -58,8 +66,8 @@ export async function getWizardStatus(email: string): Promise<WizardStatus> {
   return {
     profileComplete: REQUIRED_SECTIONS.every(saved),
     interestsComplete: INTEREST_SECTIONS.every(saved),
-    purchaseComplete,
-    linkedEmail: user.linked_email ?? null,
+    purchaseComplete: purchaseComplete || localPreview,
+    linkedEmail: user.linked_email ?? (localPreview ? email : null),
     purchasedTicketName: purchaseComplete
       ? (user.ticketWizard?.purchasedTicketName ?? null)
       : null,
