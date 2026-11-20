@@ -1,5 +1,3 @@
-import { headers } from "next/headers";
-import { isLocalPurchasedTicketPreview } from "@/lib/localTicketPreview";
 import type { Metadata } from "next";
 import { getLocale, getTranslations } from "next-intl/server";
 import { redirect } from "@/i18n/navigation";
@@ -29,7 +27,6 @@ export default async function ProfilePage() {
   const t = await getTranslations("AttendeeProfile");
   const session = await getAttendeeSession();
   const email = session?.user?.email;
-  if (!email && isLocalPurchasedTicketPreview((await headers()).get("host"))) redirect({ href: "/local-login", locale });
   if (!email) return <main className="v2 v2-profile-signin"><SignInCard returnTo="/profile" /></main>;
   let status = await getWizardStatus(email);
   if (!status.purchaseComplete) {

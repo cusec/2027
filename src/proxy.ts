@@ -2,8 +2,6 @@ import createIntlMiddleware from "next-intl/middleware";
 import { NextResponse, type NextRequest } from "next/server";
 import { routing } from "./i18n/routing";
 import { auth0 } from "./lib/auth0";
-import { isLocalTicketPreview, isLocalPurchasedTicketPreview } from "./lib/localTicketPreview";
-import { LOCAL_LOGIN_COOKIE } from "./lib/localTestAccounts";
 import { bucketFor, clientIp, takeToken } from "./lib/rateLimit";
 
 const intlMiddleware = createIntlMiddleware(routing);
@@ -25,15 +23,6 @@ const intlMiddleware = createIntlMiddleware(routing);
  */
 export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
-  if (/^\/(?:fr-CA\/)?local-login\/?$/.test(pathname)) {
-    if (!isLocalPurchasedTicketPreview(request.nextUrl.hostname)) return new NextResponse(null, { status: 404 });
-    return pathname === "/local-login" ? NextResponse.next() : NextResponse.redirect(new URL("/local-login", request.url));
-  }
-  if (pathname === "/auth/logout" && isLocalPurchasedTicketPreview(request.nextUrl.hostname)) {
-    const response = NextResponse.redirect(new URL("/local-login", request.url));
-    response.cookies.delete(LOCAL_LOGIN_COOKIE);
-    return response;
-  }
   // The attendee portal stays available when the hunt layout is closed.
   if (/^\/(?:fr-CA\/)?scavenger\/profile\/?$/.test(pathname)) {
     const target = request.nextUrl.clone();
@@ -60,14 +49,6 @@ export async function proxy(request: NextRequest) {
       );
     }
     return NextResponse.next();
-  }
-
-  if (
-    (isLocalTicketPreview(request.nextUrl.hostname) && pathname.startsWith("/tickets")) ||
-    (isLocalPurchasedTicketPreview(request.nextUrl.hostname) &&
-      /^\/(?:fr-CA\/)?(?:tickets|scavenger|profile)(?:\/|$)/.test(pathname))
-  ) {
-    return intlMiddleware(request);
   }
 
   // Auth0 fully owns its own routes - return its response directly.

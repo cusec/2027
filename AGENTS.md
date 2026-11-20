@@ -619,15 +619,11 @@ hunt, edit that one `@theme` block** — do not hunt through components.
 
 ## Feature flags & deploy
 
-Local purchased-ticket debugging uses `LOCAL_PURCHASED_TICKET_PREVIEW=true` in
-ignored `.env.local`. `getAttendeeSession()` supplies one non-staff fixture only
-in development on loopback hosts with `MONGODB_DB_NAME=CUSEC2027_dev` and no
-Vercel environment/staging branch override. It seeds the dedicated user, linked
-RegisteredUser and completed demographic sections only on insert. Ticket pages,
-hunt pages/access, purchase status API and the self Discord endpoint use it.
-Other authenticated APIs and admin routes retain Auth0. Disable
-`LOCAL_TICKET_PREVIEW` (blank registration preview) when using this mode.
-
+Local development uses the same Auth0 login/signup and ticket verification as
+hosted environments. Local test accounts, /local-login and preview bypass modes
+have been removed. Keep MONGODB_DB_NAME=CUSEC2027_dev locally and use
+TICKETS_ENABLED=true to exercise the normal ticket flow. Never copy local
+credentials or database overrides into hosted environments.
 
 - `SCAVENGER_HUNT_ENABLED` (server) gates the dashboard; `NEXT_PUBLIC_SCAVENGER_HUNT_ENABLED`
   mirrors it for client checks.
@@ -879,12 +875,12 @@ localhost.** Test in-page checkout on a deployed environment only.
 - Sponsor editor visibility and its PATCH group require the authenticated Auth0
   `Sponsor` role. VIP upgrade is currently a placeholder; VIP add-ons are checked
   against completed, single-attendee linked Ticket Tailor orders.
-- Local `.env.local` enables scavenger options for development. Keep hosted
-  staging/production flags false until conference launch; do not copy local env.
+- Keep scavenger flags false before conference launch, including the current
+  local preview. Enable them explicitly when testing the hunt.
 - The portal's hunt navigation requires `SCAVENGER_HUNT_ENABLED=true`; submissions
   also require `SUBMISSIONS_ENABLED=true`. Teams remain disabled for now.
-- Local purchased preview uses the guarded development fixture in
-  `attendeeSession.ts`; never enable it against hosted or production databases.
+- `getAttendeeSession()` caches the real Auth0 session for attendee pages and
+  APIs; it never synthesizes an identity or purchased-ticket status.
 
 ## Don'ts (ticket-wizard-specific)
 
@@ -972,11 +968,7 @@ Current Cubear presentation: mascot above a static three-step vertical timeline
 All steps stay visible. This supersedes paginated tips/manual step controls and
 load-based progression; it never indicates that a checkout step was completed.
 
-### Local test account login
-With the guarded purchased-preview mode enabled, /local-login selects basic or
-VIP. LOCAL_TEST_PASSWORD and LOCAL_TEST_SESSION_SECRET live only in ignored env.
-Use signed expiring cookies via localTestAccounts.ts, never trust an unsigned
-account selector. attendeeSession requires login; /profile redirects locally when
-missing it. /auth/logout clears only this guarded local session. Seed dedicated
-fixtures in localTestAccountSeed.ts, dev database only, with insert-only writes
-and random analytics IDs. Do not create Auth0 users or production fixtures.
+### Local authentication
+Local test logins and seeded purchased fixtures were removed on 2026-11-19.
+Use regular Auth0 accounts and verified ticket linking for local testing. The
+normal TICKETS_ENABLED flag opens registration; it does not grant admission or VIP.

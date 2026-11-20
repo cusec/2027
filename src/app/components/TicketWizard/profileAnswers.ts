@@ -60,6 +60,7 @@ export const EMPTY_ANSWERS: ProfileAnswers = {
   githubUrl: "",
   portfolioUrl: "",
   sponsorConsent: false,
+  resumeRoast: false,
 };
 
 export function answersFrom(saved: Partial<DemographicInfo> | null): ProfileAnswers {

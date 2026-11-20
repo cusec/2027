@@ -1,29 +1,14 @@
 import { getLocale } from "next-intl/server";
 import { redirect } from "@/i18n/navigation";
 import { getAttendeeSession } from "@/lib/attendeeSession";
-import { headers } from "next/headers";
 import type { DemographicInfo as SavedProfile } from "@/lib/interface";
-import { isLocalTicketPreview, LOCAL_TICKET_PREVIEW_EMAIL } from "@/lib/localTicketPreview";
 import ProfileForm from "@/app/components/TicketWizard/ProfileForm";
 import PostHogIdentify from "@/app/components/Analytics/PostHogIdentify";
 
 import SignInCard from "@/app/components/TicketWizard/SignInCard";
-import { answersFrom, EMPTY_ANSWERS } from "@/app/components/TicketWizard/profileAnswers";
+import { answersFrom } from "@/app/components/TicketWizard/profileAnswers";
 
 export default async function ProfilePage() {
-  const requestHeaders = await headers();
-  const localPreview = isLocalTicketPreview(requestHeaders.get("host"));
-  if (localPreview) {
-    return (
-      <div className="tickets-wrapper">
-        <ProfileForm
-          initial={{ ...EMPTY_ANSWERS, primaryEmail: LOCAL_TICKET_PREVIEW_EMAIL }}
-          startIndex={0}
-        />
-      </div>
-    );
-  }
-
   const session = await getAttendeeSession();
   const email = session?.user?.email;
   if (!email) return <SignInCard returnTo="/tickets/profile" />;

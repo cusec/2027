@@ -140,6 +140,7 @@ export default function InterestsForm({ initial, startIndex, initialResume }: In
     convincedBy: known([initial.convincedBy], CONVINCED_BY_OPTIONS)[0] ?? "",
   }));
   const [index, setIndex] = useState(startIndex);
+  const [resume, setResume] = useState(initialResume);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [errorField, setErrorField] = useState<string | null>(null);
@@ -186,6 +187,10 @@ export default function InterestsForm({ initial, startIndex, initialResume }: In
     }
 
     if (section === "links") {
+      if (answers.resumeRoast && !resume) {
+        fail(t("resume-roast-needs-resume"), "resumeRoast");
+        return;
+      }
       const bad = LINKS.find(({ field }) => !isValidLink(field, answers[field]));
       if (bad) {
         fail(t(`error-${bad.field}`), bad.field);
@@ -202,7 +207,7 @@ export default function InterestsForm({ initial, startIndex, initialResume }: In
     if (!result.ok) {
       const linkField = LINKS.some(({ field }) => field === result.field);
       fail(
-        linkField ? t(`error-${result.field}`) : result.field ? t("error-field") : t("error-generic"),
+        result.field === "resumeRoast" ? t("resume-roast-needs-resume") : linkField ? t(`error-${result.field}`) : result.field ? t("error-field") : t("error-generic"),
         result.field
       );
       return;
@@ -608,8 +613,22 @@ export default function InterestsForm({ initial, startIndex, initialResume }: In
           <WizardCard title={t("card-links")} icon={<Link2 />}>
             <div className="wizard-grid">
               <Question label={t("q-resume")} htmlFor="resume" hint={t("resume-hint")} wide>
-                <ResumeUpload id="resume" initialResume={initialResume} />
+                <ResumeUpload id="resume" initialResume={resume} onChange={next => {
+                  setResume(next);
+                  if (!next) set("resumeRoast", false);
+                }} />
               </Question>
+              <div className="wizard-q wizard-q--wide">
+                <label className={`wizard-chip wizard-consent${answers.resumeRoast ? " is-on" : ""}${!resume ? " is-disabled" : ""}`}>
+                  <input id="resumeRoast" className="wizard-chip__input" type="checkbox"
+                    checked={answers.resumeRoast} disabled={!resume || busy}
+                    aria-describedby="resume-roast-hint"
+                    onChange={event => set("resumeRoast", event.target.checked)} />
+                  <span className="wizard-chip__mark" aria-hidden="true">{answers.resumeRoast && <Check strokeWidth={3} />}</span>
+                  <span className="wizard-chip__text">{t("q-resume-roast")}</span>
+                </label>
+                <p id="resume-roast-hint" className="wizard-q__hint">{t(resume ? "resume-roast-hint" : "resume-roast-needs-resume")}</p>
+              </div>
 
               {LINKS.map(({ field, prefix, base, strip, placeholder }) => (
                 <Question key={field} label={t(`q-${field}`)} htmlFor={field}>

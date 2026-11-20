@@ -2,7 +2,6 @@ import { NextResponse } from "next/server";
 import { auth0 } from "@/lib/auth0";
 import { parseTravelLocation } from "@/lib/travelLocation";
 import { User, DemographicInfo } from "@/lib/models";
-import { isLocalTicketPreview } from "@/lib/localTicketPreview";
 import { trackServerEvent } from "@/lib/analytics/server";
 import { ensureAnalyticsId } from "@/lib/userService";
 import { DELEGATION_SCHOOLS, findInstitution } from "@/lib/institutions";
@@ -322,7 +321,7 @@ function experience(answers: Answers): Update {
   };
 }
 
-function links(answers: Answers, consentedBefore: boolean): Update {
+function links(answers: Answers, consentedBefore: boolean, roastConsentAt?: Date | null): Update {
   const update: Update = {};
   for (const field of ["linkedinUrl", "githubUrl", "portfolioUrl"] as const) {
     const value = text(answers, field);
@@ -333,14 +332,17 @@ function links(answers: Answers, consentedBefore: boolean): Update {
   update.sponsorConsent = consent;
   if (consent && !consentedBefore) update.sponsorConsentAt = new Date();
   if (!consent) update.sponsorConsentAt = null;
+  // Missing from older clients: preserve their existing roast choice. New
+  // clients must send an explicit boolean, independently of sponsor sharing.
+  if (answers.resumeRoast !== undefined) {
+    if (typeof answers.resumeRoast !== "boolean") throw new InvalidAnswer("resumeRoast");
+    update.resumeRoast = answers.resumeRoast;
+    update.resumeRoastConsentAt = answers.resumeRoast ? roastConsentAt ?? new Date() : null;
+  }
   return update;
 }
 
-export async function GET(request: Request) {
-  if (isLocalTicketPreview(new URL(request.url).hostname)) {
-    return NextResponse.json({ demographics: null });
-  }
-
+export async function GET() {
   const session = await auth0.getSession();
   if (!session?.user?.email) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -360,10 +362,9 @@ export async function GET(request: Request) {
 }
 
 export async function PUT(request: Request) {
-  const localPreview = isLocalTicketPreview(new URL(request.url).hostname);
-  const session = localPreview ? null : await auth0.getSession();
+  const session = await auth0.getSession();
   const sessionEmail = session?.user?.email;
-  if (!localPreview && !sessionEmail) {
+  if (!sessionEmail) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
@@ -383,30 +384,28 @@ export async function PUT(request: Request) {
       ? (body.answers as Answers)
       : {};
 
-  const existing = localPreview
-    ? null
-    : await (async () => {
-        const { default: connectMongoDB } = await import("@/lib/mongodb");
-        await connectMongoDB();
-        const user = await User.findOne({ email: sessionEmail });
-        if (!user) return null;
-        const profile = await DemographicInfo.findOne({ user: user._id })
-          .select("attendeeType sponsorConsent sections")
-          .lean<{
-            attendeeType?: string;
-            sponsorConsent?: boolean;
-            sections?: Partial<Record<SectionId, Date | null>>;
-          }>();
-        return { user, profile };
-      })();
+  const existing = await (async () => {
+    const { default: connectMongoDB } = await import("@/lib/mongodb");
+    await connectMongoDB();
+    const user = await User.findOne({ email: sessionEmail });
+    if (!user) return null;
+    const profile = await DemographicInfo.findOne({ user: user._id })
+      .select("attendeeType sponsorConsent resumeRoastConsentAt sections")
+      .lean<{
+        attendeeType?: string;
+        sponsorConsent?: boolean;
+        resumeRoastConsentAt?: Date | null;
+        sections?: Partial<Record<SectionId, Date | null>>;
+      }>();
+    return { user, profile };
+  })();
 
-  if (!localPreview && !existing) {
+  if (!existing) {
     return NextResponse.json({ error: "User not found" }, { status: 404 });
   }
 
   if (
     section === "background" &&
-    !localPreview &&
     !existing?.profile?.sections?.basics
   ) {
     return NextResponse.json(
@@ -424,9 +423,7 @@ export async function PUT(request: Request) {
       case "background":
         update = background(
           answers,
-          localPreview
-            ? one(answers, "attendeeType", ATTENDEE_TYPE_OPTIONS, true)
-            : (existing?.profile?.attendeeType ?? ""),
+          existing.profile?.attendeeType ?? "",
         );
         break;
       case "goals":
@@ -439,7 +436,7 @@ export async function PUT(request: Request) {
         update = experience(answers);
         break;
       case "links":
-        update = links(answers, Boolean(existing?.profile?.sponsorConsent));
+        update = links(answers, Boolean(existing?.profile?.sponsorConsent), existing?.profile?.resumeRoastConsentAt);
         break;
     }
   } catch (error) {
@@ -452,27 +449,23 @@ export async function PUT(request: Request) {
     throw error;
   }
 
-  if (localPreview) {
-    return NextResponse.json({
-      success: true,
-      sections: { [section]: new Date().toISOString() },
-    });
-  }
-
   const user = existing?.user;
   if (!user) {
     return NextResponse.json({ error: "User not found" }, { status: 404 });
   }
 
   const saved = await DemographicInfo.findOneAndUpdate(
-    { user: user._id },
+    { user: user._id, ...(update.resumeRoast === true ? { resumePublicId: { $exists: true, $ne: "" } } : {}) },
     {
       $set: { user: user._id, ...update, [`sections.${section}`]: new Date() },
     },
-    { upsert: true, new: true, setDefaultsOnInsert: true },
+    { upsert: update.resumeRoast !== true, new: true, setDefaultsOnInsert: true },
   )
     .select("sections")
     .lean<{ sections?: Partial<Record<SectionId, Date | null>> }>();
+
+  // The file may have been removed in another tab after the form loaded.
+  if (!saved) return NextResponse.json({ error: "invalid-answer", field: "resumeRoast" }, { status: 400 });
 
   user.hasSeenIntro = true;
   const done = (id: SectionId) => Boolean(saved?.sections?.[id]);

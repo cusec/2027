@@ -351,6 +351,8 @@ export interface DemographicInfo {
   portfolioUrl: string;
   sponsorConsent: boolean;
   sponsorConsentAt?: string | null;
+  resumeRoast: boolean;
+  resumeRoastConsentAt?: string | null;
   resumeFileName?: string;
   resumeSize?: number;
   resumeUploadedAt?: string | null;
@@ -365,6 +367,7 @@ export type ProfileAnswers = Omit<
   | "user"
   | "sections"
   | "sponsorConsentAt"
+  | "resumeRoastConsentAt"
   | "resumeFileName"
   | "resumeSize"
   | "resumeUploadedAt"
