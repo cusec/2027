@@ -441,12 +441,15 @@ The cards on both pages are `.v2-glass`, matching the landing page rather than
 the dark panels in the Figma frames for these two pages. That was a deliberate
 instruction, not an oversight — don't "restore" the green cards from the SVGs.
 
-`/sponsors` has no confirmed sponsors, so the honeycomb slots are blank plates,
-exactly as the frame draws them. Its audience figures are read out of
-`V2.dawn` at render time rather than restated in `V2.sponsors`, so the sponsor
-pitch cannot drift from the numbers the landing page shows. The tier card
-deliberately describes only logo placement — no packages, benefits or prices
-are confirmed.
+`/sponsors` uses `V2SponsorDirectory` and `sponsorsData.ts` to show the supplied
+logos from `public/assets/sponsors/` in five visible groups: partner, silver,
+bronze, in-kind and community-partner. The custom group is commented out in
+`sponsorsData.ts` for later; keep its entries and assets. Keep logo proportions and colours
+intact and use contain sizing inside the light rounded plates. Update the data
+list when adding assets; preserve the supplied filenames, encoding URL spaces.
+The sponsorship PDF label intentionally has no destination yet, per the user.
+The old honeycomb and pitch components are not mounted on this page; the
+landing-page sponsor teaser also remains hidden.
 
 ### The Figma frames are placeholder copy
 
