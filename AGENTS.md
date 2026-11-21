@@ -442,12 +442,14 @@ the dark panels in the Figma frames for these two pages. That was a deliberate
 instruction, not an oversight — don't "restore" the green cards from the SVGs.
 
 `/sponsors` uses `V2SponsorDirectory` and `sponsorsData.ts` to show the supplied
-logos from `public/assets/sponsors/` in five visible groups: partner, silver,
-bronze, in-kind and community-partner. The custom group is commented out in
-`sponsorsData.ts` for later; keep its entries and assets. Keep logo proportions and colours
+logos from `public/assets/sponsors/` in this order: partner, silver, bronze,
+custom, in-kind and community-partner. The custom group is titled "Supported by"
+("Avec le soutien de" in French), since its contributions fall outside the
+formal tiers. Keep it directly after Bronze. Keep logo proportions and colours
 intact and use contain sizing inside the light rounded plates. Update the data
 list when adding assets; preserve the supplied filenames, encoding URL spaces.
-The sponsorship PDF label intentionally has no destination yet, per the user.
+The sponsorship package link opens the supplied PDF at
+`/documents/CUSEC2027_SponsorshipPackage.pdf` in a new tab.
 The old honeycomb and pitch components are not mounted on this page; the
 landing-page sponsor teaser also remains hidden.
 

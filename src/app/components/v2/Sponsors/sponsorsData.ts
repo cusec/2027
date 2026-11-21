@@ -28,6 +28,15 @@ export const SPONSOR_GROUPS = [
 			{ name: "Schwarzman Scholars", logo: "bronze/schwarzman-scholars.svg", width: 475, height: 435 },
 		],
 	},
+	// These supporters contributed outside the sponsorship tiers.
+	{
+		key: "custom",
+		sponsors: [
+			{ name: "Ordre des ingénieurs du Québec", logo: "custom/OiQ.svg", width: 491, height: 173 },
+			{ name: "Schulich Leader Scholarships", logo: "custom/schulich-leader 1.svg", width: 419, height: 157 },
+			{ name: "Tourisme Montréal", logo: "custom/tourisme-montreal 1.svg", width: 339, height: 178 },
+		],
+	},
 	{
 		key: "in-kind",
 		sponsors: [
@@ -45,15 +54,6 @@ export const SPONSOR_GROUPS = [
 			{ name: "Startup Ecosystem Canada", logo: "community-partner/startup-ecosystem.svg", width: 224, height: 224 },
 		],
 	},
-	// Restore this group when the Custom sponsors are ready to be shown.
-	/* {
-		key: "custom",
-		sponsors: [
-			{ name: "Ordre des ingénieurs du Québec", logo: "custom/OiQ.svg", width: 491, height: 173 },
-			{ name: "Schulich Leader Scholarships", logo: "custom/schulich-leader 1.svg", width: 419, height: 157 },
-			{ name: "Tourisme Montréal", logo: "custom/tourisme-montreal 1.svg", width: 339, height: 178 },
-		],
-	}, */
 ] as const satisfies readonly {
 	key: string;
 	sponsors: readonly Sponsor[];

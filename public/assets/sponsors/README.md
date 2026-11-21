@@ -29,5 +29,6 @@ display name, relative file path, and SVG dimensions to the matching group there
 Logos are displayed in list order. Website links can be connected separately
 when confirmed destinations are supplied.
 
-The `custom` group is currently commented out in `sponsorsData.ts`. Keep those
-logos here; uncomment the group when it is ready to appear on the page.
+The `custom` group appears directly after Bronze, under "Supported by"
+("Avec le soutien de" in French). These organizations contributed outside the
+formal sponsorship tiers.
