@@ -135,7 +135,7 @@ export const SPONSOR_GROUPS = [
 				logo: "in-kind/devmaxx.svg",
 				width: 427,
 				height: 98,
-				website: "https://www.devmaxx.app/",
+				website: "https://www.devmaxx.dev/",
 			},
 		],
 	},
