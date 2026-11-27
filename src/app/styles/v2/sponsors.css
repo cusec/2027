@@ -179,39 +179,75 @@
     font-size: 2rem;
     line-height: 1.2;
     letter-spacing: 0;
+    text-align: center;
 }
 
-.v2-spon-directory__grid {
-    display: grid;
-    grid-template-columns: repeat(4, minmax(0, 1fr));
-    gap: 26px 24px;
+.v2-spon-directory__list {
+    --logo-width: 190px;
+    --logo-row-width: calc((100% - 72px) / 4);
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 24px;
     margin: 0;
     padding: 0;
     list-style: none;
 }
 
+.v2-spon-directory__list--partner {
+    --logo-width: 340px;
+    --logo-row-width: 100%;
+}
+
+.v2-spon-directory__list--silver {
+    --logo-width: 258px;
+    --logo-row-width: calc((100% - 24px) / 2);
+}
+
+.v2-spon-directory__list--bronze {
+    --logo-width: 222px;
+    --logo-row-width: calc((100% - 24px) / 2);
+}
+
+.v2-spon-directory__list--custom {
+    --logo-width: 222px;
+    --logo-row-width: calc((100% - 48px) / 3);
+}
+
+.v2-spon-directory__list--in-kind {
+    max-width: 832px;
+    margin-inline: auto;
+}
+
+.v2-spon-directory__sponsor {
+    width: min(var(--logo-width), var(--logo-row-width));
+    min-width: 0;
+}
+
 .v2-spon-directory__logo {
-    position: relative;
     display: grid;
-    place-items: center;
+    grid-template: minmax(0, 1fr) / minmax(0, 1fr);
     aspect-ratio: 1.8;
-    padding: 24px 28px;
+    padding: clamp(12px, 2vw, 24px);
     border-radius: 76px 76px 28px 28px;
     background: rgba(253, 255, 254, 0.94);
-    color: #61786D;
-    font-size: 0.9375rem;
-    text-align: center;
+    cursor: var(--cursor-hand);
+}
+
+.v2-spon-directory__logo:hover {
+    background: #fff;
+    box-shadow: 0 3px 12px rgba(11, 26, 58, 0.16);
+}
+
+.v2-spon-directory__logo:focus-visible {
+    outline: 3px solid var(--v2-ink-deep);
+    outline-offset: 4px;
 }
 
 .v2-spon-directory__logo img {
-    position: absolute;
-    inset: 0;
     display: block;
     width: 100%;
     height: 100%;
-    min-width: 0;
-    min-height: 0;
-    padding: inherit;
     object-fit: contain;
 }
 
@@ -222,12 +258,6 @@
     font-weight: 700;
     line-height: 1.5;
     text-align: center;
-}
-
-@media (max-width: 1000px) {
-    .v2-spon-directory__grid {
-        grid-template-columns: repeat(3, minmax(0, 1fr));
-    }
 }
 
 @media (max-width: 760px) {
@@ -249,26 +279,28 @@
         font-size: 1.5rem;
     }
 
-    .v2-spon-directory__grid {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-        gap: 24px 16px;
+    .v2-spon-directory__list {
+        --logo-row-width: calc((100% - 16px) / 2);
+        gap: 20px 16px;
+    }
+
+    .v2-spon-directory__list--partner {
+        --logo-row-width: 100%;
+    }
+
+    .v2-spon-directory__list--bronze,
+    .v2-spon-directory__list--custom {
+        --logo-row-width: calc(44% - 8px);
     }
 
     .v2-spon-directory__logo {
         min-height: 88px;
         border-radius: 52px 52px 22px 22px;
-        padding: 12px;
-        font-size: 0.875rem;
     }
 
     .v2-spon-directory__name {
         font-size: 0.875rem;
-    }
-}
-
-@media (max-width: 360px) {
-    .v2-spon-directory__grid {
-        grid-template-columns: minmax(0, 1fr);
+        overflow-wrap: anywhere;
     }
 }
 

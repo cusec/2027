@@ -9,18 +9,19 @@ export default function V2SponsorDirectory() {
 			<div className="v2-container">
 				<div className="v2-glass v2-spon-directory__panel">
 					{SPONSOR_GROUPS.map(({ key, sponsors }) => (
-						<section
-							className="v2-spon-directory__tier"
-							aria-labelledby={`sponsor-tier-${key}`}
-							key={key}
-						>
-							<h2 className="v2-spon-directory__heading v2-pixel" id={`sponsor-tier-${key}`}>
-								{t(`tier-name-${key}`)}
-							</h2>
-							<ul className="v2-spon-directory__grid">
+						<div key={key}>
+							{key === "in-kind" && (
+								<h2 className="v2-spon-directory__heading v2-pixel" id="sponsor-in-kind">
+									{t("tier-name-in-kind")}
+								</h2>
+							)}
+							<ul
+								className={`v2-spon-directory__list v2-spon-directory__list--${key}`}
+								aria-labelledby={key === "in-kind" ? "sponsor-in-kind" : undefined}
+							>
 								{sponsors.map((sponsor) => (
 									<li className="v2-spon-directory__sponsor" key={sponsor.logo}>
-										<div className="v2-spon-directory__logo">
+										<a className="v2-spon-directory__logo" href={sponsor.website}>
 											<img
 												src={`/assets/sponsors/${encodeURI(sponsor.logo)}`}
 												alt={sponsor.name}
@@ -29,12 +30,12 @@ export default function V2SponsorDirectory() {
 												loading="lazy"
 												decoding="async"
 											/>
-										</div>
+										</a>
 										<p className="v2-spon-directory__name">{sponsor.name}</p>
 									</li>
 								))}
 							</ul>
-						</section>
+						</div>
 					))}
 				</div>
 			</div>

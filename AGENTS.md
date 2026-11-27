@@ -443,13 +443,11 @@ instruction, not an oversight — don't "restore" the green cards from the SVGs.
 
 `/sponsors` uses `V2SponsorDirectory` and `sponsorsData.ts` to show the supplied
 logos from `public/assets/sponsors/` in this order: partner, silver, bronze,
-custom, in-kind and community-partner. The custom group is titled "Supported by"
-("Avec le soutien de" in French), since its contributions fall outside the
-formal tiers. Keep it directly after Bronze. Keep logo proportions and colours
-intact and use contain sizing inside the light rounded plates. Update the data
-list when adding assets; preserve the supplied filenames, encoding URL spaces.
-The sponsorship package link opens the supplied PDF at
-`/documents/CUSEC2027_SponsorshipPackage.pdf` in a new tab.
+custom, in-kind and community-partner. Only the in-kind group has a visible
+heading. The rounded logo plates are sized by tier and link to each sponsor's
+website. Keep logo proportions and colours intact. Preserve the supplied
+filenames and encode URL spaces. The sponsorship package PDF remains at
+`/documents/CUSEC2027_SponsorshipPackage.pdf` with its page link hidden.
 The old honeycomb and pitch components are not mounted on this page; the
 landing-page sponsor teaser also remains hidden.
 

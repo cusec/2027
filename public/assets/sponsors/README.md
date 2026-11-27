@@ -25,10 +25,9 @@ with the same category folders. These folders contain public website assets.
 
 The sponsors page reads its entries from
 `src/app/components/v2/Sponsors/sponsorsData.ts`. When adding a new logo, add its
-display name, relative file path, and SVG dimensions to the matching group there.
-Logos are displayed in list order. Website links can be connected separately
-when confirmed destinations are supplied.
+display name, relative file path, image dimensions, and official website URL to
+the matching group there. Logos are displayed in list order and link to the
+associated website.
 
-The `custom` group appears directly after Bronze, under "Supported by"
-("Avec le soutien de" in French). These organizations contributed outside the
-formal sponsorship tiers.
+The `custom` group appears directly after Bronze. Only the in-kind group has a
+heading. The VIA Rail logo comes from its [official media kit](https://corpo.viarail.ca/en/media-kit).
