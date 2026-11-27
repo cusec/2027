@@ -83,6 +83,13 @@ export const SPONSOR_GROUPS = [
 				height: 157,
 				website: "https://schulichleaders.com/",
 			},
+			{
+				name: "Intact Insurance",
+				logo: "custom/intactinsurance.svg",
+				width: 364,
+				height: 159,
+				website: "https://www.intact.ca/en/about-intact-insurance",
+			},
 		],
 	},
 	{
